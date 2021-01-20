@@ -212,13 +212,18 @@ class Admin extends AdminModule
             $bulan = $_GET['b'];
         }
 
+        $tahun = date('Y');
+        if (isset($_GET['y'])) {
+            $tahun = $_GET['y'];
+        }
+
         $username = $this->core->getUserInfo('username', null, true);
 
-        if($this->core->getUserInfo('id') == 1 and isset($_GET['bulan'])){
+        if($this->core->getUserInfo('id') == 1 and isset($_GET['b'])){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
                 ->like('nama', '%'.$phrase.'%')
                 ->orLike('shift', '%'.$phrase.'%')
                 ->asc('jam_datang')
@@ -226,28 +231,28 @@ class Admin extends AdminModule
             }elseif(isset($_GET['bulan'])){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
                 ->where('nik',$username)
                 ->asc('jam_datang')
                 ->toArray();
             }else{
-                $totalRecords = $this->db('rekap_presensi')
-                    ->join('pegawai','pegawai.id = rekap_presensi.id')
-                    ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                    ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-                    ->where('nik',$username)
-                    ->asc('jam_datang')
-                    ->toArray();
-                }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'profil', 'rekap_presensi', '%d?b='.$bulan.'&s='.$phrase]));
+            $totalRecords = $this->db('rekap_presensi')
+                ->join('pegawai','pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
+                ->where('nik',$username)
+                ->asc('jam_datang')
+                ->toArray();
+            }
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'profil', 'rekap_presensi', '%d?b='.$bulan.'&y='.$tahun.'&s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
         // list
         $offset = $pagination->offset();
 
-        if($this->core->getUserInfo('id') == 1 and isset($_GET['bulan'])){
+        if($this->core->getUserInfo('id') == 1 and isset($_GET['b'])){
         $rows = $this->db('rekap_presensi')
             ->select([
               'nama' => 'pegawai.nama',
@@ -261,15 +266,15 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+            ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+            ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
             ->like('nama', '%'.$phrase.'%')
             ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
-        }elseif(isset($_GET['bulan'])){
+        }elseif(isset($_GET['b'])){
         $rows = $this->db('rekap_presensi')
             ->select([
               'nama' => 'pegawai.nama',
@@ -283,8 +288,8 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+            ->where('jam_datang', '>', $tahun.'-'.$bulan.'-01')
+            ->where('jam_datang', '<', $tahun.'-'.$bulan.'-31')
             ->where('nik',$username)
             ->asc('jam_datang')
             ->offset($offset)
@@ -304,8 +309,8 @@ class Admin extends AdminModule
                   'photo' => 'rekap_presensi.photo'
                 ])
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+    	        ->where('jam_datang', '>', $tahun.'-'.$bulan.'-01')
+	            ->where('jam_datang', '<', $tahun.'-'.$bulan.'-31')
                 ->where('nik',$username)
                 ->asc('jam_datang')
                 ->offset($offset)
@@ -323,6 +328,7 @@ class Admin extends AdminModule
         }
 
         $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['tahun'] = array('','2020', '2021');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }

@@ -147,20 +147,25 @@ class Admin extends AdminModule
             $bulan = $_GET['b'];
         }
 
+        $tahun = date('Y');
+        if (isset($_GET['y'])) {
+            $tahun = $_GET['y'];
+        }
+
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
         if($this->core->getUserInfo('id') == 1){
         $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }else{
             $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
             ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
@@ -176,7 +181,7 @@ class Admin extends AdminModule
         if($this->core->getUserInfo('id') == 1){
             $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
@@ -185,7 +190,7 @@ class Admin extends AdminModule
         }else{
         $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
             ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
@@ -198,7 +203,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                $row['editURL'] = url([ADMIN, 'presensi', 'jadwaledit', $row['id']]);
+                $row['editURL'] = url([ADMIN, 'presensi', 'jadwaledit', $row['id'] , $bulan , $tahun]);
                 // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
                 // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
                 // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
@@ -225,6 +230,7 @@ class Admin extends AdminModule
         $this->assign['showBulan'] = $month[$bulan];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+        $this->assign['tahun'] = array('','2020', '2021');
         return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
     }
 
@@ -280,15 +286,15 @@ class Admin extends AdminModule
         return $this->draw('jadwal.form.html', ['jadwal' => $this->assign]);
     }
 
-    public function getJadwalEdit($id)
+    public function getJadwalEdit($id,$bulan,$tahun)
     {
         $this->_addHeaderFiles();
-        $row = $this->db('jadwal_pegawai')->where('id', $id)->where('tahun', date('Y'))->where('bulan', date('m'))->oneArray();
+        $row = $this->db('jadwal_pegawai')->where('id', $id)->where('tahun', $tahun)->where('bulan', $bulan)->oneArray();
         if (!empty($row)){
             $this->assign['form'] = $row;
             $this->assign['id'] = $this->db('pegawai')->toArray();
             $this->assign['h1'] = $this->db('jam_masuk')->toArray();
-            $this->assign['tahun'] = date('Y');
+            $this->assign['tahun'] = $tahun;
             $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
             return $this->draw('jadwal.form.html', ['jadwal' => $this->assign]);
@@ -347,28 +353,33 @@ class Admin extends AdminModule
             $bulan = $_GET['b'];
         }
 
+        $tahun = date('Y');
+        if (isset($_GET['y'])) {
+            $tahun = $_GET['y'];
+        }
+
         $username = $this->core->getUserInfo('username', null, true);
 
         if($this->core->getUserInfo('id') == 1){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
         }else{
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
                 ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?b='.$bulan.'&s='.$phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?b='.$bulan.'&y='.$tahun.'&s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -389,8 +400,8 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+            ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+            ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
@@ -410,8 +421,8 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+            ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+            ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
             ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
@@ -700,9 +711,9 @@ class Admin extends AdminModule
         
 
         $this->assign['getStatus'] = isset($_GET['status']);
-        $this->assign['tahun'] = date('Y');
+        $this->assign['tahun'] = array('','2020', '2021');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&s='.$phrase]);
+        $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }
     

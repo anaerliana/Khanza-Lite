@@ -19,6 +19,13 @@
                       </select>
                     </div>
                     <div class="input-group">
+                      <select name="y" id="tahun" class="form-control" placeholder="Tahun">
+                          {loop: $rekap.tahun}
+                            <option value="{$value}">{$value}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="input-group">
                       <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
                       <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                       <span class="input-group-btn">

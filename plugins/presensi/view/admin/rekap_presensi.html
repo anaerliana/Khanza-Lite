@@ -11,10 +11,10 @@
             </div>
             <div class="panel-body">
               <div class="row clearfix">
-                <div class="col col-md-8">
+                <div class="col col-md-7">
                   <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} | Total Kurang: {$rekap.totalminus} | Total Lebih: {$rekap.totalplus}</h3>
                 </div>
-                <div class="col col-md-4">
+                <div class="col col-md-5">
                   <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
                     <div class="input-group">
                       <select name="b" id="bulan" class="form-control" placeholder="Bulan">
@@ -22,6 +22,13 @@
                           <option value="{$value}">{$value}</option>
                         {/loop}
                       </select>
+                    </div>
+                    <div class="input-group">
+                      <select name="y" id="tahun" class="form-control" placeholder="Tahun">
+                          {loop: $rekap.tahun}
+                            <option value="{$value}">{$value}</option>
+                          {/loop}
+                        </select>
                     </div>
                     <div class="input-group">
                       <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
