@@ -1,0 +1,114 @@
+<article class="row">
+    <form name="petugas" action="{?=url(ADMIN.'/profil/simpancuti/'.@$cuti.form.id_user)?}" method="POST">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$cuti.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row clearfix">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="jenis_cuti">Jenis Izin</label>
+                                <select name="jenis_cuti" id="jenis_cuti" class="form-control" onselect="doSomething();">
+                                    {loop: $cuti.pilihCuti}
+                                    <option value="{$key}">{$value}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label>Alasan</label>
+                                <input type="text" name="alasan" id="alasan" class="form-control" value="" />
+                                <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nik}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4 telp">
+                            <div class="form-group">
+                                <label for="">No Telepon</label>
+                                <input type="text" name="telp" class="form-control" value="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Dari Tanggal</label>
+                                <input type="text" name="tanggal_awal" id="tanggal_awal"
+                                    class="form-control" value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Sampai Tanggal</label>
+                                <input type="text" name="tanggal_akhir" id="tanggal_akhir"
+                                    class="form-control" value="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row clearfix alamat">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="">Alamat</label>
+                                <input type="text" name="alamat" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group save">
+                        <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+<script type="text/javascript">
+    $(function () {
+        $('#tanggal_awal').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id',
+            minDate: new Date().toISOString().split('T')[0],
+        });
+        $('#tanggal_akhir').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id',
+            useCurrent: false
+        });
+    });
+    $('#tanggal_awal').on('dp.change',function(e){
+        $('#tanggal_akhir').data("DateTimePicker").minDate(e.date);
+    });
+
+    $('#tanggal_akhir').on('dp.change',function(e){
+        $('#tanggal_awal').data("DateTimePicker").maxDate(e.date);
+    });
+
+    $(document).ready(function(){
+        $('.alamat').hide();
+        $('.save').hide();
+        $('.telp').hide();
+        $('#jenis_cuti').on('change',function(){
+            // alert($(this).val());
+            $('.alamat').show();
+            $('.save').show();
+            $('.telp').show();
+            if ($(this).val() == 4) {
+                $('#tanggal_awal').on('dp.change',function(e){
+                    var dateAwal = new Date($('#tanggal_awal').val());
+                    dateAwal.setDate(dateAwal.getDate() + 90);
+                    document.getElementById("tanggal_akhir").value = dateAwal.toISOString().split('T')[0];
+                });
+            } else if($(this).val() == 7) {
+                $('.alamat').hide();
+                $('.save').show();
+                $('.telp').hide();
+            }else if($(this).val() == 0){
+                $('.alamat').hide();
+                $('.save').hide();
+                $('.telp').hide();
+            }
+        })
+    });
+
+</script>

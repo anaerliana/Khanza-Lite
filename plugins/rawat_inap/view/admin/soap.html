@@ -22,6 +22,7 @@
         <th>RR(/menit)</th>
         <th>Tinggi(cm)</th>
         <th>Berat(Kg)</th>
+        <th>SPO2</th>
         <th>GCS(E,V,M)</th>
         <th>Alergi</th>
         <th>Instruksi</th>
@@ -75,12 +76,12 @@
         <th colspan="2">Obyektif</th>
         <td colspan="6">{$value.pemeriksaan}</td>
       </tr>
-      <!--
+
       <tr>
         <th colspan="2">Assesment</th>
         <td colspan="6">{$value.penilaian}</td>
       </tr>
-	  -->
+
       <tr>
         <td>
           <div class="">
@@ -117,7 +118,7 @@
       </tr>
       {/loop}
       {loop: $pemeriksaan_ranap as $data}
-      <tr>
+      <tr {if: $data.verified_at != null } style="background-color: #dff0d8 !important;" {/if}>
         <td rowspan="6" style="vertical-align:top;">{$data.nomor}</td>
         <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Inap</b><br>
@@ -130,11 +131,15 @@
         <td>{$data.respirasi}</td>
         <td>{$data.tinggi}</td>
         <td>{$data.berat}</td>
+        <td>{$data.spo2}</td>
         <td>{$data.gcs}</td>
         <td>{$data.alergi}</td>
         <td rowspan="6" style="vertical-align:top;">
+          <h4 style="color: black;">Instruksi<br><br></h4>
           {$data.instruksi}<br><br>
-          <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
+          <h4 style="color: black;">Evaluasi<br><br></h4>
+          {$data.evaluasi}<br><br>
+          <!-- <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
           {$data.nama_petugas}
           <script>
           	jQuery('.qrcodePetugas{$data.nomor}').qrcode({
@@ -142,30 +147,30 @@
               height: 64,
           		text	: "Petugas: {$data.nama_petugas}"
           	});
-          </script>
+          </script> -->
         </td>
       </tr>
       <tr>
-        <th colspan="2">Kesadaran</th>
-        <td colspan="6">{$data.kesadaran}</td>
+        <!-- <th colspan="2">Kesadaran</th>
+        <td colspan="6">{$data.kesadaran}</td> -->
       </tr>
-      <tr>
+      <tr {if: $data.verified_at != null } style="background-color: #dff0d8 !important;" {/if}>
         <th colspan="2">Subyektif</th>
         <td colspan="6">{$data.keluhan}</td>
       </tr>
-      <!--
-      <tr>
+
+      <tr {if: $data.verified_at != null } style="background-color: #dff0d8 !important;" {/if}>
         <th colspan="2">Obyektif</th>
         <td colspan="6">{$data.pemeriksaan}</td>
       </tr>
-      <tr>
+      <tr {if: $data.verified_at != null } style="background-color: #dff0d8 !important;" {/if}>
         <th colspan="2">Assesment</th>
         <td colspan="6">{$data.penilaian}</td>
       </tr>
-	  -->
-      <tr>
+
+      <tr {if: $data.verified_at != null } style="background-color: #dff0d8 !important;" {/if}>
         <td>
-          <div class="">
+          <div class="" {if: $data.verified_at != null } style="display: none !important;" {/if}>
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$data.no_rawat}"
               data-tgl_perawatan="{$data.tgl_perawatan}"
@@ -176,6 +181,7 @@
               data-respirasi="{$data.respirasi}"
               data-tinggi="{$data.tinggi}"
               data-berat="{$data.berat}"
+              data-spo2="{$data.spo2}"
               data-gcs="{$data.gcs}"
               data-kesadaran="{$data.kesadaran}"
               data-alergi="{$data.alergi}"
@@ -184,6 +190,7 @@
               data-penilaian="{$data.penilaian}"
               data-rtl="{$data.rtl}"
               data-instruksi="{$data.instruksi}"
+              data-evaluasi="{$data.evaluasi}"
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
               data-no_rawat="{$data.no_rawat}"
@@ -192,12 +199,12 @@
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
           </div>
         </td>
-        <th colspan="2">Obyektif</th>
-        <td colspan="6">{$data.pemeriksaan}</td>
-        <!--
+        <!-- <th colspan="2">Obyektif</th>
+        <td colspan="6">{$data.pemeriksaan}</td> -->
+
         <th colspan="2">Plan</th>
         <td colspan="6">{$data.rtl}</td>
-		-->
+
       </tr>
       {/loop}
     </tbody>

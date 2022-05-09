@@ -1,0 +1,57 @@
+<form action="" method="post">
+    <div class="row clearfix">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">No Faktur</label>
+                <input type="text" class="form-control" name="faktur">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Tanggal Faktur</label>
+                <input type="text" class="form-control tanggal" name="tgl_faktur">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Nama Barang</label>
+                <input type="text" class="form-control" name="nama">
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Jumlah</label>
+                <input type="text" class="form-control" name="jumlah">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Satuan</label>
+                <input type="text" class="form-control" name="satuan">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="">Harga</label>
+                <input type="text" class="form-control" name="harga">
+            </div>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-4"></div>
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <input type="submit" value="Simpan" class="btn btn-primary form-control">
+        </div>
+    </div>
+</form>
+<script>
+    $(function () {
+        $('.tanggal').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id',
+        });
+    });
+</script>

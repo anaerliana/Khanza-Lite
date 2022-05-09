@@ -12,6 +12,7 @@ class Admin extends AdminModule
         return [
             'Kelola' => 'manage',
             'Biodata' => 'biodata',
+            'Cuti' => 'cuti',
             'Presensi Masuk' => 'presensi',
             'Rekap Presensi' => 'rekap_presensi',
             'Jadwal Pegawai' => 'jadwal',
@@ -23,6 +24,7 @@ class Admin extends AdminModule
     {
         $sub_modules = [
             ['name' => 'Biodata', 'url' => url([ADMIN, 'profil', 'biodata']), 'icon' => 'cubes', 'desc' => 'Biodata Pegawai'],
+            ['name' => 'Izin', 'url' => url([ADMIN, 'profil', 'cuti']), 'icon' => 'list', 'desc' => 'Permintaan Izin / Cuti '],
             ['name' => 'Presensi', 'url' => url([ADMIN, 'profil', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
             ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'profil', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
             ['name' => 'Jadwal', 'url' => url([ADMIN, 'profil', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
@@ -222,6 +224,7 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $perpage = '10';
         $phrase = '';
+        $year = date('Y');
         if (isset($_GET['s']))
             $phrase = $_GET['s'];
 
@@ -309,8 +312,6 @@ class Admin extends AdminModule
                 ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
                 ->where('nik', $username)
                 ->asc('jam_datang')
-                ->offset($offset)
-                ->limit($perpage)
                 ->toArray();
         } else {
             $rows = $this->db('rekap_presensi')
@@ -330,8 +331,6 @@ class Admin extends AdminModule
                 ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
                 ->where('nik', $username)
                 ->asc('jam_datang')
-                ->offset($offset)
-                ->limit($perpage)
                 ->toArray();
         }
 
@@ -340,12 +339,17 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['mapURL']  = url([ADMIN, 'profil', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
+                $beritaAcara = url([ADMIN, 'profil', 'beritaacara', $row['id'], $bulan]);
+                $cek = $this->db('rekap_ba')->where('id',$row['id'])->where('bulan',$bulan)->where('tahun',$year)->oneArray();
                 $this->assign['list'][] = $row;
             }
         }
 
+
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['getBulan'] = $bulan;
+        $this->assign['beritaAcara'] = $beritaAcara;
+        $this->assign['checkBa'] = $cek;
         $this->assign['getUser'] = $username;
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
@@ -361,6 +365,53 @@ class Admin extends AdminModule
         echo $this->tpl->draw(MODULES . '/profil/view/admin/google_map.html', true);
         exit();
     }
+
+    public function getBeritaAcara($id, $bulan)
+    {
+        $year = date('Y');
+        $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
+        $ba = $this->db('rekap_ba')->where('id',$id)->where('bulan',$bulan)->where('tahun',$year)->oneArray();
+        $this->tpl->set('tahun',$year);
+        $this->tpl->set('pegawai', $pegawai);
+        $this->tpl->set('bulan', $bulan);
+        $this->tpl->set('ba',$ba);
+        echo $this->tpl->draw(MODULES . '/profil/view/admin/berita_acara.html', true);
+        exit();
+    }
+
+    public function postRekapBkdSimpan($id = null)
+    {
+        $errors = 0;
+        if (!$id) {
+            $location = url([ADMIN, 'profil', 'rekap_presensi']);
+        } else {
+            $location = url([ADMIN, 'profil', 'rekap_presensi', $id , $_POST['bulan'] , $_POST['tahun']]);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+            $_POST['created_at'] = date('Y-m-d H:i:s');
+            $_POST['updated_at'] = date('Y-m-d H:i:s');
+            if (!$id) {
+                $query = $this->db('rekap_bkd')->save($_POST);
+                $query2 = $this->db('rekap_ba')->save($_POST);
+            } else {
+                $query = $this->db('rekap_bkd')->where('id', $id)->where('tahun', $_POST['tahun'])->where('bulan', $_POST['bulan'])->save($_POST);
+                $query = $this->db('rekap_ba')->where('id', $id)->where('tahun', $_POST['tahun'])->where('bulan', $_POST['bulan'])->save($_POST);
+            }
+            if ($query) {
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+            print_r($_POST);
+            print_r($query);
+        }
+
+        redirect($location, $_POST);
+    }
+
     public function getPresensi($page = 1)
     {
         $this->_addHeaderFiles();
@@ -499,8 +550,16 @@ class Admin extends AdminModule
     public function postBridgingBkd()
     {
         $jadwal = 0;
+        $jml_pot_tl1 = 0;
+        $jml_pot_tl2 = 0;
+        $jml_pot_tl3 = 0;
+        $jml_pot_tl4 = 0;
+        $jml_pot_psw1 = 0;
+        $jml_pot_psw2 = 0;
+        $jml_pot_psw3 = 0;
+        $jml_pot_psw4 = 0;
         $year = date('Y');
-        $biodata = $this->db('pegawai')->select(['id' => 'id', 'nama' => 'nama', 'nip' => 'nik'])->where('nik', $_POST['nik'])->oneArray();
+        $biodata = $this->db('pegawai')->select(['id' => 'id', 'nama' => 'nama', 'nip' => 'nik', 'status' => 'stts_kerja'])->where('nik', $_POST['nik'])->oneArray();
         $day = cal_days_in_month(CAL_GREGORIAN, $_POST['bulan'], $year);
         for ($i = 1; $i <= $day; $i++) {
             $jad = $this->db('jadwal_pegawai')->select('h' . $i)->where('id', $biodata['id'])->where('tahun', $year)->where('bulan', $_POST['bulan'])->oneArray();
@@ -508,25 +567,154 @@ class Admin extends AdminModule
                 $jadwal = $jadwal + 1;
             }
         }
-        $absen = $this->db('rekap_presensi')->where('id', $biodata['id'])->where('jam_datang', 'LIKE', '%' . $year . '-' . $_POST['bulan'] . '%')->toArray();
-        $jlh = count($absen);
+        // $absen = $this->db('rekap_presensi')->where('id', $biodata['id'])->where('jam_datang', 'LIKE', $year . '-' . $_POST['bulan'] . '%')->toArray();
+        $jlh = count($_POST['shift']);
 
-        $query = $this->db('bridging_bkd_presensi')->save([
-            'id' => $biodata['id'],
-            'nama' => $biodata['nama'],
-            'nip' => $biodata['nip'],
-            'tahun' => $year,
-            'bulan' => $_POST['bulan'],
-            'jumlah_kehadiran' => $jlh,
-            'jumlah_hari_kerja' => $jadwal,
-            'persentase_hari_kerja' => '0.33'
-        ]);
+        // $no = 1;
+        for ($i=0; $i < count($_POST['shift']); $i++) {
+            $jamMasukShift = $this->db('jam_jaga')->where('shift',$_POST['shift'][$i])->oneArray();
+            if (strtotime($_POST['jam_datang'][$i]) > strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) {
+                if((strtotime($_POST['jam_datang'][$i]) - strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) > (10 * 60) && (strtotime($_POST['jam_datang'][$i]) - strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) < (31 * 60)){
+                    $jml_pot_tl1 = $jml_pot_tl1 + 1;
+                }
+                if((strtotime($_POST['jam_datang'][$i]) - strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) > (30 * 60) && (strtotime($_POST['jam_datang'][$i]) - strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) < (61 * 60)){
+                    $jml_pot_tl2 = $jml_pot_tl2 + 1;
+                }
+                if((strtotime($_POST['jam_datang'][$i]) - strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) > (60 * 60) && (strtotime($_POST['jam_datang'][$i]) - strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) < (91 * 60)){
+                    $jml_pot_tl3 = $jml_pot_tl3 + 1;
+                }
+                if((strtotime($_POST['jam_datang'][$i]) - strtotime(substr($_POST['jam_datang'][$i],0,10) .' '. $jamMasukShift['jam_masuk'])) > (90 * 60)){
+                    $jml_pot_tl4 = $jml_pot_tl4 + 1;
+                }
+            }
+            if (strtotime($_POST['jam_pulang'][$i]) < strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang'])) {
+                if((strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang']) - strtotime($_POST['jam_pulang'][$i])) > (10 * 60) && (strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang']) - strtotime($_POST['jam_pulang'][$i])) < (31 * 60)){
+                    $jml_pot_psw1 = $jml_pot_psw1 + 1;
+                }
+                if((strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang']) - strtotime($_POST['jam_pulang'][$i])) > (30 * 60) && (strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang']) - strtotime($_POST['jam_pulang'][$i])) < (61 * 60)){
+                    $jml_pot_psw2 = $jml_pot_psw2 + 1;
+                }
+                if((strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang']) - strtotime($_POST['jam_pulang'][$i])) > (60 * 60) && (strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang']) - strtotime($_POST['jam_pulang'][$i])) < (91 * 60)){
+                    $jml_pot_psw3 = $jml_pot_psw3 + 1;
+                }
+                if((strtotime(substr($_POST['jam_pulang'][$i],0,10) .' '. $jamMasukShift['jam_pulang']) - strtotime($_POST['jam_pulang'][$i])) > (90 * 60)){
+                    $jml_pot_psw4 = $jml_pot_psw4 + 1;
+                }
+            }
+        }
+
+        $jml_pot_tl1 = $jml_pot_tl1 * (0.5 / 100);
+        $jml_pot_tl2 = $jml_pot_tl2 * (1 / 100);
+        $jml_pot_tl3 = $jml_pot_tl3 * (1.25 / 100);
+        $jml_pot_tl4 = $jml_pot_tl4 * (1.5 / 100);
+        $jml_pot_terlambat = $jml_pot_tl1 + $jml_pot_tl2 + $jml_pot_tl3 + $jml_pot_tl4;
+
+        $jml_pot_psw1 = $jml_pot_psw1 * (0.5 / 100);
+        $jml_pot_psw2 = $jml_pot_psw2 * (1 / 100);
+        $jml_pot_psw3 = $jml_pot_psw3 * (1.25 / 100);
+        $jml_pot_psw4 = $jml_pot_psw4 * (1.5 / 100);
+        $jml_pot_pulang = $jml_pot_psw1 + $jml_pot_psw2 + $jml_pot_psw3 + $jml_pot_psw4;
+
+        $date = new \DateTime('now');
+        $date->modify('last day of this month');
+        $cekTanggal = $date->format('Y-m-d');
+        $cekMalam = $this->db('temporary_presensi')->where('id',$biodata['id'])->like('jam_datang','%'.$cekTanggal.'%')->like('shift','%malam%')->oneArray();
+        if ($cekMalam) {
+            $jlh = $jlh + 1;
+        }
+
+        $cekBkd = $this->db('bridging_bkd_presensi')->where('id',$biodata['id'])->where('bulan',$_POST['bulan'])->where('tahun',$year)->oneArray();
+        if (!$cekBkd) {
+            $query = $this->db('bridging_bkd_presensi')->save([
+                'id' => $biodata['id'],
+                'nama' => $biodata['nama'],
+                'nip' => $biodata['nip'],
+                'tahun' => $year,
+                'bulan' => $_POST['bulan'],
+                'jumlah_kehadiran' => $jlh,
+                'jumlah_hari_kerja' => $jadwal,
+                'persentase_hari_kerja' => '0.33',
+                'jml_pot_keterlambatan' => $jml_pot_terlambat,
+                'jml_pot_pulang_lebih_awal' => $jml_pot_pulang,
+                'status' => $biodata['status'],
+            ]);
+        }else{
+            $query = $this->db('bridging_bkd_presensi')->where('id',$biodata['id'])->where('bulan',$_POST['bulan'])->where('tahun',$year)->update([
+                'jumlah_kehadiran' => $jlh,
+                'jumlah_hari_kerja' => $jadwal,
+                'persentase_hari_kerja' => '0.33',
+                'jml_pot_keterlambatan' => $jml_pot_terlambat,
+                'jml_pot_pulang_lebih_awal' => $jml_pot_pulang,
+            ]);
+        }
         // print_r($query);
         if ($query) {
+            echo 'Sukses';
             $this->notify('success', 'Simpan Sukses');
         } else {
             $this->notify('failure', 'Gagal Simpan');
         }
+        exit();
+    }
+
+    public function getCuti()
+    {
+        $this->_addHeaderFiles();
+        $this->assign['title'] = 'Pengajuan Izin';
+        $this->assign['nik'] = $this->core->getUserInfo('username', null, true);
+        $this->assign['pilihCuti'] = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
+        return $this->draw('cuti.html',['cuti' => $this->assign]);
+    }
+
+    public function postSimpanCuti()
+    {
+        $numberDays = '';
+        $kodeSurat = '';
+        $noSurat = '01';
+        $noCuti = '';
+
+        $tanggalAwal = strtotime($_POST['tanggal_awal']);
+        $tanggalAkhir = strtotime($_POST['tanggal_akhir']);
+        $timeDiff = abs($tanggalAkhir - $tanggalAwal);
+        $numberDays = $timeDiff/86400;
+        $numberDays = $numberDays + 1;
+
+        switch ($_POST['jenis_cuti']) {
+            case '1':
+                $kodeSurat = '851';
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+                break;
+            case '5':
+                $kodeSurat = '850';
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+                break;
+            case '4':
+                $kodeSurat = '854';
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+                break;
+
+            default:
+                $noCuti = '';
+                break;
+        }
+
+        $simpanIzinCuti = [
+            'nip' => $_POST['nip'],
+            'jenis_cuti' => $_POST['jenis_cuti'],
+            'alasan' => $_POST['alasan'],
+            'no_telp' => $_POST['telp'],
+            'lama' => $numberDays,
+            'tanggal_awal' => $_POST['tanggal_awal'],
+            'tanggal_akhir' => $_POST['tanggal_akhir'],
+            'alamat' => $_POST['alamat'],
+            'tgl_surat' => date('Y-m-d'),
+            'no_surat' => $noCuti,
+            'status' => '',
+            'created_at' => date('Y-m-d'),
+            'updated_at' => ''
+        ];
+
+        echo json_encode($simpanIzinCuti);
     }
 
     public function getJavascript()

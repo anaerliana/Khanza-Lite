@@ -31,9 +31,12 @@ class Admin extends AdminModule
     public function getManage()
     {
         $sub_modules = [
-            ['name' => 'Data Obat', 'url' => url([ADMIN, 'data_sirs', 'index']), 'icon' => 'users', 'desc' => 'Data Obat'],
-            ['name' => 'Data Covid 19', 'url' => url([ADMIN, 'data_sirs', 'covid']), 'icon' => 'user-plus', 'desc' => 'Tambah data covid 19'],
+            ['name' => 'Data Obat', 'url' => url([ADMIN, 'data_sirs', 'index']), 'icon' => 'medkit', 'desc' => 'Data Obat'],
+            ['name' => 'Pasien Masuk Covid 19', 'url' => url([ADMIN, 'data_sirs', 'covid']), 'icon' => 'user-plus', 'desc' => 'Tambah data pasien masuk covid 19'],
+            ['name' => 'Pasien Keluar Covid 19', 'url' => url([ADMIN, 'data_sirs', 'pasienkeluar']), 'icon' => 'minus-square', 'desc' => 'Tambah data pasien keluar covid 19'],
             ['name' => 'Data Bed Covid 19', 'url' => url([ADMIN, 'data_sirs', 'bedcovid']), 'icon' => 'bed', 'desc' => 'Data Bed covid 19'],
+            ['name' => 'Data Bed Non Covid 19', 'url' => url([ADMIN, 'data_sirs', 'bednoncovid']), 'icon' => 'bed', 'desc' => 'Data Bed non covid 19'],
+            ['name' => 'Data APD Covid 19', 'url' => url([ADMIN, 'data_sirs', 'apdcovid']), 'icon' => 'shield', 'desc' => 'Data APD covid 19'],
             ['name' => 'Pengaturan', 'url' => url([ADMIN, 'data_sirs', 'settings']), 'icon' => 'gear', 'desc' => 'Pengaturan Sirs Online'],
         ];
         return $this->draw('index.html', ['sub_modules' => $sub_modules]);
@@ -249,6 +252,28 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getPasienKeluar()
+    {
+        $this->_addHeaderFiles();
+        $this->assign['list'] = $this->db('bridging_covid')->join('reg_periksa','reg_periksa.no_rawat = bridging_covid.no_rawat')
+        ->join('pasien','pasien.no_rkm_medis = reg_periksa.no_rkm_medis')->toArray();
+        return $this->draw('pasienkeluar.html',['list' => $this->assign]);
+    }
+
+    public function anyPasienKeluarForm()
+    {
+        $rows = $this->db('reg_periksa')
+            ->join('pasien', 'reg_periksa.no_rkm_medis = pasien.no_rkm_medis')
+            ->where('no_rawat', $_POST['no_rawat'])
+            ->oneArray();
+        $result = [];
+        $result = $rows;
+        $result['tgl_inap_keluar'] = $this->db('kamar_inap')->select(['tgl_keluar' => 'tgl_keluar', 'stts_pulang' => 'stts_pulang'])->where('no_rawat', $_POST['no_rawat'])->desc('tgl_keluar')->oneArray();
+        $result['form'] = $this->db('bridging_covid')->where('no_rawat', $rows['no_rawat'])->oneArray();
+        echo $this->draw('pasienkeluarform.html',['form' => $result]);
+        exit();
+    }
+
     public function getToken()
     {
         $url = $this->url_v3 . "api/rslogin";
@@ -295,10 +320,60 @@ class Admin extends AdminModule
         }
     }
 
-    public function getVarianCovid()
+    public function bridgingSirsV3($param_url)
     {
         $token = $this->getTokenStored();
-        $url = $this->url_v3 . "api/variancovid?page=1&limit=1000";
+        $url = $this->url_v3 . $param_url;
+
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $headers = array(
+            "Content-Type: application/json",
+            "accept: */*",
+            'Authorization: Bearer ' . $token,
+        );
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+        //for debug only!
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+        $resp = curl_exec($curl);
+        curl_close($curl);
+        $json = json_decode($resp, true);
+        return $json;
+    }
+
+    public function getVarianCovid()
+    {
+        $json = $this->bridgingSirsV3('api/variancovid?page=1&limit=1000');
+        $code = $json['status'];
+        $message = $json['message'];
+        if ($json != null) {
+            echo '{
+                    "metaData": {
+                        "code": "' . $code . '",
+                        "message": "' . $message . '"
+                    },
+                    "response": ' . json_encode($json['data']) . '}';
+        } else {
+            echo '{
+                    "metaData": {
+                        "code": "5000",
+                        "message": "ERROR"
+                    },
+                    "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER KEMENKES TERPUTUS."}';
+        }
+        exit();
+    }
+
+    public function getStatusKeluar()
+    {
+        $token = $this->getTokenStored();
+        $url = $this->url_v3 . "api/kecamatan?page=1&limit=1000";
 
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -422,6 +497,34 @@ class Admin extends AdminModule
         }
     }
 
+    public function postApiSirs($url_api , $datafield = [])
+    {
+        $token = $this->getTokenStored();
+        $url = $this->url_v3 . $url_api;
+
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+        $headers = array(
+            "Content-Type: application/json",
+            "accept: */*",
+            'Authorization: Bearer ' . $token,
+        );
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $datafield);
+        //for debug only!
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+        $resp = curl_exec($curl);
+        curl_close($curl);
+        $ret = json_decode($resp, true);
+        return $ret;
+    }
+
     public function postSaveCovid()
     {
         $data = [
@@ -469,30 +572,7 @@ class Admin extends AdminModule
         ];
 
         $data = json_encode($data);
-
-        $token = $this->getTokenStored();
-        $url = $this->url_v3 . "api/laporancovid19versi3";
-
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-
-        $headers = array(
-            "Content-Type: application/json",
-            "accept: */*",
-            'Authorization: Bearer ' . $token,
-        );
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        //for debug only!
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-
-        $resp = curl_exec($curl);
-        curl_close($curl);
-        $ret = json_decode($resp, true);
+        $ret = $this->postApiSirs('api/laporancovid19versi3', $data);
         if ($ret == NULL) {
             $data = '{
                     "status": "false",
@@ -561,14 +641,90 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getBedCovid()
+    public function postSaveCovidKeluar()
     {
-        $this->_addHeaderFiles();
+        function cutString($string)
+        {
+            $word = ':';
+            $wordPos = strpos($string, $word);
+            $wordPosCut = substr($string, 0, $wordPos);
+            if ($wordPos != '') {
+                return $wordPosCut;
+            }else{
+                return null;
+            }
+        }
+
+        function checkNullKu($string)
+        {
+            if ($string != '') {
+                return substr($string, 0, 1);
+            }else{
+                return null;
+            }
+        }
+
+        $data = [
+            'laporanCovid19Versi3Id' => $_POST['id_covid'],
+            'tanggalKeluar' => $_POST['tgl_keluar'],
+            'statusKeluarId' => substr($_POST['status_keluar'], 0, 1),
+            'penyebabKematianId' => checkNullKu($_POST['penyebab_kematian']),
+            'penyebabKematianLangsungId' => cutString($_POST['penyebab_kematian_lgs']),
+            'statusPasienSaatMeninggalId' => checkNullKu($_POST['status_pasien_meninggal']),
+            'komorbidCoInsidenId' => cutString($_POST['komorbid']),
+        ];
+
+        $data = json_encode($data);
+        $ret = $this->postApiSirs('api/laporancovid19versi3statuskeluar', $data);
+        if ($ret == NULL) {
+            $data = '{
+                    "status": "false",
+                    "message": "Koneksi ke server Kemenkes terputus. Silahkan ulangi beberapa saat lagi!"}';
+            $data = json_decode($data, true);
+            $ret = json_encode($data);
+            echo $ret;
+        } else if ($ret['status'] == true) {
+            $code = $ret['status'];
+            if ($ret != null) {
+                $simpan['tgl_keluar'] = $_POST['tgl_keluar'];
+                $simpan['status_keluar'] = substr($_POST['status_keluar'], 0, 1);
+                $simpan['penyebab_kematian'] = checkNullKu($_POST['penyebab_kematian']);
+                $simpan['penyebab_kematian_lgs'] = cutString($_POST['penyebab_kematian_lgs']);
+                $simpan['status_pasien_meninggal'] = checkNullKu($_POST['status_pasien_meninggal']);
+                $simpan['komorbid'] = cutString($_POST['komorbid']);
+
+                $cari = $this->db('bridging_covid')->where('id',$_POST['id_covid'])->where('no_rawat',$_POST['no_rawat'])->save($simpan);
+
+                if ($cari) {
+                    $data = '{
+                        "status": "' . $code . '",
+                        "message": "Berhasil Memulangkan dengan Id : ' . $ret['data']['id'] . '"}';
+                    $data = json_decode($data, true);
+                    $ret = json_encode($data);
+                    echo $ret;
+                }
+            } else {
+                $data = '{
+                    "status": "false",
+                    "message": "Koneksi ke server Kemenkes terputus. Silahkan ulangi beberapa saat lagi!"}';
+                $data = json_decode($data, true);
+                $ret = json_encode($data);
+                echo $ret;
+            }
+        } else {
+            $ret = json_encode($ret);
+            echo $ret;
+        }
+        exit();
+    }
+
+    public function bridgingSirs($param_url)
+    {
         date_default_timezone_set('UTC');
         $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
 
 
-        $url = $this->url."Fasyankes";
+        $url = $this->url.$param_url;
         $headers = [
             "X-rs-id: " . $this->id_sirs,
             "X-Timestamp: " . $tStamp,
@@ -590,7 +746,28 @@ class Admin extends AdminModule
         curl_close($curl);
 
         $json = json_decode($result,true);
+        return $json;
+    }
+
+    public function getBedCovid()
+    {
+        $this->_addHeaderFiles();
+        $json = $this->bridgingSirs('Fasyankes');
         return $this->draw('bedcovidlist.html', ['rawat_inap' => $json['fasyankes']]);
+    }
+
+    public function getBedNonCovid()
+    {
+        $this->_addHeaderFiles();
+        $json = $this->bridgingSirs('Fasyankes');
+        return $this->draw('bednoncovid.html', ['rawat_inap' => $json['fasyankes']]);
+    }
+
+    public function getApdCovid()
+    {
+        $this->_addHeaderFiles();
+        $json = $this->bridgingSirs('Fasyankes/apd');
+        return $this->draw('apd.html', ['apd' => $json['apd']]);
     }
 
     public function getSettings()

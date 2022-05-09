@@ -1,0 +1,36 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Penyerahan Barang</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div id="notif"></div>
+                </div>
+                <div class="display">
+                    <table class="table table-responsive table-striped no-padding" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Ruang</th>
+                                <th>Barang</th>
+                                <th>Tanggal Pinjam</th>
+                                <th>Peminjam</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $penyerahan.pinjam}
+                            <tr>
+                                <td>{$value.peminjam}</td>
+                                <td>{$value.barang_nama.nama_barang}</td>
+                                <td>{$value.tgl_pinjam}</td>
+                                <td>{$value.peminjam_nama.nama}</td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

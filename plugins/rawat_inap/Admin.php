@@ -95,7 +95,7 @@ class Admin extends AdminModule
           AND
             reg_periksa.kd_pj=penjab.kd_pj";
 
-        if ($this->core->getUserInfo('role') != 'admin') {
+        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker'],true)) {
           $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
         }
         if($status_pulang == '') {
@@ -601,14 +601,15 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
-      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ranap` LIKE 'instruksi'");
+      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ranap` LIKE 'evaluasi'");
       $check_db->execute();
       $check_db = $check_db->fetch();
 
       if($check_db) {
         $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+        $_POST['verified_at'] = null;
       } else {
-        unset($_POST['instruksi']);
+        unset($_POST['evaluasi']);
       }
 
       if(!$this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
@@ -616,6 +617,7 @@ class Admin extends AdminModule
       } else {
         $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
       }
+      // echo json_encode($_POST);
       exit();
     }
 

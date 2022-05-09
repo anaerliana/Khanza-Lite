@@ -242,10 +242,9 @@ class Admin extends AdminModule
             }
           } else {
             if ($jam_jaga['shift'] != $isAbsen['shift']) {
-              $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai!');
+              $this->notify('failure', 'Jadwal shift tidak sesuai!');
             } else {
-              $jamDatang = substr($isAbsen['jam_datang'], 16);
-              if ((strtotime(date('Y-m-d H:i')) - strtotime($jamDatang)) < 2 * 60) {
+              if ((strtotime(date('Y-m-d H:i:s')) - strtotime($isAbsen['jam_datang'])) < 10 * 60) {
                 $this->notify('failure', 'Sabar ... Jangan pencet terus');
               } else {
                 $status = $isAbsen['status'];

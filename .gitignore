@@ -3,5 +3,7 @@ config.php
 kasir.zip
 webapps
 admin/tmp
+plugins/surat
+plugins/simpeg
 tmp
 uploads

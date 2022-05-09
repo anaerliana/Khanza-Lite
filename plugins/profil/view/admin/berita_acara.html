@@ -1,0 +1,76 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Berita Acara Presensi</h4><br>
+    <b>{$pegawai.nama}</b>
+</div>
+<div class="modal-body">
+    <div class="row clearfix">
+        <div class="col-md-12">
+            <table>
+                <tr>
+                    <td>Saya yang bertanda tangan dibawah ini</td>
+                </tr>
+                <tr>
+                    <td>Nama : {$pegawai.nama}</td>
+                </tr>
+                <tr>
+                    <td>NIP / NIPK : {$pegawai.nik}</td>
+                </tr>
+                <tr>
+                    <td>Menyatakan bahwa data yang saya inputkan dibawah ini adalah benar</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <form name="" action="{?=url(ADMIN.'/profil/rekapbkdsimpan/'.@$ba.id)?}" method="POST">
+        <input type="hidden" name="nama" id="" class="form-control" value="{$pegawai.nama}">
+        <input type="hidden" name="id" id="" class="form-control" value="{$pegawai.id}">
+        <input type="hidden" name="tahun" class="form-control" value="{$tahun}" />
+        <input type="hidden" name="bulan" id="" class="form-control" value="{$bulan}">
+        <br>
+        <div class="row clearfix">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Cuti</label>
+                    <input type="number" name="cuti" id="" class="form-control" value="{$ba.cuti}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Izin</label>
+                    <input type="number" name="izin" id="" class="form-control" value="{$ba.izin}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Sakit</label>
+                    <input type="number" name="sakit" id="" class="form-control" value="{$ba.sakit}">
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Cuti Melahirkan</label>
+                    <input type="number" name="cuti_melahirkan" id="" class="form-control" value="{$ba.cuti_melahirkan}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Tugas Luar</label>
+                    <input type="number" name="tugas_luar" id="" class="form-control" value="{$ba.tugas_luar}">
+                </div>
+            </div>
+        </div>
+        Demikian Berita Acara ini saya buat. Sekian dan Terima Kasih.
+        <br>
+        <br>
+        <div class="form-group">
+            <input type="submit" name="save" class="btn btn-success" value="Simpan" />
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

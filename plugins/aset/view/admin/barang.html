@@ -1,0 +1,55 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Barang</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div id="notif"></div>
+                </div>
+                <div class="display">
+                    <table class="table table-responsive table-striped no-padding dataTables" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Nama Barang</th>
+                                <th>Jumlah Barang</th>
+                                <th>Produsen</th>
+                                <th>Merk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $barang.barang}
+                            <tr>
+                                <td>{$value.nama_barang}</td>
+                                <td>{$value.jml_barang}</td>
+                                <td>{$value.kode_produsen}</td>
+                                <td>{$value.id_merk}</td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.dataTables').DataTable({
+        "order": [[3, "desc"]],
+        "pagingType": "full",
+        "language": {
+            "paginate": {
+                "first": "&laquo;",
+                "last": "&raquo;",
+                "previous": "‹",
+                "next": "›"
+            },
+            "search": "",
+            "searchPlaceholder": "Search..."
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+</script>

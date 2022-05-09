@@ -424,14 +424,16 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     var respirasi       = $('input:text[name=respirasi]').val();
     var tinggi          = $('input:text[name=tinggi]').val();
     var berat           = $('input:text[name=berat]').val();
+    var spo2           = $('input:text[name=spo2]').val();
     var gcs             = $('input:text[name=gcs]').val();
-    var kesadaran       = $('input:text[name=kesadaran]').val();
+    // var kesadaran       = $('input:text[name=kesadaran]').val();
     var alergi          = $('input:text[name=alergi]').val();
     var keluhan         = $('textarea[name=keluhan]').val();
     var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
     var penilaian       = $('textarea[name=penilaian]').val();
     var rtl             = $('textarea[name=rtl]').val();
     var instruksi       = $('textarea[name=instruksi]').val();
+    var evaluasi       = $('textarea[name=evaluasi]').val();
 
     var url = baseURL + '/rawat_inap/savesoap?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
@@ -443,14 +445,16 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     respirasi : respirasi,
     tinggi : tinggi,
     berat : berat,
+    spo2 : spo2,
     gcs : gcs,
-    kesadaran : kesadaran,
+    // kesadaran : kesadaran,
     keluhan : keluhan,
     pemeriksaan : pemeriksaan,
     alergi : alergi,
     penilaian : penilaian,
     rtl : rtl,
-    instruksi : instruksi
+    instruksi : instruksi,
+    evaluasi : evaluasi
     }, function(data) {
       console.log(data);
       // tampilkan data
@@ -467,14 +471,16 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('input:text[name=respirasi]').val("");
       $('input:text[name=tinggi]').val("");
       $('input:text[name=berat]').val("");
+      $('input:text[name=spo2]').val("");
       $('input:text[name=gcs]').val("");
-      $('input:text[name=kesadaran]').val("");
+      // $('input:text[name=kesadaran]').val("");
       $('input:text[name=alergi]').val("");
       $('textarea[name=keluhan]').val("");
       $('textarea[name=pemeriksaan]').val("");
       $('textarea[name=penilaian]').val("");
       $('textarea[name=rtl]').val("");
       $('textarea[name=instruksi]').val("");
+      $('textarea[name=evaluasi]').val("");
       $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
       $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
       $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
@@ -499,6 +505,7 @@ $("#soap").on("click",".edit_soap", function(event){
   var respirasi       = $(this).attr("data-respirasi");
   var tinggi          = $(this).attr("data-tinggi");
   var berat           = $(this).attr("data-berat");
+  var spo2            = $(this).attr("data-spo2");
   var gcs             = $(this).attr("data-gcs");
   var kesadaran       = $(this).attr("data-kesadaran");
   var alergi          = $(this).attr("data-alergi");
@@ -507,6 +514,7 @@ $("#soap").on("click",".edit_soap", function(event){
   var penilaian       = $(this).attr("data-penilaian");
   var rtl             = $(this).attr("data-rtl");
   var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi       = $(this).attr("data-evaluasi");
 
   $('input:text[name=tgl_perawatan]').val(tgl_perawatan);
   $('input:text[name=jam_rawat]').val(jam_rawat);
@@ -516,6 +524,7 @@ $("#soap").on("click",".edit_soap", function(event){
   $('input:text[name=respirasi]').val(respirasi);
   $('input:text[name=tinggi]').val(tinggi);
   $('input:text[name=berat]').val(berat);
+  $('input:text[name=spo2]').val(spo2);
   $('input:text[name=gcs]').val(gcs);
   $('input:text[name=kesadaran]').val(kesadaran);
   $('input:text[name=alergi]').val(alergi);
@@ -524,6 +533,7 @@ $("#soap").on("click",".edit_soap", function(event){
   $('textarea[name=penilaian]').val(penilaian);
   $('textarea[name=rtl]').val(rtl);
   $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
 
 });
 

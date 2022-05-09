@@ -170,6 +170,7 @@ class Admin extends AdminModule
           ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
+      	  ->asc('berkas_digital_perawatan.lokasi_file')
           ->toArray();
         $galleri_pasien = $this->db('mlite_pasien_galleries_items')
           ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
@@ -495,6 +496,7 @@ class Admin extends AdminModule
           ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
+      	  ->asc('berkas_digital_perawatan.lokasi_file')
           ->toArray();
         $galleri_pasien = $this->db('mlite_pasien_galleries_items')
           ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
@@ -619,6 +621,11 @@ class Admin extends AdminModule
     if ($data['response']['jnsPelayanan'] == 'Rawat Inap') {
       $jenis_pelayanan = '1';
     }
+
+    if ($data['response']['dpjp']['kdDPJP'] == 0){
+      $data['response']['dpjp']['kdDPJP'] = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['kd_dokter_bpjs'];
+      $data['response']['dpjp']['nmDPJP'] = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs'];
+    }
     // echo json_encode($data);
     $data_rujukan = [];
     $no_telp = "00000000";
@@ -641,7 +648,7 @@ class Admin extends AdminModule
       $code = $data_rujukan['metaData']['code'];
       $message = $data_rujukan['metaData']['message'];
       if ($this->vclaim_version == 1) {
-        //echo json_encode($data);
+        // echo json_encode($data);
         $data_rujukan = $data_rujukan;
       } else {
         $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
@@ -673,14 +680,7 @@ class Admin extends AdminModule
         $no_telp = '00000000';
       }
 
-      if ($data_rujukan['metaData']['code'] == 201) {
-        $data_rujukan['response']['rujukan']['tglKunjungan'] = $_POST['tgl_kunjungan'];
-        $data_rujukan['response']['rujukan']['provPerujuk']['kode'] = $this->settings->get('settings.ppk_bpjs');
-        $data_rujukan['response']['rujukan']['provPerujuk']['nama'] = $this->settings->get('settings.nama_instansi');
-        $data_rujukan['response']['rujukan']['diagnosa']['kode'] = $_POST['kd_diagnosa'];
-        $data_rujukan['response']['rujukan']['diagnosa']['nama'] = $data['response']['diagnosa'];
-        $data_rujukan['response']['rujukan']['pelayanan']['kode'] = $jenis_pelayanan;
-      } else if ($data_rujukan['metaData']['code'] == 202) {
+      if ($data_rujukan['metaData']['code'] == 201 || $data_rujukan['metaData']['code'] == 202) {
         $data_rujukan['response']['rujukan']['tglKunjungan'] = $_POST['tgl_kunjungan'];
         $data_rujukan['response']['rujukan']['provPerujuk']['kode'] = $this->settings->get('settings.ppk_bpjs');
         $data_rujukan['response']['rujukan']['provPerujuk']['nama'] = $this->settings->get('settings.nama_instansi');
@@ -691,7 +691,8 @@ class Admin extends AdminModule
     }
 
     if ($data['metaData']['code'] == 200) {
-      $insert = $this->db('bridging_sep')->save([
+      // $insert = $this->db('bridging_sep')->save([
+        $insert = [
         'no_sep' => $data['response']['noSep'],
         'no_rawat' => $_POST['no_rawat'],
         'tglsep' => $data['response']['tglSep'],
@@ -744,7 +745,8 @@ class Admin extends AdminModule
         'asesmenpelayanan' => '',
         'kddpjplayanan' => $data['response']['dpjp']['kdDPJP'],
         'nmdpjplayanan' => $data['response']['dpjp']['nmDPJP']
-      ]);
+      // ]);
+      ];
     }
     // print_r($insert);
     if ($insert) {
@@ -762,6 +764,7 @@ class Admin extends AdminModule
       ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
       ->where('berkas_digital_perawatan.no_rawat', $this->revertNorawat($id))
       ->asc('master_berkas_digital.nama')
+      ->asc('berkas_digital_perawatan.lokasi_file')
       ->toArray();
 
     $galleri_pasien = $this->db('mlite_pasien_galleries_items')
