@@ -171,6 +171,25 @@
       <tr {if: $data.verified_at != null } style="background-color: #dff0d8 !important;" {/if}>
         <td>
           <div class="" {if: $data.verified_at != null } style="display: none !important;" {/if}>
+            <button type="button" name="button" class="btn btn-primary btn-xs copy_soap"
+              data-no_rawat="{$data.no_rawat}"
+              data-suhu_tubuh="{$data.suhu_tubuh}"
+              data-tensi="{$data.tensi}"
+              data-nadi="{$data.nadi}"
+              data-respirasi="{$data.respirasi}"
+              data-tinggi="{$data.tinggi}"
+              data-berat="{$data.berat}"
+              data-spo2="{$data.spo2}"
+              data-gcs="{$data.gcs}"
+              data-kesadaran="{$data.kesadaran}"
+              data-alergi="{$data.alergi}"
+              data-keluhan="{$data.keluhan}"
+              data-pemeriksaan="{$data.pemeriksaan}"
+              data-penilaian="{$data.penilaian}"
+              data-rtl="{$data.rtl}"
+              data-instruksi="{$data.instruksi}"
+              data-evaluasi="{$data.evaluasi}"
+              ><span class="fa fa-edit"></span><span class="hidden-xs"> Copy</span></button>
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$data.no_rawat}"
               data-tgl_perawatan="{$data.tgl_perawatan}"

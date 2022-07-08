@@ -1,0 +1,127 @@
+<div id="form_hais">
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-body">
+          <div class="form-group">
+            <label for="tanggal">Tanggal</label>
+            <input type="text" id="tgl_perawatan" name="tgl_perawatan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
+          </div>
+          <div class="form-group">
+            <label for="jam">Jam</label>
+            <input type="text" id="jam_rawat" name="jam_rawat" class="form-control jam" value="{?=date('H:i:s')?}">
+          </div>
+          <div class="form-group">
+            <label for="id_pendaftaran">Id Rawat</label>
+            <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control" value="" readonly>
+          </div>
+          <div class="form-group">
+            <label for="id_pasien">Nomor RM</label>
+            <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik" value="" readonly>
+          </div>
+          <div class="form-group">
+            <label for="nama_pasien">Nama Pasien</label>
+            <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
+          </div>
+          <div class="form-group">
+            <label for="">Bed</label>
+            <input type="text" name="nm_kamar" id="" class="form-control" readonly>
+            <input type="text" name="kd_kamar" id="" class="form-control" readonly>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <h4>Pemeriksaan HaiS</h4>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-2">
+              <label for="nama_pasien">ETT</label>
+              <input type="text" name="tensi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">CVL</label>
+              <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">IVL</label>
+              <input type="text" name="nadi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">UC</label>
+              <input type="text" name="respirasi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">VAP</label>
+              <input type="text" name="tinggi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">IAD</label>
+              <input type="text" name="berat" class="form-control" placeholder="" value="">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-2">
+              <label for="nama_pasien">PLEB</label>
+              <input type="text" name="tensi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">ISK</label>
+              <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">ILO</label>
+              <input type="text" name="nadi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">HAP</label>
+              <input type="text" name="respirasi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">TINEA</label>
+              <input type="text" name="tinggi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">SCABIES</label>
+              <input type="text" name="berat" class="form-control" placeholder="" value="">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-2">
+              <label for="nama_pasien">DEKU</label>
+              <select name="deku" id="" class="form-control">
+                <option value="IYA">YA</option>
+                <option value="TIDAK">TIDAK</option>
+              </select>
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">SPUTUM</label>
+              <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">DARAH</label>
+              <input type="text" name="nadi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">URINE</label>
+              <input type="text" name="respirasi" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
+              <label for="nama_pasien">ANTIBIOTIK</label>
+              <input type="text" name="tinggi" class="form-control" placeholder="" value="">
+            </div>
+          </div>
+        </div>
+        <div class="m-t-xl">
+          <button type="button" name="button" class="btn btn-primary" id="simpan_hais"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+          <button type="button" name="button" class="btn btn-success" id="selesai_hais"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

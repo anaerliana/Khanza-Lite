@@ -4,6 +4,10 @@ $("#form_soap").hide();
 $("#form_sep").hide();
 $("#form_berkasdigital").hide();
 $("#histori_pelayanan").hide();
+$("#form_hais").hide();
+$("#hais").hide();
+$("#form_jadwaloperasi").hide()
+$("#form_dietpasien").hide()
 $("#notif").hide();
 $('#provider').hide();
 $('#aturan_pakai').hide();
@@ -537,6 +541,46 @@ $("#soap").on("click",".edit_soap", function(event){
 
 });
 
+$("#soap").on("click",".copy_soap", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat        = $(this).attr("data-no_rawat");
+  var suhu_tubuh      = $(this).attr("data-suhu_tubuh");
+  var tensi           = $(this).attr("data-tensi");
+  var nadi            = $(this).attr("data-nadi");
+  var respirasi       = $(this).attr("data-respirasi");
+  var tinggi          = $(this).attr("data-tinggi");
+  var berat           = $(this).attr("data-berat");
+  var spo2            = $(this).attr("data-spo2");
+  var gcs             = $(this).attr("data-gcs");
+  var kesadaran       = $(this).attr("data-kesadaran");
+  var alergi          = $(this).attr("data-alergi");
+  var keluhan         = $(this).attr("data-keluhan");
+  var pemeriksaan     = $(this).attr("data-pemeriksaan");
+  var penilaian       = $(this).attr("data-penilaian");
+  var rtl             = $(this).attr("data-rtl");
+  var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi       = $(this).attr("data-evaluasi");
+
+  $('input:text[name=suhu_tubuh]').val(suhu_tubuh);
+  $('input:text[name=tensi]').val(tensi);
+  $('input:text[name=nadi]').val(nadi);
+  $('input:text[name=respirasi]').val(respirasi);
+  $('input:text[name=tinggi]').val(tinggi);
+  $('input:text[name=berat]').val(berat);
+  $('input:text[name=spo2]').val(spo2);
+  $('input:text[name=gcs]').val(gcs);
+  $('input:text[name=kesadaran]').val(kesadaran);
+  $('input:text[name=alergi]').val(alergi);
+  $('textarea[name=keluhan]').val(keluhan);
+  $('textarea[name=pemeriksaan]').val(pemeriksaan);
+  $('textarea[name=penilaian]').val(penilaian);
+  $('textarea[name=rtl]').val(rtl);
+  $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
+
+});
+
 // ketika tombol hapus ditekan
 $("#soap").on("click",".hapus_soap", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -613,6 +657,20 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#display").show();
   $("#rincian").hide();
   $("#soap").hide();
+  $("#berkasdigital").hide();
+});
+
+$("#form_hais").on("click", "#selesai_hais", function(event){
+  bersih();
+  $("#form_berkasdigital").hide();
+  $("#form_rincian").hide();
+  $("#form_soap").hide();
+  $("#form_hais").hide();
+  $("#form").show();
+  $("#display").show();
+  $("#rincian").hide();
+  $("#soap").hide();
+  $("#hais").hide();
   $("#berkasdigital").hide();
 });
 
@@ -863,6 +921,156 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
       });
     }
   });
+});
+
+//Dietpasien
+// ketika tombol simpan diklik
+$("#form_dietpasien").on("click", "#simpan_dietpasien", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var no_rawat      = $('input:text[name=no_rawat]').val();
+  var kd_kamar      = $('input:text[name=kd_kamar]').val();
+  var kd_diet       = $('input:hidden[name=kd_diet]').val();
+  var tanggal       = $('input:text[name=tanggalhari]').val();
+  var waktu         = $('select[name=waktu]').val();
+  console.log({
+    no_rawat, kd_kamar, kd_diet,
+    tanggal, waktu
+  });
+ // return
+  var url = baseURL + '/rawat_inap/savedietpasien?t=' + mlite.token;
+  $.post(url, {
+    no_rawat : no_rawat,
+    kd_kamar: kd_kamar,
+    kd_diet: kd_diet,
+    tanggal: tanggal,
+    waktu : waktu
+  }, function(data) {
+    console.log(data);
+    // tampilkan data
+    var url = baseURL + '/rawat_inap/dietpasien?t=' + mlite.token;
+    $.post(url, {
+      no_rawat : no_rawat,
+    }, function(data) {
+      // tampilkan data
+      console.log(data);
+      // $("#jadwaloperasi").html(data);
+      $("#dietpasien").html(data).show();
+
+    });
+
+    $('input:text[name=waktu]').val("");
+    $('input:text[name=nama_diet]').val("");
+    $('input:text[name=tanggalhari]').val("{?=date('Y-m-d')?}");
+
+    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    "Data Diet Harian Pasien telah disimpan!"+
+    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    "</div>").show();
+  });
+});
+
+
+// // ketika tombol edit ditekan
+$("#dietpasien").on("click",".edit_dietpasien", function(event){
+var baseURL = mlite.url + '/' + mlite.admin;
+event.preventDefault();
+var no_rawat        = $(this).attr("data-no_rawat");
+var nm_pasien       = $(this).attr("data-nm_pasien");
+var tanggal         = $(this).attr("data-tanggal");
+var waktu          = $(this).attr("data-waktu");
+var kd_kamar        = $(this).attr("data-kd_kamar");
+var nm_penyakit     = $(this).attr("data-nm_penyakit");
+var kd_diet        = $(this).attr("data-kd_diet");
+var nama_diet       = $(this).attr("data-nama_diet");
+
+$('input:text[name=no_rawat]').val(no_rawat);
+$('input:text[name=nm_pasien]').val(nm_pasien);
+$('input:text[name=tanggalhari]').val(tanggal);
+$('select[name=waktu]').val(waktu).change();
+$('input:text[name=kd_kamar]').val(kd_kamar);
+$('input:text[name=nm_penyakit]').val(nm_penyakit);
+$('input:hidden[name=kd_diet]').val(kd_diet);
+$('input:text[name=nama_diet]').val(nama_diet);
+// alert("coba lagi"
+
+// );
+});
+
+// // ketika tombol hapus ditekan
+$("#dietpasien").on("click",".hapus_dietpasien", function(event){
+var baseURL = mlite.url + '/' + mlite.admin;
+event.preventDefault();
+var url = baseURL + '/rawat_inap/hapusdietpasien?t=' + mlite.token;
+var no_rawat = $(this).attr("data-no_rawat");
+var tanggal = $(this).attr("data-tanggal");
+var waktu = $(this).attr("data-waktu");
+
+// tampilkan dialog konfirmasi
+bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+  // ketika ditekan tombol ok
+  if (result){
+    // mengirimkan perintah penghapusan
+    $.post(url, {
+      no_rawat: no_rawat,
+      tanggal: tanggal,
+      waktu: waktu,
+
+    } ,function(data) {
+      var url = baseURL + '/rawat_inap/dietpasien?t=' + mlite.token;
+      $.post(url, {no_rawat : no_rawat,
+      }, function(data) {
+        // tampilkan data
+        $("#dietpasien").html(data).show();
+      });
+
+      $('input:text[name=waktu]').val("");
+      $('input:text[name=tanggalhari]').val("{?=date('Y-m-d')?}");
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Data Diet Pasien telah dihapus!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    });
+  }
+});
+});
+
+
+// tombol batal diklik
+$("#form_rincian").on("click", "#selesai", function(event){
+bersih();
+$("#form_berkasdigital").hide();
+$("#form_rincian").hide();
+$("#form_soap").hide();
+$("#form").show();
+$("#display").show();
+$("#rincian").hide();
+$("#soap").hide();
+$("#berkasdigital").hide();
+$("#form_hais").hide();
+$("#form_jadwaloperasi").hide();
+$("#form_dietpasien").hide()
+});
+
+// tombol batal diklik
+$("#form_dietpasien").on("click", "#selesai_dietpasien", function(event){
+bersih();
+$("#form_berkasdigital").hide();
+$("#form_rincian").hide();
+$("#form_soap").hide();
+$("#form").show();
+$("#display").show();
+$("#rincian").hide();
+$("#soap").hide();
+$("#berkasdigital").hide();
+$("#form_hais").hide();
+$("#hais").hide();
+$("#form_jadwaloperasi").hide();
+$("#jadwaloperasi").hide();
+$("#form_dietpasien").hide()
+$("#dietpasien").hide()
+
 });
 
 function bersih(){

@@ -5,6 +5,8 @@
     // use Endroid\QrCode\QrCode;
     // use Endroid\QrCode\Response\QrCodeResponse;
 
+use Spipu\Html2Pdf\Html2Pdf;
+
 function checkEmptyFields(array $keys, array $array)
 {
     foreach ($keys as $field) {
@@ -566,4 +568,37 @@ function stringDecrypt($key, $string){
 
 function decompress($string){
     return \LZCompressor\LZString::decompressFromEncodedURIComponent($string);
+}
+
+function htmlToPdf($url){
+
+    $html2pdf = new Html2Pdf();
+    $html2pdf->writeHTML($url);
+
+}
+
+function postWagsApi($no_telp,$msg,$sender,$url)
+{
+    $notif = "";
+    $waapiphonenumber = $sender;
+    $waapiserver = $url;
+    $url = $waapiserver."/wagateway/kirimpesan";
+    $curlHandle = curl_init();
+    curl_setopt($curlHandle, CURLOPT_URL, $url);
+    curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=text&sender=".$waapiphonenumber."&number=".$no_telp."&message=".$msg);
+    curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+    curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+    curl_setopt($curlHandle, CURLOPT_POST, 1);
+    curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($curlHandle);
+    curl_close($curlHandle);
+    $response = json_decode($response, true);
+    if($response['status'] == 'true') {
+    $notif = "200";
+    } else {
+    $notif = "201";
+    }
+    return $notif;
+    // return json_encode($response);
 }

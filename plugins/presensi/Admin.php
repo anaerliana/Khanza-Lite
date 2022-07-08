@@ -112,7 +112,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                // $row['editURL'] = url([ADMIN, 'master', 'petugasedit', $row['nip']]);
+                $row['editURL'] = url([ADMIN, 'presensi', 'jagaedit', $row['no_id']]);
                 // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
                 // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
                 // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
@@ -149,6 +149,20 @@ class Admin extends AdminModule
         return $this->draw('jagaadd.form.html', ['jagaadd' => $this->assign]);
     }
 
+    public function getJagaEdit($id)
+    {
+        $this->_addHeaderFiles();
+        $rows = $this->db('jam_jaga')
+            ->where('no_id', $id)
+            ->oneArray();
+        $this->assign['form'] = $rows;
+
+        $this->assign['dep_id'] = $this->db('departemen')->toArray();
+        $this->assign['shift'] = $this->db('jam_masuk')->toArray();
+
+        return $this->draw('jagaadd.form.html', ['jagaadd' => $this->assign]);
+    }
+
     public function postJagaSave($id = null)
     {
         $errors = 0;
@@ -156,7 +170,7 @@ class Admin extends AdminModule
         if (!$id) {
             $location = url([ADMIN, 'presensi', 'jamjaga']);
         } else {
-            $location = url([ADMIN, 'presensi', 'editjaga']);
+            $location = url([ADMIN, 'presensi', 'jamjaga']);
         }
 
         if (checkEmptyFields(['dep_id'], $_POST)) {

@@ -1,6 +1,6 @@
 <?php
 return [
-    'name'          =>  'Kepegawaian',
+    'name'          =>  'SIM Pegawai',
     'description'   =>  'Pengelolaan data kepegawaian KhanzaLITE.',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',

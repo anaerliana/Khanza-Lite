@@ -126,7 +126,7 @@ class Admin extends AdminModule
           AND reg_periksa.kd_poli = poliklinik.kd_poli
           AND reg_periksa.kd_pj = penjab.kd_pj";
 
-        if ($this->core->getUserInfo('role') != 'admin') {
+        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi'],true)) {
           $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
         }
         if($status_periksa == 'belum') {

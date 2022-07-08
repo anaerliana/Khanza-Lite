@@ -3,6 +3,7 @@
 namespace Plugins\Dashboard;
 
 use Systems\AdminModule;
+use Plugins\Api\Site;
 
 class Admin extends AdminModule
 {
@@ -153,6 +154,18 @@ class Admin extends AdminModule
         $terlambat1     = (int)$terlambat1;
         $terlambat2     = (int)$terlambat2;
 
+        $searchPetugas = $this->db('pegawai')->select([
+          'nik' => 'nik',
+          'nama' => 'nama'
+        ])->where('id',$idpeg['id'])->oneArray();
+        $searchPhone = $this->db('petugas')->select('no_telp')->where('nip',$searchPetugas['nik'])->oneArray();
+
+        $sender = $this->settings->get('api.wagateway_phonenumber');
+        $url = $this->settings->get('api.wagateway_server');
+
+        $msgMasuk = 'Terima kasih '.$searchPetugas['nama'].' sudah melakukan presensi masuk untuk hari ini. Jangan lupa untuk melakukan presensi pulang.';
+        $msgPulang = 'Terima kasih '.$searchPetugas['nama'].' sudah melakukan presensi pulang untuk hari ini.';
+
         if (!$isFullAbsen) {
           if (!$isAbsen) {
             if (!$jadwal_pegawai) {
@@ -194,6 +207,7 @@ class Admin extends AdminModule
 
                   if ($insert) {
                     $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
+                    postWagsApi($searchPhone['no_telp'],$msgMasuk,$sender,$url);
                   }
                 }
               } else {
@@ -237,6 +251,7 @@ class Admin extends AdminModule
 
                 if ($insert) {
                   $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
+                  postWagsApi($searchPhone['no_telp'],$msgMasuk,$sender,$url);
                 }
               }
             }
@@ -287,6 +302,7 @@ class Admin extends AdminModule
                   if ($insert) {
                     $this->notify('success', 'Presensi pulang telah disimpan');
                     $this->db('temporary_presensi')->where('id', $isAbsen['id'])->delete();
+                    postWagsApi($searchPhone['no_telp'],$msgPulang,$sender,$url);
                   }
                 }
               }

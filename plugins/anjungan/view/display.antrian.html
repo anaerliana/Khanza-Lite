@@ -301,12 +301,7 @@
               <div class="form-row">
                 <div class="col form-group">
                   <label>Cara Bayar</label>
-                  <select class="form-control" name="kd_pj" id="kdpj">
-                    <option value="" selected >Pilih Cara Bayar</option>
-                    {loop: $penjab}
-                    <option value="{$value.kd_pj}">{$value.png_jawab}</option>
-                    {/loop}
-                  </select>
+                  <input type="text" name="kd_pj" value="UMUM" id="" class="form-control">
                  </div>
                  <div class="col form-group">
                   <label>Tanggal Kunjungan</label>

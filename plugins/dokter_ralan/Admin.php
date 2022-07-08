@@ -138,34 +138,72 @@ class Admin extends AdminModule
       }
       if($_POST['kat'] == 'obat') {
 
-        $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+        $cek_resep = $this->db('resep_obat_baru')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('status', 'ralan')->oneArray();
         if(!$cek_resep) {
-          $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+          $max_id = $this->db('resep_obat_baru')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->oneArray();
           if(empty($max_id['no_resep'])) {
             $max_id['no_resep'] = '0000';
           }
           $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
           $no_resep = date('Ymd').''.$_next_no_resep;
 
-          $resep_obat = $this->db('resep_obat')
-            ->save([
-              'no_resep' => $no_resep,
-              'tgl_perawatan' => $_POST['tgl_perawatan'],
-              'jam' => $_POST['jam_rawat'],
-              'no_rawat' => $_POST['no_rawat'],
-              'kd_dokter' => $this->core->getUserInfo('username', null, true),
-              'tgl_peresepan' => $_POST['tgl_perawatan'],
-              'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan'
-            ]);
-          $this->db('resep_dokter')
-            ->save([
-              'no_resep' => $no_resep,
-              'kode_brng' => $_POST['kd_jenis_prw'],
-              'jml' => $_POST['jml'],
-              'aturan_pakai' => $_POST['aturan_pakai']
-            ]);
+          $check_db = $this->db->pdo()->query("SHOW COLUMNS FROM `resep_obat_baru` LIKE 'tgl_penyerahan'");
+          $check_db->execute();
+          $check_db = $check_db->fetch();
+          $resep_obat = '';
+          if($check_db) {
+            $msg = 'Gagal';
+            // $resep_obat = [
+            //     'no_resep' => $no_resep,
+            //     'tgl_perawatan' => '0000-00-00',
+            //     'jam' => '00:00:00',
+            //     'no_rawat' => $_POST['no_rawat'],
+            //     'kd_dokter' => $this->core->getUserInfo('username', null, true),
+            //     'tgl_peresepan' => $_POST['tgl_perawatan'],
+            //     'jam_peresepan' => $_POST['jam_rawat'],
+            //     'status' => 'ralan',
+            //     'tgl_penyerahan' => '0000-00-00',
+            //     'jam_penyerahan' => '00:00:00'
+            //   ];
+            return $msg;
+              // $resep_obat = $this->db('resep_obat_baru')
+              // ->save([
+              //   'no_resep' => $no_resep,
+              //   'tgl_perawatan' => '0000-00-00',
+              //   'jam' => '00:00:00',
+              //   'no_rawat' => $_POST['no_rawat'],
+              //   'kd_dokter' => $this->core->getUserInfo('username', null, true),
+              //   'tgl_peresepan' => $_POST['tgl_perawatan'],
+              //   'jam_peresepan' => $_POST['jam_rawat'],
+              //   'status' => 'ralan',
+              //   'tgl_penyerahan' => '0000-00-00',
+              //   'jam_penyerahan' => '00:00:00'
+              // ]);
+          } else {
+            $msg = 'berhasil';
+            // $resep_obat = $this->db('resep_obat_baru')
+            //   ->save([
+            //     'no_resep' => $no_resep,
+            //     'tgl_perawatan' => '0000-00-00',
+            //     'jam' => '00:00:00',
+            //     'no_rawat' => $_POST['no_rawat'],
+            //     'kd_dokter' => $this->core->getUserInfo('username', null, true),
+            //     'tgl_peresepan' => $_POST['tgl_perawatan'],
+            //     'jam_peresepan' => $_POST['jam_rawat'],
+            //     'status' => 'ralan'
+            //   ]);
+            return $msg;
+          }
 
+          if ($this->db('resep_obat_baru')->where('no_resep', $no_resep)->where('kd_dokter', $this->core->getUserInfo('username', null, true))->oneArray()) {
+            $this->db('resep_dokter')
+              ->save([
+                'no_resep' => $no_resep,
+                'kode_brng' => $_POST['kd_jenis_prw'],
+                'jml' => $_POST['jml'],
+                'aturan_pakai' => $_POST['aturan_pakai']
+              ]);
+          }
         } else {
           $no_resep = $cek_resep['no_resep'];
           $this->db('resep_dokter')

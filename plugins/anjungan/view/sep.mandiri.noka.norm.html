@@ -134,6 +134,18 @@
       footer a, footer a:hover {
         color: #fff;
       }
+
+      .bd-example-modal-lg .modal-dialog{
+        display: table;
+        position: relative;
+        margin: 0 auto;
+        top: calc(50% - 24px);
+      }
+
+      .bd-example-modal-lg .modal-dialog .modal-content{
+        background-color: transparent;
+        border: none;
+      }
     </style>
 </head>
 <body>
@@ -154,9 +166,13 @@
           <div class="card-body">
             <div class="form-signin">
               {if: is_array($sep_response)}
-              <u class="list-unstyled">
+              <ul class="list-unstyled">
               {loop: $sep_response.rujukan as $key => $val }
-                <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase">{$val.poliRujukan.nama}</a></li>
+                {if: $no_rkm_medis != ''}
+                <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
+                {else}
+                <li><a href="{?=url('anjungan/baru/bikin')?}/{$val.noKunjungan}" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
+                {/if}
               {/loop}
               </ul>
               {else}
@@ -164,6 +180,7 @@
               {/if}
             </div>
           </div>
+          <div class="loader"></div>
         </div>
       </div>
     </div>
@@ -174,10 +191,28 @@
         </center>
       </div>
     </div>
+    <br>
+    <div class="row">
+      <div class="col-sm-9 col-md-8 col-lg-8 mx-auto">
+        <center>
+          <a href="{?=url('anjungan/sep/')?}" class="btn btn-info">KEMBALI</a>
+        </center>
+      </div>
+    </div>
   </div>
   <br>
   <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
     <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
+  </div>
+
+  <div class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 48px;margin-left: 5.5em;">
+            <span class="fa fa-spinner fa-spin fa-3x" style='color: white;'>
+            </span>
+        </div>
+          <span style="color: whitesmoke;font-size: 2.2em;font-weight: bold;"><center>Hadangi Satumat</center></span>
+      </div>
   </div>
 
   <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
@@ -330,10 +365,23 @@
       location.reload();
   });
   function loading(){
-      $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
+      $("#reload").html("<div><i class='fa fa-spinner'></i> Loading ...</div>");
   }
   var btn_reload = document.getElementById("reload");
   btn_reload.addEventListener("click", loading);
+
+  $('a').click(function(event) {
+    event.preventDefault();
+    $('.modal').modal('show');
+    var href = $(this).attr("href");
+    $.ajax({
+        url: $(this).attr('href'),
+        success: function(response) {
+          window.location.href = href;
+        }
+    });
+    return false; // for good measure
+  });
   </script>
 </body>
 </html>

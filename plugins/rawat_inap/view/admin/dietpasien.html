@@ -1,0 +1,52 @@
+<h4>Data Diet Harian Pasien</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>No.Rawat</th>
+                <th>Nama Pasien</th>
+                <th>Kamar</th>
+                <th>Tanggal</th>
+                <th>Waktu</th>
+                <th>Diet</th>
+                <th>Diagnosa</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $dietpasien}
+            <tr>
+                <td>{$value.nomor}</td>
+                <td>{$value.no_rawat} </td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.kd_kamar}</td>
+                <td>{$value.tanggal}</td>
+                <td>{$value.waktu}</td>
+                <td>{$value.nama_diet}</td>
+                <td>{$value.nm_penyakit}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <div class="">
+                        <button type="button" name="button" class="btn btn-success btn-xs edit_dietpasien"
+                            data-no_rawat="{$value.no_rawat}" 
+                            data-nm_pasien="{$value.nm_pasien}"
+                            data-kd_kamar="{$value.kd_kamar}"
+                            data-tanggal="{$value.tanggal}"
+                            data-waktu="{$value.waktu}"
+                            data-kd_diet="{$value.kd_diet}"
+                            data-nama_diet="{$value.nama_diet}"
+                            data-nm_penyakit="{$value.nm_penyakit}" >
+                            <span class="fa fa-edit"></span>
+                            <span class="hidden-xs"> Edit</span></button>
+                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_dietpasien"
+                            data-no_rawat="{$value.no_rawat}" data-tanggal="{$value.tanggal}" data-waktu="{$value.waktu}"><span
+                                class="fa fa-trash"></span>
+                            <span class="hidden-xs"> Hapus</span></button>
+                    </div>
+                </td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>

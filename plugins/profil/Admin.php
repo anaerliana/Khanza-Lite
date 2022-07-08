@@ -42,12 +42,17 @@ class Admin extends AdminModule
         return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
     }
 
-    public function getBiodata()
+    public function getBiodata($id = null)
     {
         $this->_addHeaderFiles();
-        $username = $this->core->getUserInfo('username', null, true);
+        if($id){
+            $row = $this->db('pegawai')->where('id', $id)->oneArray();
+            $username = $row['nik'];
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $row = $this->db('pegawai')->where('nik', $username)->oneArray();
+        }
 
-        $row = $this->db('pegawai')->where('nik', $username)->oneArray();
         $this->assign['form'] = $row;
         $this->assign['title'] = 'Edit Biodata';
         $this->assign['jk'] = ['Pria', 'Wanita'];
@@ -56,16 +61,162 @@ class Admin extends AdminModule
         $this->assign['stts_wp'] = $this->db('stts_wp')->toArray();
         $this->assign['pendidikan'] = $this->db('pendidikan')->toArray();
         $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
-
+        $this->assign['stts_kerja'] = $this->db('stts_kerja')->toArray();
+        $this->assign['identpeg'] = $this->db('simpeg_identpeg')->where('NIP',$username)->oneArray();
+        $this->assign['petugas'] = $this->db('petugas')->where('nip',$username)->oneArray();
         $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . $row['photo']);
-
+        $this->assign['knapang'] = [
+            '0' => '',
+            '1' => 'Reguler',
+            '2' => 'Pilihan'
+        ];
+        $this->assign['agama'] = [
+            '1' => 'Islam',
+            '2' => 'Kristen Protestan',
+            '3' => 'Katolik',
+            '4' => 'Hindu',
+            '5' => 'Budha',
+            '6' => 'Konghucu'
+        ];
+        // $this->assign['rpendum'] = $this->core->mysql('rpendum')->where('NIP',$username)->toArray();
+        $this->assign['rpendum'] = $this->db('simpeg_rpendum')->where('NIP',$username)->toArray();
+        $this->assign['rpangkat'] = $this->db('simpeg_rpangkat')->where('NIP',$username)->toArray();
+        $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('NIP',$username)->toArray();
+        $this->assign['rdppp'] = $this->db('simpeg_rdppp')->where('NIP',$username)->toArray();
+        $this->assign['gkkhir'] = $this->db('simpeg_gkkhir')->where('NIP',$username)->toArray();
+        $this->assign['rdiknstr'] = $this->db('simpeg_rdiknstr')->where('NIP',$username)->toArray();
+        $this->assign['rdikfung'] = $this->db('simpeg_rdikfung')->where('NIP',$username)->toArray();
+        $this->assign['rdikstr'] = $this->db('simpeg_rdikstr')->where('NIP',$username)->toArray();
+        $this->assign['rdiktek'] = $this->db('simpeg_rdiktek')->where('NIP',$username)->toArray();
+        $this->assign['rseminar'] = $this->db('simpeg_rseminar')->where('NIP',$username)->toArray();
+        $this->assign['rjabfung'] = $this->db('simpeg_rjabfung')->where('NIP',$username)->toArray();
+        $this->assign['rsertifikasi'] = $this->db('simpeg_rsertifikasi')->where('nip',$username)->toArray();
+        $this->assign['rtubel'] = $this->db('simpeg_rtubel')->where('NIP',$username)->toArray();
+        $this->assign['rakand'] = $this->db('simpeg_rakand')->where('NIP',$username)->toArray();
+        $this->assign['ribukand'] = $this->db('simpeg_ribukand')->where('NIP',$username)->toArray();
+        $this->assign['rsistri'] = $this->db('simpeg_rsistri')->where('NIP',$username)->toArray();
+        $this->assign['ranak'] = $this->db('simpeg_ranak')->where('NIP',$username)->toArray();
+        $this->assign['rkeluarga'] = $this->db('simpeg_rkeluarga')->where('NIP',$username)->toArray();
+        $this->assign['tpu'] = [
+            '01' => 'SD',
+            '02' => 'SLTP',
+            '03' => 'SLTA',
+            '04' => 'D-I',
+            '05' => 'D-II',
+            '06' => 'D-III/SM/Akademi',
+            '07' => 'D-IV',
+            '08' => 'S-1',
+            '09' => 'S-2',
+            '10' => 'S-3',
+            '11' => 'Pendidikan Profesi'
+        ];
+        $this->assign['sttstubel'] = [
+            '1' => 'Lulus',
+            '2' => 'Sedang Sekolah',
+            '3' => 'Tidak Lulus'
+        ];
+        $this->assign['jnsjab'] = [
+            '' => '',
+            '1' => 'Struktural',
+            '2' => 'Fungsional Tertentu',
+            '3' => 'Fungsional Umum atau Administrasi'
+        ];
+        $this->assign['diknstr'] = [
+            '1' => 'Pra Jabatan',
+            '2' => 'Ujian Dinas Tingkat I',
+            '3' => 'Ujian Dinas Tingkat II',
+            '4' => 'Ujian Dinas Tingkat III',
+        ];
+        $this->assign['dikstr'] = [
+            '1' => 'DIKLAT PIM TK. I',
+            '2' => 'DIKLAT PIM TK. II',
+            '3' => 'DIKLAT PIM TK. III',
+            '4' => 'DIKLAT PIM TK. IV',
+            '5' => 'SEPADA',
+        ];
+        $this->assign['golruang'] = [
+            '145' => 'IV/e (Pembina Utama)',
+            '144' => 'IV/d (Pembina Utama)',
+            '143' => 'IV/c (Pembina Utama)',
+            '142' => 'IV/b (Pembina Utama)',
+            '141' => 'IV/a (Pembina Utama)',
+            '134' => 'III/d (Pembina Utama)',
+            '133' => 'III/c (Pembina Utama)',
+            '132' => 'III/b (Pembina Utama)',
+            '131' => 'III/a (Pembina Utama)',
+            '124' => 'II/d (Pembina Utama)',
+            '123' => 'II/c (Pembina Utama)',
+            '122' => 'II/b (Pembina Utama)',
+            '121' => 'II/a (Pembina Utama)',
+            '114' => 'I/d (Pembina Utama)',
+            '113' => 'I/c (Pembina Utama)',
+            '112' => 'I/b (Pembina Utama)',
+            '111' => 'I/a (Pembina Utama)',
+        ];
+        $this->assign['profesi'] = [
+            '1' => 'Psikologi Klinik',
+            '2' => 'Promotor Kesehatan',
+            '3' => 'Epidemiolog Kesehatan',
+            '4' => 'Praktisi Kesehatan Tradisional',
+            '5' => 'Audiologis',
+            '6' => 'Pembimbing Kesehatan Kerja',
+            '7' => 'Dokter',
+            '8' => 'Dokter Gigi',
+            '9' => 'Apoteker',
+            '10' => 'Asisten Apoteker',
+            '11' => 'Perawat',
+            '12' => 'Bidan',
+            '13' => 'ATLM',
+            '14' => 'Radiografer',
+            '15' => 'Ahli Gizi',
+            '16' => 'Perekam Medis',
+            '17' => 'Sanitarian',
+            '18' => 'ATEM',
+            '19' => 'Surveilans'
+        ];
+        $this->assign['eselon'] = [
+            '11' => 'I. a',
+            '12' => 'I. b',
+            '21' => 'II. a',
+            '22' => 'II. b',
+            '31' => 'III. a',
+            '32' => 'III. b',
+            '41' => 'IV. a',
+            '42' => 'IV. b',
+            '51' => 'V. a',
+            '52' => 'V. b',
+            '99' => '---',
+        ];
+        $this->assign['stunj'] = [
+            'D' => 'Dapat Tunjangan',
+            'T' => 'Tidak Dapat Tunjangan',
+        ];
+        $this->assign['jkel'] = [
+            '1' => 'Laki - Laki',
+            '2' => 'Perempuan',
+        ];
+        $this->assign['hubungan'] = [
+            'K' => 'Anak Kandung',
+            'T' => 'Anak Tiri',
+            'A' => 'Anak Angkat',
+        ];
+        $this->assign['hub_kel'] = array('Mertua','Saudara Kandung','Saudara Istri/Suami');
+        $this->assign['nikah'] = [
+            'N' => 'Menikah',
+            'C' => 'Cerai',
+            'M' => 'Meninggal',
+            'B' => 'Ada',
+        ];
+        $this->assign['statusHidup'] = [
+            'B' => 'Ada',
+            'M' => 'Meninggal',
+        ];
         return $this->draw('biodata.html', ['biodata' => $this->assign]);
     }
 
     public function postBiodataSave($id = null)
     {
         $errors = 0;
-
         if (!$id) {
             $location = url([ADMIN, 'profil', 'biodata']);
         } else {
@@ -104,11 +255,51 @@ class Admin extends AdminModule
                     $_POST['photo'] = "pages/pegawai/photo/" . $pegawai['nik'] . "." . $img->getInfos('type');
                 }
             }
-
+            $pegawai = $this->db('pegawai')->where('id',$id)->oneArray();
             if (!$id) {    // new
-                $query = $this->db('pegawai')->save($_POST);
+                $query = $this->db('pegawai')->save([
+                    'nama' => $_POST['nama'],
+                    'alamat' => $_POST['alamat'],
+                    'tmp_lahir' => $_POST['tmp_lahir'],
+                    'tgl_lahir' => $_POST['tgl_lahir'],
+                    'jk' => $_POST['jk'],
+                    'stts_kerja' => $_POST['stts_kerja'],
+                    'pendidikan' => $_POST['pendidikan'],
+                    'departemen' => $_POST['departemen'],
+                    'bidang' => $_POST['bidang'],
+                    'jbtn' => $_POST['jbtn'],
+                    'jnj_jabatan' => $_POST['jnj_jabatan'],
+                    'no_ktp' => $_POST['no_ktp'],
+                    'npwp' => $_POST['npwp'],
+                    'stts_wp' => $_POST['stts_wp'],
+                    'mulai_kontrak' => $_POST['mulai_kontrak'],
+                ]);
+                $query2 = $this->db('petugas')->save([
+                    'no_telp' => $_POST['no_hp'],
+                    'agama' => $_POST['agama'],
+                ]);
             } else {        // edit
-                $query = $this->db('pegawai')->where('id', $id)->save($_POST);
+                $query = $this->db('pegawai')->where('id', $id)->save([
+                    'nama' => $_POST['nama'],
+                    'alamat' => $_POST['alamat'],
+                    'tmp_lahir' => $_POST['tmp_lahir'],
+                    'tgl_lahir' => $_POST['tgl_lahir'],
+                    'jk' => $_POST['jk'],
+                    'stts_kerja' => $_POST['stts_kerja'],
+                    'pendidikan' => $_POST['pendidikan'],
+                    'departemen' => $_POST['departemen'],
+                    'bidang' => $_POST['bidang'],
+                    'jbtn' => $_POST['jbtn'],
+                    'jnj_jabatan' => $_POST['jnj_jabatan'],
+                    'no_ktp' => $_POST['no_ktp'],
+                    'npwp' => $_POST['npwp'],
+                    'stts_wp' => $_POST['stts_wp'],
+                    'mulai_kontrak' => $_POST['mulai_kontrak'],
+                ]);
+                $query2 = $this->db('petugas')->where('nip', $pegawai['nik'])->save([
+                    'no_telp' => $_POST['no_hp'],
+                    'agama' => $_POST['agama'],
+                ]);
             }
 
             if ($query) {
@@ -124,13 +315,968 @@ class Admin extends AdminModule
             } else {
                 $this->notify('failure', 'Simpan gagal');
             }
-
+            // echo $query;
             redirect($location);
         }
 
         redirect($location, $_POST);
     }
+    // ============================================== SIMPEG =======================================================
+    public function postPangkatSave($idPeg = null)
+    {
+        $id = $_POST['ID_PANGKAT'];
 
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+        $errors = 0;
+
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rpangkat')->save([
+                    'NIP' => $username,
+                    'KGOLRU' => $_POST['KGOLRU'],
+                    'KNPANG' => $_POST['KNPANG'],
+                    'TMTPANG' => $_POST['TMTPANG'],
+                    'NSKPANG' => $_POST['NSKPANG'],
+                    'NPEJABAT' => $_POST['NPEJABAT'],
+                    'TSKPANG' => $_POST['TSKPANG'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rpangkat')->where('ID_PANGKAT', $id)->save([
+                    'NIP' => $username,
+                    'KGOLRU' => $_POST['KGOLRU'],
+                    'KNPANG' => $_POST['KNPANG'],
+                    'TMTPANG' => $_POST['TMTPANG'],
+                    'NSKPANG' => $_POST['NSKPANG'],
+                    'NPEJABAT' => $_POST['NPEJABAT'],
+                    'TSKPANG' => $_POST['TSKPANG'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            }
+            if ($query) {
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postJabatanSave($idPeg = null)
+    {
+        $id = $_POST['ID_JAB'];
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+        $errors = 0;
+
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rjabatan')->save([
+                    'NIP' => $username,
+                    'NUNKER' => $_POST['NUNKER'],
+                    'JNSJAB' => $_POST['JNSJAB'],
+                    'KESELON' => $_POST['KESELON'],
+                    'NJAB' => $_POST['NJAB'],
+                    'TMTJABAT' => $_POST['TMTJABAT'],
+                    'NSKJABAT' => $_POST['NSKJABAT'],
+                    'TSKJABAT' => $_POST['TSKJABAT'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rjabatan')->where('ID_JAB', $id)->save([
+                    'NIP' => $username,
+                    'NUNKER' => $_POST['NUNKER'],
+                    'JNSJAB' => $_POST['JNSJAB'],
+                    'KESELON' => $_POST['KESELON'],
+                    'NJAB' => $_POST['NJAB'],
+                    'TMTJABAT' => $_POST['TMTJABAT'],
+                    'NSKJABAT' => $_POST['NSKJABAT'],
+                    'TSKJABAT' => $_POST['TSKJABAT'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            }
+            if ($query) {
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postSkpSave($idPeg = null)
+    {
+        $id = $_POST['ID_DP3'];
+        $errors = 0;
+
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rdppp')->save([
+                    'NIP' => $username,
+                    'THNILAI' => $_POST['THNILAI'],
+                    'NSETIA' => $_POST['NSETIA'],
+                    'NPRES' => $_POST['NPRES'],
+                    'NTJAWAB' => $_POST['NTJAWAB'],
+                    'NTAAT' => $_POST['NTAAT'],
+                    'NJUJUR' => $_POST['NJUJUR'],
+                    'NKSAMA' => $_POST['NKSAMA'],
+                    'NPKARSA' => $_POST['NPKARSA'],
+                    'NPIMPIN' => $_POST['NPIMPIN'],
+                    'jabat_nilai' => $_POST['jabat_nilai'],
+                    'SEBUTAN' => '',
+                    'atasan_jabat_nilai' => $_POST['atasan_jabat_nilai'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rdppp')->where('ID_DP3', $id)->save([
+                    'NIP' => $username,
+                    'THNILAI' => $_POST['THNILAI'],
+                    'NSETIA' => $_POST['NSETIA'],
+                    'NPRES' => $_POST['NPRES'],
+                    'NTJAWAB' => $_POST['NTJAWAB'],
+                    'NTAAT' => $_POST['NTAAT'],
+                    'NJUJUR' => $_POST['NJUJUR'],
+                    'NKSAMA' => $_POST['NKSAMA'],
+                    'NPKARSA' => $_POST['NPKARSA'],
+                    'NPIMPIN' => $_POST['NPIMPIN'],
+                    'jabat_nilai' => $_POST['jabat_nilai'],
+                    'SEBUTAN' => '',
+                    'atasan_jabat_nilai' => $_POST['atasan_jabat_nilai'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postGajiBerSave($idPeg = null)
+    {
+        $id = $_POST['ID_KGB'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_gkkhir')->save([
+                    'NIP' => $username,
+                    'NPEJABAT' => $_POST['NPEJABAT'],
+                    'NO_SK' => $_POST['NO_SK'],
+                    'TGL_SK' => $_POST['TGL_SK'],
+                    'TMTNGAJ' => $_POST['TMTNGAJ'],
+                    'KGOLRU' => $_POST['KGOLRU'],
+                    'MSKERJA' => $_POST['MSKERJA'],
+                    'MSKERJA_BLN' => $_POST['MSKERJA_BLN'],
+                    'GPOKKHIR' => $_POST['GPOKKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_gkkhir')->where('ID_KGB', $id)->save([
+                    'NIP' => $username,
+                    'NPEJABAT' => $_POST['NPEJABAT'],
+                    'NO_SK' => $_POST['NO_SK'],
+                    'TGL_SK' => $_POST['TGL_SK'],
+                    'TMTNGAJ' => $_POST['TMTNGAJ'],
+                    'KGOLRU' => $_POST['KGOLRU'],
+                    'MSKERJA' => $_POST['MSKERJA'],
+                    'MSKERJA_BLN' => $_POST['MSKERJA_BLN'],
+                    'GPOKKHIR' => $_POST['GPOKKHIR'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postRjabFungSave($idPeg = null)
+    {
+        $id = $_POST['id'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rjabfung')->save([
+                    'NIP' => $username,
+                    'no_sk' => $_POST['no_sk'],
+                    'tgl_sk' => $_POST['tgl_sk'],
+                    'utama' => $_POST['utama'],
+                    'penunjang' => $_POST['penunjang'],
+                    'total' => $_POST['total'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rjabfung')->where('id', $id)->save([
+                    'NIP' => $username,
+                    'no_sk' => $_POST['no_sk'],
+                    'tgl_sk' => $_POST['tgl_sk'],
+                    'utama' => $_POST['utama'],
+                    'penunjang' => $_POST['penunjang'],
+                    'total' => $_POST['total'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postRiwserSave($idPeg = null)
+    {
+        $id = $_POST['id'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rsertifikasi')->save([
+                    'nip' => $username,
+                    'id_profesi' => $_POST['id_profesi'],
+                    'no_str' => $_POST['no_str'],
+                    'tgl_str' => $_POST['tgl_str'],
+                    'tgl_laku_str' => $_POST['tgl_laku_str'],
+                    'no_sip' => $_POST['no_sip'],
+                    'tgl_sip' => $_POST['tgl_sip'],
+                    'tgl_laku_sip' => $_POST['tgl_laku_sip'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rsertifikasi')->where('id', $id)->save([
+                    'nip' => $username,
+                    'id_profesi' => $_POST['id_profesi'],
+                    'no_str' => $_POST['no_str'],
+                    'tgl_str' => $_POST['tgl_str'],
+                    'tgl_laku_str' => $_POST['tgl_laku_str'],
+                    'no_sip' => $_POST['no_sip'],
+                    'tgl_sip' => $_POST['tgl_sip'],
+                    'tgl_laku_sip' => $_POST['tgl_laku_sip'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postPendumSave($idPeg = null)
+    {
+        $id = $_POST['ID_PENDUM'];
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rpendum')->save([
+                    'NIP' => $username,
+                    'KTPU' => $_POST['KTPU'],
+                    'JURUSAN' => $_POST['JURUSAN'],
+                    'PROG_STUDI' => $_POST['PROG_STUDI'],
+                    'NEGARA' => $_POST['NEGARA'],
+                    'NSEK' => $_POST['NSEK'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'NKEPSEK' => $_POST['NKEPSEK'],
+                    'NSTTB' => $_POST['NSTTB'],
+                    'TSTTB' => $_POST['TSTTB'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rpendum')->where('ID_PENDUM', $id)->save([
+                    'NIP' => $username,
+                    'KTPU' => $_POST['KTPU'],
+                    'JURUSAN' => $_POST['JURUSAN'],
+                    'PROG_STUDI' => $_POST['PROG_STUDI'],
+                    'NEGARA' => $_POST['NEGARA'],
+                    'NSEK' => $_POST['NSEK'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'NKEPSEK' => $_POST['NKEPSEK'],
+                    'NSTTB' => $_POST['NSTTB'],
+                    'TSTTB' => $_POST['TSTTB'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postDiknonSave($idPeg = null)
+    {
+        $id = $_POST['ID_DIKNSTR'];
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rdiknstr')->save([
+                    'NIP' => $username,
+                    'KDIKNSTR' => $_POST['KDIKNSTR'],
+                    'NDIKNSTR' => $_POST['NDIKNSTR'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rdiknstr')->where('ID_DIKNSTR', $id)->save([
+                    'NIP' => $username,
+                    'KDIKNSTR' => $_POST['KDIKNSTR'],
+                    'NDIKNSTR' => $_POST['NDIKNSTR'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postDikStrSave($idPeg = null)
+    {
+        $id = $_POST['ID_DIKSTR'];
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rdikstr')->save([
+                    'NIP' => $username,
+                    'KDIKSTR' => $_POST['KDIKSTR'],
+                    'NDIKSTR' => $_POST['NDIKSTR'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rdikstr')->where('ID_DIKSTR', $id)->save([
+                    'NIP' => $username,
+                    'KDIKSTR' => $_POST['KDIKSTR'],
+                    'NDIKSTR' => $_POST['NDIKSTR'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postDikFungSave($idPeg = null)
+    {
+        $id = $_POST['ID_DIKFUNG'];
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rdikfung')->save([
+                    'NIP' => $username,
+                    'NDIKFUNG' => $_POST['NDIKFUNG'],
+                    'KDIKFUNG' => '0',
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rdikfung')->where('ID_DIKFUNG', $id)->save([
+                    'NIP' => $username,
+                    'NDIKFUNG' => $_POST['NDIKFUNG'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postDikTekSave($idPeg = null)
+    {
+        $id = $_POST['ID_DIKTEK'];
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rdiktek')->save([
+                    'NIP' => $username,
+                    'NDIKTEK' => $_POST['NDIKTEK'],
+                    'KDIKTEK' => '0',
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rdiktek')->where('ID_DIKTEK', $id)->save([
+                    'NIP' => $username,
+                    'NDIKTEK' => $_POST['NDIKTEK'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'ANGKATAN' => $_POST['ANGKATAN'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'NSTTPP' => $_POST['NSTTPP'],
+                    'TSTTPP' => $_POST['TSTTPP'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postSemSave($idPeg = null)
+    {
+        $id = $_POST['ID_SEMINAR'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rseminar')->save([
+                    'NIP' => $username,
+                    'NSEMINAR' => $_POST['NSEMINAR'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'NPIAGAM' => $_POST['NPIAGAM'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'TPIAGAM' => $_POST['TPIAGAM'],
+                    'SKP' => '',
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rseminar')->where('ID_SEMINAR', $id)->save([
+                    'NIP' => $username,
+                    'NSEMINAR' => $_POST['NSEMINAR'],
+                    'TEMPAT' => $_POST['TEMPAT'],
+                    'PAN' => $_POST['PAN'],
+                    'NPIAGAM' => $_POST['NPIAGAM'],
+                    'TMULAI' => $_POST['TMULAI'],
+                    'TAKHIR' => $_POST['TAKHIR'],
+                    'JAM' => $_POST['JAM'],
+                    'TPIAGAM' => $_POST['TPIAGAM'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postTubelSave($idPeg = null)
+    {
+        $id = $_POST['ID_TUBEL'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rtubel')->save([
+                    'NIP' => $username,
+                    'NSEK' => $_POST['NSEK'],
+                    'PROG_STUDI' => $_POST['PROG_STUDI'],
+                    'JURUSAN' => $_POST['JURUSAN'],
+                    'NSTTB' => $_POST['NSTTB'],
+                    'TSTTB' => $_POST['TSTTB'],
+                    'STATUS' => $_POST['STATUS'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rtubel')->where('ID_TUBEL', $id)->save([
+                    'NIP' => $username,
+                    'NSEK' => $_POST['NSEK'],
+                    'PROG_STUDI' => $_POST['PROG_STUDI'],
+                    'JURUSAN' => $_POST['JURUSAN'],
+                    'NSTTB' => $_POST['NSTTB'],
+                    'TSTTB' => $_POST['TSTTB'],
+                    'STATUS' => $_POST['STATUS'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postAyahSave($idPeg = null)
+    {
+        $id = $_POST['ID_AYAH'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rakand')->save([
+                    'NIP' => $username,
+                    'NAYAH' => $_POST['NAYAH'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'ALJALAN' => $_POST['ALJALAN'],
+                    'NOTELP' => $_POST['NOTELP'],
+                    'WIL' => $_POST['WIL'],
+                    'KPOS' => $_POST['KPOS'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rakand')->where('ID_AYAH', $id)->save([
+                    'NIP' => $username,
+                    'NAYAH' => $_POST['NAYAH'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'ALJALAN' => $_POST['ALJALAN'],
+                    'NOTELP' => $_POST['NOTELP'],
+                    'WIL' => $_POST['WIL'],
+                    'KPOS' => $_POST['KPOS'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postIbuSave($idPeg = null)
+    {
+        $id = $_POST['ID_IBU'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_ribukand')->save([
+                    'NIP' => $username,
+                    'NIBU' => $_POST['NIBU'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'ALJALAN' => $_POST['ALJALAN'],
+                    'NOTELP' => $_POST['NOTELP'],
+                    'WIL' => $_POST['WIL'],
+                    'KPOS' => $_POST['KPOS'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_ribukand')->where('ID_IBU', $id)->save([
+                    'NIP' => $username,
+                    'NIBU' => $_POST['NIBU'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'ALJALAN' => $_POST['ALJALAN'],
+                    'NOTELP' => $_POST['NOTELP'],
+                    'WIL' => $_POST['WIL'],
+                    'KPOS' => $_POST['KPOS'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postIssuSave($idPeg = null)
+    {
+        $id = $_POST['ID_ISTRI'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rsistri')->save([
+                    'NIP' => $username,
+                    'NISUA' => $_POST['NISUA'],
+                    'KTLAHIR' => $_POST['KTLAHIR'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'TIJASAH' => $_POST['TIJASAH'],
+                    'TKAWIN' => $_POST['TKAWIN'],
+                    'STUNJ' => $_POST['STUNJ'],
+                    'STATUS' => $_POST['STATUS'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rsistri')->where('ID_ISTRI', $id)->save([
+                    'NIP' => $username,
+                    'NISUA' => $_POST['NISUA'],
+                    'KTLAHIR' => $_POST['KTLAHIR'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'TIJASAH' => $_POST['TIJASAH'],
+                    'TKAWIN' => $_POST['TKAWIN'],
+                    'STUNJ' => $_POST['STUNJ'],
+                    'STATUS' => $_POST['STATUS'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postAnakSave($idPeg = null)
+    {
+        $id = $_POST['ID_ANAK'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_ranak')->save([
+                    'NIP' => $username,
+                    'NANAK' => $_POST['NANAK'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'TIJASAH' => $_POST['TIJASAH'],
+                    'KELUARGA' => $_POST['KELUARGA'],
+                    'TUNJ' => $_POST['TUNJ'],
+                    'KJKEL' => $_POST['KJKEL'],
+                    'STATUS' => $_POST['STATUS'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_ranak')->where('ID_ANAK', $id)->save([
+                    'NIP' => $username,
+                    'NANAK' => $_POST['NANAK'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'TIJASAH' => $_POST['TIJASAH'],
+                    'KELUARGA' => $_POST['KELUARGA'],
+                    'TUNJ' => $_POST['TUNJ'],
+                    'KJKEL' => $_POST['KJKEL'],
+                    'STATUS' => $_POST['STATUS'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postKeluargaSave($idPeg = null)
+    {
+        $id = $_POST['ID_KELUARGA'];
+
+        $errors = 0;
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_rkeluarga')->save([
+                    'NIP' => $username,
+                    'NAMA' => $_POST['NAMA'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'SEX' => $_POST['SEX'],
+                    'HUB_KEL' => $_POST['HUB_KEL'],
+                    'NOTELP' => $_POST['NOTELP'],
+                    'ALJALAN' => $_POST['ALJALAN'],
+                    'WIL' => $_POST['WIL'],
+                    'KPOS' => $_POST['KPOS'],
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_rkeluarga')->where('ID_KELUARGA', $id)->save([
+                    'NIP' => $username,
+                    'NAMA' => $_POST['NAMA'],
+                    'TGLLAHIR' => $_POST['TGLLAHIR'],
+                    'TLAHIR' => $_POST['TLAHIR'],
+                    'NKERJA' => $_POST['NKERJA'],
+                    'SEX' => $_POST['SEX'],
+                    'HUB_KEL' => $_POST['HUB_KEL'],
+                    'NOTELP' => $_POST['NOTELP'],
+                    'ALJALAN' => $_POST['ALJALAN'],
+                    'WIL' => $_POST['WIL'],
+                    'KPOS' => $_POST['KPOS'],
+                ]);
+            }
+            if ($query) {
+                // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+    // ============================================== LAIN LAIN =======================================================
     public function getJadwal($page = 1)
     {
 
@@ -724,15 +1870,22 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getCss()
+    {
+        header('Content-type: text/css');
+        echo $this->draw(MODULES . '/profil/css/admin/app.css');
+        exit();
+    }
+
     private function _addHeaderFiles()
     {
         // CSS
-        //$this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('plugins/profil/css/admin/timeline.min.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
-        //$this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJs(url('plugins/profil/js/admin/timeline.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
 
@@ -742,5 +1895,6 @@ class Admin extends AdminModule
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'profil', 'javascript']), 'footer');
+        $this->core->addCSS(url([ADMIN,'profil','css']));
     }
 }

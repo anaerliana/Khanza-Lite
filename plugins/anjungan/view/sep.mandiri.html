@@ -134,6 +134,18 @@
       footer a, footer a:hover {
         color: #fff;
       }
+
+      .cardku {
+        position: fixed;
+        /* top: 50%; */
+        /* left: 50%; */
+        /* margin-top: -50px;
+        margin-left: -100px; */
+        z-index: 1;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        border-radius: 5px;
+        background: #f2f2f2;
+      }
     </style>
 </head>
 <body>
@@ -145,6 +157,12 @@
 
   <br><br><br>
   <div class="container">
+    {if: $notif != ''}
+      <div class="cardku d-flex justify-content-center" id="divAlert">
+        {$notif}
+      </div>
+      <!-- <div class="alert alert-warning" id="divAlert" role="alert"><center>{$notif}</center></div> -->
+    {/if}
     <div class="card-deck mb-3 text-center">
       <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#antrian">
         <div class="card-body btn btn-lg btn-success">
@@ -157,9 +175,9 @@
       <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#daftar">
         <div class="card-body btn btn-lg btn-primary">
           <ul class="list-unstyled mt-3 mb-4">
-            <span style="font-size: 100px; color: white;"><i class="fa fa-stethoscope"></i></span>
+            <span style="font-size: 100px; color: white;"><i class="fa fa-vcard"></i></span>
           </ul>
-          <h1 class="display-4">CHECK IN</h1>
+          <h1 class="display-4">PENDAFTARAN</h1>
         </div>
       </div>
     </div>
@@ -211,22 +229,88 @@
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalCenterTitle">Check In Pendaftaran</h5>
+          <h5 class="modal-title" id="exampleModalCenterTitle">Pendaftaran</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
-        <div>
-            <div class="form-group">
-              <input type="text" class="form-control form-control-lg" id="norm" placeholder="Nomor Booking">
+          <div class="container">
+            <div class="card-deck mb-3 text-center">
+              <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#baru" data-dismiss="modal">
+                <div class="card-body btn btn-lg btn-success">
+                  <ul class="list-unstyled mt-3 mb-4">
+                    <span style="font-size: 100px; color: white;"><i class="fa fa-user-plus"></i></span>
+                  </ul>
+                  <a href="#" style="text-decoration: none; color: white;"><h1 class="display-4">BARU</h1></a>
+                </div>
+              </div>
+              <div class="card mb-4 shadow-sm" data-toggle="modal" data-target="#lama" data-dismiss="modal">
+                <div class="card-body btn btn-lg btn-primary">
+                  <ul class="list-unstyled mt-3 mb-4">
+                    <span style="font-size: 100px; color: white;"><i class="fa fa-users"></i></span>
+                  </ul>
+                  <h1 class="display-4">LAMA</h1>
+                </div>
+              </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Tutup</button>
-          <button type="submit" id="checkin" class="btn btn-lg btn-primary">Check In</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="baru" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <form class="form-signin" action="{?=url('anjungan/baru/cek')?}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Pendaftaran Pasien Baru</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+              <input type="text" name="nik" id="cek_nik" class="form-control form-control-lg text-black" placeholder="NIK" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Tutup</button>
+          <button class="btn btn-lg btn-success shadow" id="ceknik" name="ceknik" onclick="this.value=\'ceknik\'" type="submit">
+            <span class="text">Cek NIK</span>
+          </button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="lama" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content">
+        <form class="form-signin" action="{?=url('anjungan/daftar/cek')?}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalCenterTitle">Pendaftaran Pasien Lama</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+              <input type="text" name="no_rkm_medis" id="cek_norm" class="form-control form-control-lg text-black norm" placeholder="Nomor Kartu Berobat" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Tutup</button>
+          <button class="btn btn-lg btn-success shadow" id="cekrmlama" name="cekrm" onclick="this.value=\'cekrm\'" type="submit">
+            <span class="text">Cek Kartu Berobat</span>
+          </button>
+        </div>
+        </form>
       </div>
     </div>
   </div>
@@ -364,17 +448,59 @@
       //.addTyping();
   });
 
+  $(function() {
+      $('#cek_nik')
+      .keyboard({
+        layout: 'custom',
+        customLayout: {
+          'normal' : [
+            '8 9 . {b}',
+            '4 5 6 7',
+            '0 1 2 3',
+            '{accept} {cancel}'
+          ]
+        },
+        maxLength : 16,
+        // Prevent keys not in the displayed keyboard from being typed in
+        restrictInput : true,
+        // include lower case characters (added v1.25.7)
+        restrictInclude : 'a b c d e f',
+        // don't use combos or A+E could become a ligature
+        useCombos : false,
+        // activate the "validate" callback function
+        acceptValid : true,
+        validate : function(keyboard, value, isClosing){
+          // only make valid if input is 6 characters in length
+          return value.length === 16;
+        }
+      })
+      //.addTyping();
+  });
+
   </script>
   <script>
-  $("#daftar").on("click","#checkin", function(event){
-    alert('Terima kasih telah melakukan check in pendaftaran rawat jalan. Silahkan lakukan cetak mandiri Surat Eligibilitas Peserta (SEP) anda pada menu CETAK SEP.');
-    $('#daftar').modal('hide');
-  });
+  // $("#daftar").on("click","#checkin", function(event){
+  //   alert('Terima kasih telah melakukan check in pendaftaran rawat jalan. Silahkan lakukan cetak mandiri Surat Eligibilitas Peserta (SEP) anda pada menu CETAK SEP.');
+  //   $('#daftar').modal('hide');
+  // });
   function loading(){
       $(".text").html("<i class='fa fa-spinner'></i> Loading ...");
   }
   var btn = document.getElementById("cekrm");
   btn.addEventListener("click", loading);
+  var btn = document.getElementById("cekrmlama");
+  btn.addEventListener("click", loading);
+  var btn2 = document.getElementById("checkin");
+  btn2.addEventListener("click", loading);
+
+  </script>
+  <script>
+    if (document.getElementById('divAlert')) {
+      setTimeout(function(){
+    // $('#divAlert').remove();
+        document.getElementById('divAlert').style.display = 'none'
+      }, 5000);
+    }
   </script>
 
 </body>

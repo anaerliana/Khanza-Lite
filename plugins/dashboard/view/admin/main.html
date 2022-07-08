@@ -243,46 +243,46 @@
 </div>
 <script>
   function getDistanceFromLatLonInKm() {
-    window.navigator.geolocation.getCurrentPosition(function(pos) {
-      console.log(pos);
-      var units = 'km';
-      var latitude2 = '-2.58';
-      var longitude2 = '115.37';
-      var latitude1 = pos.coords.latitude;
-      var longitude1 = pos.coords.longitude;
-      var p = 0.017453292519943295;    //This is  Math.PI / 180
-      var c = Math.cos;
-      var a = 0.5 - c((latitude2 - latitude1) * p)/2 +
-              c(latitude1 * p) * c(latitude2 * p) *
-              (1 - c((longitude2 - longitude1) * p))/2;
-      var R = 6371; //  Earth distance in km so it will return the distance in km
-      var dist = 2 * R * Math.asin(Math.sqrt(a));
-      if(dist > 2) {
-        alert('Absen wajib di dalam RS!!')
-      } else {
+    // window.navigator.geolocation.getCurrentPosition(function(pos) {
+    //   console.log(pos);
+    //   var units = 'km';
+    //   var latitude2 = '-2.58';
+    //   var longitude2 = '115.37';
+    //   var latitude1 = pos.coords.latitude;
+    //   var longitude1 = pos.coords.longitude;
+    //   var p = 0.017453292519943295;    //This is  Math.PI / 180
+    //   var c = Math.cos;
+    //   var a = 0.5 - c((latitude2 - latitude1) * p)/2 +
+    //           c(latitude1 * p) * c(latitude2 * p) *
+    //           (1 - c((longitude2 - longitude1) * p))/2;
+    //   var R = 6371; //  Earth distance in km so it will return the distance in km
+    //   var dist = 2 * R * Math.asin(Math.sqrt(a));
+    //   if(dist > 2) {
+    //     alert('Absen wajib di dalam RS!!')
+    //   } else {
         $('#myModal').modal('show', function () {
         });
-      }
-    },
-   	function handleError(error) {
-      // Display error based on the error code.
-      const { code } = error;
-      switch (code) {
-        case GeolocationPositionError.TIMEOUT:
-          // Handle timeout.
-          alert('Koneksi Terputus')
-          break;
-        case GeolocationPositionError.PERMISSION_DENIED:
-          // User denied the request.
-        alert('Cek Lokasi Belum Di Izinkan!!')
-          break;
-        case GeolocationPositionError.POSITION_UNAVAILABLE:
-          // Position not available.
-              alert('Lokasi Tidak Ditemukan!!')
-          break;
-      }
-    },
-    {timeout: 5000 , maximumAge: 0});
+    //   }
+    // },
+   	// function handleError(error) {
+    //   // Display error based on the error code.
+    //   const { code } = error;
+    //   switch (code) {
+    //     case GeolocationPositionError.TIMEOUT:
+    //       // Handle timeout.
+    //       alert('Koneksi Terputus')
+    //       break;
+    //     case GeolocationPositionError.PERMISSION_DENIED:
+    //       // User denied the request.
+    //     alert('Cek Lokasi Belum Di Izinkan!!')
+    //       break;
+    //     case GeolocationPositionError.POSITION_UNAVAILABLE:
+    //       // Position not available.
+    //           alert('Lokasi Tidak Ditemukan!!')
+    //       break;
+    //   }
+    // },
+    // {timeout: 5000 , maximumAge: 0});
   }
 
   $(document).ready(function () {

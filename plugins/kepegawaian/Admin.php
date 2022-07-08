@@ -11,7 +11,9 @@ class Admin extends AdminModule
     {
         return [
             'Kelola' => 'manage',
-            'Data Pegawai' => 'index',
+            'Data Pegawai PNS' => 'index',
+            'Data Pegawai Kontrak' => 'indexkontrak',
+            'Data Pegawai Tidak Aktif' => 'indexnon',
             'Tambah Baru' => 'add',
             //'Master Pegawai' => 'master',
         ];
@@ -19,12 +21,32 @@ class Admin extends AdminModule
 
     public function getManage()
     {
-      $sub_modules = [
-        ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
-        ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
-        //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
-      ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+        $this->_addHeaderFiles();
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        // $this->core->addJS(url([ADMIN, 'kepegawaian', 'jschart']), 'footer');
+        $sub_modules = [
+            ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
+            ['name' => 'Data Pegawai Kontrak', 'url' => url([ADMIN, 'kepegawaian', 'indexkontrak']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
+            ['name' => 'Data Pegawai Tidak Aktif', 'url' => url([ADMIN, 'kepegawaian', 'indexnon']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
+            ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
+            //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
+        ];
+        $stats['KunjunganTahunChart'] = $this->KunjunganTahunChart();
+        $stats['KunjunganChart'] = $this->KunjunganChart();
+        $stats['RanapTahunChart'] = $this->RanapTahunChart();
+        $stats['RujukTahunChart'] = $this->RujukTahunChart();
+        $this->assign['pns'] = $this->db('pegawai')->where('stts_aktif','AKTIF')->where('stts_kerja','PNS')->toArray();
+        $this->assign['pr'] = $this->db('pegawai')->where('stts_aktif','AKTIF')->where('stts_kerja','PNS')->where('jk','Wanita')->toArray();
+        $this->assign['lk'] = $this->db('pegawai')->where('stts_aktif','AKTIF')->where('stts_kerja','PNS')->where('jk','Pria')->toArray();
+        $this->assign['kontrak'] = $this->db('pegawai')->where('stts_aktif','AKTIF')->where('stts_kerja','FT')->toArray();
+        return $this->draw('manage.html', ['sub_modules' => $sub_modules , 'list' => $this->assign , 'stats' => $stats]);
+    }
+
+    public function postSearch(){
+        $id = $this->db('pegawai')->where('nik',$_POST['nip'])->oneArray();
+        $id = $id['id'];
+        redirect(url([ADMIN, 'profil', 'biodata', $id]));
     }
 
     public function getIndex($page = 1)
@@ -32,7 +54,53 @@ class Admin extends AdminModule
 
         $this->_addHeaderFiles();
 
-        $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->toArray();
+        $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->where('stts_kerja','PNS')->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['editURL'] = url([ADMIN, 'profil', 'biodata', $row['id']]);
+                $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
+
+        return $this->draw('index.html', ['pegawai' => $this->assign]);
+    }
+
+    public function getIndexKontrak($page = 1)
+    {
+
+        $this->_addHeaderFiles();
+
+        $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->where('stts_kerja','FT')->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['editURL'] = url([ADMIN, 'profil', 'biodata', $row['id']]);
+                $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
+
+        return $this->draw('index.html', ['pegawai' => $this->assign]);
+    }
+
+    public function getIndexNon($page = 1)
+    {
+
+        $this->_addHeaderFiles();
+
+        $rows = $this->db('pegawai')->where('stts_aktif','!=','AKTIF')->toArray();
 
         $this->assign['list'] = [];
         if (count($rows)) {
@@ -48,7 +116,6 @@ class Admin extends AdminModule
         $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
 
         return $this->draw('index.html', ['pegawai' => $this->assign]);
-
     }
 
     public function getAdd()
@@ -268,6 +335,110 @@ class Admin extends AdminModule
 
     }
 
+    public function RujukTahunChart()
+    {
+
+        $query = $this->db('pegawai')
+            ->select([
+              'count'       => 'COUNT(DISTINCT nik)',
+              'label'       => 'pendidikan'
+            ])
+            ->where('stts_kerja', 'PNS')
+            ->where('jk','Wanita')
+            ->group('pendidikan');
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => []
+            ];
+            foreach ($data as $value) {
+                $return['labels'][] = $value['label'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
+    public function RanapTahunChart()
+    {
+
+        $query = $this->db('pegawai')
+            ->select([
+              'count'       => 'COUNT(DISTINCT nik)',
+              'label'       => 'pendidikan'
+            ])
+            ->where('stts_kerja', 'PNS')
+            ->where('jk','Pria')
+            ->group('pendidikan');
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => []
+            ];
+            foreach ($data as $value) {
+                $return['labels'][] = $value['label'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
+    public function KunjunganTahunChart()
+    {
+
+        $query = $this->db('pegawai')
+            ->select([
+              'count'       => 'COUNT(DISTINCT nik)',
+              'label'       => 'stts_aktif'
+            ])
+            ->where('stts_kerja', 'PNS')
+            ->where('jk','Pria')
+            ->group('stts_aktif');
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => []
+            ];
+            foreach ($data as $value) {
+                $return['labels'][] = $value['label'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
+    public function KunjunganChart()
+    {
+
+        $query = $this->db('pegawai')
+            ->select([
+              'count'       => 'COUNT(DISTINCT nik)',
+              'label'       => 'stts_aktif'
+            ])
+            ->where('stts_kerja', 'PNS')
+            ->where('jk','Wanita')
+            ->group('stts_aktif');
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => []
+            ];
+            foreach ($data as $value) {
+                $return['labels'][] = $value['label'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
     public function getCSS()
     {
         header('Content-type: text/css');
@@ -279,6 +450,13 @@ class Admin extends AdminModule
     {
         header('Content-type: text/javascript');
         echo $this->draw(MODULES.'/kepegawaian/js/admin/kepegawaian.js');
+        exit();
+    }
+
+    public function getJsChart()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/kepegawaian/js/admin/chart.js');
         exit();
     }
 

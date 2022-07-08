@@ -177,7 +177,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">Nama</label>
-            <input type="text" class="form-control" name="nmps" id="nama_peserta" value="{$reg_periksa.nm_pasien}" readonly>
+            <input type="text" class="form-control" name="nmps" id="nama_peserta" value="{if: $reg_periksa.nm_pasien != ''}{$reg_periksa.nm_pasien}{else}{$rujukan.rujukan.peserta.nama}{/if}" readonly>
           </div>
         </div>
       </div>
@@ -185,7 +185,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">JK</label>
-            <input type="text" class="form-control" name="jk" id="sep_jenis_kelamin_kode" value="{$reg_periksa.jk}" readonly>
+            <input type="text" class="form-control" name="jk" id="sep_jenis_kelamin_kode" value="{if: $reg_periksa.jk != ''}{$reg_periksa.jk}{else}{$rujukan.rujukan.peserta.sex}{/if}" readonly>
           </div>
         </div>
       </div>
@@ -193,7 +193,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">Tanggal Lahir</label>
-            <input type="text" class="form-control" name="tgllhr" id="sep_tanggal_lahir" value="{$reg_periksa.tgl_lahir}" readonly>
+            <input type="text" class="form-control" name="tgllhr" id="sep_tanggal_lahir" value="{if: $reg_periksa.tgl_lahir != ''}{$reg_periksa.tgl_lahir}{else}{$rujukan.rujukan.peserta.tglLahir}{/if}" readonly>
           </div>
         </div>
       </div>
@@ -210,7 +210,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">No SKDP</label>
-            <input type="text" class="form-control" name="skdp" id="sep_nomor_skdp" value="{$skdp_bpjs}">
+            <input type="text" class="form-control" name="skdp" id="sep_nomor_skdp" value="{$skdp_bpjs}" onclick="test()">
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">No Peserta</label>
-            <input type="text" class="form-control" name="nops" id="sep_no_kartu" value="{$reg_periksa.no_peserta}"
+            <input type="text" class="form-control" name="nops" id="sep_no_kartu" value="{if: $reg_periksa.no_peserta != ''}{$reg_periksa.no_peserta}{else}{$rujukan.rujukan.peserta.noKartu}{/if}"
               readonly>
           </div>
         </div>
@@ -390,13 +390,18 @@
         <input type="text" class="form-control" name="nmdpjp" id="sep_dpjp_yang_melayani_nama"
           value="{$dpjp.nm_dokter_bpjs}" readonly>
       </div>
-      <div class="col-md-2" style="display:none;">
+      <div class="col-md-2" >
         <div class="form-group">
           <div class="form-line">
             <label>Faskes</label>
             <select name="fsks" id="sep_asal_faskes_kode" class="form-control" readonly>
+              {if: $reg_periksa.asalRujuk == '2'}
+              <option value="1">1. Faskes 1</option>
+              <option value="2" selected>2. Faskes 2(RS)</option>
+              {else}
               <option value="1" selected>1. Faskes 1</option>
               <option value="2">2. Faskes 2(RS)</option>
+              {/if}
             </select>
           </div>
         </div>
@@ -427,7 +432,14 @@
         </center>
       </div>
     </div>
-
+    <br>
+    <div class="row">
+      <div class="col-sm-9 col-md-8 col-lg-8 mx-auto">
+        <center>
+          <a href="{?=url('anjungan/sep/')?}" class="btn btn-info">KEMBALI</a>
+        </center>
+      </div>
+    </div>
   </div>
   <br>
   <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
@@ -589,6 +601,31 @@
         $('#simpan').attr('disabled', true);
         document.getElementById("simpan").style.background = "grey";
       }
+      let skdp = $('#sep_nomor_skdp').val();
+      let checkSkdp = skdp.includes('Koneksi ke');
+      if (checkSkdp == true) {
+        $('#simpan').attr('disabled', true);
+        document.getElementById("simpan").style.background = "grey";
+      }
+      function test(){
+        var rujukan = $('#sep_nomor_rujukan').val();
+        var kdpolitujuan = $('#sep_spesialis_kode').val();
+        var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
+        $.ajax({
+            type:"POST",
+            url: "{?=url('anjungan/check')?}",
+            data: {
+                rujukan: rujukan,
+                kd_poli:kdpolitujuan,
+                kd_dokter:kddpjp
+            },
+            success:function(responsedata){
+               // process on data
+               $('#sep_nomor_skdp').val(responsedata);
+
+            }
+        });
+      }
     });
 
   </script>
@@ -623,6 +660,11 @@
       event.preventDefault();
 
       var url = baseURL + '/anjungan/sep/savesep?t=' + mlite.token;
+      if ($('#sep_norm').val() == '') {
+        var urlAjax = "{?=url('anjungan/baru/savesep')?}";
+      } else {
+        var urlAjax = "{?=url('anjungan/sep/savesep')?}";
+      }
 
       var no_rawat = $('#sep_no_rawat').val();
       var tglsep = $('#sep_tanggal_sep').val();
@@ -678,7 +720,7 @@
       console.log($("#form_sep :input").serializeArray());
       $.ajax({
         type: "POST",
-        url: "{?=url('anjungan/sep/savesep')?}",
+        url: urlAjax,
         data: {
           no_rawat: no_rawat,
           tglsep: tglsep,

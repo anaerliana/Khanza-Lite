@@ -13,6 +13,8 @@ class Site extends SiteModule
     {
         $this->route('api', 'getIndex');
         $this->route('api/apam', 'getApam');
+        $this->route('api/wag','getWags');
+        $this->route('api/sendAbsen/(:str)/(:str)','getSendAbsen');
     }
 
     public function getIndex()
@@ -1108,4 +1110,163 @@ class Site extends SiteModule
       $mail->send();
     }
 
+    public function getWags(){
+      $datetime = new \DateTime('tomorrow');
+      $dateyesterday = new \DateTime('yesterday');
+      $date = $datetime->format('Y-m-d');
+      $datebefore = $dateyesterday->format('Y-m-d');
+      $dateIndo = $datetime->format('d-m-Y');
+      $mysql_date = date('Y-m-d');
+      $timestamp = date("Y-m-d H:i:s");
+      $time = date("H:i:s");
+
+      $sender = $this->settings->get('api.wagateway_phonenumber');
+      $url = $this->settings->get('api.wagateway_server');
+
+      // $getWaBefore = $this->db('bridging_wa')->where('tanggal',$datebefore)->toArray();
+      // if (count($getWaBefore) > 0) {
+      //   echo 'Link Release</br>';
+      //   $this->db('bridging_wa')->where('tanggal',$datebefore)->delete();
+      // }
+
+      $getCheckWA = $this->db('bridging_wa')->where('tanggal',$mysql_date)->toArray();
+      $getCheckBooking = $this->db('booking_registrasi')->where('tanggal_periksa',$date)->toArray();
+      if (count($getCheckWA) < count($getCheckBooking)) {
+        echo 'Link Start</br>';
+        $getBooking = $this->db('booking_registrasi')->select(['nm_pasien' => 'pasien.nm_pasien','no_tlp' => 'pasien.no_tlp','nm_poli' => 'poliklinik.nm_poli','no_rkm_medis'=>'pasien.no_rkm_medis'])->join('pasien','pasien.no_rkm_medis = booking_registrasi.no_rkm_medis')->join('poliklinik','poliklinik.kd_poli = booking_registrasi.kd_poli')->where('booking_registrasi.tanggal_periksa',$date)->toArray();
+        for ($i=0; $i < count($getBooking); $i++) {
+          $namaPasien = $getBooking[$i]['nm_pasien'];
+          $tlpPasien = $getBooking[$i]['no_tlp'];
+          $poliklinik = $getBooking[$i]['nm_poli'];
+          $no_rkm_medis = $getBooking[$i]['no_rkm_medis'];
+          $simpanBooking = $this->db('bridging_wa')->save([
+            'no_rkm_medis' => $no_rkm_medis,
+            'nama' => $namaPasien,
+            'tanggal' => $mysql_date,
+            'no_telp' => $tlpPasien,
+            'poli' => $poliklinik,
+            'status' => '-',
+            'created_at' => $timestamp,
+            'updated_at' => $timestamp,
+          ]);
+        }
+      }
+
+      echo 'Mulai Mengirim Whatsapp</br>';
+      $getCron = $this->db('bridging_wa')->where('tanggal',$mysql_date)->where('status','-')->where('no_telp','!=','')->limit(2)->toArray();
+      for ($i=0; $i < count($getCron); $i++) {
+        $namaPasien = $getCron[$i]['nama'];
+        $tlpPasien = $getCron[$i]['no_telp'];
+        $poliklinik = $getCron[$i]['poli'];
+        $no_rkm_medis = $getCron[$i]['no_rkm_medis'];
+        // $msg = "Assalamualaikum ".$namaPasien.". \nUlun RSHD SIAP WA Bot dari Rumah Sakit H. Damanhuri Barabai .
+        // \nHandak mahabar akan lawan maingat akan pian, kalau nya ISUK tanggal ".$dateIndo." pian ada JADWAL BAPARIKSA ke ".$poliklinik." di Rumah Sakit H. Damanhuri Barabai . Kaina pian datang LANGSUNG HAJA ke ANJUNGAN ada haja disana kaina papadaan kita manjaga akan .
+        // \nPian pasti akan RUJUKAN BPJS pian masih berlaku amunnya habis jangan kada ingat ma inta nang hanyar. Nitu haja pasan ulun . Salah khilap muhun maap . \n \nWassalamualaikum
+        // \nDaftar Online Tanpa Antri via Apam Barabai Klik Disini >>> https://play.google.com/store/apps/details?id=com.rshdbarabai.apam&hl=in&gl=US";
+        $msg = "Assalamualaikum ".$namaPasien.". \nSaya 'AUSYI' WA Bot dari Rumah Sakit Aura Syifa Kediri .
+        \nMemberitahukan bahwa Besok tanggal ".$dateIndo." Anda mempunyai JADWAL PERIKSA ke ".$poliklinik." di Rumah Sakit Aura Syifa Kediri  . Anda bisa LANGSUNG ke ANJUNGAN atau bertanya ke Customer Service.
+        \nPastikan RUJUKAN BPJS Anda masih berlaku . Jika RUJUKAN BPJS Anda habis jangan lupa untuk meminta RUJUKAN BPJS yang baru. Terima Kasih . \n \nWassalamualaikum
+        \n \nDaftar Online Tanpa Antri Dan Cek Riwayat Pemeriksaan via Apam Aura Syifa Klik Disini >>> https://play.google.com/store/apps/details?id=com.rsaurasyifa.apam";
+        $kirimWa = postWagsApi($tlpPasien,$msg,$sender,$url);
+        if ($kirimWa == '200') {
+          $simpanNotif = $this->db('bridging_wa')->where('no_rkm_medis',$no_rkm_medis)->where('tanggal',$mysql_date)->save([
+            'status' => 'Success',
+            'updated_at' => $timestamp,
+          ]);
+          if ($simpanNotif) {
+            echo 'Berhasil Kirim Whatsapp ke '.$no_rkm_medis.'</br>';
+          }
+        } else {
+          $simpanNotif = $this->db('bridging_wa')->where('no_rkm_medis',$no_rkm_medis)->where('tanggal',$mysql_date)->save([
+            'status' => 'Failed',
+            'updated_at' => $timestamp,
+          ]);
+          if ($simpanNotif) {
+            echo 'Gagal Kirim Whatsapp ke '.$no_rkm_medis.'</br>';
+          }
+        }
+      }
+      echo 'Selesai Mengirim Whatsapp</br>';
+      exit();
+    }
+
+    // public function getWags(){
+    //   $datetime = new \DateTime('tomorrow');
+    //   // $dateyesterday = new \DateTime('yesterday');
+    //   // $date = $datetime->format('Y-m-d');
+    //   // $datebefore = $dateyesterday->format('Y-m-d');
+    //   $dateIndo = $datetime->format('d-m-Y');
+    //   // $mysql_date = date('Y-m-d');
+    //   // $timestamp = date("Y-m-d H:i:s");
+    //   // $time = date("H:i:s");
+
+    //   $sender = $this->settings->get('api.wagateway_phonenumber');
+    //   $url = $this->settings->get('api.wagateway_server');
+
+    //   // $getWaBefore = $this->db('bridging_wa')->where('tanggal',$datebefore)->toArray();
+    //   // if (count($getWaBefore) > 0) {
+    //   //   echo 'Link Release</br>';
+    //   //   $this->db('bridging_wa')->where('tanggal',$datebefore)->delete();
+    //   // }
+
+    //   // $getCheckWA = $this->db('bridging_wa')->where('tanggal',$mysql_date)->toArray();
+    //   // $getCheckBooking = $this->db('booking_registrasi')->where('tanggal_periksa',$date)->toArray();
+    //   // if (count($getCheckWA) < count($getCheckBooking)) {
+    //   //   echo 'Link Start</br>';
+    //   //   $getBooking = $this->db('booking_registrasi')->select(['nm_pasien' => 'pasien.nm_pasien','no_tlp' => 'pasien.no_tlp','nm_poli' => 'poliklinik.nm_poli','no_rkm_medis'=>'pasien.no_rkm_medis'])->join('pasien','pasien.no_rkm_medis = booking_registrasi.no_rkm_medis')->join('poliklinik','poliklinik.kd_poli = booking_registrasi.kd_poli')->where('booking_registrasi.tanggal_periksa',$date)->toArray();
+    //   //   for ($i=0; $i < count($getBooking); $i++) {
+    //   //     $namaPasien = $getBooking[$i]['nm_pasien'];
+    //   //     $tlpPasien = $getBooking[$i]['no_tlp'];
+    //   //     $poliklinik = $getBooking[$i]['nm_poli'];
+    //   //     $no_rkm_medis = $getBooking[$i]['no_rkm_medis'];
+    //   //     $simpanBooking = $this->db('bridging_wa')->save([
+    //   //       'no_rkm_medis' => $no_rkm_medis,
+    //   //       'nama' => $namaPasien,
+    //   //       'tanggal' => $mysql_date,
+    //   //       'no_telp' => $tlpPasien,
+    //   //       'poli' => $poliklinik,
+    //   //       'status' => '-',
+    //   //       'created_at' => $timestamp,
+    //   //       'updated_at' => $timestamp,
+    //   //     ]);
+    //   //   }
+    //   // }
+
+    //   echo 'Mulai Mengirim Whatsapp</br>';
+    //   // $getCron = $this->db('bridging_wa')->where('tanggal',$mysql_date)->where('status','-')->where('no_telp','!=','')->limit(2)->toArray();
+    //   // for ($i=0; $i < count($getCron); $i++) {
+    //     $namaPasien = 'Adly';
+    //     $tlpPasien = '082149099444';
+    //     $poliklinik = 'Coba';
+    //   //   $no_rkm_medis = $getCron[$i]['no_rkm_medis'];
+    //     $msg = "Assalamualaikum ".$namaPasien.". \nUlun RSHD SIAP WA Bot dari Rumah Sakit H. Damanhuri Barabai .
+    //     \nHandak mahabar akan lawan maingat akan pian, kalau nya ISUK tanggal ".$dateIndo." pian ada JADWAL BAPARIKSA ke ".$poliklinik." di Rumah Sakit H. Damanhuri Barabai . Kaina pian datang LANGSUNG HAJA ke ANJUNGAN ada haja disana kaina papadaan kita manjaga akan .
+    //     \nPian pasti akan RUJUKAN BPJS pian masih berlaku amunnya habis jangan kada ingat ma inta nang hanyar. Nitu haja pasan ulun . Salah khilap muhun maap . \n \nWassalamualaikum
+    //     \nDaftar Online Tanpa Antri via Apam Barabai Klik Disini >>> https://play.google.com/store/apps/details?id=com.rshdbarabai.apam&hl=in&gl=US";
+    //   //   $msg = "Assalamualaikum ".$namaPasien.". \nSaya 'AUSYI' WA Bot dari Rumah Sakit Aura Syifa Kediri .
+    //   //   \nMemberitahukan bahwa Besok tanggal ".$dateIndo." Anda mempunyai JADWAL PERIKSA ke ".$poliklinik." di Rumah Sakit Aura Syifa Kediri  . Anda bisa LANGSUNG ke ANJUNGAN atau bertanya ke Customer Service.
+    //   //   \nPastikan RUJUKAN BPJS Anda masih berlaku . Jika RUJUKAN BPJS Anda habis jangan lupa untuk meminta RUJUKAN BPJS yang baru. Terima Kasih . \n \nWassalamualaikum
+    //   //   \n \nDaftar Online Tanpa Antri via Apam Aura Syifa Klik Disini >>> https://play.google.com/store/apps/details?id=com.rsaurasyifa.apam";
+    //     $kirimWa = postWagsApi($tlpPasien,$msg,$sender,$url);
+    //     if ($kirimWa == '200') {
+    //   //     $simpanNotif = $this->db('bridging_wa')->where('no_rkm_medis',$no_rkm_medis)->where('tanggal',$mysql_date)->save([
+    //   //       'status' => 'Success',
+    //   //       'updated_at' => $timestamp,
+    //   //     ]);
+    //   //     if ($simpanNotif) {
+    //         echo 'Berhasil Kirim Whatsapp ke '.$tlpPasien.'</br>';
+    //       }
+    //   //   } else {
+    //   //     $simpanNotif = $this->db('bridging_wa')->where('no_rkm_medis',$no_rkm_medis)->where('tanggal',$mysql_date)->save([
+    //   //       'status' => 'Failed',
+    //   //       'updated_at' => $timestamp,
+    //   //     ]);
+    //   //     if ($simpanNotif) {
+    //   //       echo 'Gagal Kirim Whatsapp ke '.$no_rkm_medis.'</br>';
+    //   //     }
+    //   //   }
+    //   // }
+    //   echo 'Selesai Mengirim Whatsapp</br>';
+    //   exit();
+    // }
 }

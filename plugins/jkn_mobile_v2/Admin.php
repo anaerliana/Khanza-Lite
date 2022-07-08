@@ -400,7 +400,7 @@ class Admin extends AdminModule
 
             echo $this->draw('antrol.display.html', ['row' => $this->assign]);
         } else {
-            $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/rs';
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             $response = [];

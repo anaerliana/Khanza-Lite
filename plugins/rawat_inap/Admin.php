@@ -95,7 +95,7 @@ class Admin extends AdminModule
           AND
             reg_periksa.kd_pj=penjab.kd_pj";
 
-        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker'],true)) {
+        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi'],true)) {
           $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
         }
         if($status_pulang == '') {
@@ -700,6 +700,119 @@ class Admin extends AdminModule
 
       exit();
 
+    }
+
+    public function anyHais()
+    {
+
+      $i = 1;
+      $row['nama_petugas'] = '';
+      $row['departemen_petugas'] = '';
+      $rows = $this->db('pemeriksaan_ralan')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+      $result = [];
+      foreach ($rows as $row) {
+        $row['nomor'] = $i++;
+        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
+        $result[] = $row;
+      }
+
+      $rows_ranap = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+      $result_ranap = [];
+      foreach ($rows_ranap as $row) {
+        $row['nomor'] = $i++;
+        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
+        $result_ranap[] = $row;
+      }
+
+      echo $this->draw('hais.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap]);
+      exit();
+    }
+
+    public function anyDietPasien()
+    {
+
+      $i = 1;
+      $rows = $this->db('detail_beri_diet')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+
+      $result = [];
+     foreach ($rows as $row) {
+      // $row = $rows;
+        $row['nomor'] = $i++;
+
+        $pasien = $this->db('reg_periksa')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+
+        $row['nm_pasien'] = $pasien['nm_pasien'];
+
+        $kamar_inap = $this->db('kamar_inap')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+          $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+
+        $penyakit = $this->db('diagnosa_pasien')
+          ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+
+          $row['nm_penyakit'] = $penyakit['nm_penyakit'];
+
+          $diet = $this->db('diet')
+           ->where('kd_diet', $row['kd_diet'])
+           ->oneArray();
+           $row['nama_diet'] = $diet['nama_diet'];
+
+        $result[] = $row;
+     }
+
+      echo $this->draw('dietpasien.html', ['dietpasien' => $result]);
+      exit();
+    }
+
+
+    public function postDiet()
+    {
+
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('diet')->like('nama_diet', $key)->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li data-id="'.$row['kd_diet'].'" class="list-group-item link-class">'.$row["nama_diet"].'</li>';
+          }
+        }
+        echo $output;
+      }
+
+      exit();
+
+    }
+
+    public function postSaveDietPasien()
+    {
+      if(!$this->db('detail_beri_diet')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('waktu', $_POST['waktu'])->oneArray()) {
+        $this->db('detail_beri_diet')->save($_POST);
+      } else {
+        $this->db('detail_beri_diet')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('waktu', $_POST['waktu'])->save($_POST);
+      }
+      exit();
+    }
+
+    public function postHapusDietPasien()
+    {
+      $this->db('detail_beri_diet')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('waktu', $_POST['waktu'])->delete();
+      exit();
     }
 
     public function postProviderList()
