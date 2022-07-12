@@ -1,0 +1,225 @@
+<h4>Bundles Maintanance VAP</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Oral Hygiene 4 – 6 x sehariatau  K/ P</th>
+                <th>Managemen oropharingeal dan endotrakheal</th>
+                <th>Sedasition vacation</th>
+                <th>Posisi Kepala 30 – 45 ◦</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $maintanance}
+            <tr>
+                <td>{$value.nomor}</td>
+                <td>
+                    {$value.tanggal}<br>
+                </td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.hand_mainvap}</td>
+                <td>{$value.oral_mainvap}</td>
+                <td>{$value.manage_mainvap}</td>
+                <td>{$value.sedasi_mainvap}</td>
+                <td>{$value.kepala_mainvap}</td> </tr>
+               <tr><td></td><td>
+        <div class="">
+          <button type="button" name="button" class="btn btn-success btn-xs edit_insersi_vap"
+            data-tanggal="{$value.tanggal}" 
+            data-no_rawat="{$value.no_rawat}"
+            data-kd_kamar="{$value.kd_kamar}"
+            data-no_rkm_medis="{$value.no_rkm_medis}" 
+            data-nm_pasien="{$value.nm_pasien}" 
+            data-hand_mainvap="{$value.hand_mainvap}" 
+            data-oral_mainvap="{$value.oral_mainvap}" 
+            data-manage_mainvap="{$value.manage_mainvap}"
+            data-sedasi_mainvap="{$value.sedasi_mainvap}"
+            data-kepala_mainvap="{$value.kepala_mainvap}" >
+            <span class="fa fa-edit"></span>
+            <span class="hidden-xs"> Edit</span></button>
+            <button type="button" name="button" class="btn btn-danger btn-xs hapus_insersi_vap"
+            data-no_rawat="{$value.no_rawat}" 
+            data-tanggal="{$value.tanggal}"><span
+            class="fa fa-trash"></span>
+            <span class="hidden-xs"> Hapus</span></button>
+        </div> 
+      </td> </tr>    
+            {/loop}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Maintanance IADP/CLABSI</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Desinfeksi hub CVC dengan alkohol 70 %</th>
+                <th>Perawatan area insersi</th>
+                <th>Ganti dreasing secara aseptik</th>
+                <th>Lepas infus yang tidak perlu</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $maintanace}
+            <tr>
+                <td>{$value.nomor}</td>
+                <td>
+                    {$value.tanggal}<br>
+                </td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.hand_mainiadp}</td>
+                <td>{$value.desinfeksi_mainiadp}</td>
+                <td>{$value.perawatan_mainiadp}</td>
+                <td>{$value.dreasing_mainiadp}</td>
+                <td>{$value.infus_mainiadp}</td> </tr>
+               <tr><td></td> <td>
+        <div class="">
+          <button type="button" name="button" class="btn btn-success btn-xs edit_maintanance_iadp"
+            data-tanggal="{$value.tanggal}" 
+            data-no_rawat="{$value.no_rawat}"
+            data-kd_kamar="{$value.kd_kamar}"
+            data-no_rkm_medis="{$value.no_rkm_medis}" 
+            data-nm_pasien="{$value.nm_pasien}" 
+            data-hand_mainiadp="{$value.hand_mainiadp}" 
+            data-desinfeksi_mainiadp="{$value.desinfeksi_mainiadp}" 
+            data-perawatan_mainiadp="{$value.perawatan_mainiadp}" 
+            data-dreasing_mainiadp="{$value.dreasing_mainiadp}"
+            data-infus_mainiadp="{$value.infus_mainiadp}" >
+            <span class="fa fa-edit"></span>
+            <span class="hidden-xs"> Edit</span></button>
+            <button type="button" name="button" class="btn btn-danger btn-xs hapus_maintanance_iadp"
+            data-no_rawat="{$value.no_rawat}" 
+            data-tanggal="{$value.tanggal}"><span
+            class="fa fa-trash"></span>
+            <span class="hidden-xs"> Hapus</span></button>
+        </div> 
+      </td> </tr>    
+            {/loop}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Maintanance VENA PERIPER</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Perawatan area insersi</th>
+                <th>Kaji Kebutuhan jika tidak perlu segera lepas</th>
+                <th>Penggantian administrasi set</th>
+                <th>Edukasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $maintanance}
+            <tr>
+                <td>{$value.nomor}</td>
+                <td>
+                    {$value.tanggal}<br>
+                </td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.hand_mainvena}</td>
+                <td>{$value.perawatan_mainvena}</td>
+                <td>{$value.kaji_mainvena}</td>
+                <td>{$value.administrasi_mainvena}</td>
+                <td>{$value.edukasi_mainvena}</td> </tr>
+               <tr><td></td> <td>
+        <div class="">
+          <button type="button" name="button" class="btn btn-success btn-xs edit_main_vena"
+            data-tanggal="{$value.tanggal}" 
+            data-no_rawat="{$value.no_rawat}"
+            data-kd_kamar="{$value.kd_kamar}"
+            data-no_rkm_medis="{$value.no_rkm_medis}" 
+            data-nm_pasien="{$value.nm_pasien}" 
+            data-hand_mainvena="{$value.hand_mainvena}" 
+            data-perawatan_mainvena="{$value.perawatan_mainvena}" 
+            data-kaji_mainvena="{$value.kaji_mainvena}" 
+            data-administrasi_mainvena="{$value.administrasi_mainvena}"
+            data-edukasi_mainvena="{$value.edukasi_mainvena}" >
+            <span class="fa fa-edit"></span>
+            <span class="hidden-xs"> Edit</span></button>
+            <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_vena"
+            data-no_rawat="{$value.no_rawat}" 
+            data-tanggal="{$value.tanggal}"><span
+            class="fa fa-trash"></span>
+            <span class="hidden-xs"> Hapus</span></button>
+        </div> 
+      </td> </tr>    
+            {/loop}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Insersi ISK</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Perawatan kateter perinieal setiap hari/sesudah BAB</th>
+                <th>Urine bag tidak di lantai</th>
+                <th>Urine bag lebih rendah dari kandung kemih</th>
+                <th>Posisi selang tidak terlipat/kinking dan drainase tertutup</th>
+                <th>Segera lepas jika tidak dibutuhkan lagi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $maintanance}
+            <tr>
+                <td>{$value.nomor}</td>
+                <td>
+                    {$value.tanggal}<br>
+                </td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.kateter_mainisk}</td>
+                <td>{$value.baglantai_mainisk}</td>
+                <td>{$value.bagrendah_mainisk}</td>
+                <td>{$value.posisiselang_mainisk}</td>
+                <td>{$value.lepas_mainisk}</td> </tr>
+               <tr><td></td> <td>
+        <div class="">
+          <button type="button" name="button" class="btn btn-success btn-xs edit_main_isk"
+            data-tanggal="{$value.tanggal}" 
+            data-no_rawat="{$value.no_rawat}"
+            data-kd_kamar="{$value.kd_kamar}"
+            data-no_rkm_medis="{$value.no_rkm_medis}" 
+            data-nm_pasien="{$value.nm_pasien}" 
+            data-kateter_mainisk="{$value.kateter_mainisk}" 
+            data-baglantai_mainisk="{$value.baglantai_mainisk}" 
+            data-bagrendah_mainisk="{$value.bagrendah_mainisk}" 
+            data-posisiselang_mainisk="{$value.posisiselang_mainisk}"
+            data-lepas_mainisk="{$value.lepas_mainisk}">
+            <span class="fa fa-edit"></span>
+            <span class="hidden-xs"> Edit</span></button>
+            <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_isk"
+            data-no_rawat="{$value.no_rawat}" 
+            data-tanggal="{$value.tanggal}"><span
+            class="fa fa-trash"></span>
+            <span class="hidden-xs"> Hapus</span></button>
+        </div> 
+      </td> </tr>    
+            {/loop}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
