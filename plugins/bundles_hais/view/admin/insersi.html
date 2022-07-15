@@ -13,14 +13,16 @@
             </tr>
         </thead>
         <tbody>
+            
             {if: !empty($bundles)}
             {loop: $bundles as $value}
+            
             <tr>
                 <td></td>
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
                 <td>{$value.hand_vap}</td>
                 <td>{$value.tehniksteril_vap}</td>
                 <td>{$value.apd_vap}</td>
@@ -74,7 +76,7 @@
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
                 <td>{$value.hand_iadp}</td>
                 <td>{$value.area_iadp}</td>
                 <td>{$value.tehniksteril_iadp}</td>
@@ -131,7 +133,7 @@
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
                 <td>{$value.hand_vena}</td>
                 <td>{$value.kaji_vena}</td>
                 <td>{$value.tehnik_vena}</td>
@@ -187,7 +189,7 @@
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
                 <td>{$value.kaji_isk}</td>
                 <td>{$value.petugas_isk}</td>
                 <td>{$value.tangan_isk}</td>

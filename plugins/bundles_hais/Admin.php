@@ -95,12 +95,14 @@ class Admin extends AdminModule
   
   public function postSaveInsersi()
   {
-    $this->_addHeaderFiles(); 
     if(!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
       $this->db('bundles_hais')->save($_POST);
     } else{
       $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->save($_POST);
     }
+    // echo('Simpan_berhasil');
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
     exit();
   }
 
@@ -136,12 +138,14 @@ class Admin extends AdminModule
 
   public function postSaveMaintanance()
   {
-    $this->_addHeaderFiles(); 
     if(!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
       $this->db('bundles_hais')->save($_POST);
     } else{
       $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->save($_POST);
     }
+    // echo('Simpan_berhasil');
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
     exit();
   }
 
@@ -155,13 +159,14 @@ class Admin extends AdminModule
       // }
     $row = [];
     $bundles_ido = [];
-    $id = revertNorawat($no_rawat);
     
+    $id = revertNorawat($no_rawat);
     $pasien = $this->db('reg_periksa')
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
       ->where('no_rawat', $id)
       ->oneArray();
 
+    
     $bundles_ido['no_rkm_medis'] = $pasien['no_rkm_medis'];
     $bundles_ido['nm_pasien'] = $pasien['nm_pasien'];
     $bundles_ido['no_rawat'] = $pasien['no_rawat'];
@@ -169,11 +174,13 @@ class Admin extends AdminModule
       ->where('no_rawat', $id)
       ->oneArray();
     $bundles_ido['kd_kamar'] = $kamar_inap['kd_kamar'];
-    
+        
+   
     $bundles = $this->db('bundles_hais')
       ->where('no_rawat', $id)
       ->toArray(); 
     foreach($bundles as $bundle){
+      
       $row['bundles'] = $bundle;
       
     }
@@ -182,14 +189,23 @@ class Admin extends AdminModule
 
   }
 
-  public function postSaveIdo()
+  public function postSaveBundles_Ido()
   {
-    $this->_addHeaderFiles(); 
+    // $this->_addHeaderFiles(); 
     if(!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
       $this->db('bundles_hais')->save($_POST);
     } else{
       $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->save($_POST);
     }
+    // echo('Simpan_berhasil');
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    exit();
+  }
+
+  public function postHapusIdo()
+  {
+    $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('luka_idopost', $_POST['luka_idopost'])->delete();
     exit();
   }
 
