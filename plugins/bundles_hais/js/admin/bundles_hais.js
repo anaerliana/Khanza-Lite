@@ -148,30 +148,30 @@ $("#bundles_maintanance").on("click", "#simpan_maintanance", function (event) {
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
 
-  var no_rawat = $('input:text[name=no_rawat]').val();
-  var tanggal = $('input:text[name=tanggalbundles]').val();
-  var kd_kamar = $('input:text[name=kd_kamar]').val();
-  var hand_mainvap = $('input:radio[name=hand_mainvap]:checked').val();
-  var oral_mainvap = $('input:radio[name=oral_mainvap]:checked').val();
-  var manage_mainvap = $('input:radio[name=manage_mainvap]:checked').val();
-  var sedasi_mainvap = $('input:radio[name=sedasi_mainvap]:checked').val();
-  var kepala_mainvap = $('input:radio[name=kepala_mainvap]:checked').val();
-  var hand_mainiadp = $('input:radio[name=hand_mainiadp]:checked').val();
+  var no_rawat            = $('input:text[name=no_rawat]').val();
+  var tanggal             = $('input:text[name=tanggalbundles]').val();
+  var kd_kamar            = $('input:text[name=kd_kamar]').val();
+  var hand_mainvap        = $('input:radio[name=hand_mainvap]:checked').val();
+  var oral_mainvap        = $('input:radio[name=oral_mainvap]:checked').val();
+  var manage_mainvap      = $('input:radio[name=manage_mainvap]:checked').val();
+  var sedasi_mainvap      = $('input:radio[name=sedasi_mainvap]:checked').val();
+  var kepala_mainvap      = $('input:radio[name=kepala_mainvap]:checked').val();
+  var hand_mainiadp       = $('input:radio[name=hand_mainiadp]:checked').val();
   var desinfeksi_mainiadp = $('input:radio[name=desinfeksi_mainiadp]:checked').val();
-  var perawatan_mainiadp = $('input:radio[name=perawatan_mainiadp]:checked').val();
-  var dreasing_mainiadp = $('input:radio[name=dreasing_mainiadp]:checked').val();
-  var infus_mainiadp = $('input:radio[name=infus_mainiadp]:checked').val();
-  var hand_mainvena = $('input:radio[name=hand_mainvena]:checked').val();
-  var perawatan_mainvena = $('input:radio[name=perawatan_mainvena]:checked').val();
-  var kaji_mainvena = $('input:radio[name=kaji_mainvena]:checked').val();
+  var perawatan_mainiadp  = $('input:radio[name=perawatan_mainiadp]:checked').val();
+  var dreasing_mainiadp   = $('input:radio[name=dreasing_mainiadp]:checked').val();
+  var infus_mainiadp      = $('input:radio[name=infus_mainiadp]:checked').val();
+  var hand_mainvena       = $('input:radio[name=hand_mainvena]:checked').val();
+  var perawatan_mainvena  = $('input:radio[name=perawatan_mainvena]:checked').val();
+  var kaji_mainvena       = $('input:radio[name=kaji_mainvena]:checked').val();
   var administrasi_mainvena = $('input:radio[name=administrasi_mainvena]:checked').val();
-  var edukasi_mainvena = $('input:radio[name=edukasi_mainvena]:checked').val();
-  var hand_mainisk = $('input:radio[name=hand_mainisk]:checked').val();
-  var kateter_mainisk = $('input:radio[name=kateter_mainisk]:checked').val()
-  var baglantai_mainisk = $('input:radio[name=baglantai_mainisk]:checked').val()
-  var bagrendah_mainisk = $('input:radio[name=bagrendah_mainisk]:checked').val()
-  var posisiselang_mainisk = $('input:radio[name=posisiselang_mainisk]:checked').val()
-  var lepas_mainisk = $('input:radio[name=kateter_mainisk]:checked').val()
+  var edukasi_mainvena      = $('input:radio[name=edukasi_mainvena]:checked').val();
+  var hand_mainisk          = $('input:radio[name=hand_mainisk]:checked').val();
+  var kateter_mainisk       = $('input:radio[name=kateter_mainisk]:checked').val()
+  var baglantai_mainisk     = $('input:radio[name=baglantai_mainisk]:checked').val()
+  var bagrendah_mainisk     = $('input:radio[name=bagrendah_mainisk]:checked').val()
+  var posisiselang_mainisk  = $('input:radio[name=posisiselang_mainisk]:checked').val()
+  var lepas_mainisk         = $('input:radio[name=kateter_mainisk]:checked').val()
 
   console.log({
     no_rawat, kd_kamar,
@@ -229,16 +229,9 @@ $("#bundles_maintanance").on("click", "#simpan_maintanance", function (event) {
   }, function (data) {
     console.log(data);
     // tampilkan data
-    var url = baseURL + '/bundles_hais/bundles_maitanance/' + data + '?t=' + mlite.token;
-    // var url = baseURL + '/bundles_hais/bundles_maintanance?t=' + mlite.token;
-    // $.post(url, {
-    //   no_rawat: no_rawat,
-    // }, function (data) {
-    //   // tampilkan data
+    var url = baseURL + '/bundles_hais/bundles_maintanance/' + data + '?t=' + mlite.token;
+    
     window.location = url;
-    //   console.log(data);
-    //   $("#maintanance").html(data).show();
-    // });
     // $('input:text[name=no_rawat]').val("");
     // $('input:text[name=kd_kamar]').val("");
     $('input:radio[name=hand_mainvap]:checked').val("");
@@ -287,23 +280,23 @@ $("#bundles_ido").on("click", "#simpan_ido", function (event) {
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
 
-  var no_rawat = $('input:text[name=no_rawat]').val();
-  var tanggal = $('input:text[name=tanggalbundles]').val();
-  var kd_kamar = $('input:text[name=kd_kamar]').val();
-  var mandi_idopre = $('input:radio[name=mandi_idopre]:checked').val();
-  var cukur_idopre = $('input:radio[name=cukur_idopre]:checked').val();
-  var guladarah_idopre = $('input:radio[name=guladarah_idopre]:checked').val();
-  var antibiotik_idopre = $('input:radio[name=antibiotik_idopre]:checked').val();
-  var hand_idointra = $('input:radio[name=hand_idointra]:checked').val();
-  var steril_idointra = $('input:radio[name=steril_idointra]:checked').val();
+  var no_rawat            = $('input:text[name=no_rawat]').val();
+  var tanggal             = $('input:text[name=tanggalbundles]').val();
+  var kd_kamar            = $('input:text[name=kd_kamar]').val();
+  var mandi_idopre        = $('input:radio[name=mandi_idopre]:checked').val();
+  var cukur_idopre        = $('input:radio[name=cukur_idopre]:checked').val();
+  var guladarah_idopre    = $('input:radio[name=guladarah_idopre]:checked').val();
+  var antibiotik_idopre   = $('input:radio[name=antibiotik_idopre]:checked').val();
+  var hand_idointra       = $('input:radio[name=hand_idointra]:checked').val();
+  var steril_idointra     = $('input:radio[name=steril_idointra]:checked').val();
   var antiseptic_idointra = $('input:radio[name=antiseptic_idointra]:checked').val();
-  var tehnik_idointra = $('input:radio[name=tehnik_idointra]:checked').val();
-  var mobile_idointra = $('input:radio[name=mobile_idointra]:checked').val();
-  var suhu_idointra = $('input:radio[name=suhu_idointra]:checked').val();
-  var luka_idopost = $('input:radio[name=luka_idopost]:checked').val();
-  var rawat_idopost = $('input:radio[name=rawat_idopost]:checked').val();
-  var apd_idopost = $('input:radio[name=apd_idopost]:checked').val();
-  var kaji_idopost = $('input:radio[name=kaji_idopost]:checked').val();
+  var tehnik_idointra     = $('input:radio[name=tehnik_idointra]:checked').val();
+  var mobile_idointra     = $('input:radio[name=mobile_idointra]:checked').val();
+  var suhu_idointra       = $('input:radio[name=suhu_idointra]:checked').val();
+  var luka_idopost        = $('input:radio[name=luka_idopost]:checked').val();
+  var rawat_idopost       = $('input:radio[name=rawat_idopost]:checked').val();
+  var apd_idopost         = $('input:radio[name=apd_idopost]:checked').val();
+  var kaji_idopost        = $('input:radio[name=kaji_idopost]:checked').val();
 
   console.log({
     no_rawat, 
@@ -385,43 +378,172 @@ $("#bundles_ido").on("click", "#simpan_ido", function (event) {
   // alert("coba lagi");
 });
 
+// ketika tombol EDIT ditekan
+$("#bundles_ido").on("click",".edit_ido_pre", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat          = $(this).attr("data-no_rawat");
+  var tanggal           = $(this).attr("data-tanggal");
+  var kd_kamar          = $(this).attr("data-kd_kamar");
+  var no_rkm_medis      = $(this).attr("data-no_rkm_medis");
+  var nm_pasien         = $(this).attr("data-nm_pasien");
+  var mandi_idopre      = $(this).attr("data-mandi_idopre");
+  var cukur_idopre      = $(this).attr("data-cukur_idopre");
+  var guladarah_idopre  = $(this).attr("data-guladarah_idopre");
+  var antibiotik_idopre = $(this).attr("data-antibiotik_idopre");
+
+  
+  $('input:text[name=tanggalbundles]').val(tanggal);
+  $('input:text[name=no_rawat]').val(no_rawat);
+  $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+  $('input:text[name=nm_pasien]').val(nm_pasien);
+  $('input:text[name=kd_kamar]').val(kd_kamar);
+  $('input:radio[name=mandi_idopre]:checked').val(mandi_idopre).change();
+  $('input:radio[name=cukur_idopre]:checked').val(cukur_idopre);
+  $('input:radio[name=guladarah_idopre]:checked').val(guladarah_idopre);
+  $('input:radio[name=antibiotik_idopre]:checked').val(antibiotik_idopre);
+  
+// alert("coba lagi");
+});
+
+$("#bundles_ido").on("click", ".hapus_ido_pre", function (event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  // var url = baseURL + '/rawat_inap/hapusido?t=' + mlite.token;
+  // var no_rawat = $(this).attr("data-no_rawat");
+  // var tanggal = $(this).attr("data-tanggal");
+
+  // // tampilkan dialog konfirmasi
+  // bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function (result) {
+  //   // ketika ditekan tombol ok
+  //   if (result) {
+  //     // mengirimkan perintah penghapusan
+  //     $.post(url, {
+  //       no_rawat: no_rawat,
+  //       tanggal: tanggal,
+  //       luka_idopost: luka_idopost,
+  //     }, function (data) {
+  //       var url = baseURL + '/rawat_inap/bundles_ido?t=' + mlite.token;
+  //       $.post(url, {
+  //         no_rawat: no_rawat,
+  //       }, function (data) {
+  //         // tampilkan data
+  //         $("#ido").html(data).show();
+  //       });
+  //       $('input:radio[name=mandi_idopre]:checked').val("");
+  //       $('input:radio[name=cukur_idopre]:checked').val("");
+  //       $('input:radio[name=guladarah_idopre]:checked').val("");
+  //       $('input:radio[name=antibiotik_idopre]:checked').val("");
+  //       $('input:text[name=tanggalbundles]').val("{?=date('Y-m-d')?}");
+  //       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+  //         "Data Bundles IDO PRE OPERASI telah dihapus!" +
+  //         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+  //         "</div>").show();
+  //     });
+  //   }
+  // });
+  alert("coba lagi");
+});
+
+// ketika tombol EDIT ditekan
+$("#bundles_ido").on("click",".edit_ido_intra", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat          = $(this).attr("data-no_rawat");
+  var tanggal           = $(this).attr("data-tanggal");
+  var kd_kamar          = $(this).attr("data-kd_kamar");
+  var no_rkm_medis      = $(this).attr("data-no_rkm_medis");
+  var nm_pasien         = $(this).attr("data-nm_pasien");
+  var hand_idointra       =  $(this).attr("data-hand_idointra");
+  var steril_idointra     =  $(this).attr("data-steril_idointra");
+  var antiseptic_idointra =  $(this).attr("data-antiseptic_idointra");
+  var tehnik_idointra     =  $(this).attr("data-tehnik_idointra");
+  var mobile_idointra     =  $(this).attr("data-mobile_idointra");
+  var suhu_idointra       =  $(this).attr("data-suhu_idointra");
+
+  $('input:text[name=tanggalbundles]').val(tanggal);
+  $('input:text[name=no_rawat]').val(no_rawat);
+  $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+  $('input:text[name=nm_pasien]').val(nm_pasien);
+  $('input:text[name=kd_kamar]').val(kd_kamar);
+  $('input:radio[name=hand_idointra]:checked').val(hand_idointra).change();
+  $('input:radio[name=steril_idointra]:checked').val(steril_idointra).change();
+  $('input:radio[name=antiseptic_idointra]:checked').val(antiseptic_idointra).change();
+  $('input:radio[name=tehnik_idointra]:checked').val(tehnik_idointra).change();
+  $('input:radio[name=mobile_idointra]:checked').val(mobile_idointra).change();
+  $('input:radio[name=suhu_idointra]:checked').val(suhu_idointra).change();
+// alert("coba lagi");
+});
+
+// ketika tombol EDIT ditekan
+$("#bundles_ido").on("click",".edit_ido_post", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat      = $(this).attr("data-no_rawat");
+  var tanggal       = $(this).attr("data-tanggal");
+  var kd_kamar      = $(this).attr("data-kd_kamar");
+  var no_rkm_medis  = $(this).attr("data-no_rkm_medis");
+  var nm_pasien     = $(this).attr("data-nm_pasien");
+  var luka_idopost  =  $(this).attr("data-luka_idopost");
+  var rawat_idopost =  $(this).attr("data-rawat_idopost");
+  var apd_idopost   =  $(this).attr("data-apd_idopost");
+  var kaji_idopost  =  $(this).attr("data-kaji_idopost");
+
+  var luka_idopost = $('input:radio[name=luka_idopost]:checked').val();
+  var rawat_idopost = $('input:radio[name=rawat_idopost]:checked').val();
+  var apd_idopost = $('input:radio[name=apd_idopost]:checked').val();
+  var kaji_idopost = $('input:radio[name=kaji_idopost]:checked').val();
+
+  $('input:text[name=tanggalbundles]').val(tanggal);
+  $('input:text[name=no_rawat]').val(no_rawat);
+  $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+  $('input:text[name=nm_pasien]').val(nm_pasien);
+  $('input:text[name=kd_kamar]').val(kd_kamar);
+  $('input:radio[name=luka_idopost]:checked').val(luka_idopost).change();
+  $('input:radio[name=rawat_idopost]:checked').val(rawat_idopost).change();
+  $('input:radio[name=apd_idopost]:checked').val(apd_idopost).change();
+  $('input:radio[name=kaji_idopost]:checked').val(kaji_idopost).change();
+// alert("coba lagi");
+});
+
 $("#bundles_ido").on("click", ".hapus_ido_post", function (event) {
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url = baseURL + '/rawat_inap/hapusido?t=' + mlite.token;
-  var no_rawat = $(this).attr("data-no_rawat");
-  var tanggal = $(this).attr("data-tanggal");
-  var luka_idopost = $(this).attr("data-luka_idopost");
+  // var url = baseURL + '/rawat_inap/hapusido?t=' + mlite.token;
+  // var no_rawat = $(this).attr("data-no_rawat");
+  // var tanggal = $(this).attr("data-tanggal");
+  // var luka_idopost = $(this).attr("data-luka_idopost");
 
-  // tampilkan dialog konfirmasi
-  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function (result) {
-    // ketika ditekan tombol ok
-    if (result) {
-      // mengirimkan perintah penghapusan
-      $.post(url, {
-        no_rawat: no_rawat,
-        tanggal: tanggal,
-        luka_idopost: luka_idopost,
-      }, function (data) {
-        var url = baseURL + '/rawat_inap/bundles_ido?t=' + mlite.token;
-        $.post(url, {
-          no_rawat: no_rawat,
-        }, function (data) {
-          // tampilkan data
-          $("#ido").html(data).show();
-        });
-        $('input:radio[name=luka_idopost]:checked').val("");
-        $('input:radio[name=rawat_idopost]:checked').val("");
-        $('input:radio[name=apd_idopost]:checked').val("");
-        $('input:radio[name=kaji_idopost]:checked').val("");
-        $('input:text[name=tanggalbundles]').val("{?=date('Y-m-d')?}");
-        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
-          "Data Bundles IDO POST telah dihapus!" +
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
-          "</div>").show();
-      });
-    }
-  });
+  // // tampilkan dialog konfirmasi
+  // bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function (result) {
+  //   // ketika ditekan tombol ok
+  //   if (result) {
+  //     // mengirimkan perintah penghapusan
+  //     $.post(url, {
+  //       no_rawat: no_rawat,
+  //       tanggal: tanggal,
+  //       luka_idopost: luka_idopost,
+  //     }, function (data) {
+  //       var url = baseURL + '/rawat_inap/bundles_ido?t=' + mlite.token;
+  //       $.post(url, {
+  //         no_rawat: no_rawat,
+  //       }, function (data) {
+  //         // tampilkan data
+  //         $("#ido").html(data).show();
+  //       });
+  //       $('input:radio[name=luka_idopost]:checked').val("");
+  //       $('input:radio[name=rawat_idopost]:checked').val("");
+  //       $('input:radio[name=apd_idopost]:checked').val("");
+  //       $('input:radio[name=kaji_idopost]:checked').val("");
+  //       $('input:text[name=tanggalbundles]').val("{?=date('Y-m-d')?}");
+  //       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+  //         "Data Bundles IDO POST telah dihapus!" +
+  //         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+  //         "</div>").show();
+  //     });
+  //   }
+  // });
+  alert("coba lagi");
 });
 
 
@@ -435,7 +557,14 @@ $("#bundles_ido").on("click", "#selesai_ido", function (event) {
 });
 
 function bersih() {
-  window.location.href = "http://localhost/litegithub/admin/bundles_hais/manage";
+  // window.location.href = "http://localhost/litegithub/admin/bundles_hais/manage";
+  // <button onclick="selesai()" class="btn btn-success" ><i
+  //                                   class="fa fa-check"></i>Selesai</button>
+  //                                 <script>
+                                    // function selesai() {
+                                      window.history.back();
+                                    // }
+                                  // </script>
 }
 
 // function load_list(){

@@ -14,13 +14,14 @@
             </tr>
         </thead>
         <tbody>
-            {loop: $maintanance}
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
             <tr>
-                <td>{$value.nomor}</td>
+                <td></td>
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_maintanance_hais.nm_pasien}</td>
                 <td>{$value.hand_mainvap}</td>
                 <td>{$value.oral_mainvap}</td>
                 <td>{$value.manage_mainvap}</td>
@@ -49,6 +50,7 @@
         </div> 
       </td> </tr>    
             {/loop}
+            {/if}
         </tbody>
     </table>
 </div>
@@ -69,13 +71,14 @@
             </tr>
         </thead>
         <tbody>
-            {loop: $maintanace}
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
             <tr>
-                <td>{$value.nomor}</td>
+                <td></td>
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_maintanance_hais.nm_pasien}</td>
                 <td>{$value.hand_mainiadp}</td>
                 <td>{$value.desinfeksi_mainiadp}</td>
                 <td>{$value.perawatan_mainiadp}</td>
@@ -104,6 +107,7 @@
         </div> 
       </td> </tr>    
             {/loop}
+            {/if}
         </tbody>
     </table>
 </div>
@@ -124,13 +128,14 @@
             </tr>
         </thead>
         <tbody>
-            {loop: $maintanance}
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
             <tr>
-                <td>{$value.nomor}</td>
+                <td></td>
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_maintanance_hais.nm_pasien}</td>
                 <td>{$value.hand_mainvena}</td>
                 <td>{$value.perawatan_mainvena}</td>
                 <td>{$value.kaji_mainvena}</td>
@@ -159,11 +164,12 @@
         </div> 
       </td> </tr>    
             {/loop}
+            {/if}
         </tbody>
     </table>
 </div>
 
-<h4>Bundles Insersi ISK</h4>
+<h4>Bundles Maintanance ISK</h4>
 <div class="table-responsive no-margin">
     <table class="table table-bordered no-padding" width="100%">
         <thead>
@@ -171,6 +177,7 @@
                 <th>No</th>
                 <th>Tanggal</th>
                 <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
                 <th>Perawatan kateter perinieal setiap hari/sesudah BAB</th>
                 <th>Urine bag tidak di lantai</th>
                 <th>Urine bag lebih rendah dari kandung kemih</th>
@@ -179,13 +186,15 @@
             </tr>
         </thead>
         <tbody>
-            {loop: $maintanance}
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
             <tr>
-                <td>{$value.nomor}</td>
+                <td></td>
                 <td>
                     {$value.tanggal}<br>
                 </td>
-                <td>{$value.nm_pasien}</td>
+                <td>{$bundles_maintanance_hais.nm_pasien}</td>
+                <td>{$value.hand_mainisk}</td>
                 <td>{$value.kateter_mainisk}</td>
                 <td>{$value.baglantai_mainisk}</td>
                 <td>{$value.bagrendah_mainisk}</td>
@@ -199,6 +208,7 @@
             data-kd_kamar="{$value.kd_kamar}"
             data-no_rkm_medis="{$value.no_rkm_medis}" 
             data-nm_pasien="{$value.nm_pasien}" 
+            data-hand_mainisk="{$value.hand_mainisk}" 
             data-kateter_mainisk="{$value.kateter_mainisk}" 
             data-baglantai_mainisk="{$value.baglantai_mainisk}" 
             data-bagrendah_mainisk="{$value.bagrendah_mainisk}" 
@@ -214,6 +224,7 @@
         </div> 
       </td> </tr>    
             {/loop}
+            {/if}
         </tbody>
     </table>
 </div>
