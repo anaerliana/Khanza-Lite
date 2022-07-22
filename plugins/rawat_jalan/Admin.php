@@ -126,7 +126,7 @@ class Admin extends AdminModule
           AND reg_periksa.kd_poli = poliklinik.kd_poli
           AND reg_periksa.kd_pj = penjab.kd_pj";
 
-        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi'],true)) {
+        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi','manajemen'],true)) {
           $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
         }
         if($status_periksa == 'belum') {
@@ -1255,6 +1255,80 @@ class Admin extends AdminModule
         $pdf->Row(array($hasil['temp3'],$hasil['temp2'],$hasil['temp1'],$this->core->getPasienInfo('nm_pasien', $hasil['temp6']),$hasil['temp6'],$poliklinik['nm_poli'],$dokter['nm_dokter'],$penjab['png_jawab']));
       }
       $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
+    }
+
+    public function anyAutoRegist(){
+      $date = date('Y-m-d');
+      $no = 1;
+      $checkBooking = $this->db('booking_registrasi')->where('tanggal_periksa',$date)->where('status','Belum')->toArray();
+      foreach ($checkBooking as $value) {
+        # code...
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $value['kd_poli'])->oneArray();
+
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $value['no_rkm_medis'])->oneArray();
+
+        $birthDate = new \DateTime($pasien['tgl_lahir']);
+        $today = new \DateTime("today");
+        $umur_daftar = "0";
+        $status_umur = 'Hr';
+        if ($birthDate < $today) {
+          $y = $today->diff($birthDate)->y;
+          $m = $today->diff($birthDate)->m;
+          $d = $today->diff($birthDate)->d;
+          $umur_daftar = $d;
+          $status_umur = "Hr";
+          if($y !='0'){
+            $umur_daftar = $y;
+            $status_umur = "Th";
+          }
+          if($y =='0' && $m !='0'){
+            $umur_daftar = $m;
+            $status_umur = "Bl";
+          }
+        }
+
+        $_POST['no_reg'] = $value['no_reg'];
+        $_POST['no_rawat'] = $this->setNoRawat();
+        $_POST['tgl_registrasi'] = $date;
+        $_POST['jam_reg'] = '06:00:00';
+        $_POST['kd_dokter'] = $value['kd_dokter'];
+        $_POST['no_rkm_medis'] = $value['no_rkm_medis'];
+        $_POST['kd_poli'] = $value['kd_poli'];
+        $_POST['p_jawab'] = '-';
+        $_POST['almt_pj'] = '-';
+        $_POST['hubunganpj'] = '-';
+        $_POST['biaya_reg'] = $poliklinik['registrasi'];
+        $_POST['stts'] = 'Belum';
+        $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $value['no_rkm_medis'])->count();
+        $_POST['stts_daftar'] = 'Baru';
+        if($cek_stts_daftar > 0) {
+          $_POST['stts_daftar'] = 'Lama';
+        }
+        $_POST['status_lanjut'] = 'Ralan';
+        $_POST['kd_pj'] = $value['kd_pj'];
+        $_POST['umurdaftar'] = $umur_daftar;
+        $_POST['sttsumur'] = $status_umur;
+        $_POST['status_bayar'] = 'Belum Bayar';
+        $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis',$value['no_rkm_medis'])->where('kd_poli', $value['kd_poli'])->count();
+        $_POST['status_poli'] = 'Baru';
+        if($cek_status_poli > 0) {
+          $_POST['status_poli'] = 'Lama';
+        }
+        // echo $_POST;
+        $query = $this->db('reg_periksa')->save($_POST);
+        if ($query) {
+          # code...
+          // echo json_encode($_POST);
+          $this->db('booking_registrasi')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_periksa',$date)->save(['status' => 'Terdaftar']);
+          $updateSkdp = $this->db('skdp_bpjs')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_datang',$date)->save(['status' => 'Sudah Periksa']);
+          if ($updateSkdp) {
+            echo $no.'.'.$value['no_rkm_medis'].' Berhasil Didaftarkan';
+            echo '<br>';
+          }
+        }
+        $no++;
+      }
+      exit();
     }
 
     public function getJavascript()

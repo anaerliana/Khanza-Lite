@@ -44,11 +44,9 @@
               {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               disabled
               {/if}
-            ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<a href="#status_rawat" rel="tag" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}"><button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm">panggil</span></button></a>{/if}</td>
+            ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
           <td style="white-space: nowrap;"><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">{$value.nm_poli}</a></td>
-          <td style="white-space: nowrap;">
-              {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <a href="#status_rawat_sudah" data-no_rawat="{$value.no_rawat}">{$value.nm_dokter}</a>{/if} </td>
+          <td style="white-space: nowrap;">{$value.nm_dokter}</td>
           <td style="white-space: nowrap;">{$value.png_jawab}</td>
           <td style="white-space: nowrap;">{$value.no_peserta}</td>
           <td style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
@@ -140,121 +138,6 @@
       $("#soap").html(data).show();
     });
   });
-
-  $('a[href="#status_rawat"]').click(function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/rawat_jalan/statusrawat?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-    var stts = $(this).attr("data-stts");
-
-    // tampilkan dialog konfirmasi
-
-    bootbox.prompt({
-        title: "Status lanjut pasien.",
-        message: '',
-        inputType: 'radio',
-        value: stts,
-        inputOptions: [
-        {
-            text: 'Berkas Dikirim',
-            value: 'Berkas Dikirim',
-        },
-        {
-            text: 'Berkas Diterima',
-            value: 'Berkas Diterima',
-        },
-        {
-            text: 'Belum Periksa',
-            value: 'Belum',
-        },
-        {
-            text: 'Sudah Periksa',
-            value: 'Sudah',
-        },
-        {
-            text: 'Batal Periksa',
-            value: 'Batal',
-        },
-        {
-            text: 'Pasien Dirujuk',
-            value: 'Dirujuk',
-        },
-        {
-            text: 'Meninggal',
-            value: 'Meninggal',
-        },
-        {
-            text: 'Dirawat',
-            value: 'Dirawat',
-        },
-        {
-            text: 'Pulang Paksa',
-            value: 'Pulang Paksa',
-        }
-        ],
-        callback: function (result) {
-            console.log(result);
-            // ketika ditekan tombol ok
-            if (result){
-              // mengirimkan perintah penghapusan
-              $.post(url, {
-                no_rawat: no_rawat,
-                stts: result
-              } ,function(data) {
-                // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-                $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-                $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-                "Status lanjut pasien telah disimpan!"+
-                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-                "</div>").show();
-              });
-            }
-        }
-    });
-  });
-
-    $('a[href="#status_rawat_sudah"]').click(function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/rawat_jalan/statusrawat?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-    var stts = $(this).attr("data-stts");
-
-    // tampilkan dialog konfirmasi
-
-    bootbox.prompt({
-        title: "Status lanjut pasien.",
-        message: '',
-        inputType: 'radio',
-        value: stts,
-        inputOptions: [
-                {
-            text: 'Sudah Periksa',
-            value: 'Sudah',
-        }
-        ],
-        callback: function (result) {
-            console.log(result);
-            // ketika ditekan tombol ok
-            if (result){
-              // mengirimkan perintah penghapusan
-              $.post(url, {
-                no_rawat: no_rawat,
-                stts: result
-              } ,function(data) {
-                // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-                $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-                $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-                "Status lanjut pasien telah disimpan!"+
-                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-                "</div>").show();
-              });
-            }
-        }
-    });
-  });
-
 </script>
 <script>
   $('a[href="#surat_kontrol"]').click(function(event){
@@ -281,7 +164,7 @@
       $("#notif").hide();
       $("#form_soap").hide();
       $("#form_kontrol").show();
-      $("#surat_kontrol").html(data).show();
+      $("#kontrol").html(data).show();
     });
   });
 </script>

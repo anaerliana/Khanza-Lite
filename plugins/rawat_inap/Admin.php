@@ -95,7 +95,7 @@ class Admin extends AdminModule
           AND
             reg_periksa.kd_pj=penjab.kd_pj";
 
-        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi'],true)) {
+        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi','manajemen'],true)) {
           $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
         }
         if($status_pulang == '') {

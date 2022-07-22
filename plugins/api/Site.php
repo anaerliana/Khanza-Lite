@@ -15,6 +15,7 @@ class Site extends SiteModule
         $this->route('api/apam', 'getApam');
         $this->route('api/wag','getWags');
         $this->route('api/sendAbsen/(:str)/(:str)','getSendAbsen');
+        $this->route('api/autoregis','getAutoRegist');
     }
 
     public function getIndex()
@@ -1111,6 +1112,7 @@ class Site extends SiteModule
     }
 
     public function getWags(){
+      header("Refresh:180");
       $datetime = new \DateTime('tomorrow');
       $dateyesterday = new \DateTime('yesterday');
       $date = $datetime->format('Y-m-d');
@@ -1123,23 +1125,26 @@ class Site extends SiteModule
       $sender = $this->settings->get('api.wagateway_phonenumber');
       $url = $this->settings->get('api.wagateway_server');
 
-      // $getWaBefore = $this->db('bridging_wa')->where('tanggal',$datebefore)->toArray();
-      // if (count($getWaBefore) > 0) {
-      //   echo 'Link Release</br>';
-      //   $this->db('bridging_wa')->where('tanggal',$datebefore)->delete();
-      // }
+      $getWaBefore = $this->db('bridging_wa')->where('tanggal',$datebefore)->toArray();
+      if (count($getWaBefore) > 0) {
+        echo 'Link Release</br>';
+        $this->db('bridging_wa')->where('tanggal',$datebefore)->delete();
+      }
 
       $getCheckWA = $this->db('bridging_wa')->where('tanggal',$mysql_date)->toArray();
       $getCheckBooking = $this->db('booking_registrasi')->where('tanggal_periksa',$date)->toArray();
       if (count($getCheckWA) < count($getCheckBooking)) {
         echo 'Link Start</br>';
-        $getBooking = $this->db('booking_registrasi')->select(['nm_pasien' => 'pasien.nm_pasien','no_tlp' => 'pasien.no_tlp','nm_poli' => 'poliklinik.nm_poli','no_rkm_medis'=>'pasien.no_rkm_medis'])->join('pasien','pasien.no_rkm_medis = booking_registrasi.no_rkm_medis')->join('poliklinik','poliklinik.kd_poli = booking_registrasi.kd_poli')->where('booking_registrasi.tanggal_periksa',$date)->toArray();
+        $getBooking = $this->db('booking_registrasi')
+        ->select(['nm_pasien' => 'pasien.nm_pasien','no_tlp' => 'pasien.no_tlp','nm_poli' => 'poliklinik.nm_poli','no_rkm_medis'=>'pasien.no_rkm_medis'])
+        ->join('pasien','pasien.no_rkm_medis = booking_registrasi.no_rkm_medis')->join('poliklinik','poliklinik.kd_poli = booking_registrasi.kd_poli')
+        ->where('booking_registrasi.tanggal_periksa',$date)->toArray();
         for ($i=0; $i < count($getBooking); $i++) {
           $namaPasien = $getBooking[$i]['nm_pasien'];
           $tlpPasien = $getBooking[$i]['no_tlp'];
           $poliklinik = $getBooking[$i]['nm_poli'];
           $no_rkm_medis = $getBooking[$i]['no_rkm_medis'];
-          $simpanBooking = $this->db('bridging_wa')->save([
+          $this->db('bridging_wa')->save([
             'no_rkm_medis' => $no_rkm_medis,
             'nama' => $namaPasien,
             'tanggal' => $mysql_date,
@@ -1159,14 +1164,10 @@ class Site extends SiteModule
         $tlpPasien = $getCron[$i]['no_telp'];
         $poliklinik = $getCron[$i]['poli'];
         $no_rkm_medis = $getCron[$i]['no_rkm_medis'];
-        // $msg = "Assalamualaikum ".$namaPasien.". \nUlun RSHD SIAP WA Bot dari Rumah Sakit H. Damanhuri Barabai .
-        // \nHandak mahabar akan lawan maingat akan pian, kalau nya ISUK tanggal ".$dateIndo." pian ada JADWAL BAPARIKSA ke ".$poliklinik." di Rumah Sakit H. Damanhuri Barabai . Kaina pian datang LANGSUNG HAJA ke ANJUNGAN ada haja disana kaina papadaan kita manjaga akan .
-        // \nPian pasti akan RUJUKAN BPJS pian masih berlaku amunnya habis jangan kada ingat ma inta nang hanyar. Nitu haja pasan ulun . Salah khilap muhun maap . \n \nWassalamualaikum
-        // \nDaftar Online Tanpa Antri via Apam Barabai Klik Disini >>> https://play.google.com/store/apps/details?id=com.rshdbarabai.apam&hl=in&gl=US";
-        $msg = "Assalamualaikum ".$namaPasien.". \nSaya 'AUSYI' WA Bot dari Rumah Sakit Aura Syifa Kediri .
-        \nMemberitahukan bahwa Besok tanggal ".$dateIndo." Anda mempunyai JADWAL PERIKSA ke ".$poliklinik." di Rumah Sakit Aura Syifa Kediri  . Anda bisa LANGSUNG ke ANJUNGAN atau bertanya ke Customer Service.
-        \nPastikan RUJUKAN BPJS Anda masih berlaku . Jika RUJUKAN BPJS Anda habis jangan lupa untuk meminta RUJUKAN BPJS yang baru. Terima Kasih . \n \nWassalamualaikum
-        \n \nDaftar Online Tanpa Antri Dan Cek Riwayat Pemeriksaan via Apam Aura Syifa Klik Disini >>> https://play.google.com/store/apps/details?id=com.rsaurasyifa.apam";
+        $msg = "Assalamualaikum ".$namaPasien.". \nUlun RSHD SIAP WA Bot dari Rumah Sakit H. Damanhuri Barabai .
+        \nHandak behabar dan meingatakan pian, kalau nya BESOK tanggal ".$dateIndo." pian ada JADWAL PERIKSA ke ".$poliklinik." di Rumah Sakit H. Damanhuri Barabai . Pian bisa datang LANGSUNG ke ANJUNGAN PASIEN MANDIRI (APM) .
+        \nPastikan RUJUKAN BPJS pian masih berlaku. Jika sudah habis, maka mintalah rujukan kembali untuk berobat ke Rumah Sakit.Terima kasih \n \nWassalamualaikum
+        \nDaftar Online Tanpa Antri via Apam Barabai Klik Disini >>> https://play.google.com/store/apps/details?id=com.rshdbarabai.apam&hl=in&gl=US";
         $kirimWa = postWagsApi($tlpPasien,$msg,$sender,$url);
         if ($kirimWa == '200') {
           $simpanNotif = $this->db('bridging_wa')->where('no_rkm_medis',$no_rkm_medis)->where('tanggal',$mysql_date)->save([
@@ -1188,6 +1189,98 @@ class Site extends SiteModule
       }
       echo 'Selesai Mengirim Whatsapp</br>';
       exit();
+    }
+
+    public function getAutoRegist(){
+      $date = date('Y-m-d');
+      $no = 1;
+      $checkBooking = $this->db('booking_registrasi')->where('tanggal_periksa',$date)->where('status','Belum')->toArray();
+      foreach ($checkBooking as $value) {
+        # code...
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $value['kd_poli'])->oneArray();
+
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $value['no_rkm_medis'])->oneArray();
+
+        $birthDate = new \DateTime($pasien['tgl_lahir']);
+        $today = new \DateTime("today");
+        $umur_daftar = "0";
+        $status_umur = 'Hr';
+        if ($birthDate < $today) {
+          $y = $today->diff($birthDate)->y;
+          $m = $today->diff($birthDate)->m;
+          $d = $today->diff($birthDate)->d;
+          $umur_daftar = $d;
+          $status_umur = "Hr";
+          if($y !='0'){
+            $umur_daftar = $y;
+            $status_umur = "Th";
+          }
+          if($y =='0' && $m !='0'){
+            $umur_daftar = $m;
+            $status_umur = "Bl";
+          }
+        }
+
+        $_POST['no_reg'] = $value['no_reg'];
+        $_POST['no_rawat'] = $this->setNoRawat();
+        $_POST['tgl_registrasi'] = $date;
+        $_POST['jam_reg'] = '06:00:00';
+        $_POST['kd_dokter'] = $value['kd_dokter'];
+        $_POST['no_rkm_medis'] = $value['no_rkm_medis'];
+        $_POST['kd_poli'] = $value['kd_poli'];
+        $_POST['p_jawab'] = '-';
+        $_POST['almt_pj'] = '-';
+        $_POST['hubunganpj'] = '-';
+        $_POST['biaya_reg'] = $poliklinik['registrasi'];
+        $_POST['stts'] = 'Belum';
+        $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $value['no_rkm_medis'])->count();
+        $_POST['stts_daftar'] = 'Baru';
+        if($cek_stts_daftar > 0) {
+          $_POST['stts_daftar'] = 'Lama';
+        }
+        $_POST['status_lanjut'] = 'Ralan';
+        $_POST['kd_pj'] = $value['kd_pj'];
+        $_POST['umurdaftar'] = $umur_daftar;
+        $_POST['sttsumur'] = $status_umur;
+        $_POST['status_bayar'] = 'Belum Bayar';
+        $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis',$value['no_rkm_medis'])->where('kd_poli', $value['kd_poli'])->count();
+        $_POST['status_poli'] = 'Baru';
+        if($cek_status_poli > 0) {
+          $_POST['status_poli'] = 'Lama';
+        }
+        // echo $_POST;
+        $query = $this->db('reg_periksa')->save($_POST);
+        if ($query) {
+          # code...
+          // echo json_encode($_POST);
+          $this->db('booking_registrasi')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_periksa',$date)->save(['status' => 'Terdaftar']);
+          $updateSkdp = $this->db('skdp_bpjs')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_datang',$date)->save(['status' => 'Sudah Periksa']);
+          if ($updateSkdp) {
+            echo $no.'.'.$value['no_rkm_medis'].' Berhasil Didaftarkan';
+            echo '<br>';
+          }
+        }
+        $no++;
+      }
+      if(!$checkBooking){
+        echo 'Tidak Ada Data Booking Untuk Hari Ini';
+      }
+      exit();
+    }
+
+    public function setNoRawat()
+    {
+        $date = date('Y-m-d');
+        $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
+        $last_no_rawat->execute();
+        $last_no_rawat = $last_no_rawat->fetch();
+        if(empty($last_no_rawat[0])) {
+          $last_no_rawat[0] = '000000';
+        }
+        $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
+        $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
+
+        return $next_no_rawat;
     }
 
     // public function getWags(){
