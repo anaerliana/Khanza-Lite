@@ -1977,24 +1977,6 @@ class Site extends SiteModule
         }
       }
     }
-    // $surat_kontrol_bpjs = $this->db('bridging_surat_kontrol_bpjs')
-    //   ->select('no_surat')
-    //   ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
-    //   ->where('bridging_sep.nomr', $slug[4])
-    //   ->where('tgl_rencana', $date)
-    //   ->oneArray();
-
-    // if (!$surat_kontrol_bpjs) {
-    //   $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan', $slug[3])->where('kdpolitujuan', $rujukan['rujukan']['poliRujukan']['kode'])->desc('tglsep')->oneArray();
-    //   if ($cari_rujukan) {
-    //     $skdp_bpjs = $this->createKontrol($slug[3], $rujukan['rujukan']['poliRujukan']['kode'], $dpjp['kd_dokter_bpjs']);
-    //     $no_surat_kontrol_bpjs = $skdp_bpjs;
-    //   } else {
-    //     $no_surat_kontrol_bpjs = "";
-    //   }
-    // } else {
-    //   $no_surat_kontrol_bpjs = $surat_kontrol_bpjs['no_surat'];
-    // }
 
     $content = $this->draw('sep.mandiri.bikin.html', [
       'title' => $title,
@@ -2139,7 +2121,12 @@ class Site extends SiteModule
       // $_POST['sep_no_sep'] = '1708UjiCoba';
 
       if($_POST['no_rawat'] == ''){
-        $poli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs',$_POST['kdpolitujuan'])->oneArray();
+        if (date("H:i:s") <= '15:00:00') {
+          $waktu_poli = 'Pagi';
+        } else {
+          $waktu_poli = 'Sore';
+        }
+        $poli = $this->db('maping_poli_bpjs')->join('poliklinik','maping_poli_bpjs.kd_poli_rs = poliklinik.kd_poli')->where('kd_poli_bpjs',$_POST['kdpolitujuan'])->like('nm_poli','%'.$waktu_poli)->oneArray();
         $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kddpjp'])->oneArray();
         $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['nomr'])->count();
         $_POST['stts_daftar'] = 'Baru';
