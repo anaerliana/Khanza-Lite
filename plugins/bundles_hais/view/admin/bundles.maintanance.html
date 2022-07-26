@@ -1,0 +1,221 @@
+<div id="bundles_maintanance">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right" style="margin-top:-8px;">
+                </div>
+                <h3 class="panel-title">Bundles Maintanance</h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="col-sm-4">
+                                <label for="tanggal">Tanggal</label>
+                                <input type="text" id="tanggal" name="tanggalbundles" class="form-control tanggal"
+                                    value="{?=date('Y-m-d')?}">
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="no_rawat"> No.Rawat</label>
+                                <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control"
+                                    value="{$bundles_maintanance_hais.no_rawat}" readonly>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="no_rkm_medis">Nomor RM</label>
+                                <input type="text" name="no_rkm_medis" class="form-control"
+                                    placeholder="Nomor Rekam Medik" value="{$bundles_maintanance_hais.no_rkm_medis}" readonly>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="nm_pasien">Nama Pasien</label>
+                                <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien"
+                                    value="{$bundles_maintanance_hais.nm_pasien}" readonly>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="kd_kamar">Kode Kamar</label>
+                                <input type="text" name="kd_kamar" class="form-control" placeholder="Kode Kamar"
+                                    value="{$bundles_maintanance_hais.kd_kamar}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES VAP :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_mainvap">Hand Hygiene :</label><br>
+                                        <input name="hand_mainvap" type="radio" id="hand_mainvap1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainvap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_mainvap" type="radio" id="hand_mainvap0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainvap == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="oral_mainvap">Oral Hygiene 4 - 6x sehari atau K/P:</label><br>
+                                        <input name="oral_mainvap" type="radio" id="oral_mainvap1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.oral_mainvap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="oral_mainvap" type="radio" id="oral_mainvap0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.oral_mainvap == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="manage_mainvap">Managemen oropharingeal dan endotrakheal
+                                            :</label><br>
+                                            <input name="manage_mainvap" type="radio" id="manage_mainvap1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.manage_mainvap == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="manage_mainvap" type="radio" id="manage_mainvap0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.manage_mainvap == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="sedasi_mainvap">Sedasitionvacation :</label><br> 
+                                        <input name="sedasi_mainvap" type="radio" id="sedasi_mainvap1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.sedasi_mainvap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="sedasi_mainvap" type="radio" id="sedasi_mainvap0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.sedasi_mainvap == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="kepala_mainvap">Posisi Kepala 30 – 45 ◦ :</label><br>
+                                        <input name="kepala_mainvap" type="radio" id="kepala_mainvap1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.kepala_mainvap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="kepala_mainvap" type="radio" id="kepala_mainvap0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.kepala_mainvap == '0'}checked{/if} {/if}>TIDAK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES IADP/CLABSI :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_mainiadp">Hand Hygiene :</label><br> 
+                                        <input name="hand_mainiadp" type="radio" id="hand_mainiadp1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainiadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_mainiadp" type="radio" id="hand_mainiadp0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainiadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="desinfeksi_mainiadp">Desinfeksi hub CVC denganalkohol 70 % :</label><br>
+                                        <input name="desinfeksi_mainiadp" type="radio" id="desinfeksi_mainiadp1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.desinfeksi_mainiadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="desinfeksi_mainiadp" type="radio" id="desinfeksi_mainiadp0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.desinfeksi_mainiadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="perawatan_mainiadp">Perawatan Area Insersi :</label><br>
+                                        <input name="perawatan_mainiadp" type="radio" id="perawatan_mainiadp1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.perawatan_mainiadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="perawatan_mainiadp" type="radio" id="perawatan_mainiadp0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.perawatan_mainiadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="dreasing_mainiadp">Ganti Dreasing Secara Septik :</label><br>
+                                        <input name="dreasing_mainiadp" type="radio" id="dreasing_mainiadp1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.dreasing_mainiadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="dreasing_mainiadp" type="radio" id="dreasing_mainiadp0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.dreasing_mainiadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="infus_mainiadp">Lepas infus yang tidak perlu :</label><br>
+                                        <input name="infus_mainiadp" type="radio" id="infus_mainiadp1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.infus_mainiadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="infus_mainiadp" type="radio" id="infus_mainiadp0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.infus_mainiadp == '0'}checked{/if} {/if}>TIDAK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES VENA PERIPER :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_mainvena">Hand Hygiene :</label><br>
+                                        <input name="hand_mainvena" type="radio" id="hand_mainvena1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainvena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_mainvena" type="radio" id="hand_mainvena0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainvena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="perawatan_mainvena">Perawatan Area Insersi :</label><br>
+                                        <input name="perawatan_mainvena" type="radio" id="perawatan_mainvena1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.perawatan_mainvena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="perawatan_mainvena" type="radio" id="perawatan_mainvena0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.perawatan_mainvena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="kaji_mainvena">Kaji Kebutuhan jika tidak perlu segera lepas
+                                            :</label><br>
+                                            <input name="kaji_mainvena" type="radio" id="kaji_mainvena1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.kaji_mainvena == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="kaji_mainvena" type="radio" id="kaji_mainvena0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.kaji_mainvena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="administrasi_mainvena">Penggantian administrasi set
+                                            :</label><br>
+                                            <input name="administrasi_mainvena" type="radio" id="administrasi_mainvena1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.administrasi_mainvena == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="administrasi_mainvena" type="radio" id="administrasi_mainvena0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.administrasi_mainvena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="edukasi_mainvena">Edukasi :</label><br>
+                                        <input name="edukasi_mainvena" type="radio" id="edukasi_mainvena1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.edukasi_mainvena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="edukasi_mainvena" type="radio" id="edukasi_mainvena0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.edukasi_mainvena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES ISK :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_mainisk">Hand Hygiene :</label><br>
+                                        <input name="hand_mainisk" type="radio" id="hand_mainisk1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainisk == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_mainisk" type="radio" id="hand_mainisk0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.hand_mainisk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="kateter_mainisk">Perawatan kateter
+                                            perineal setiap hari/sesudah BAB :</label><br>
+                                            <input name="kateter_mainisk" type="radio" id="kateter_mainisk1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.kateter_mainisk == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="kateter_mainisk" type="radio" id="kateter_mainisk0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.kateter_mainisk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="baglantai_mainisk">Urine bag tidak di lantai :</label><br>
+                                        <input name="baglantai_mainisk" type="radio" id="baglantai_mainisk1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.baglantai_mainisk == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="baglantai_mainisk" type="radio" id="baglantai_mainisk0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.baglantai_mainisk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <label for="bagrendah_mainisk">Urine bag lebih rendah
+                                            dari kandung kemih :</label><br>
+                                            <input name="bagrendah_mainisk" type="radio" id="bagrendah_mainisk1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.bagrendah_mainisk == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="bagrendah_mainisk" type="radio" id="bagrendah_mainisk0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.bagrendah_mainisk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="posisiselang_mainisk">Posisi selang tidak terlipat/kinking dan drainase
+                                            tertutup :</label><br>
+                                            <input name="posisiselang_mainisk" type="radio" id="posisiselang_mainisk1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.posisiselang_mainisk == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="posisiselang_mainisk" type="radio" id="posisiselang_mainisk0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.posisiselang_mainisk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="lepas_mainisk">Segera lepas jika tidak
+                                            dibutuhkan lagi :</label><br>
+                                            <input name="lepas_mainisk" type="radio" id="lepas_mainisk1" value="1" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.lepas_mainisk == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="lepas_mainisk" type="radio" id="lepas_mainisk0" value="0" {if: !empty($value.data)} {if: $bundles_maintanance_hais.bundles.lepas_mainisk == '0'}checked{/if} {/if}>TIDAK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 m-b-xl">
+                    <div class="text-center">
+                        <button type="button" name="button" class="btn btn-primary " id="simpan_maintanance"><i
+                                class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+                        <button type="button" name="button" class="btn btn-success" id="selesai_maintanance"><i
+                                class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    {include: ../plugins/bundles_hais/view/admin/maintanance.html}
+                </div>
+                <div>
+                    <div id="maintanance"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

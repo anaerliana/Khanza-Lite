@@ -1,0 +1,257 @@
+<h4>Bundles Insersi VAP</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Tehniksteril</th>
+                <th>Pemakaian APD</th>
+                <th>Sedasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.hand_vap != null or $value.tehniksteril_vap != null or $value.apd_vap != null or  $value.sedasi_vap != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                    <button type="button" name="button" class="btn btn-success btn-xs edit_insersi_vap"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}" 
+                        data-hand_vap="{$value.hand_vap}"
+                        data-tehniksteril_vap="{$value.tehniksteril_vap}" 
+                        data-apd_vap="{$value.apd_vap}"
+                        data-sedasi_vap="{$value.sedasi_vap}">
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
+
+                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_insersi_vap"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}" 
+                        data-hand_vap="{$value.hand_vap}"
+                        data-tehniksteril_vap="{$value.tehniksteril_vap}" 
+                        data-apd_vap="{$value.apd_vap}"
+                        data-sedasi_vap="{$value.sedasi_vap}"
+                        ><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
+                <td>{if: $value.hand_vap == '1'} YA {elseif: $value.hand_vap == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.tehniksteril_vap == '1'} YA {elseif: $value.tehniksteril_vap == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.apd_vap == '1'} YA {elseif: $value.apd_vap == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.sedasi_vap == '1'} YA {elseif: $value.sedasi_vap == '0'} TIDAK {else} {/if}</td>
+            </tr>
+            {/if}
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Insersi IADP/CLABSI</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Seleksi area insersi secara optimal</th>
+                <th>Tehniksteril</th>
+                <th>Alcohol-based chlorhexidine preparasi kulit</th>
+                <th>Max penggunaan APD</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.hand_iadp != null or $value.area_iadp != null or $value.tehniksteril_iadp != null or  $value.alcohol_iadp != null or $value.apd_iadp != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                    <button type="button" name="button" class="btn btn-success btn-xs edit_insersi_iadp"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}" 
+                        data-hand_iadp="{$value.hand_iadp}"
+                        data-area_iadp="{$value.area_iadp}" 
+                        data-tehniksteril_iadp="{$value.tehniksteril_iadp}"
+                        data-alcohol_iadp="{$value.alcohol_iadp}" 
+                        data-apd_iadp="{$value.apd_iadp}">
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
+
+                     <button type="button" name="button" class="btn btn-danger btn-xs hapus_insersi_iadp"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}" 
+                        data-hand_iadp="{$value.hand_iadp}"
+                        data-area_iadp="{$value.area_iadp}" 
+                        data-tehniksteril_iadp="{$value.tehniksteril_iadp}"
+                        data-alcohol_iadp="{$value.alcohol_iadp}" 
+                        data-apd_iadp="{$value.apd_iadp}"
+                        ><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
+                <td>{if: $value.hand_iadp == '1'} YA {elseif: $value.hand_iadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.area_iadp == '1'} YA {elseif: $value.area_iadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.tehniksteril_iadp == '1'} YA {elseif: $value.tehniksteril_iadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.alcohol_iadp == '1'} YA {elseif: $value.alcohol_iadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.apd_iadp == '1'} YA {elseif: $value.apd_iadp == '0'} TIDAK {else} {/if}</td>
+            </tr>
+            {/if}
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Insersi VENA PERIPER</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Kaji Kebutuhan</th>
+                <th>Tehniksteril</th>
+                <th>Petugas terampil</th>
+                <th>Desinfeksi Area Insersi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.hand_vena != null or $value.kaji_vena != null or $value.tehnik_vena != null or  $value.petugas_vena != null or $value.desinfeksi_vena != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                    <button type="button" name="button" class="btn btn-success btn-xs edit_insersi_vena"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}" 
+                        data-hand_vena="{$value.hand_vena}"
+                        data-kaji_vena="{$value.kaji_vena}" 
+                        data-tehnik_vena="{$value.tehnik_vena}"
+                        data-petugas_vena="{$value.petugas_vena}" 
+                        data-desinfeksi_vena="{$value.desinfeksi_vena}">
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
+
+                    <button type="button" name="button" class="btn btn-danger btn-xs hapus_insersi_vena"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}" 
+                        data-hand_vena="{$value.hand_vena}"
+                        data-kaji_vena="{$value.kaji_vena}" 
+                        data-tehnik_vena="{$value.tehnik_vena}"
+                        data-petugas_vena="{$value.petugas_vena}" 
+                        data-desinfeksi_vena="{$value.desinfeksi_vena}"><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
+                <td>{if: $value.hand_vena == '1'} YA {elseif: $value.hand_vena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.kaji_vena == '1'} YA {elseif: $value.kaji_vena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.tehnik_vena == '1'} YA {elseif: $value.tehnik_vena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.petugas_vena == '1'} YA {elseif: $value.petugas_vena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.desinfeksi_vena == '1'} YA {elseif: $value.desinfeksi_vena == '0'} TIDAK {else} {/if}</td>
+            </tr>
+            {/if}
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Insersi ISK</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Kaji kebutuhan /ada indikasi</th>
+                <th>Pemasangan oleh petugas yang terlatih</th>
+                <th>Kebersihan Tangan</th>
+                <th>Tehniksteril</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.kaji_isk != null or $value.petugas_isk != null or $value.tangan_isk != null or  $value.tehniksteril_isk != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                    <button type="button" name="button" class="btn btn-success btn-xs edit_insersi_isk"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}"
+                        data-kaji_isk="{$value.kaji_isk}"
+                        data-petugas_isk="{$value.petugas_isk}" 
+                        data-tangan_isk="{$value.tangan_isk}"
+                        data-tehniksteril_isk="{$value.tehniksteril_isk}">
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
+
+                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_insersi_isk"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$bundles_insersi_hais.no_rawat}"
+                        data-kd_kamar="{$bundles_insersi_hais.kd_kamar}"
+                        data-no_rkm_medis="{$bundles_insersi_hais.no_rkm_medis}"
+                        data-nm_pasien="{$bundles_insersi_hais.nm_pasien}" 
+                        data-kaji_isk="{$value.kaji_isk}"
+                        data-petugas_isk="{$value.petugas_isk}" 
+                        data-tangan_isk="{$value.tangan_isk}"
+                        data-tehniksteril_isk="{$value.tehniksteril_isk}"><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$bundles_insersi_hais.nm_pasien}</td>
+                <td>{if: $value.kaji_isk == '1'} YA {elseif: $value.kaji_isk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.petugas_isk == '1'} YA {elseif: $value.petugas_isk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.tangan_isk == '1'} YA {elseif: $value.tangan_isk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.tehniksteril_isk == '1'} YA {elseif: $value.tehniksteril_isk == '0'} TIDAK {else} {/if}</td>
+            </tr>
+            {/if}
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>

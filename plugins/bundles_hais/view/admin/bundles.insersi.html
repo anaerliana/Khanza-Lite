@@ -1,0 +1,201 @@
+<div id="bundles_insersi">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right" style="margin-top:-8px;">
+                </div>
+                <h3 class="panel-title">Bundles Insersi</h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="col-sm-4">
+                                <label for="tanggal">Tanggal</label>
+                                <input type="text" id="tanggal" name="tanggalbundles" class="form-control tanggal"
+                                    value="{?=date('Y-m-d')?}">
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="no_rawat"> No.Rawat</label>
+                                <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control"
+                                    value="{$bundles_insersi_hais.no_rawat}" readonly>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="no_rkm_medis">Nomor RM</label>
+                                <input type="text" name="no_rkm_medis" class="form-control"
+                                    placeholder="Nomor Rekam Medik" value="{$bundles_insersi_hais.no_rkm_medis}" readonly>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="nm_pasien">Nama Pasien</label>
+                                <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien"
+                                    value="{$bundles_insersi_hais.nm_pasien}" readonly>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="kd_kamar">Kode Kamar</label>
+                                <input type="text" name="kd_kamar" class="form-control" placeholder="Kode Kamar"
+                                    value="{$bundles_insersi_hais.kd_kamar}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES VAP :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_vap">Hand Hygiene :</label><br>
+                                        <input name="hand_vap" type="radio" id="hand_vap1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.hand_vap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_vap" type="radio" id="hand_vap0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.hand_vap == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="tehniksteril">Tehniksteril :</label><br>
+                                        <input name="tehniksteril_vap" type="radio" id="tehniksteril_vap1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehniksteril_vap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="tehniksteril_vap" type="radio" id="tehniksteril_vap0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehniksteril_vap == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="apd_vap">Pemakaian APD :</label><br>
+                                        <input name="apd_vap" type="radio" id="apd_vap1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.apd_vap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="apd_vap" type="radio" id="apd_vap0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.apd_vap == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="sedasi_vap">Sedasi :</label><br>
+                                        <input name="sedasi_vap" type="radio" id="sedasi_vap1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.sedasi_vap == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="sedasi_vap" type="radio" id="sedasi_vap0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.sedasi_vap == '0'}checked{/if} {/if}>TIDAK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES IADP/CLABSI :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_iadp">Hand Hygiene :</label><br>
+                                        <input name="hand_iadp" type="radio" id="hand_iadp1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.hand_iadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_iadp" type="radio" id="hand_iadp0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.hand_iadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="area_iadp">Seleksi area insersi secara optimal :</label><br>
+                                        <input name="area_iadp" type="radio" id="area_iadp1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.area_iadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="area_iadp" type="radio" id="area_iadp0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.area_iadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="tehniksteril_iadp">Tehniksteril :</label><br>
+                                        <input name="tehniksteril_iadp" type="radio" id="tehniksteril_iadp1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehniksteril_iadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="tehniksteril_iadp" type="radio" id="tehniksteril_iadp0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehniksteril_iadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="alcohol_iadp">Alcohol-based chlorhexidine
+                                            preparasikulit:</label><br>
+                                        <input name="alcohol_iadp" type="radio" id="alcohol_iadp1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.alcohol_iadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="alcohol_iadp" type="radio" id="alcohol_iadp0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.alcohol_iadp == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="apd_iadp">Max penggunaan APD :</label><br>
+                                        <input name="apd_iadp" type="radio" id="apd_iadp1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.apd_iadp == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="apd_iadp" type="radio" id="apd_iadp0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.apd_iadp == '0'}checked{/if} {/if}>TIDAK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES VENA PERIPER :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_vena">Hand Hygiene :</label><br>
+                                        <input name="hand_vena" type="radio" id="hand_vena1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.hand_vena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_vena" type="radio" id="hand_vena0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.hand_vena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="kaji_vena">Kaji Kebutuhan :</label><br>
+                                        <input name="kaji_vena" type="radio" id="kaji_vena1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.kaji_vena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="kaji_vena" type="radio" id="kaji_vena0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.kaji_vena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="tehnik_vena">Tehniksteril :</label><br>
+                                        <input name="tehnik_vena" type="radio" id="tehnik_vena1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehnik_vena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="tehnik_vena" type="radio" id="tehnik_vena0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehnik_vena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="petugas_vena">Petugas Terampil :</label><br>
+                                        <input name="petugas_vena" type="radio" id="petugas_vena1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.petugas_vena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="petugas_vena" type="radio" id="petugas_vena0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.petugas_vena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="desinfeksi_vena">Desinfeksi Area Insersi :</label><br>
+                                        <input name="desinfeksi_vena" type="radio" id="desinfeksi_vena1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.desinfeksi_vena == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="desinfeksi_vena" type="radio" id="desinfeksi_vena0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.desinfeksi_vena == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES ISK :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="kaji_isk">Kaji Kebutuhan / Ada indikasi:</label><br>
+                                        <input name="kaji_isk" type="radio" id="kaji_isk1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.kaji_isk == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="kaji_isk" type="radio" id="kaji_isk0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.kaji_isk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="petugas_isk">Pemasangan oleh petugas yang terlatih
+                                            :</label><br>
+                                        <input name="petugas_isk" type="radio" id="petugas_isk1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.petugas_isk == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="petugas_isk" type="radio" id="petugas_isk0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.petugas_isk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <label for="tangan_isk">Kebersihan Tangan :</label><br>
+                                        <input name="tangan_isk" type="radio" id="tangan_isk1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tangan_isk == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="tangan_isk" type="radio" id="tangan_isk0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tangan_isk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="tehniksteril_isk">Tehniksteril :</label><br>
+                                        <input name="tehniksteril_isk" type="radio" id="tehniksteril_isk1" value="1" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehniksteril_isk == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="tehniksteril_isk" type="radio" id="tehniksteril_isk0" value="0" {if: !empty($value.data)} {if: $bundles_insersi_hais.bundles.tehniksteril_isk == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 m-b-xl">
+                    <div class="text-center">
+                        <button type="button" name="button" class="btn btn-primary " id="simpan_insersi"><i
+                                class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+                        <button type="button" name="button" class="btn btn-success" id="selesai_insersi"><i
+                                class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+                    </div>
+                </div>
+                    <div class="col-md-12">
+                    {include: ../plugins/bundles_hais/view/admin/insersi.html}
+                </div>
+                <div>
+                     <div id="insersi"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

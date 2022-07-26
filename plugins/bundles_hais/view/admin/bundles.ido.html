@@ -1,0 +1,174 @@
+<div id="bundles_ido">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="btn-group pull-right" style="margin-top:-8px;">
+                </div>
+                <h3 class="panel-title">Bundles IDO</h3>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="col-sm-4">
+                                <label for="tanggal">Tanggal</label>
+                                <input type="text" id="tanggal" name="tanggalbundles" class="form-control tanggal"
+                                    value="{?=date('Y-m-d')?}">
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="no_rawat"> No.Rawat</label>
+                                <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control"
+                                    value="{$bundles_ido_hais.no_rawat}" readonly>
+                                   
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="no_rkm_medis">Nomor RM</label>
+                                <input type="text" name="no_rkm_medis" class="form-control"
+                                    placeholder="Nomor Rekam Medik" value="{$bundles_ido_hais.no_rkm_medis}" readonly>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label for="nm_pasien">Nama Pasien</label>
+                                <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien"
+                                    value="{$bundles_ido_hais.nm_pasien}" readonly>
+                            </div>
+                            <div class="col-sm-6">
+                                <label for="kd_kamar">Kode Kamar</label>
+                                <input type="text" name="kd_kamar" class="form-control" placeholder="Kode Kamar"
+                                    value="{$bundles_ido_hais.kd_kamar}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES PRE OPERASI :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="mandi_idopre">Mandi dengan anti septic/plan soap sore dan pagi hari :</label><br>
+                                            <input name="mandi_idopre" type="radio" id="mandi_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mandi_idopre == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="mandi_idopre" type="radio" id="mandi_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mandi_idopre == '0'}checked{/if} {/if}>TIDAK<br>
+                                        </div>
+                                    <div class="col-sm-6">
+                                        <label for="cukur_idopre">Pencukuran bila
+                                            diperlukan dan Dengan Clipper:</label><br>
+                                            <input name="cukur_idopre" type="radio" id="cukur_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.cukur_idopre == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="cukur_idopre" type="radio" id="cukur_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.cukur_idopre == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="guladarah_idopre">GulaDarah < 200 mg/dl/normal :</label>
+                                                <br>
+                                                <input name="guladarah_idopre" type="radio" id="guladarah_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.guladarah_idopre == '1'}checked{/if} {/if}>YA<br>
+                                                <input name="guladarah_idopre" type="radio" id="guladarah_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.guladarah_idopre == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="antibiotik_idopre">Antibiotik 60 mnt sebelum insisi
+                                            :</label><br> 
+                                            <input name="antibiotik_idopre" type="radio" id="antibiotik_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antibiotik_idopre == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="antibiotik_idopre" type="radio" id="antibiotik_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antibiotik_idopre == '0'}checked{/if} {/if}>TIDAK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES INTRA OPERASI :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="hand_idointra">Hand Hygiene Dengan surgical antiseptik :</label><br>
+                                        <input name="hand_idointra" type="radio" id="hand_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.hand_idointra == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_idointra" type="radio" id="hand_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.hand_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="steril_idointra">Instrument Steril :</label><br>
+                                         <input name="steril_idointra" type="radio" id="steril_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.steril_idointra == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="steril_idointra" type="radio" id="steril_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.steril_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="antiseptic_idointra">Menggunakan antiseptic skin
+                                            preparasi :</label><br>
+                                            <input name="antiseptic_idointra" type="radio" id="antiseptic_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antiseptic_idointra == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="antiseptic_idointra" type="radio" id="antiseptic_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antiseptic_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="tehnik_idointra">Tehnik Operasi Steril :</label><br>
+                                        <input name="tehnik_idointra" type="radio" id="tehnik_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.tehnik_idointra == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="tehnik_idointra" type="radio" id="tehnik_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.tehnik_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="mobile_idointra">System mobile personil dibatasi
+                                            :</label><br>
+                                            <input name="mobile_idointra" type="radio" id="mobile_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mobile_idointra == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="mobile_idointra" type="radio" id="mobile_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mobile_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="suhu_idointra">Suhu/kelembaban udara 19-24ºC 40-60%
+                                            :</label><br>
+                                            <input name="suhu_idointra" type="radio" id="suhu_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.suhu_idointra == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="suhu_idointra" type="radio" id="suhu_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.suhu_idointra == '0'}checked{/if} {/if}>TIDAK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <h4>BUNDLES POST OPERASI :</h4>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <label for="luka_idopost">Luka ditutup 2x 24 jam / bila terjadi rembesan segera diganti :</label><br>
+                                        <input name="luka_idopost" type="radio" id="luka_idopost1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.luka_idopost == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="luka_idopost" type="radio" id="luka_idopost0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.luka_idopost == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="rawat_idopost">Rawat luka dengan tehnik steril dengan cairan Nacl :</label><br>
+                                        <input name="rawat_idopost" type="radio" id="rawat_idopost1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.rawat_idopost == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="rawat_idopost" type="radio" id="rawat_idopost0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.rawat_idopost == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="apd_idopost">Menggunakan APD saat merawat luka sesuai kebutuhan :</label><br>
+                                        <input name="apd_idopost" type="radio" id="apd_idopost1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.apd_idopost == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="apd_idopost" type="radio" id="apd_idopost0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.apd_idopost == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="kaji_idopost">Kaji nutris pasien :</label><br>
+                                        <input name="kaji_idopost" type="radio" id="kaji_idopost1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.kaji_idopost == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="kaji_idopost" type="radio" id="kaji_idopost0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.kaji_idopost == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 m-b-xl">
+                    <div class="text-center">
+                        <button type="button" name="button" class="btn btn-primary" id="simpan_ido" value="Refresh Page"><i
+                                class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+                        <button type="button" name="button" class="btn btn-success" id="selesai_ido"><i
+                                class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    {include: ../plugins/bundles_hais/view/admin/ido.html}
+                </div>
+                <div>
+                     <div id="ido"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+     

@@ -33,11 +33,14 @@
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li><a href="#set_dpjp" data-no_rawat="{$value.no_rawat}">Set DPJP</a></li>
               <li><a href="#hais" data-no_rawat="{$value.no_rawat}" data-kd_kamar="{$value.kd_kamar}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-nm_kamar="{$value.nm_bangsal}">HaiS</a></li>
+              <li><a href="{?=url([ADMIN, 'bundles_hais', 'manage', $value.con_no_rawat])?}" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Bundles HaiS</a></li>
               <li><a href="#form_dietpasien" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Diet Pasien</a></li>
               {/if}
               {if: $this->core->getUserInfo('role') == 'apoteker'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
               {/if}
+              <li><a href="#form_dietpasien" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Diet Pasien</a></li>
+              <li><a href="#form_jadwaloperasi" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Input Jadwal Operasi</a></li>
               {if: $this->core->getUserInfo('role') == 'laboratorium'}
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               {/if}
@@ -205,6 +208,9 @@
       $("#notif").hide();
       $("#form_soap").show();
       $("#soap").html(data).show();
+      $("#form_hais").hide();
+      $("#form_jadwaloperasi").hide();
+      $("#form_dietpasien").hide();
     });
   });
 
@@ -240,7 +246,7 @@
 
     });
   });
-
+  
   $('a[href="#layanan_obat"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -262,6 +268,9 @@
       $("#form").hide();
       $("#notif").hide();
       $("#rincian").html(data).show();
+      $("#form_hais").hide();
+      $("#form_jadwaloperasi").hide();
+      $("#form_dietpasien").hide();
     });
   });
 
@@ -287,6 +296,9 @@
       $("#notif").hide();
       $("#berkasdigital").html(data).show();
       $('.images').lightbox();
+      $("#form_hais").hide();
+      $("#form_jadwaloperasi").hide();
+      $("#form_dietpasien").hide();
     });
   });
 
@@ -316,8 +328,43 @@
       $("#notif").hide();
       $("#form_hais").show();
       $("#hais").html(data).show();
+      $("#form_jadwaloperasi").hide();
+      $("#form_dietpasien").hide();
     });
   });
+
+  $('a[href="#form_jadwaloperasi"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    // var kd_kamar = $(this).attr("data-kd_kamar");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    // $('input:text[name=kd_kamar]').val(kd_kamar);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_inap/jadwaloperasi?t=' + mlite.token;
+    $.post(url, {no_rawat : no_rawat,
+    }, function(data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#soap").hide();
+      $("#form_hais").hide();
+      $("#form_jadwaloperasi").show();
+      $("#jadwaloperasi").html(data).show();
+      $("#form_dietpasien").hide();
+      $("#dietpasien").hide();
+    });
+  });
+
 
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $('.dataTables').DataTable({
