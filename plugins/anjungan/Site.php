@@ -1738,6 +1738,7 @@ class Site extends SiteModule
     $date = date('Y-m-d');
     if (isset($_POST['cekrm']) && isset($_POST['no_rkm_medis']) && $_POST['no_rkm_medis'] != '') {
       $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+      $checkSEP = $this->db('bridging_sep')->where('nomr',$_POST['no_rkm_medis'])->where('tglsep',$date)->oneArray();
       $reg = $this->db('reg_periksa')->join('poliklinik','poliklinik.kd_poli = reg_periksa.kd_poli')->where('no_rkm_medis',$_POST['no_rkm_medis'])->where('tgl_registrasi',$date)->oneArray();
       if($pasien && $reg){
         if (date("H:i:s") <= '15:00:00') {
@@ -1745,11 +1746,19 @@ class Site extends SiteModule
             $_SESSION['message'] = "Anda Terdaftar Untuk Hari Ini Pada Poli Sore. Silahkan Datang Lagi Pada Sore Hari. Atau silakan ke loket pendaftaran jika ingin pindah ke poli pagi";
             redirect(url('anjungan/sep'));
           } else {
-            redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis']));
+            if ($checkSEP) {
+              redirect(url('anjungan/sep/cetaksep/' . $checkSEP['no_sep']));
+            } else {
+              redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis']));
+            }
           }
         } else {
           if (strpos($reg['nm_poli'], 'SORE') !== false) {
-            redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis']));
+            if ($checkSEP) {
+              redirect(url('anjungan/sep/cetaksep/' . $checkSEP['no_sep']));
+            } else {
+              redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis']));
+            }
           } else {
             $_SESSION['message'] = "Anda Terdaftar Untuk Hari Ini Pada Poli Pagi. Silahkan Bertanya Kepada Satpam Ataupun Resepsionis";
             redirect(url('anjungan/sep'));
@@ -1968,24 +1977,6 @@ class Site extends SiteModule
         }
       }
     }
-    // $surat_kontrol_bpjs = $this->db('bridging_surat_kontrol_bpjs')
-    //   ->select('no_surat')
-    //   ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
-    //   ->where('bridging_sep.nomr', $slug[4])
-    //   ->where('tgl_rencana', $date)
-    //   ->oneArray();
-
-    // if (!$surat_kontrol_bpjs) {
-    //   $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan', $slug[3])->where('kdpolitujuan', $rujukan['rujukan']['poliRujukan']['kode'])->desc('tglsep')->oneArray();
-    //   if ($cari_rujukan) {
-    //     $skdp_bpjs = $this->createKontrol($slug[3], $rujukan['rujukan']['poliRujukan']['kode'], $dpjp['kd_dokter_bpjs']);
-    //     $no_surat_kontrol_bpjs = $skdp_bpjs;
-    //   } else {
-    //     $no_surat_kontrol_bpjs = "";
-    //   }
-    // } else {
-    //   $no_surat_kontrol_bpjs = $surat_kontrol_bpjs['no_surat'];
-    // }
 
     $content = $this->draw('sep.mandiri.bikin.html', [
       'title' => $title,
@@ -2130,7 +2121,12 @@ class Site extends SiteModule
       // $_POST['sep_no_sep'] = '1708UjiCoba';
 
       if($_POST['no_rawat'] == ''){
-        $poli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs',$_POST['kdpolitujuan'])->oneArray();
+        if (date("H:i:s") <= '15:00:00') {
+          $waktu_poli = 'Pagi';
+        } else {
+          $waktu_poli = 'Sore';
+        }
+        $poli = $this->db('maping_poli_bpjs')->join('poliklinik','maping_poli_bpjs.kd_poli_rs = poliklinik.kd_poli')->where('kd_poli_bpjs',$_POST['kdpolitujuan'])->like('nm_poli','%'.$waktu_poli)->oneArray();
         $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kddpjp'])->oneArray();
         $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['nomr'])->count();
         $_POST['stts_daftar'] = 'Baru';
@@ -2420,16 +2416,59 @@ class Site extends SiteModule
     $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
     echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
-    $this->db('mutasi_berkas')->save([
-      'no_rawat' => $_POST['no_rawat'],
-      'status' => 'Sudah Dikirim',
-      'dikirim' => date('Y-m-d H:i:s'),
-      'diterima' => '0000-00-00 00:00:00',
-      'kembali' => '0000-00-00 00:00:00',
-      'tidakada' => '0000-00-00 00:00:00',
-      'ranap' => '0000-00-00 00:00:00'
-    ]);
+    $mutasi_berkas = $this->db('mutasi_berkas')->where('no_rawat',$_POST['no_rawat'])->oneArray();
+    if(!$mutasi_berkas){
+      $this->db('mutasi_berkas')->save([
+        'no_rawat' => $_POST['no_rawat'],
+        'status' => 'Sudah Dikirim',
+        'dikirim' => date('Y-m-d H:i:s'),
+        'diterima' => '0000-00-00 00:00:00',
+        'kembali' => '0000-00-00 00:00:00',
+        'tidakada' => '0000-00-00 00:00:00',
+        'ranap' => '0000-00-00 00:00:00'
+      ]);
+      $mutasi_dikirim = $this->db('mutasi_berkas')->where('no_rawat',$_POST['no_rawat'])->where('status','Sudah Dikirim')->oneArray();
+      if ($mutasi_dikirim) {
+        $this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->save([
+          'status' => 'Sudah Diterima',
+          'diterima' => $this->randMinutes($mutasi_dikirim['dikirim']),
+        ]);
+        $mutasi_diterima = $this->db('mutasi_berkas')->where('no_rawat',$_POST['no_rawat'])->where('status','Sudah Diterima')->oneArray();
+        if ($mutasi_diterima) {
+          $this->db('pemeriksaan_ralan')->save([
+            'no_rawat' => $_POST['no_rawat'],
+            'tgl_perawatan' => substr($this->randMinutes($mutasi_diterima['diterima']),0,10),
+            'jam_rawat' => substr($this->randMinutes($mutasi_diterima['diterima']),11),
+            'tensi' => '-',
+            'kesadaran' => 'Compos Mentis',
+            'rtl' => '-',
+            'penilaian' => '-',
+          ]);
+        }
+      }
+    }
     exit();
+  }
+
+  public function randMinutes($date1){
+    $format = 'Y-m-d H:i:s';
+    $date = \DateTime::createFromFormat($format, $date1);
+    $time = $date->format('H:i:s');
+    $date = $date->format('Y-m-d');
+    list($h, $m, $s) = explode(":", $time);
+    $seconds = $s + ($m * 60) + ($h * 3600);
+    $min = 5 * 60;
+    $max = 15 * 60;
+    $seconds += rand($min, $max); //set desired min and max values
+
+    // now back to time format
+    $hours = floor($seconds / 3600);
+    $mins = floor($seconds / 60 % 60);
+    $secs = floor($seconds % 60);
+
+    $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+    $timeFormat = $date.' '.$timeFormat;
+    return $timeFormat;
   }
 
   public function postCheckFungsi(){

@@ -1,0 +1,75 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 5px;
+  }
+</style>
+<div class="row" style="margin-bottom:100px;">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <div id="btn_cetak" data-toggle="modal"><i></i><span class="hidden-xs"></span></div>
+          </span>
+        </div>
+    <h4 class="modal-title">Riwayat Kegiatan</h4>
+</div>
+<div class="modal-body">
+  <h4>Data Kegiatan</h4>
+  <div class="table table-responsive">
+    <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+      <tr class="isi">
+        <td valign="top" width="20%">Nomor Kegiatan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%"><span id="nomor_kegiatan">{$kegiatan.nomor_kegiatan}</span></td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Order By</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.order_by}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Finish By</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.finish_by}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Nama Kegiatan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.nama_kegiatan}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Detail Kegiatan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.detail_kegiatan}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Tanggal Mulai</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.tanggal_mulai}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Tanggal Selesai</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.tanggal_selesai}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Jam Mulai</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.jam_mulai}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Jam Selesai</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.jam_selesai}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Status</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$kegiatan.status}</td>
+      </tr>
+      </table>
+      <br>
+      <a href="{?=url(ADMIN.'/pms/manage')?}" text-align="right"type="button" name="button" class="btn btn-primary pull-right" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Tutup</span></a>
+      

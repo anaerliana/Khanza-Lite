@@ -14,15 +14,15 @@ class Admin extends AdminModule
       'Bundles Insersi' => 'bundles_insersi',
       'Bundles Maintanance' => 'bundles_maintanance',
       'Bundles IDO' => 'bundles_ido',
-      //'Master Pegawai' => 'master',
     ];
   }
 
 
-  public function getManage($no_rawat)
+  public function getManage($no_rawat=null)
   {
-
-
+    if ($no_rawat==null) {
+    }
+   else {
     $sub_modules = [
       ['name' => 'Bundles Insersi', 'url' => url([ADMIN, 'bundles_hais', 'bundlesinsersi', $no_rawat]), 'icon' => 'pencil', 'desc' => 'Bundles Insersi'],
       ['name' => 'Bundles Maintanance', 'url' => url([ADMIN, 'bundles_hais', 'bundles_maintanance', $no_rawat]), 'icon' => 'pencil-square-o', 'desc' => 'Bundles Maintanance'],
@@ -30,190 +30,305 @@ class Admin extends AdminModule
     ];
     return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
   }
+}
 
+//BUNDLES_INSERSI
   public function anyBundlesInsersi($no_rawat)
   {
-    // //js
-    // $this->_addHeaderFiles();
-    // $row = [];
-    // $id = revertNorawat($no_rawat);
-    // $pasien = $this->db('reg_periksa')
-    //   ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-    //   ->where('no_rawat', $id)
-    //   ->oneArray();
+    $this->_addHeaderFiles();
+    $id = revertNorawat($no_rawat);
 
-    // $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
-    // $row['nm_pasien'] = $pasien['nm_pasien'];
-    // $row['no_rawat'] = $pasien['no_rawat'];
+    $bundles_insersi = $this->db('kamar_inap')
+      ->select('reg_periksa.no_rawat')
+      ->select('pasien.nm_pasien')
+      ->select('reg_periksa.no_rkm_medis')
+      ->select('kamar_inap.kd_kamar')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->where('kamar_inap.no_rawat', $id)
+      ->oneArray();
 
-    //   $bundles = $this->db('bundles_hais')
-    //     ->where('no_rawat', $id)
-    //     ->toArray();
-    //   foreach($bundles as $bundle){
+    $bundles = $this->db('bundles_hais')
+      ->where('no_rawat', $id)
+      ->toArray();
 
-    //     $row['bundles'] = $bundle;
-    //   }
-    //   $kamar_inap = $this->db('kamar_inap')
-    //     ->where('no_rawat', $id)
-    //     ->oneArray();
-
-    //   $row['kd_kamar'] = $kamar_inap['kd_kamar'];
-    // return $this->draw('bundles.insersi.html', ['bundles_insersi' => $row ]);
-    // // echo $this->draw('bundles.insersi.html', ['bundles_insersi' => $row ]);
-    {
-      $this->_addHeaderFiles();
-      $row = [];
-      $bundles_insersi = [];
-      $id = revertNorawat($no_rawat);
-      
-      $pasien = $this->db('reg_periksa')
-        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-        ->where('no_rawat', $id)
-        ->oneArray();
-  
-      $bundles_insersi['no_rkm_medis'] = $pasien['no_rkm_medis'];
-      $bundles_insersi['nm_pasien'] = $pasien['nm_pasien'];
-      $bundles_insersi['no_rawat'] = $pasien['no_rawat'];
-      $kamar_inap = $this->db('kamar_inap')
-        ->where('no_rawat', $id)
-        ->oneArray();
-      $bundles_insersi['kd_kamar'] = $kamar_inap['kd_kamar'];
-      
-      $bundles = $this->db('bundles_hais')
-        ->where('no_rawat', $id)
-        ->toArray(); 
-      foreach($bundles as $bundle){
-        $row['bundles'] = $bundle;
-        
-      }
-  
-      return $this->draw('bundles.insersi.html', ['bundles_insersi_hais' => $bundles_insersi , 'bundles' => $row]);
-  
-    }
+    return $this->draw('bundles.insersi.html', ['bundles_insersi_hais' => $bundles_insersi, 'bundles' => $bundles]);
   }
 
-  
+
   public function postSaveInsersi()
-  {
-    if(!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
+  { 
+    if (!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
       $this->db('bundles_hais')->save($_POST);
-    } else{
+    } else {
       $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->save($_POST);
     }
-    // echo('Simpan_berhasil');
+
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    $this->notify('success', 'Data Bundles Insersi telah disimpan');
+    exit();
+  }
+
+  public function postHapus_Insersi_Vap()
+  {
+
+    $this->db('bundles_hais')
+      ->where('id', $_POST['id'])
+      ->update([
+        'hand_vap' => NULL,
+        'tehniksteril_vap' => NULL,
+        'apd_vap' => NULL,
+        'sedasi_vap' => NULL
+      ]);
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    
+    exit();
+  }
+
+  public function postHapus_Insersi_Iadp()
+  {
+
+    $this->db('bundles_hais')
+      ->where('id', $_POST['id'])
+      ->update([
+        'hand_iadp' => NULL,
+        'area_iadp' => NULL,
+        'tehniksteril_iadp' => NULL,
+        'alcohol_iadp' => NULL,
+        'apd_iadp' => NULL
+      ]);
     $no_rawat = convertNorawat($_POST['no_rawat']);
     echo $no_rawat;
     exit();
   }
 
+  public function postHapus_Insersi_Vena()
+  {
+
+    $this->db('bundles_hais')
+      ->where('id', $_POST['id'])
+      ->update([
+        'hand_vena' => NULL,
+        'kaji_vena' => NULL,
+        'tehnik_vena' => NULL,
+        'petugas_vena' => NULL,
+        'desinfeksi_vena' => NULL
+      ]);
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    exit();
+  }
+
+  public function postHapus_Insersi_Isk()
+  {
+
+    $this->db('bundles_hais')
+      ->where('id', $_POST['id'])
+      ->update([
+        'kaji_isk' => NULL,
+        'petugas_isk' => NULL,
+        'tangan_isk' => NULL,
+        'tehniksteril_isk' => NULL
+      ]);
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    exit();
+  }
+
+  //BUNDLES_MAINTANANCE
   public function anyBundles_Maintanance($no_rawat)
   {
     $this->_addHeaderFiles();
-  $row = [];
-  $bundles_maintanance = [];
-  
-  $id = revertNorawat($no_rawat);
-  $pasien = $this->db('reg_periksa')
-    ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-    ->where('no_rawat', $id)
-    ->oneArray();
-
-  
-  $bundles_maintanance['no_rkm_medis'] = $pasien['no_rkm_medis'];
-  $bundles_maintanance['nm_pasien'] = $pasien['nm_pasien'];
-  $bundles_maintanance['no_rawat'] = $pasien['no_rawat'];
-  $kamar_inap = $this->db('kamar_inap')
-    ->where('no_rawat', $id)
-    ->oneArray();
-  $bundles_maintanance['kd_kamar'] = $kamar_inap['kd_kamar'];
-      
- 
-  $bundles = $this->db('bundles_hais')
-    ->where('no_rawat', $id)
-    ->toArray(); 
-  foreach($bundles as $bundle){
-    
-    $row['bundles'] = $bundle;
-    
-  }
-
-    return $this->draw('bundles.maintanance.html', ['bundles_maintanance_hais' => $bundles_maintanance , 'bundles' => $row]);
-  }
-
-  public function postSaveMaintanance()
-  {
-    if(!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
-      $this->db('bundles_hais')->save($_POST);
-    } else{
-      $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->save($_POST);
-    }
-    // echo('Simpan_berhasil');
-    $no_rawat = convertNorawat($_POST['no_rawat']);
-    echo $no_rawat;
-    exit();
-  }
-
-
-  public function anyBundles_IDO($no_rawat)
-  {
-    $this->_addHeaderFiles();
-      // if(isset($_POST['no_rawat'])) {
-      //   $id = $_POST['no_rawat'];
-      // } else {
-      // }
-    $row = [];
-    $bundles_ido = [];
-    
     $id = revertNorawat($no_rawat);
-    $pasien = $this->db('reg_periksa')
+
+    $bundles_maintanance = $this->db('kamar_inap')
+      ->select('reg_periksa.no_rawat')
+      ->select('pasien.nm_pasien')
+      ->select('reg_periksa.no_rkm_medis')
+      ->select('kamar_inap.kd_kamar')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->where('no_rawat', $id)
+      ->where('kamar_inap.no_rawat', $id)
       ->oneArray();
 
-    
-    $bundles_ido['no_rkm_medis'] = $pasien['no_rkm_medis'];
-    $bundles_ido['nm_pasien'] = $pasien['nm_pasien'];
-    $bundles_ido['no_rawat'] = $pasien['no_rawat'];
-    $kamar_inap = $this->db('kamar_inap')
-      ->where('no_rawat', $id)
-      ->oneArray();
-    $bundles_ido['kd_kamar'] = $kamar_inap['kd_kamar'];
-        
-   
     $bundles = $this->db('bundles_hais')
       ->where('no_rawat', $id)
-      ->toArray(); 
-    foreach($bundles as $bundle){
-      
-      $row['bundles'] = $bundle;
-      
+      ->toArray();
+
+    return $this->draw('bundles.maintanance.html', ['bundles_maintanance_hais' => $bundles_maintanance, 'bundles' => $bundles]);
+  }
+
+
+  public function postSaveBundles_Maintanance()
+  {
+    if (!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
+      $this->db('bundles_hais')->save($_POST);
+    } else {
+      $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->save($_POST);
     }
 
-    return $this->draw('bundles.ido.html', ['bundles_ido_hais' => $bundles_ido , 'bundles' => $bundles]);
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    $this->notify('success', 'Data Bundles Maintanance telah disimpan');
+    exit();
+  }
+  
+     public function postHapus_Main_Vap()
+     {
+   
+       $this->db('bundles_hais')
+         ->where('id', $_POST['id'])
+         ->update([
+           'hand_mainvap' => NULL,
+           'oral_mainvap' => NULL,
+           'manage_mainvap' => NULL,
+           'sedasi_mainvap' => NULL,
+           'kepala_mainvap' => NULL
+         ]);
+       $no_rawat = convertNorawat($_POST['no_rawat']);
+       echo $no_rawat;
+       exit();
+     }
 
+     public function postHapus_Main_Iadp()
+     {
+   
+       $this->db('bundles_hais')
+         ->where('id', $_POST['id'])
+         ->update([
+           'hand_mainiadp' => NULL,
+           'desinfeksi_mainiadp' => NULL,
+           'perawatan_mainiadp' => NULL,
+           'dreasing_mainiadp' => NULL,
+           'infus_mainiadp' => NULL
+         ]);
+       $no_rawat = convertNorawat($_POST['no_rawat']);
+       echo $no_rawat;
+       exit();
+     }
+
+     public function postHapus_Main_Vena()
+     {
+   
+       $this->db('bundles_hais')
+         ->where('id', $_POST['id'])
+         ->update([
+           'hand_mainvena' => NULL,
+           'perawatan_mainvena' => NULL,
+           'kaji_mainvena' => NULL,
+           'administrasi_mainvena' => NULL,
+           'edukasi_mainvena' => NULL
+         ]);
+       $no_rawat = convertNorawat($_POST['no_rawat']);
+       echo $no_rawat;
+       exit();
+     }
+
+     public function postHapus_Main_Isk()
+     {
+   
+       $this->db('bundles_hais')
+         ->where('id', $_POST['id'])
+         ->update([
+           'hand_mainisk' => NULL,
+           'kateter_mainisk' => NULL,
+           'baglantai_mainisk' => NULL,
+           'bagrendah_mainisk' => NULL,
+           'posisiselang_mainisk' => NULL,
+           'lepas_mainisk' => NULL
+         ]);
+       $no_rawat = convertNorawat($_POST['no_rawat']);
+       echo $no_rawat;
+       exit();
+     }
+
+//BUNDLES_IDO     
+  public function anyBundles_IDO($no_rawat = 0)
+  {
+
+    $this->_addHeaderFiles();
+    $id = revertNorawat($no_rawat);
+
+    $bundles_ido = $this->db('kamar_inap')
+      ->select('reg_periksa.no_rawat')
+      ->select('pasien.nm_pasien')
+      ->select('reg_periksa.no_rkm_medis')
+      ->select('kamar_inap.kd_kamar')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->where('kamar_inap.no_rawat', $id)
+      ->oneArray();
+
+    $bundles = $this->db('bundles_hais')
+      ->where('no_rawat', $id)
+      ->toArray();
+    return $this->draw('bundles.ido.html', ['bundles_ido_hais' => $bundles_ido, 'bundles' => $bundles]);
   }
 
   public function postSaveBundles_Ido()
   {
-    // $this->_addHeaderFiles(); 
-    if(!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
+    if (!$this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->oneArray()) {
       $this->db('bundles_hais')->save($_POST);
-    } else{
+    } else {
       $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('kd_kamar', $_POST['kd_kamar'])->save($_POST);
     }
-    // echo('Simpan_berhasil');
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    $this->notify('success', 'Data Bundles IDO telah disimpan');
+    exit();
+  }
+
+  public function postHapus_IdoPre()
+  {
+    $this->db('bundles_hais')
+      ->where('id', $_POST['id'])
+      ->update([
+        'mandi_idopre' => NULL,
+        'cukur_idopre' => NULL,
+        'guladarah_idopre' => NULL,
+        'antibiotik_idopre' => NULL
+      ]);
+  
     $no_rawat = convertNorawat($_POST['no_rawat']);
     echo $no_rawat;
     exit();
   }
 
-  public function postHapusIdo()
+  public function postHapus_IdoIntra()
   {
-    $this->db('bundles_hais')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->where('luka_idopost', $_POST['luka_idopost'])->delete();
+
+    $this->db('bundles_hais')
+      ->where('id', $_POST['id'])
+      ->update([
+        'hand_idointra' => NULL,
+        'steril_idointra' => NULL,
+        'antiseptic_idointra' => NULL,
+        'tehnik_idointra' => NULL,
+        'mobile_idointra' => NULL,
+        'suhu_idointra' => NULL
+      ]);
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
     exit();
   }
 
+  public function postHapus_IdoPost()
+  {
 
+    $this->db('bundles_hais')
+      ->where('id', $_POST['id'])
+      ->update([
+        'luka_idopost' => NULL,
+        'rawat_idopost' => NULL,
+        'apd_idopost' => NULL,
+        'kaji_idopost' => NULL
+      ]);
+    $no_rawat = convertNorawat($_POST['no_rawat']);
+    echo $no_rawat;
+    exit();
+  }
 
   public function getCSS()
   {

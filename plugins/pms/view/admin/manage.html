@@ -1,0 +1,89 @@
+<div class="row" style="margin-bottom:100px;">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+          <!--span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <div id="btn_cetak" data-toggle="modal"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></div>
+          </span-->
+          <!-- <a href="{?=url([ADMIN,'pms','cetak'])?}" class="btn btn-sm dropdown-toggle"><i class="fa fa-print"></i>Cetak</a> -->
+        </div>
+      <h3 class="panel-title">Kelola Kegiatan</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div id="notif"></div>
+        </div>
+<div id="manage">
+  <div class="table-responsive no-margin">
+  	<a href="{?=url([ADMIN,'pms','add'])?}" class="input-group btn btn-default" type="button" id="tambahkegiatan" >Tambah Kegiatan</a>
+    	<table class="table table-striped no-padding dataTables" width="150%" >
+      <thead>
+		<tr>
+			<!--th style="white-space: nowrap;">ID</th-->
+			<th style="white-space: nowrap;">No.</th>
+			<th style="white-space: nowrap;">Order</th>
+			<th style="white-space: nowrap;">Finish</th>
+			<th style="white-space: nowrap;">Nama Kegiatan</th>
+			<th style="white-space: nowrap;">Detail Kegiatan</th>
+			<th style="white-space: nowrap;">Tanggal Mulai</th>
+			<th style="white-space: nowrap;">Tanggal Selesai</th>
+			<th style="white-space: nowrap;">Jam Mulai</th>
+			<th style="white-space: nowrap;">Jam Selesai</th>
+			<th style="white-space: nowrap;">Status</th>
+			<th style="white-space: nowrap;">Aksi</th>
+		</tr>
+	</thead>
+	<tbody>
+		{loop: $pms}
+		<tr>
+			<!--td>{$value.id}</td-->
+			<td>{$value.nomor_kegiatan}</td>
+			<td>{$value.order_by}</td>
+			<td>{$value.finish_by}</td>
+			<td>{$value.nama_kegiatan}</td>
+			<td>{$value.detail_kegiatan}</td>
+			<td>{$value.tanggal_mulai}</td>
+			<td>{$value.tanggal_selesai}</td>
+			<td>{$value.jam_mulai}</td>
+			<td>{$value.jam_selesai}</td>
+			<td>{$value.status}</td>
+			<td>
+				<a href="{?=url([ADMIN,'pms','view',$value.nomor_kegiatan])?}" class="btn btn-success fa fa-check"></a>
+				{if: $this->core->getUserInfo('role') == 'admin'}
+				<a href="{?=url([ADMIN,'pms','edit',$value.nomor_kegiatan])?}" class="btn btn-primary fa fa-edit"></a> 
+				<a href="{?=url([ADMIN,'pms','delete',$value.nomor_kegiatan])?}" class="btn btn-danger fa fa-trash"></a>
+				{/if}
+       		</td> 
+        </div>
+		</tr>
+		{/loop}
+	</tbody>
+</div>
+	<br></br>
+	<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  $('.dataTables').DataTable({
+    "order": [[ 3, "desc" ]],
+    "pagingType": "full",
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next":     "›"
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+	</script>
+			</table>
+		</div>
+	</div>
+</div>

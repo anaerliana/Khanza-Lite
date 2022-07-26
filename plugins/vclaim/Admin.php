@@ -404,7 +404,59 @@ class Admin extends AdminModule
     $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
     echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
+    $mutasi_berkas = $this->db('mutasi_berkas')->where('no_rawat',$data_sep['no_rawat'])->oneArray();
+    if(!$mutasi_berkas){
+      $this->db('mutasi_berkas')->save([
+        'no_rawat' => $data_sep['no_rawat'],
+        'status' => 'Sudah Dikirim',
+        'dikirim' => date('Y-m-d H:i:s'),
+        'diterima' => '0000-00-00 00:00:00',
+        'kembali' => '0000-00-00 00:00:00',
+        'tidakada' => '0000-00-00 00:00:00',
+        'ranap' => '0000-00-00 00:00:00'
+      ]);
+      $mutasi_dikirim = $this->db('mutasi_berkas')->where('no_rawat',$data_sep['no_rawat'])->where('status','Sudah Dikirim')->oneArray();
+      if ($mutasi_dikirim) {
+        $this->db('mutasi_berkas')->where('no_rawat', $data_sep['no_rawat'])->save([
+          'status' => 'Sudah Diterima',
+          'diterima' => $this->randMinutes($mutasi_dikirim['dikirim']),
+        ]);
+        $mutasi_diterima = $this->db('mutasi_berkas')->where('no_rawat',$data_sep['no_rawat'])->where('status','Sudah Diterima')->oneArray();
+        if ($mutasi_diterima) {
+          $this->db('pemeriksaan_ralan')->save([
+            'no_rawat' => $data_sep['no_rawat'],
+            'tgl_perawatan' => substr($this->randMinutes($mutasi_diterima['diterima']),0,10),
+            'jam_rawat' => substr($this->randMinutes($mutasi_diterima['diterima']),11),
+            'tensi' => '-',
+            'kesadaran' => 'Compos Mentis',
+            'rtl' => '-',
+            'penilaian' => '-',
+          ]);
+        }
+      }
+    }
     exit();
+  }
+
+  public function randMinutes($date1){
+    $format = 'Y-m-d H:i:s';
+    $date = \DateTime::createFromFormat($format, $date1);
+    $time = $date->format('H:i:s');
+    $date = $date->format('Y-m-d');
+    list($h, $m, $s) = explode(":", $time);
+    $seconds = $s + ($m * 60) + ($h * 3600);
+    $min = 5 * 60;
+    $max = 15 * 60;
+    $seconds += rand($min, $max); //set desired min and max values
+
+    // now back to time format
+    $hours = floor($seconds / 3600);
+    $mins = floor($seconds / 60 % 60);
+    $secs = floor($seconds % 60);
+
+    $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+    $timeFormat = $date.' '.$timeFormat;
+    return $timeFormat;
   }
 
   public function postSyncSEP()
