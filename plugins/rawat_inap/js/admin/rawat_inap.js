@@ -694,15 +694,15 @@ $("#form_hais").on("click", "#simpan_hais", function(event){
   var CVL             = $('input:text[name=CVL]').val();
   var IVL             = $('input:text[name=IVL]').val();
   var UC              = $('input:text[name=UC]').val();
-  var VAP              = $('input:text[name=VAP]').val();
-  var IAD              = $('input:text[name=IAD]').val();
-  var PLEB             = $('input:text[name=PLEB]').val();
-  var ISK              = $('input:text[name=ISK]').val();
-  var ILO              = $('input:text[name=ILO]').val();
-  var HAP              = $('input:text[name=HAP]').val();
-  var Tinea            = $('input:text[name=Tinea]').val();
-  var Scabies          = $('input:text[name=Scabies]').val();
-  var ANTIBIOTIK       = $('input:text[name=ANTIBIOTIK]').val();
+  var VAP             = $('input:text[name=VAP]').val();
+  var IAD             = $('input:text[name=IAD]').val();
+  var PLEB            = $('input:text[name=PLEB]').val();
+  var ISK             = $('input:text[name=ISK]').val();
+  var ILO             = $('input:text[name=ILO]').val();
+  var HAP             = $('input:text[name=HAP]').val();
+  var Tinea           = $('input:text[name=Tinea]').val();
+  var Scabies         = $('input:text[name=Scabies]').val();
+  var ANTIBIOTIK      = $('input:text[name=ANTIBIOTIK]').val();
   
   var url = baseURL + '/rawat_inap/savehais?t=' + mlite.token;
   $.post(url, {
@@ -1333,7 +1333,7 @@ $("#form_jadwaloperasi").on("click", "#simpan_jadwaloperasi", function(event){
     jam_mulai: jam_mulai,
     jam_selesai: jam_selesai,
     status: status,
-    edit: edit
+    edit: edit 
   }, function(data) {
     console.log(data);
     // tampilkan data

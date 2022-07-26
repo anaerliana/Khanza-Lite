@@ -1350,7 +1350,7 @@ class Admin extends AdminModule
                 }
                 $this->notify('success', 'Simpan sukes');
             } else {
-                $this->notify('failure', 'Simpan gagal');
+              $this->notify('failure', 'Simpan gagal');
             }
 
             redirect($location);
@@ -1407,7 +1407,7 @@ class Admin extends AdminModule
                 ]);
                 $this->notify('success', 'Simpan sukes');
             } else {
-                $this->notify('failure', 'Simpan gagal');
+                $this->y('failure', 'Simpan gagal');
             }
 
             redirect($location);
