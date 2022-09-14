@@ -1,9 +1,4 @@
 <?php
-    // require_once '../vendor/autoload.php';
-    // use Endroid\QrCode\ErrorCorrectionLevel;
-    // use Endroid\QrCode\LabelAlignment;
-    // use Endroid\QrCode\QrCode;
-    // use Endroid\QrCode\Response\QrCodeResponse;
 
 use Spipu\Html2Pdf\Html2Pdf;
 
@@ -552,11 +547,6 @@ function formatDuit($duit){
 }
 
 function stringDecrypt($key, $string){
-    //date_default_timezone_set('UTC');
-    //$tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
-    //=====KEY====/
-    //$key = $consid.$secretkey.$tStamp;
-
     $encrypt_method = 'AES-256-CBC';
     $key_hash = hex2bin(hash('sha256', $key));
     $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);

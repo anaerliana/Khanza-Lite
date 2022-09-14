@@ -1192,6 +1192,7 @@ class Site extends SiteModule
     }
 
     public function getAutoRegist(){
+      date_default_timezone_set($this->settings->get('settings.timezone'));
       $date = date('Y-m-d');
       $no = 1;
       $checkBooking = $this->db('booking_registrasi')->where('tanggal_periksa',$date)->where('status','Belum')->toArray();
@@ -1254,9 +1255,10 @@ class Site extends SiteModule
           # code...
           // echo json_encode($_POST);
           $this->db('booking_registrasi')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_periksa',$date)->save(['status' => 'Terdaftar']);
-          $updateSkdp = $this->db('skdp_bpjs')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_datang',$date)->save(['status' => 'Sudah Periksa']);
+          $this->db('skdp_bpjs')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_datang',$date)->save(['status' => 'Sudah Periksa']);
+          $updateSkdp = $this->db('skdp_bpjs')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_datang',$date)->where('status','Sudah Periksa')->oneArray();
           if ($updateSkdp) {
-            echo $no.'.'.$value['no_rkm_medis'].' Berhasil Didaftarkan';
+            echo $no.'.'.$value['no_rkm_medis'].' Berhasil Didaftarkan Dan Update SKDP';
             echo '<br>';
           }
         }
@@ -1270,17 +1272,18 @@ class Site extends SiteModule
 
     public function setNoRawat()
     {
-        $date = date('Y-m-d');
-        $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
-        $last_no_rawat->execute();
-        $last_no_rawat = $last_no_rawat->fetch();
-        if(empty($last_no_rawat[0])) {
-          $last_no_rawat[0] = '000000';
-        }
-        $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
-        $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
+      date_default_timezone_set($this->settings->get('settings.timezone'));
+      $date = date('Y-m-d');
+      $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
+      $last_no_rawat->execute();
+      $last_no_rawat = $last_no_rawat->fetch();
+      if(empty($last_no_rawat[0])) {
+        $last_no_rawat[0] = '000000';
+      }
+      $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
+      $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
 
-        return $next_no_rawat;
+      return $next_no_rawat;
     }
 
     // public function getWags(){

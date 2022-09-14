@@ -169,7 +169,11 @@
               <ul class="list-unstyled">
               {loop: $sep_response.rujukan as $key => $val }
                 {if: $no_rkm_medis != ''}
-                <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
+                  {if: $status != 'reg'}
+                    <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}/{$status}" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
+                  {else}
+                    <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}/reg" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
+                  {/if}
                 {else}
                 <li><a href="{?=url('anjungan/baru/bikin')?}/{$val.noKunjungan}" id="open{$val.noKunjungan}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase rujukan">{$val.poliRujukan.nama}</a></li>
                 {/if}

@@ -10,10 +10,10 @@
         {
             return [
                 'Manage' => 'manage',
-                'Data Pasien Operasi' => 'pasienoperasi',
-                'Paket Operasi' => 'paketoperasi',
-                'Obat Operasi' => 'obatoperasi',
-                'Laporan Operasi' => 'laporanoperasi',
+                'Data Barang' => 'barang',
+                'Inventaris Aset' => 'inventarisaset',
+                'Penerimaan Aset' => 'penerimaanaset',
+                'Penyerahan Aset' => 'penyerahanbarang',
             ];
         }
 
@@ -59,6 +59,20 @@
             $this->assign['pinjam'][] = $value;
           }
           return $this->draw('penyerahanbarang.html',['penyerahan' => $this->assign]);
+        }
+
+        public function postPenerimaanAsetSave()
+        {
+          $simpanAset = [
+            'id' => 'id',
+            'no_faktur' => $_POST['faktur'],
+            'tgl_faktur' => $_POST['tgl_faktur'],
+            'kode_barang' => 'kodebarang',
+            'jumlah' => $_POST['jumlah'],
+            'satuan' => $_POST['satuan'],
+            'harga' => $_POST['harga']
+          ];
+          echo json_encode($simpanAset);
         }
 
         private function _addHeaderFiles()

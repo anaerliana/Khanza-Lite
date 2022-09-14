@@ -24,7 +24,7 @@ class Admin extends AdminModule
     {
         $sub_modules = [
             ['name' => 'Biodata', 'url' => url([ADMIN, 'profil', 'biodata']), 'icon' => 'cubes', 'desc' => 'Biodata Pegawai'],
-            ['name' => 'Izin', 'url' => url([ADMIN, 'profil', 'cuti']), 'icon' => 'list', 'desc' => 'Permintaan Izin / Cuti '],
+            ['name' => 'Izin & Cuti', 'url' => url([ADMIN, 'profil', 'cuti']), 'icon' => 'list', 'desc' => 'Permintaan Izin / Cuti '],
             ['name' => 'Presensi', 'url' => url([ADMIN, 'profil', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
             ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'profil', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
             ['name' => 'Jadwal', 'url' => url([ADMIN, 'profil', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
@@ -48,22 +48,32 @@ class Admin extends AdminModule
         if($id){
             $row = $this->db('pegawai')->where('id', $id)->oneArray();
             $username = $row['nik'];
+            $this->assign['title'] = 'Edit Biodata Pegawai';
         } else {
             $username = $this->core->getUserInfo('username', null, true);
             $row = $this->db('pegawai')->where('nik', $username)->oneArray();
+            $this->assign['title'] = 'Edit Biodata';
         }
+        $nipk_baru = '';
 
         $this->assign['form'] = $row;
-        $this->assign['title'] = 'Edit Biodata';
+        if ($this->assign['form']['stts_kerja'] == 'FT') {
+            $this->assign['rsk'] = $this->db('simpeg_skkontrak')->where('nip',$username)->desc('tgl_sk')->toArray();
+            $this->assign['petugas'] = $this->db('petugas')->where('nip',$username)->oneArray();
+            $nipk_baru = $username;
+            $nipkBaru = $this->db('pegawai_mapping')->select('nipk')->where('nipk_baru',$username)->oneArray();
+            if ($nipkBaru) {
+                $username = $nipkBaru['nipk'];
+            }
+        }
+
         $this->assign['jk'] = ['Pria', 'Wanita'];
         $this->assign['departemen'] = $this->db('departemen')->toArray();
         $this->assign['bidang'] = $this->db('bidang')->toArray();
         $this->assign['stts_wp'] = $this->db('stts_wp')->toArray();
         $this->assign['pendidikan'] = $this->db('pendidikan')->toArray();
         $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
-        $this->assign['stts_kerja'] = $this->db('stts_kerja')->toArray();
         $this->assign['identpeg'] = $this->db('simpeg_identpeg')->where('NIP',$username)->oneArray();
-        $this->assign['petugas'] = $this->db('petugas')->where('nip',$username)->oneArray();
         $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . $row['photo']);
         $this->assign['knapang'] = [
             '0' => '',
@@ -78,25 +88,46 @@ class Admin extends AdminModule
             '5' => 'Budha',
             '6' => 'Konghucu'
         ];
-        // $this->assign['rpendum'] = $this->core->mysql('rpendum')->where('NIP',$username)->toArray();
-        $this->assign['rpendum'] = $this->db('simpeg_rpendum')->where('NIP',$username)->toArray();
-        $this->assign['rpangkat'] = $this->db('simpeg_rpangkat')->where('NIP',$username)->toArray();
-        $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('NIP',$username)->toArray();
-        $this->assign['rdppp'] = $this->db('simpeg_rdppp')->where('NIP',$username)->toArray();
-        $this->assign['gkkhir'] = $this->db('simpeg_gkkhir')->where('NIP',$username)->toArray();
-        $this->assign['rdiknstr'] = $this->db('simpeg_rdiknstr')->where('NIP',$username)->toArray();
-        $this->assign['rdikfung'] = $this->db('simpeg_rdikfung')->where('NIP',$username)->toArray();
-        $this->assign['rdikstr'] = $this->db('simpeg_rdikstr')->where('NIP',$username)->toArray();
-        $this->assign['rdiktek'] = $this->db('simpeg_rdiktek')->where('NIP',$username)->toArray();
-        $this->assign['rseminar'] = $this->db('simpeg_rseminar')->where('NIP',$username)->toArray();
-        $this->assign['rjabfung'] = $this->db('simpeg_rjabfung')->where('NIP',$username)->toArray();
-        $this->assign['rsertifikasi'] = $this->db('simpeg_rsertifikasi')->where('nip',$username)->toArray();
-        $this->assign['rtubel'] = $this->db('simpeg_rtubel')->where('NIP',$username)->toArray();
-        $this->assign['rakand'] = $this->db('simpeg_rakand')->where('NIP',$username)->toArray();
-        $this->assign['ribukand'] = $this->db('simpeg_ribukand')->where('NIP',$username)->toArray();
-        $this->assign['rsistri'] = $this->db('simpeg_rsistri')->where('NIP',$username)->toArray();
-        $this->assign['ranak'] = $this->db('simpeg_ranak')->where('NIP',$username)->toArray();
-        $this->assign['rkeluarga'] = $this->db('simpeg_rkeluarga')->where('NIP',$username)->toArray();
+        $this->assign['urlBerkas'] = UPLOADS.'/simpeg/';
+        $stmt = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rpendum WHERE NIP IN ('$username','$nipk_baru') ORDER BY TSTTB DESC");
+        $stmt->execute();
+        $this->assign['rpendum'] = $stmt->fetchAll();
+        $unker = $this->db()->pdo()->prepare("SELECT * FROM simpeg_unker WHERE NIP IN ('$username','$nipk_baru') AND status = '1'");
+        $unker->execute();
+        $this->assign['runker'] = $unker->fetchAll();
+        $bkstmbh = $this->db()->pdo()->prepare("SELECT * FROM simpeg_bkstambah WHERE nip IN ('$username','$nipk_baru') AND status = '1'");
+        $bkstmbh->execute();
+        $this->assign['bkstambah'] = $bkstmbh->fetchAll();
+        $sert = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rsertifikasi WHERE nip IN ('$username','$nipk_baru') ORDER BY tgl_str DESC");
+        $sert->execute();
+        $this->assign['rsertifikasi'] = $sert->fetchAll();
+        $akan = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rakand WHERE NIP IN ('$username','$nipk_baru')");
+        $akan->execute();
+        $this->assign['rakand'] = $akan->fetchAll();
+        $ibuk = $this->db()->pdo()->prepare("SELECT * FROM simpeg_ribukand WHERE NIP IN ('$username','$nipk_baru')");
+        $ibuk->execute();
+        $this->assign['ribukand'] = $ibuk->fetchAll();
+        $istri = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rsistri WHERE NIP IN ('$username','$nipk_baru')");
+        $istri->execute();
+        $this->assign['rsistri'] = $istri->fetchAll();
+        $anak = $this->db()->pdo()->prepare("SELECT * FROM simpeg_ranak WHERE NIP IN ('$username','$nipk_baru')");
+        $anak->execute();
+        $this->assign['ranak'] = $anak->fetchAll();
+        $kel = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rkeluarga WHERE NIP IN ('$username','$nipk_baru')");
+        $kel->execute();
+        $this->assign['rkeluarga'] = $kel->fetchAll();
+        $this->assign['rpangkat'] = $this->db('simpeg_rpangkat')->where('NIP',$username)->desc('TMTPANG')->toArray();
+        $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('NIP',$username)->desc('TMTJABAT')->toArray();
+        $this->assign['rdppp'] = $this->db('simpeg_rdppp')->where('NIP',$username)->desc('THNILAI')->toArray();
+        $this->assign['gkkhir'] = $this->db('simpeg_gkkhir')->where('NIP',$username)->desc('TMTNGAJ')->toArray();
+        $this->assign['rdiknstr'] = $this->db('simpeg_rdiknstr')->where('NIP',$username)->desc('TMULAI')->toArray();
+        $this->assign['rdikfung'] = $this->db('simpeg_rdikfung')->where('NIP',$username)->desc('TMULAI')->toArray();
+        $this->assign['rdikstr'] = $this->db('simpeg_rdikstr')->where('NIP',$username)->desc('TMULAI')->toArray();
+        $this->assign['rdiktek'] = $this->db('simpeg_rdiktek')->where('NIP',$username)->desc('TMULAI')->toArray();
+        $this->assign['rseminar'] = $this->db('simpeg_rseminar')->where('NIP',$username)->desc('TMULAI')->toArray();
+        $this->assign['rjabfung'] = $this->db('simpeg_rjabfung')->where('NIP',$username)->desc('tgl_sk')->toArray();
+        $this->assign['rtubel'] = $this->db('simpeg_rtubel')->where('NIP',$username)->desc('TSTTB')->toArray();
+        $this->assign['rpangkatlast'] = $this->db('simpeg_rpangkat')->where('NIP',$username)->where('ISAKHIR','1')->desc('TMTPANG')->toArray();
         $this->assign['tpu'] = [
             '01' => 'SD',
             '02' => 'SLTP',
@@ -136,22 +167,22 @@ class Admin extends AdminModule
         ];
         $this->assign['golruang'] = [
             '145' => 'IV/e (Pembina Utama)',
-            '144' => 'IV/d (Pembina Utama)',
-            '143' => 'IV/c (Pembina Utama)',
-            '142' => 'IV/b (Pembina Utama)',
-            '141' => 'IV/a (Pembina Utama)',
-            '134' => 'III/d (Pembina Utama)',
-            '133' => 'III/c (Pembina Utama)',
-            '132' => 'III/b (Pembina Utama)',
-            '131' => 'III/a (Pembina Utama)',
-            '124' => 'II/d (Pembina Utama)',
-            '123' => 'II/c (Pembina Utama)',
-            '122' => 'II/b (Pembina Utama)',
-            '121' => 'II/a (Pembina Utama)',
-            '114' => 'I/d (Pembina Utama)',
-            '113' => 'I/c (Pembina Utama)',
-            '112' => 'I/b (Pembina Utama)',
-            '111' => 'I/a (Pembina Utama)',
+            '144' => 'IV/d (Pembina Utama Madya)',
+            '143' => 'IV/c (Pembina Utama Muda)',
+            '142' => 'IV/b (Pembina Tingkat 1)',
+            '141' => 'IV/a (Pembina)',
+            '134' => 'III/d (Penata Tingkat 1)',
+            '133' => 'III/c (Penata)',
+            '132' => 'III/b (Penata Muda Tingkat 1)',
+            '131' => 'III/a (Penata Muda)',
+            '124' => 'II/d (Pengatur Tingkat 1)',
+            '123' => 'II/c (Pengatur)',
+            '122' => 'II/b (Pengatur Muda Tingkat 1)',
+            '121' => 'II/a (Pengatur Muda)',
+            '114' => 'I/d (Juru Tingkat 1)',
+            '113' => 'I/c (Juru)',
+            '112' => 'I/b (Juru Muda Tingkat 1)',
+            '111' => 'I/a (Juru Muda)',
         ];
         $this->assign['profesi'] = [
             '1' => 'Psikologi Klinik',
@@ -211,6 +242,19 @@ class Admin extends AdminModule
             'B' => 'Ada',
             'M' => 'Meninggal',
         ];
+        $this->assign['stts_kerja'] = [
+            'FT' => 'Honorer / Kontrak',
+            'PNS' => 'Pegawai Negeri Sipil',
+        ];
+        $this->assign['stts_aktif'] = [
+            'KELUAR' => 'Keluar',
+            'AKTIF' => 'Aktif',
+        ];
+        $this->assign['kpej'] = [
+            '0' => 'Bupati',
+            '1' => 'Sekretaris Daerah',
+            '2' => 'Direktur',
+        ];
         return $this->draw('biodata.html', ['biodata' => $this->assign]);
     }
 
@@ -253,9 +297,23 @@ class Admin extends AdminModule
                     }
 
                     $_POST['photo'] = "pages/pegawai/photo/" . $pegawai['nik'] . "." . $img->getInfos('type');
+
+                    if (!empty($pegawai['photo'])) {
+                        # code...
+                        $_POST['photo'] = $pegawai['photo'];
+                    }
                 }
             }
+
             $pegawai = $this->db('pegawai')->where('id',$id)->oneArray();
+            if (!empty($pegawai['photo'])) {
+                # code...
+                $_POST['photo'] = $pegawai['photo'];
+            }
+            if($_POST['departemen'] == '-'){
+                $_POST['departemen'] = $pegawai['departemen'];
+            }
+            $petugas = $this->db('petugas')->where('nip', $pegawai['nik'])->oneArray();
             if (!$id) {    // new
                 $query = $this->db('pegawai')->save([
                     'nama' => $_POST['nama'],
@@ -266,13 +324,14 @@ class Admin extends AdminModule
                     'stts_kerja' => $_POST['stts_kerja'],
                     'pendidikan' => $_POST['pendidikan'],
                     'departemen' => $_POST['departemen'],
-                    'bidang' => $_POST['bidang'],
                     'jbtn' => $_POST['jbtn'],
                     'jnj_jabatan' => $_POST['jnj_jabatan'],
                     'no_ktp' => $_POST['no_ktp'],
                     'npwp' => $_POST['npwp'],
                     'stts_wp' => $_POST['stts_wp'],
                     'mulai_kontrak' => $_POST['mulai_kontrak'],
+                    'stts_aktif' => $_POST['stts_aktif'],
+                    'photo' => $_POST['photo'],
                 ]);
                 $query2 = $this->db('petugas')->save([
                     'no_telp' => $_POST['no_hp'],
@@ -288,14 +347,24 @@ class Admin extends AdminModule
                     'stts_kerja' => $_POST['stts_kerja'],
                     'pendidikan' => $_POST['pendidikan'],
                     'departemen' => $_POST['departemen'],
-                    'bidang' => $_POST['bidang'],
                     'jbtn' => $_POST['jbtn'],
                     'jnj_jabatan' => $_POST['jnj_jabatan'],
                     'no_ktp' => $_POST['no_ktp'],
                     'npwp' => $_POST['npwp'],
                     'stts_wp' => $_POST['stts_wp'],
                     'mulai_kontrak' => $_POST['mulai_kontrak'],
+                    'stts_aktif' => $_POST['stts_aktif'],
+                    'photo' => $_POST['photo'],
                 ]);
+                if (!$petugas) {
+                    $query2 = $this->db('petugas')->save([
+                        'nip' => $pegawai['nik'],
+                        'nama' => $_POST['nama'],
+                        'no_telp' => $_POST['no_hp'],
+                        'agama' => $_POST['agama'],
+                        'status' => '1',
+                    ]);
+                }
                 $query2 = $this->db('petugas')->where('nip', $pegawai['nik'])->save([
                     'no_telp' => $_POST['no_hp'],
                     'agama' => $_POST['agama'],
@@ -322,6 +391,138 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
     // ============================================== SIMPEG =======================================================
+
+    public function getLihatBerkas($id)
+    {
+      $this->tpl->set('bacafile',$id);
+      $folder = substr($id,0,strpos($id,"_"));
+      $this->tpl->set('folder',$folder);
+      echo $this->draw('load_pdf.html');
+      exit();
+    }
+
+    public function postUnkerSave($idPeg = null)
+    {
+        $id = $_POST['id'];
+
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+
+        $errors = 0;
+
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $queryEdit = $this->db('simpeg_unker')->where('NIP', $username)->where('status', '1')->save([
+                    'status' => '0'
+                ]);
+                $query = $this->db('simpeg_unker')->save([
+                    'NIP' => $username,
+                    'UNIT' => $_POST['UNIT'],
+                    'SUNIT' => $_POST['SUNIT'],
+                    'SSUNIT' => $_POST['SSUNIT'],
+                    'status' => '1'
+                ]);
+                if ($_POST['SSUNIT'] != '-' ) {
+                    # code...
+                    $queryEdit1 = $this->db('pegawai')->where('nik', $username)->save([
+                        'bidang' => $_POST['SSUNIT']
+                    ]);
+                } else if ($_POST['SUNIT'] != '-' && $_POST['SSUNIT'] == '-'){
+                    $queryEdit1 = $this->db('pegawai')->where('nik', $username)->save([
+                        'bidang' => $_POST['SUNIT']
+                    ]);
+                } else {
+                    $queryEdit1 = $this->db('pegawai')->where('nik', $username)->save([
+                        'bidang' => $_POST['UNIT']
+                    ]);
+                }
+            }
+
+            if ($query) {
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postBkstambahSave($idPeg = null)
+    {
+        $id = $_POST['id'];
+
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+
+        $errors = 0;
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_bkstambah')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_bkstambah')->save([
+                    'nip' => $username,
+                    'nm_berkas' => strtoupper($_POST['nm_berkas']),
+                    'nm_file' => $_POST['nm_file'],
+                    'status' => '1'
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_bkstambah')->where('id', $id)->save([
+                    'status' => '0'
+                ]);
+                $querybaru = $this->db('simpeg_bkstambah')->save([
+                    'nip' => $username,
+                    'nm_berkas' => strtoupper($_POST['nm_berkas']),
+                    'nm_file' => $_POST['nm_file'],
+                    'status' => '1'
+                ]);
+            }
+            if ($query) {
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
     public function postPangkatSave($idPeg = null)
     {
         $id = $_POST['ID_PANGKAT'];
@@ -338,6 +539,29 @@ class Admin extends AdminModule
         $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
         $errors = 0;
 
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rpangkat')->select('nm_file')->where('ID_PANGKAT', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -350,6 +574,7 @@ class Admin extends AdminModule
                     'NPEJABAT' => $_POST['NPEJABAT'],
                     'TSKPANG' => $_POST['TSKPANG'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rpangkat')->where('ID_PANGKAT', $id)->save([
@@ -361,6 +586,7 @@ class Admin extends AdminModule
                     'NPEJABAT' => $_POST['NPEJABAT'],
                     'TSKPANG' => $_POST['TSKPANG'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -388,6 +614,29 @@ class Admin extends AdminModule
             $location = url([ADMIN, 'profil', 'biodata']);
         }
 
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rjabatan')->select('nm_file')->where('ID_JAB', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -401,6 +650,7 @@ class Admin extends AdminModule
                     'NSKJABAT' => $_POST['NSKJABAT'],
                     'TSKJABAT' => $_POST['TSKJABAT'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rjabatan')->where('ID_JAB', $id)->save([
@@ -413,6 +663,7 @@ class Admin extends AdminModule
                     'NSKJABAT' => $_POST['NSKJABAT'],
                     'TSKJABAT' => $_POST['TSKJABAT'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -439,6 +690,29 @@ class Admin extends AdminModule
             $location = url([ADMIN, 'profil', 'biodata']);
         }
 
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rdppp')->select('nm_file')->where('ID_DP3', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -456,6 +730,7 @@ class Admin extends AdminModule
                     'jabat_nilai' => $_POST['jabat_nilai'],
                     'SEBUTAN' => '',
                     'atasan_jabat_nilai' => $_POST['atasan_jabat_nilai'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rdppp')->where('ID_DP3', $id)->save([
@@ -472,6 +747,7 @@ class Admin extends AdminModule
                     'jabat_nilai' => $_POST['jabat_nilai'],
                     'SEBUTAN' => '',
                     'atasan_jabat_nilai' => $_POST['atasan_jabat_nilai'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -499,6 +775,29 @@ class Admin extends AdminModule
             $location = url([ADMIN, 'profil', 'biodata']);
         }
 
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_gkkhir')->select('nm_file')->where('ID_KGB', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -512,6 +811,7 @@ class Admin extends AdminModule
                     'MSKERJA' => $_POST['MSKERJA'],
                     'MSKERJA_BLN' => $_POST['MSKERJA_BLN'],
                     'GPOKKHIR' => $_POST['GPOKKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_gkkhir')->where('ID_KGB', $id)->save([
@@ -524,6 +824,7 @@ class Admin extends AdminModule
                     'MSKERJA' => $_POST['MSKERJA'],
                     'MSKERJA_BLN' => $_POST['MSKERJA_BLN'],
                     'GPOKKHIR' => $_POST['GPOKKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -550,6 +851,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rjabfung')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -560,6 +885,7 @@ class Admin extends AdminModule
                     'utama' => $_POST['utama'],
                     'penunjang' => $_POST['penunjang'],
                     'total' => $_POST['total'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rjabfung')->where('id', $id)->save([
@@ -569,6 +895,7 @@ class Admin extends AdminModule
                     'utama' => $_POST['utama'],
                     'penunjang' => $_POST['penunjang'],
                     'total' => $_POST['total'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -595,6 +922,29 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rsertifikasi')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -607,6 +957,7 @@ class Admin extends AdminModule
                     'no_sip' => $_POST['no_sip'],
                     'tgl_sip' => $_POST['tgl_sip'],
                     'tgl_laku_sip' => $_POST['tgl_laku_sip'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rsertifikasi')->where('id', $id)->save([
@@ -618,10 +969,86 @@ class Admin extends AdminModule
                     'no_sip' => $_POST['no_sip'],
                     'tgl_sip' => $_POST['tgl_sip'],
                     'tgl_laku_sip' => $_POST['tgl_laku_sip'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
                 // echo $query;
+                $this->notify('success', 'Simpan sukses');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+            redirect($location);
+        }
+        redirect($location, $_POST);
+    }
+
+    public function postSkKontrakSave($idPeg = null)
+    {
+        $id = $_POST['id'];
+
+        if($idPeg){
+            $row = $this->db('pegawai')->where('id', $idPeg)->oneArray();
+            $username = $row['nik'];
+            $location = url([ADMIN, 'profil', 'biodata', $idPeg]);
+        } else {
+            $username = $this->core->getUserInfo('username', null, true);
+            $location = url([ADMIN, 'profil', 'biodata']);
+        }
+
+        $_POST['ISAKHIR'] = ($_POST['ISAKHIR'] == null) ? '0' : $_POST['ISAKHIR'] ;
+        $errors = 0;
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_skkontrak')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
+
+        if (!$errors) {
+            unset($_POST['save']);
+            if (!$id) {    // new
+                $query = $this->db('simpeg_skkontrak')->save([
+                    'nip' => $username,
+                    'kpej' => $_POST['kpej'],
+                    'npej' => $_POST['npej'],
+                    'no_sk' => $_POST['no_sk'],
+                    'tgl_sk' => $_POST['tgl_sk'],
+                    'tgl_tmt' => $_POST['tgl_tmt'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
+                ]);
+            } else {        // edit
+                $query = $this->db('simpeg_skkontrak')->where('id', $id)->save([
+                    'nip' => $username,
+                    'kpej' => $_POST['kpej'],
+                    'npej' => $_POST['npej'],
+                    'no_sk' => $_POST['no_sk'],
+                    'tgl_sk' => $_POST['tgl_sk'],
+                    'tgl_tmt' => $_POST['tgl_tmt'],
+                    'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
+                ]);
+            }
+            if ($query) {
                 $this->notify('success', 'Simpan sukses');
             } else {
                 $this->notify('failure', 'Simpan gagal');
@@ -645,6 +1072,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rpendum')->select('nm_file')->where('ID_PENDUM', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -660,6 +1111,7 @@ class Admin extends AdminModule
                     'NSTTB' => $_POST['NSTTB'],
                     'TSTTB' => $_POST['TSTTB'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rpendum')->where('ID_PENDUM', $id)->save([
@@ -674,6 +1126,7 @@ class Admin extends AdminModule
                     'NSTTB' => $_POST['NSTTB'],
                     'TSTTB' => $_POST['TSTTB'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -701,6 +1154,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rdiknstr')->select('nm_file')->where('ID_DIKNSTR', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -717,6 +1194,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rdiknstr')->where('ID_DIKNSTR', $id)->save([
@@ -732,6 +1210,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -759,6 +1238,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rdikstr')->select('nm_file')->where('ID_DIKSTR', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -775,6 +1278,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rdikstr')->where('ID_DIKSTR', $id)->save([
@@ -790,6 +1294,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -817,6 +1322,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rdikfung')->select('nm_file')->where('ID_DIKFUNG', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -833,6 +1362,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rdikfung')->where('ID_DIKFUNG', $id)->save([
@@ -847,6 +1377,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -874,6 +1405,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rdiktek')->select('nm_file')->where('ID_DIKTEK', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -890,6 +1445,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rdiktek')->where('ID_DIKTEK', $id)->save([
@@ -904,6 +1460,7 @@ class Admin extends AdminModule
                     'NSTTPP' => $_POST['NSTTPP'],
                     'TSTTPP' => $_POST['TSTTPP'],
                     'ISAKHIR' => $_POST['ISAKHIR'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -930,6 +1487,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rseminar')->select('nm_file')->where('ID_SEMINAR', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -944,6 +1525,7 @@ class Admin extends AdminModule
                     'JAM' => $_POST['JAM'],
                     'TPIAGAM' => $_POST['TPIAGAM'],
                     'SKP' => '',
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rseminar')->where('ID_SEMINAR', $id)->save([
@@ -956,6 +1538,7 @@ class Admin extends AdminModule
                     'TAKHIR' => $_POST['TAKHIR'],
                     'JAM' => $_POST['JAM'],
                     'TPIAGAM' => $_POST['TPIAGAM'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -982,6 +1565,30 @@ class Admin extends AdminModule
             $username = $this->core->getUserInfo('username', null, true);
             $location = url([ADMIN, 'profil', 'biodata']);
         }
+
+        if ($_FILES['file']['size'] == 0)
+        {
+            $_POST['nm_file'] = '';
+            // cover_image is empty (and not an error)
+        } else {
+            $targetFolder = UPLOADS.'/simpeg/'.$username;
+            if (!file_exists($targetFolder)) {
+                mkdir($targetFolder, 0755, true);
+            }
+            $nm_berkas = $username.'_'.time().'.pdf';
+            $checkBerkas = $this->db('simpeg_rtubel')->select('nm_file')->where('ID_TUBEL', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $nm_berkas = $checkBerkas['nm_file'];
+            }
+            $copy_file = false;
+            $copy_file = move_uploaded_file($_FILES['file']['tmp_name'],$targetFolder.'/'.$nm_berkas);
+            if ($copy_file == true) {
+                $_POST['nm_file'] = $nm_berkas;
+            } else {
+                $errors += 1;
+            }
+        }
+
         if (!$errors) {
             unset($_POST['save']);
             if (!$id) {    // new
@@ -993,6 +1600,7 @@ class Admin extends AdminModule
                     'NSTTB' => $_POST['NSTTB'],
                     'TSTTB' => $_POST['TSTTB'],
                     'STATUS' => $_POST['STATUS'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             } else {        // edit
                 $query = $this->db('simpeg_rtubel')->where('ID_TUBEL', $id)->save([
@@ -1003,6 +1611,7 @@ class Admin extends AdminModule
                     'NSTTB' => $_POST['NSTTB'],
                     'TSTTB' => $_POST['TSTTB'],
                     'STATUS' => $_POST['STATUS'],
+                    'nm_file' => $_POST['nm_file']
                 ]);
             }
             if ($query) {
@@ -1276,6 +1885,100 @@ class Admin extends AdminModule
         }
         redirect($location, $_POST);
     }
+
+    public function postDeleteSimpeg()
+    {
+        $tableTarget = '';
+        $idTarget = '';
+        $notification = '';
+        switch ($_POST['tabel']) {
+            case 'pangkat':
+                $tableTarget = 'simpeg_rpangkat';
+                $idTarget = 'ID_PANGKAT';
+                break;
+            case 'jabatan':
+                $tableTarget = 'simpeg_rjabatan';
+                $idTarget = 'ID_JAB';
+                break;
+            case 'skp':
+                $tableTarget = 'simpeg_rdppp';
+                $idTarget = 'ID_DP3';
+                break;
+            case 'gkkhir':
+                $tableTarget = 'simpeg_gkkhir';
+                $idTarget = 'ID_KGB';
+                break;
+            case 'angkre':
+                $tableTarget = 'simpeg_rjabfung';
+                $idTarget = 'id';
+                break;
+            case 'riwser':
+                $tableTarget = 'simpeg_rsertifikasi';
+                $idTarget = 'id';
+                break;
+            case 'pendum':
+                $tableTarget = 'simpeg_rpendum';
+                $idTarget = 'ID_PENDUM';
+                break;
+            case 'diknstr':
+                $tableTarget = 'simpeg_rdiknstr';
+                $idTarget = 'ID_DIKNSTR';
+                break;
+            case 'dikstr':
+                $tableTarget = 'simpeg_rdikstr';
+                $idTarget = 'ID_DIKSTR';
+                break;
+            case 'dikfung':
+                $tableTarget = 'simpeg_rdikfung';
+                $idTarget = 'ID_DIKFUNG';
+                break;
+            case 'diktek':
+                $tableTarget = 'simpeg_rpendum';
+                $idTarget = 'ID_DIKTEK';
+                break;
+            case 'seminar':
+                $tableTarget = 'simpeg_rseminar';
+                $idTarget = 'ID_SEMINAR';
+                break;
+            case 'rtubel':
+                $tableTarget = 'simpeg_rtubel';
+                $idTarget = 'ID_TUBEL';
+                break;
+            case 'skkontrak':
+                $tableTarget = 'simpeg_skkontrak';
+                $idTarget = 'id';
+                break;
+            case 'unker':
+                $tableTarget = 'simpeg_unker';
+                $idTarget = 'id';
+                break;
+            case 'bkstambah':
+                $tableTarget = 'simpeg_bkstambah';
+                $idTarget = 'id';
+                break;
+            default:
+                $tableTarget = '';
+                $idTarget = '';
+                break;
+        }
+        if ($tableTarget != '') {
+            # code...
+            $search = $this->db($tableTarget)->where($idTarget,$_POST['id'])->oneArray();
+            if ($search) {
+                $this->db($tableTarget)->where($idTarget,$_POST['id'])->delete();
+                $searchAgain = $this->db($tableTarget)->where($idTarget,$_POST['id'])->oneArray();
+                if (!$searchAgain) {
+                    $notification = 'Data Berhasil Dihapus';
+                }
+            } else {
+                $notification = 'Data Tidak Ditemukan';
+            }
+        } else {
+            $notification = 'Data Tidak Ada';
+        }
+        echo $notification;
+        exit();
+    }
     // ============================================== LAIN LAIN =======================================================
     public function getJadwal($page = 1)
     {
@@ -1352,7 +2055,8 @@ class Admin extends AdminModule
 
         $year = date('Y');
         $month = date('m');
-        $day = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        // $day = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+        $day = $this->days_in_month($month, $year);
 
         for ($i = 1; $i < $day + 1; $i++) {
             $i;
@@ -1388,8 +2092,8 @@ class Admin extends AdminModule
         if ($this->core->getUserInfo('id') == 1 and isset($_GET['bulan'])) {
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '>=', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<=', date('Y-' . $bulan) . '-32')
                 ->like('nama', '%' . $phrase . '%')
                 ->orLike('shift', '%' . $phrase . '%')
                 ->asc('jam_datang')
@@ -1397,16 +2101,16 @@ class Admin extends AdminModule
         } elseif (isset($_GET['bulan'])) {
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '>=', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<=', date('Y-' . $bulan) . '-32')
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
         } else {
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '>=', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<=', date('Y-' . $bulan) . '-32')
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
@@ -1432,8 +2136,8 @@ class Admin extends AdminModule
                     'photo' => 'rekap_presensi.photo'
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '>=', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<=', date('Y-' . $bulan) . '-32')
                 ->like('nama', '%' . $phrase . '%')
                 ->orLike('shift', '%' . $phrase . '%')
                 ->asc('jam_datang')
@@ -1454,8 +2158,8 @@ class Admin extends AdminModule
                     'photo' => 'rekap_presensi.photo'
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '>=', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<=', date('Y-' . $bulan) . '-32')
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
@@ -1473,8 +2177,8 @@ class Admin extends AdminModule
                     'photo' => 'rekap_presensi.photo'
                 ])
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
-                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('jam_datang', '>=', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<=', date('Y-' . $bulan) . '-32')
                 ->where('nik', $username)
                 ->asc('jam_datang')
                 ->toArray();
@@ -1491,7 +2195,7 @@ class Admin extends AdminModule
             }
         }
 
-
+        $this->assign['rekapBkd'] = $this->db('bridging_bkd_presensi')->join('pegawai','pegawai.id = bridging_bkd_presensi.id')->where('pegawai.nik',$username)->where('bridging_bkd_presensi.bulan',$bulan)->where('bridging_bkd_presensi.tahun',$year)->oneArray();
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['getBulan'] = $bulan;
         $this->assign['beritaAcara'] = $beritaAcara;
@@ -1706,7 +2410,8 @@ class Admin extends AdminModule
         $jml_pot_psw4 = 0;
         $year = date('Y');
         $biodata = $this->db('pegawai')->select(['id' => 'id', 'nama' => 'nama', 'nip' => 'nik', 'status' => 'stts_kerja'])->where('nik', $_POST['nik'])->oneArray();
-        $day = cal_days_in_month(CAL_GREGORIAN, $_POST['bulan'], $year);
+        // $day = cal_days_in_month(CAL_GREGORIAN, $_POST['bulan'], $year);
+        $day = $this->days_in_month($_POST['bulan'], $year);
         for ($i = 1; $i <= $day; $i++) {
             $jad = $this->db('jadwal_pegawai')->select('h' . $i)->where('id', $biodata['id'])->where('tahun', $year)->where('bulan', $_POST['bulan'])->oneArray();
             if ($jad['h' . $i] != "") {
@@ -1779,7 +2484,7 @@ class Admin extends AdminModule
                 'bulan' => $_POST['bulan'],
                 'jumlah_kehadiran' => $jlh,
                 'jumlah_hari_kerja' => $jadwal,
-                'persentase_hari_kerja' => '0.33',
+                'persentase_hari_kerja' => '1',
                 'jml_pot_keterlambatan' => $jml_pot_terlambat,
                 'jml_pot_pulang_lebih_awal' => $jml_pot_pulang,
                 'status' => $biodata['status'],
@@ -1788,26 +2493,33 @@ class Admin extends AdminModule
             $query = $this->db('bridging_bkd_presensi')->where('id',$biodata['id'])->where('bulan',$_POST['bulan'])->where('tahun',$year)->update([
                 'jumlah_kehadiran' => $jlh,
                 'jumlah_hari_kerja' => $jadwal,
-                'persentase_hari_kerja' => '0.33',
+                'persentase_hari_kerja' => '1',
                 'jml_pot_keterlambatan' => $jml_pot_terlambat,
                 'jml_pot_pulang_lebih_awal' => $jml_pot_pulang,
             ]);
         }
-        // print_r($query);
-        if ($query) {
-            echo 'Sukses';
-            $this->notify('success', 'Simpan Sukses');
+
+        $cekBkd = $this->db('bridging_bkd_presensi')->where('id',$biodata['id'])->where('bulan',$_POST['bulan'])->where('tahun',$year)->oneArray();
+        if ($cekBkd) {
+            echo 200;
         } else {
-            $this->notify('failure', 'Gagal Simpan');
+            echo 201;
         }
         exit();
+    }
+
+    private function days_in_month($month, $year)
+    {
+    // calculate number of days in a month
+    return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
     }
 
     public function getCuti()
     {
         $this->_addHeaderFiles();
-        $this->assign['title'] = 'Pengajuan Izin';
+        $this->assign['title'] = 'Pengajuan Izin & Cuti';
         $this->assign['nik'] = $this->core->getUserInfo('username', null, true);
+        $this->assign['list'] = $this->db('izin_cuti')->where('nip',$this->assign['nik'])->toArray();
         $this->assign['pilihCuti'] = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         return $this->draw('cuti.html',['cuti' => $this->assign]);
     }
@@ -1818,17 +2530,22 @@ class Admin extends AdminModule
         $kodeSurat = '';
         $noSurat = '01';
         $noCuti = '';
+        $cutiTahunan = 12;
+        $sisaCuti = '';
+        $location = url([ADMIN, 'profil', 'cuti']);
 
         $tanggalAwal = strtotime($_POST['tanggal_awal']);
         $tanggalAkhir = strtotime($_POST['tanggal_akhir']);
         $timeDiff = abs($tanggalAkhir - $tanggalAwal);
         $numberDays = $timeDiff/86400;
         $numberDays = $numberDays + 1;
+        $tahun = date('Y',$tanggalAwal);
 
         switch ($_POST['jenis_cuti']) {
             case '1':
                 $kodeSurat = '851';
                 $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+                $sisaCuti = $cutiTahunan - $numberDays;
                 break;
             case '5':
                 $kodeSurat = '850';
@@ -1844,23 +2561,32 @@ class Admin extends AdminModule
                 break;
         }
 
-        $simpanIzinCuti = [
+        $lastId = $this->db('izin_cuti')->lastInsertId();
+        $this->db('izin_cuti')->save([
+            'id' => $lastId,
             'nip' => $_POST['nip'],
             'jenis_cuti' => $_POST['jenis_cuti'],
             'alasan' => $_POST['alasan'],
             'no_telp' => $_POST['telp'],
             'lama' => $numberDays,
-            'tanggal_awal' => $_POST['tanggal_awal'],
-            'tanggal_akhir' => $_POST['tanggal_akhir'],
+            'sisa_cuti_tahunan' => $sisaCuti,
+            'tahun' => $tahun,
+            'tgl_awal' => $_POST['tanggal_awal'],
+            'tgl_akhir' => $_POST['tanggal_akhir'],
             'alamat' => $_POST['alamat'],
             'tgl_surat' => date('Y-m-d'),
             'no_surat' => $noCuti,
             'status' => '',
-            'created_at' => date('Y-m-d'),
-            'updated_at' => ''
-        ];
-
-        echo json_encode($simpanIzinCuti);
+            'created_at' => null,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+        if (!$lastId) {
+            $this->notify('success', 'Simpan sukses');
+        } else {
+            $this->notify('failure', 'Gagal Simpan');
+        }
+        redirect($location);
+        exit();
     }
 
     public function getJavascript()

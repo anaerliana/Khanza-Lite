@@ -432,6 +432,19 @@ class Admin extends AdminModule
             'rtl' => '-',
             'penilaian' => '-',
           ]);
+          $pemeriksaan = $this->db('pemeriksaan_ralan')->where('no_rawat',$_POST['no_rawat'])->oneArray();
+          if ($pemeriksaan) {
+            $this->db('mlite_antrian_loket')->save([
+              'type' => 'Loket',
+              'noantrian' => '1',
+              'no_rkm_medis' => $data_sep['nomr'],
+              'postdate' => substr($this->randMinutes($mutasi_dikirim['dikirim']),0,10),
+              'start_time' => substr($this->randMinutesAwal($mutasi_dikirim['dikirim']),11),
+              'end_time' => substr($this->randMinutesAkhir($mutasi_dikirim['dikirim']),11),
+              'status' => '1',
+              'loket' => '1'
+            ]);
+          }
         }
       }
     }
@@ -448,6 +461,48 @@ class Admin extends AdminModule
     $min = 5 * 60;
     $max = 15 * 60;
     $seconds += rand($min, $max); //set desired min and max values
+
+    // now back to time format
+    $hours = floor($seconds / 3600);
+    $mins = floor($seconds / 60 % 60);
+    $secs = floor($seconds % 60);
+
+    $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+    $timeFormat = $date.' '.$timeFormat;
+    return $timeFormat;
+  }
+
+  public function randMinutesAwal($date1){
+    $format = 'Y-m-d H:i:s';
+    $date = \DateTime::createFromFormat($format, $date1);
+    $time = $date->format('H:i:s');
+    $date = $date->format('Y-m-d');
+    list($h, $m, $s) = explode(":", $time);
+    $seconds = $s + ($m * 60) + ($h * 3600);
+    $min = 3 * 60;
+    $max = 7 * 60;
+    $seconds -= rand($min, $max); //set desired min and max values
+
+    // now back to time format
+    $hours = floor($seconds / 3600);
+    $mins = floor($seconds / 60 % 60);
+    $secs = floor($seconds % 60);
+
+    $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+    $timeFormat = $date.' '.$timeFormat;
+    return $timeFormat;
+  }
+
+  public function randMinutesAkhir($date1){
+    $format = 'Y-m-d H:i:s';
+    $date = \DateTime::createFromFormat($format, $date1);
+    $time = $date->format('H:i:s');
+    $date = $date->format('Y-m-d');
+    list($h, $m, $s) = explode(":", $time);
+    $seconds = $s + ($m * 60) + ($h * 3600);
+    $min = 7 * 60;
+    $max = 10 * 60;
+    $seconds -= rand($min, $max); //set desired min and max values
 
     // now back to time format
     $hours = floor($seconds / 3600);
@@ -476,7 +531,7 @@ class Admin extends AdminModule
       echo 'Data pasien tidak ditemukan!';
     } else {
 
-      /*$simpan_sep = $this->db('bridging_sep')->save([
+      $this->db('bridging_sep')->save([
             'no_sep' => $_POST['noSep'],
             'no_rawat' => $data['no_rawat'],
             'tglsep' => $_POST['tglsep'],
@@ -526,11 +581,12 @@ class Admin extends AdminModule
             'no_sep' => $_POST['sep_no_sep'],
             'prb' => $_POST['prolanis_prb']
           ]);
+          $simpan_sep = $this->db('bridging_sep')->where('no_sep',$_POST['noSep'])->oneArray();
           if($simpan_sep) {
             echo $_POST['sep_no_sep'];
-          }*/
+          }
 
-      echo '0186R0020920V003231';
+      // echo '0186R0020920V003231';
     }
 
     exit();

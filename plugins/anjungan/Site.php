@@ -41,11 +41,12 @@ class Site extends SiteModule
     $this->route('anjungan/bed', 'getDisplayBed');
     $this->route('anjungan/sep', 'getSepMandiri');
     $this->route('anjungan/sep/cek', 'getSepMandiriCek');
-    $this->route('anjungan/sep/(:int)/(:int)', 'getSepMandiriNokaNorm');
-    $this->route('anjungan/sep/bikin/(:str)/(:int)', 'getSepMandiriBikin');
+    $this->route('anjungan/sep/(:int)/(:int)/(:str)', 'getSepMandiriNokaNorm');
+    $this->route('anjungan/sep/bikin/(:str)/(:int)/(:str)', 'getSepMandiriBikin');
     $this->route('anjungan/sep/savesep', 'postSaveSep');
     $this->route('anjungan/sep/cetaksep/(:str)', 'getCetakSEP');
     $this->route('anjungan/daftar/cek','getDaftarMandiriCek');
+    $this->route('anjungan/daftar/reg','postRegDaftar');
     $this->route('anjungan/baru/cek','getBaruCek');
     $this->route('anjungan/baru/(:int)','getBaruData');
     $this->route('anjungan/baru/bikin/(:str)','getBaruBikin');
@@ -1736,7 +1737,11 @@ class Site extends SiteModule
   {
     session_start();
     $date = date('Y-m-d');
+    $status = "pagi";
     if (isset($_POST['cekrm']) && isset($_POST['no_rkm_medis']) && $_POST['no_rkm_medis'] != '') {
+      if (date('H:i:s') <= '14:00:00' ) {
+        $status = 'sore';
+      }
       $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
       $checkSEP = $this->db('bridging_sep')->where('nomr',$_POST['no_rkm_medis'])->where('tglsep',$date)->oneArray();
       $reg = $this->db('reg_periksa')->join('poliklinik','poliklinik.kd_poli = reg_periksa.kd_poli')->where('no_rkm_medis',$_POST['no_rkm_medis'])->where('tgl_registrasi',$date)->oneArray();
@@ -1749,7 +1754,7 @@ class Site extends SiteModule
             if ($checkSEP) {
               redirect(url('anjungan/sep/cetaksep/' . $checkSEP['no_sep']));
             } else {
-              redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis']));
+              redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis'] . '/' . $status));
             }
           }
         } else {
@@ -1757,7 +1762,7 @@ class Site extends SiteModule
             if ($checkSEP) {
               redirect(url('anjungan/sep/cetaksep/' . $checkSEP['no_sep']));
             } else {
-              redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis']));
+              redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis'] . '/' . $status));
             }
           } else {
             $_SESSION['message'] = "Anda Terdaftar Untuk Hari Ini Pada Poli Pagi. Silahkan Bertanya Kepada Satpam Ataupun Resepsionis";
@@ -1783,7 +1788,7 @@ class Site extends SiteModule
     date_default_timezone_set($this->settings->get('settings.timezone'));
     $slug = parseURL();
     $sep_response = '';
-    if (count($slug) == 4 && $slug[0] == 'anjungan' && $slug[1] == 'sep') {
+    if (count($slug) == 5 && $slug[0] == 'anjungan' && $slug[1] == 'sep') {
 
       $url = "Rujukan/List/Peserta/" . $slug[2];
 
@@ -1840,6 +1845,7 @@ class Site extends SiteModule
       'tanggal' => $tanggal,
       'running_text' => $this->settings->get('anjungan.text_anjungan'),
       'no_rkm_medis' => $slug[3],
+      'status' => $slug[4],
       'sep_response' => $sep_response
     ]);
 
@@ -1864,6 +1870,10 @@ class Site extends SiteModule
     $slug = parseURL();
 
     $title = 'Display SEP Mandiri';
+    $title_header = 'Anjungan Cetak Surat Eligibilitas Peserta BPJS';
+    if ($slug[5] == 'reg' ) {
+      $title_header = 'Pendaftaran Poli Sore';
+    }
     $logo  = $this->settings->get('settings.logo');
     $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
     $nama_ppk  = $this->settings->get('settings.nama_instansi');
@@ -1878,11 +1888,7 @@ class Site extends SiteModule
 
     $date = date('Y-m-d');
 
-    //if ($searchBy == 'RS') {
-    //    $url = 'Rujukan/RS/'.$slug[3];
-    //} else {
     $url = 'Rujukan/' . $slug[3];
-    //}
     $url = $this->api_url . '' . $url;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
@@ -1916,12 +1922,8 @@ class Site extends SiteModule
 
     if (empty($reg_periksa)) {
       $pasien = $this->db('pasien')->where('no_rkm_medis', $slug[4])->oneArray();
-      if (date("H:i:s") <= '15:00:00') {
-        $waktu_poli = 'Pagi';
-      } else {
-        $waktu_poli = 'Sore';
-      }
-      $poli = $this->db('maping_poli_bpjs')->join('poliklinik','maping_poli_bpjs.kd_poli_rs = poliklinik.kd_poli')->where('kd_poli_bpjs',$rujukan['rujukan']['poliRujukan']['kode'])->like('nm_poli','%'.$waktu_poli)->oneArray();
+      $stts_poli = ($slug[5] == 'reg') ? 'sore' : $slug[5] ;
+      $poli = $this->db('maping_poli_bpjs')->join('poliklinik','maping_poli_bpjs.kd_poli_rs = poliklinik.kd_poli')->where('kd_poli_bpjs',$rujukan['rujukan']['poliRujukan']['kode'])->like('nm_poli','%'.$stts_poli)->oneArray();
       $tentukan_hari = date('D', strtotime(date('Y-m-d')));
       $day = array(
         'Sun' => 'AKHAD',
@@ -1943,7 +1945,9 @@ class Site extends SiteModule
         'no_tlp' => $pasien['no_tlp'],
         'no_peserta' => $pasien['no_peserta'],
         'nm_poli' => $poli['nm_poli_bpjs'],
-        'no_rawat' => ''
+        'no_rawat' => '',
+        'kd_poli_rs' => $poli['kd_poli_rs'],
+        'stts_daftar_poli' => $slug[5]
       ];
       $dpjp = [
         'kd_dokter_bpjs' => $dokter['kd_dokter_bpjs'],
@@ -1980,6 +1984,7 @@ class Site extends SiteModule
 
     $content = $this->draw('sep.mandiri.bikin.html', [
       'title' => $title,
+      'title_header' => $title_header,
       'logo' => $logo,
       'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
       'username' => $username,
@@ -2020,8 +2025,8 @@ class Site extends SiteModule
       ->oneArray();
 
 
-    if ($dpjpKontrol['kddpjp'] == "") {
-      $dpjpKontrol['kddpjp'] = $_POST['kddpjp'];
+    if ($dpjpKontrol['kd_dokter_bpjs'] == "") {
+      $dpjpKontrol['kddpjp'] = "";
     }
 
     $data = [
@@ -2074,12 +2079,12 @@ class Site extends SiteModule
             ]
           ],
           'tujuanKunj' => $_POST['tujuanKunj'],
-          'flagProcedure' => $_POST['flagProcedure'],
-          'kdPenunjang' => $_POST['kdPenunjang'],
+          'flagProcedure' => '',
+          'kdPenunjang' => '',
           'assesmentPel' => $_POST['assesmentPel'],
           'skdp' => [
             'noSurat' => $_POST['noskdp'],
-            'kodeDPJP' => $dpjpKontrol['kddpjp']
+            'kodeDPJP' => $dpjpKontrol['kddpjp'],
           ],
           'dpjpLayan' => $_POST['kddpjp'],
           'noTelp' => $_POST['notelep'],
@@ -2119,14 +2124,9 @@ class Site extends SiteModule
 
       $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
       // $_POST['sep_no_sep'] = '1708UjiCoba';
-
       if($_POST['no_rawat'] == ''){
-        if (date("H:i:s") <= '15:00:00') {
-          $waktu_poli = 'Pagi';
-        } else {
-          $waktu_poli = 'Sore';
-        }
-        $poli = $this->db('maping_poli_bpjs')->join('poliklinik','maping_poli_bpjs.kd_poli_rs = poliklinik.kd_poli')->where('kd_poli_bpjs',$_POST['kdpolitujuan'])->like('nm_poli','%'.$waktu_poli)->oneArray();
+        date_default_timezone_set($this->settings->get('settings.timezone'));
+        $poli = $this->db('maping_poli_bpjs')->join('poliklinik','maping_poli_bpjs.kd_poli_rs = poliklinik.kd_poli')->where('kd_poli_rs',$_POST['kdpolirs'])->oneArray();
         $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kddpjp'])->oneArray();
         $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['nomr'])->count();
         $_POST['stts_daftar'] = 'Baru';
@@ -2167,8 +2167,7 @@ class Site extends SiteModule
             }
         }
         $_POST['no_rawat'] = $this->getMaxid();
-        date_default_timezone_set($this->settings->get('settings.timezone'));
-        $simpan_reg = $this->db('reg_periksa')->save([
+        $this->db('reg_periksa')->save([
           'no_reg' => $this->getMaxAntrian($poli['kd_poli_rs'],$dpjp['kd_dokter']),
           'no_rawat' => $_POST['no_rawat'],
           'tgl_registrasi' => date('Y-m-d'),
@@ -2189,6 +2188,7 @@ class Site extends SiteModule
           'status_bayar' => 'Belum Bayar',
           'status_poli' => $_POST['status_poli']
         ]);
+        $simpan_reg = $this->db('reg_periksa')->where('no_rawat',$_POST['no_rawat'])->oneArray();
         if($simpan_reg){
           $simpan_sep = $this->db('bridging_sep')->save([
             'no_sep' => $_POST['sep_no_sep'],
@@ -2207,9 +2207,9 @@ class Site extends SiteModule
             'kdpolitujuan' => $_POST['kdpolitujuan'],
             'nmpolitujuan' => $_POST['nmpolitujuan'],
             'klsrawat' => $_POST['klsrawat'],
-            'klsnaik' => '',
-            'pembiayaan' => '',
-            'pjnaikkelas' => '',
+            // 'klsnaik' => '',
+            // 'pembiayaan' => '',
+            // 'pjnaikkelas' => '',
             'lakalantas' => $_POST['lakalantas'],
             'user' => $_POST['sep_user'],
             'nomr' => $_POST['nomr'],
@@ -2238,12 +2238,12 @@ class Site extends SiteModule
             'noskdp' => $_POST['noskdp'],
             'kddpjp' => $_POST['kddpjp'],
             'nmdpdjp' => $_POST['nmdpdjp'],
-            'tujuankunjungan' => $_POST['tujuanKunj'],
-            'flagprosedur' => $_POST['flagProcedure'],
-            'penunjang' => $_POST['kdPenunjang'],
-            'asesmenpelayanan' => $_POST['assesmentPel'],
-            'kddpjplayanan' => $_POST['kddpjp'],
-            'nmdpjplayanan' => $_POST['nmdpdjp']
+            // 'tujuankunjungan' => $_POST['tujuanKunj'],
+            // 'flagprosedur' => $_POST['flagProcedure'],
+            // 'penunjang' => $_POST['kdPenunjang'],
+            // 'asesmenpelayanan' => $_POST['assesmentPel'],
+            // 'kddpjplayanan' => $_POST['kddpjp'],
+            // 'nmdpjplayanan' => $_POST['nmdpdjp']
           ]);
         }
       }else{
@@ -2444,6 +2444,19 @@ class Site extends SiteModule
             'rtl' => '-',
             'penilaian' => '-',
           ]);
+          $pemeriksaan = $this->db('pemeriksaan_ralan')->where('no_rawat',$_POST['no_rawat'])->oneArray();
+          if ($pemeriksaan) {
+            $this->db('mlite_antrian_loket')->save([
+              'type' => 'Loket',
+              'noantrian' => '1',
+              'no_rkm_medis' => $data_sep['nomr'],
+              'postdate' => substr($this->randMinutes($mutasi_dikirim['dikirim']),0,10),
+              'start_time' => substr($this->randMinutesAwal($mutasi_dikirim['dikirim']),11),
+              'end_time' => substr($this->randMinutesAkhir($mutasi_dikirim['dikirim']),11),
+              'status' => '1',
+              'loket' => '1'
+            ]);
+          }
         }
       }
     }
@@ -2460,6 +2473,48 @@ class Site extends SiteModule
     $min = 5 * 60;
     $max = 15 * 60;
     $seconds += rand($min, $max); //set desired min and max values
+
+    // now back to time format
+    $hours = floor($seconds / 3600);
+    $mins = floor($seconds / 60 % 60);
+    $secs = floor($seconds % 60);
+
+    $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+    $timeFormat = $date.' '.$timeFormat;
+    return $timeFormat;
+  }
+
+  public function randMinutesAwal($date1){
+    $format = 'Y-m-d H:i:s';
+    $date = \DateTime::createFromFormat($format, $date1);
+    $time = $date->format('H:i:s');
+    $date = $date->format('Y-m-d');
+    list($h, $m, $s) = explode(":", $time);
+    $seconds = $s + ($m * 60) + ($h * 3600);
+    $min = 3 * 60;
+    $max = 7 * 60;
+    $seconds -= rand($min, $max); //set desired min and max values
+
+    // now back to time format
+    $hours = floor($seconds / 3600);
+    $mins = floor($seconds / 60 % 60);
+    $secs = floor($seconds % 60);
+
+    $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+    $timeFormat = $date.' '.$timeFormat;
+    return $timeFormat;
+  }
+
+  public function randMinutesAkhir($date1){
+    $format = 'Y-m-d H:i:s';
+    $date = \DateTime::createFromFormat($format, $date1);
+    $time = $date->format('H:i:s');
+    $date = $date->format('Y-m-d');
+    list($h, $m, $s) = explode(":", $time);
+    $seconds = $s + ($m * 60) + ($h * 3600);
+    $min = 7 * 60;
+    $max = 10 * 60;
+    $seconds -= rand($min, $max); //set desired min and max values
 
     // now back to time format
     $hours = floor($seconds / 3600);
@@ -2536,7 +2591,7 @@ class Site extends SiteModule
   {
     $date = date('Y-m-d');
     $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan', $rujukan)->where('kdpolitujuan', $poli)->desc('tglsep')->oneArray();
-    $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $dokter)->oneArray();
+    $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $dokter)->oneArray();
     $nmPoli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $poli)->oneArray();
 
     date_default_timezone_set('UTC');
@@ -2576,7 +2631,7 @@ class Site extends SiteModule
       //var_dump($rujukan);
       $noKontrol = $rujukan['noSuratKontrol'];
 
-      $simpanKontrol = $this->db('bridging_surat_kontrol_bpjs')->save([
+      $this->db('bridging_surat_kontrol_bpjs')->save([
         'no_sep' => $cari_rujukan['no_sep'],
         'tgl_surat' => $cari_rujukan['tglsep'],
         'no_surat' => $noKontrol,
@@ -2586,6 +2641,7 @@ class Site extends SiteModule
         'kd_poli_bpjs' => $poli,
         'nm_poli_bpjs' => $nmPoli['nm_poli_bpjs']
       ]);
+      $simpanKontrol = $this->db('bridging_surat_kontrol_bpjs')->where('no_surat',$noKontrol)->oneArray();
       if ($simpanKontrol) {
         $noKontrol = $noKontrol;
       }
@@ -2598,9 +2654,17 @@ class Site extends SiteModule
   {
     session_start();
     $date = date('Y-m-d');
+    $status = 'cetak';
     if (isset($_POST['cekrm']) && isset($_POST['no_rkm_medis']) && $_POST['no_rkm_medis'] != '') {
       $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
       $reg = $this->db('reg_periksa')->where('no_rkm_medis',$_POST['no_rkm_medis'])->where('tgl_registrasi',$date)->oneArray();
+
+      if (date('H:i:s') <= '14:00:00' && $_POST['status'] == 'sore') {
+        $status = 'reg';
+      } else if (date('H:i:s') >= '14:00:00' && $_POST['status'] == 'pagi'){
+        $status = 'palsu';
+      }
+
       if($reg){
         $_SESSION['message'] = "Anda Sudah Terdaftar Untuk Hari Ini. Silahkan Menggunakan Menu Cetak SEP";
         redirect(url('anjungan/sep'));
@@ -2608,10 +2672,92 @@ class Site extends SiteModule
         $_SESSION['message'] = "Anda Belum Terdaftar Dirumah Sakit ini. Silahkan Menggunakan Menu Pendaftaran Baru";
         redirect(url('anjungan/sep'));
       }else{
-        redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis']));
+        if ($status == 'reg') {
+          redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis'] . '/' . $status));
+        } else if($status == 'palsu'){
+          $_SESSION['message'] = "Anda Tidak Bisa Mendaftar Ke Poli Pagi Hari Ini. Silahkan Daftar Ke Poli Sore Jika Ingin Periksa Hari Ini . Atau Datang Lagi Besok Jika Ingin Periksa Ke Poli Pagi";
+          redirect(url('anjungan/sep'));
+        } else {
+          redirect(url('anjungan/sep/' . $pasien['no_peserta'] . '/' . $_POST['no_rkm_medis'] . '/' . $_POST['status']));
+        }
       }
     } else {
       redirect(url('anjungan/sep'));
+    }
+    exit();
+  }
+
+  public function postRegDaftar()
+  {
+    $slug = parseURL();
+    date_default_timezone_set($this->settings->get('settings.timezone'));
+    $poli = $this->db('maping_poli_bpjs')->join('poliklinik','maping_poli_bpjs.kd_poli_rs = poliklinik.kd_poli')->where('kd_poli_rs',$_POST['kdpolirs'])->oneArray();
+    $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kddpjp'])->oneArray();
+    $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['nomr'])->count();
+    $_POST['stts_daftar'] = 'Baru';
+    if($cek_stts_daftar > 0) {
+      $_POST['stts_daftar'] = 'Lama';
+    }
+
+    $biaya_reg = $this->db('poliklinik')->where('kd_poli', $poli['kd_poli_rs'])->oneArray();
+    $_POST['biaya_reg'] = $biaya_reg['registrasi'];
+    if($_POST['stts_daftar'] == 'Lama') {
+      $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
+    }
+
+    $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['nomr'])->where('kd_poli', $poli['kd_poli_rs'])->count();
+    $_POST['status_poli'] = 'Baru';
+    if($cek_status_poli > 0) {
+      $_POST['status_poli'] = 'Lama';
+    }
+
+    $tanggal = new \DateTime($_POST['tanggal_lahir']);
+    $today = new \DateTime(date('Y-m-d'));
+    $y = $today->diff($tanggal)->y;
+    $m = $today->diff($tanggal)->m;
+    $d = $today->diff($tanggal)->d;
+
+    $umur="0";
+    $sttsumur="Th";
+    if($y>0){
+        $umur=$y;
+        $sttsumur="Th";
+    }else if($y==0){
+        if($m>0){
+            $umur=$m;
+            $sttsumur="Bl";
+        }else if($m==0){
+            $umur=$d;
+            $sttsumur="Hr";
+        }
+    }
+    $_POST['no_rawat'] = $this->getMaxid();
+    $this->db('reg_periksa')->save([
+      'no_reg' => $this->getMaxAntrian($poli['kd_poli_rs'],$dpjp['kd_dokter']),
+      'no_rawat' => $_POST['no_rawat'],
+      'tgl_registrasi' => date('Y-m-d'),
+      'jam_reg' => date('H:i:s'),
+      'kd_dokter' => $dpjp['kd_dokter'],
+      'no_rkm_medis' => $_POST['nomr'],
+      'kd_poli' => $poli['kd_poli_rs'],
+      'p_jawab' => 'SAUDARA',
+      'almt_pj' => 'ALAMAT',
+      'hubunganpj' => 'SAUDARA',
+      'biaya_reg' => $_POST['biaya_reg'],
+      'stts' => 'Belum',
+      'stts_daftar' => $_POST['stts_daftar'],
+      'status_lanjut' => 'Ralan',
+      'kd_pj' => 'BPJ',
+      'umurdaftar' => $umur,
+      'sttsumur' => $sttsumur,
+      'status_bayar' => 'Belum Bayar',
+      'status_poli' => $_POST['status_poli']
+    ]);
+    $cek_regist = $this->db('reg_periksa')->where('no_rawat',$_POST['no_rawat'])->where('no_rkm_medis',$_POST['nomr'])->oneArray();
+    if ($cek_regist) {
+      echo '200';
+    } else {
+      echo '201';
     }
     exit();
   }

@@ -158,7 +158,7 @@
 <body>
   <div class="mx-auto text-center text-white">
     <img src="{?=url()?}/{$logo}" width="150"><br>
-    <h3 class="display-6">Anjungan Cetak Surat Eligibilitas Peserta BPJS</h3>
+    <h3 class="display-6">{$title_header}</h3>
     <h2 class="display-5">{$settings.nama_instansi}</h2>
   </div>
   <br><br><br><br>
@@ -359,6 +359,7 @@
             <label for="norm">Kode Poli Tujuan</label>
             <input type="text" class="form-control" name="kdpoli" id="sep_spesialis_kode"
               value="{$rujukan.rujukan.poliRujukan.kode}" readonly>
+            <input type="text" name="kd_poli_rs" id="kd_poli_rs" value="{$reg_periksa.kd_poli_rs}">
           </div>
         </div>
       </div>
@@ -390,7 +391,7 @@
         <input type="text" class="form-control" name="nmdpjp" id="sep_dpjp_yang_melayani_nama"
           value="{$dpjp.nm_dokter_bpjs}" readonly>
       </div>
-      <div class="col-md-2" >
+      <div class="col-md-2" style="display:none;">
         <div class="form-group">
           <div class="form-line">
             <label>Faskes</label>
@@ -419,7 +420,11 @@
       <div class="col-md-4"></div>
       <div class="col-md-4">
         <div class="form-group">
+          {if: $reg_periksa.stts_daftar_poli == 'reg'}
+          <button class="btn btn-lg btn-success btn-block text-uppercase" id="simpandaftar">SIMPAN PENDAFTARAN</button>
+          {else}
           <button class="btn btn-lg btn-success btn-block text-uppercase" id="simpan">SIMPAN SEP</button>
+          {/if}
         </div>
       </div>
       <div class="col-md-4"></div>
@@ -660,11 +665,6 @@
       event.preventDefault();
 
       var url = baseURL + '/anjungan/sep/savesep?t=' + mlite.token;
-      if ($('#sep_norm').val() == '') {
-        var urlAjax = "{?=url('anjungan/baru/savesep')?}";
-      } else {
-        var urlAjax = "{?=url('anjungan/sep/savesep')?}";
-      }
 
       var no_rawat = $('#sep_no_rawat').val();
       var tglsep = $('#sep_tanggal_sep').val();
@@ -717,10 +717,12 @@
       var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
       var nmdpdjp = $('#sep_dpjp_yang_melayani_nama').val();
       var prolanis_prb = $('.prolainis_peserta').text();
+      var kdpolirs = $('#kd_poli_rs').val();
       console.log($("#form_sep :input").serializeArray());
+      console.log(tujuanKunj);
       $.ajax({
         type: "POST",
-        url: urlAjax,
+        url: url,
         data: {
           no_rawat: no_rawat,
           tglsep: tglsep,
@@ -767,7 +769,8 @@
           noskdp: noskdp,
           kddpjp: kddpjp,
           nmdpdjp: nmdpdjp,
-          prolanis_prb: prolanis_prb
+          prolanis_prb: prolanis_prb,
+          kdpolirs: kdpolirs
         },
         success: function (result) {
           var messages = result.split(' ');
@@ -783,6 +786,43 @@
           // console.log(result);
 
 
+        }
+      });
+    });
+
+    $("#form_sep").on("click", "#simpandaftar", function (event) {
+      var baseURL = mlite.url;
+      event.preventDefault();
+
+      var url = baseURL + '/anjungan/daftar/reg?t=' + mlite.token;
+      console.log(url);
+
+      var no_rawat = $('#sep_no_rawat').val();
+      var nama_peserta = $('#nama_peserta').val();
+      var nomr = $('#sep_norm').val();
+      var tanggal_lahir = $('#sep_tanggal_lahir').val();
+      var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
+      var kdpolirs = $('#kd_poli_rs').val();
+      console.log($("#form_sep :input").serializeArray());
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          no_rawat: no_rawat,
+          nama_pasien: nama_peserta,
+          nomr: nomr,
+          tanggal_lahir: tanggal_lahir,
+          kddpjp: kddpjp,
+          kdpolirs: kdpolirs
+        },
+        success: function (result) {
+          if (result == '200') {
+            alert('Anda Telah Selesai Melakukan Pendaftaran . Silahkan Datang Lagi Pada Sore Hari Ke Anjungan Ini Dan Melakukan Pencetakan Jaminan SEP Untuk Diserahkan Ke Perawat Di Poli . Terima Kasih');
+            window.location.replace(baseURL + '/anjungan/sep/');
+          } else {
+            alert('Gagal menyimpan data ke database SIMRS');
+          }
+          console.log(result);
         }
       });
     });
@@ -802,6 +842,12 @@
     }
     var btn = document.getElementById("simpan");
     btn.addEventListener("click", loading);
+    function reload(){
+        $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
+    }
+
+    var btnDaftar = document.getElementById("simpandaftar");
+    btnDaftar.addEventListener("click", loading);
     function reload(){
         $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
     }

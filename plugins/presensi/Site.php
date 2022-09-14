@@ -28,6 +28,7 @@ class Site extends SiteModule
         $response = array();
         if ($header[$this->settings->get('presensi.header_username')] == $this->settings->get('presensi.x_username') && $header[$this->settings->get('presensi.header_password')] == $this->settings->get('presensi.x_password')) {
             $response = array(
+                'status' => true,
                 'response' => array(
                     'token' => $this->_getToken()
                 ),
@@ -110,7 +111,7 @@ class Site extends SiteModule
                             'nip' => $key['nip'],
                             'jumlah_kehadiran' => (float)$key['jumlah_kehadiran'],
                             'jumlah_hari_kerja' => (float)$key['jumlah_hari_kerja'],
-                            'persentase_hari_kerja' => (float)$key['persentase_hari_kerja'],
+                            'persentase_hari_kerja' => 1,
                             'dl1' => "",
                             'dl2' => "",
                             'cuti_melahirkan' => (float)$rekap['cuti_melahirkan'],
@@ -126,7 +127,7 @@ class Site extends SiteModule
                             'jlh_over_cuti' => "",
                             'sakit_seb_10_hari' => "",
                             'pot_manunggal' => "",
-                            'tk1' => "",
+                            'tk1' => 0,
                             'tk2' => "",
                             'jml_pot_keterlambatan' => (float)$key['jml_pot_keterlambatan'],
                             'jml_pot_pulang_lebih_awal' => (float)$key['jml_pot_pulang_lebih_awal'],
@@ -139,8 +140,8 @@ class Site extends SiteModule
                             'jml_pot_lupa_absen_masuk' => "",
                             'jml_pot_kelebihan_cuti_akhir' => "",
                             'total_potongan' => $key['jml_pot_keterlambatan'] + $key['jml_pot_pulang_lebih_awal'],
-                            'persentase_final' => (float)$key['persentase_hari_kerja'],
-                            'defaultdeptid' => "",
+                            'persentase_final' => (float)1 - ($key['jml_pot_keterlambatan'] + $key['jml_pot_pulang_lebih_awal']),
+                            'defaultdeptid' => "40",
                             'periode' => $yearmonth,
                             'create_date' => $this->getTimestamp(),
                             'last_sync' => "",

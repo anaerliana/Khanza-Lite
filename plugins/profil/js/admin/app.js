@@ -42,7 +42,7 @@ $("#form").on("click", "#manage", function (event) {
         jam_datang: jam_datang,
         jam_pulang: jam_pulang,
       }, function (data) {
-        console.log(data);
+        console.log(data == 200);
         if (data == 'Sukses') {
           $("#display").load(baseURL + '/profil/rekap_presensi?t=' + mlite.token);
           $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
@@ -111,7 +111,7 @@ $("#pendum").on("click",".edit_pendum",function(event) {
 $("#diknon").on("click",".edit_diknon",function(event) {
   event.preventDefault();
   var ktpu = $(this).attr("data-ktpu");
-  var negara = $(this).attr("data-negara");
+  var tempat = $(this).attr("data-negara");
   var prog_studi = $(this).attr("data-prog_studi");
   var jurusan = $(this).attr("data-jurusan");
   var nsek = $(this).attr("data-nsek");
@@ -123,7 +123,7 @@ $("#diknon").on("click",".edit_diknon",function(event) {
   var id = $(this).attr("data-id");
 
   $("div.diknon select").val(ktpu).change();
-  $("input:text[name=TEMPAT]").val(negara);
+  $("input:text[name=TEMPAT]").val(tempat);
   $("input:text[name=PAN]").val(prog_studi);
   $("input:text[name=ANGKATAN]").val(jurusan);
   $("input:text[name=TMULAI]").val(nsek);
@@ -305,6 +305,7 @@ $("#pangkat").on("click",".edit_pangkat",function(event) {
   var pejabat = $(this).attr("data-pejabat");
   var isakhir = $(this).attr("data-isakhir");
   var id = $(this).attr("data-id");
+  console.log(gol);
 
   $("div.gol select").val(gol).change();
   $("div.npang select").val(npang).change();
@@ -313,6 +314,35 @@ $("#pangkat").on("click",".edit_pangkat",function(event) {
   $("input:text[name=TSKPANG]").val(tsk);
   $("input:text[name=NPEJABAT]").val(pejabat);
   document.getElementById("ID_PANGKAT").value = id;
+
+  if (isakhir === '1') {
+    if ($('#isakhir_pangkat').prop('checked')==false){
+      $('#isakhir_pangkat').prop('checked', true).change();
+    }
+  } else if(isakhir === '0'){
+    if ($('#isakhir_pangkat').prop('checked')==true){
+      $('#isakhir_pangkat').prop('checked', false).change();
+    }
+  }
+  // alert('Jancok');
+})
+
+$("#riwsk").on("click",".edit_pangkat",function(event) {
+  event.preventDefault();
+  var gol = $(this).attr("data-gol");
+  var npang = $(this).attr("data-npang");
+  var tmt = $(this).attr("data-tmt");
+  var nsk = $(this).attr("data-nsk");
+  var tsk = $(this).attr("data-tsk");
+  var isakhir = $(this).attr("data-isakhir");
+  var id = $(this).attr("data-id");
+
+  $("div.gol select").val(gol).change();
+  $("input:text[name=npej]").val(npang);
+  $("input:text[name=tgl_tmt]").val(tmt);
+  $("input:text[name=no_sk]").val(nsk);
+  $("input:text[name=tgl_sk]").val(tsk);
+  document.getElementById("idsk").value = id;
 
   if (isakhir === '1') {
     if ($('#isakhir_pangkat').prop('checked')==false){
@@ -572,4 +602,64 @@ $("#kel").on("click",".edit_kel",function(event) {
 
 function setTextField(ddl) {
     document.getElementById('make_text').value = ddl.options[ddl.selectedIndex].text;
+}
+
+$(".del").on("click",function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/profil/deletesimpeg?t=' + mlite.token;
+  var tabel = $(this).attr("data-tabel");
+  var id = $(this).attr("data-id");
+
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function (result) {
+    // ketika ditekan tombol ok
+    if (result) {
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        tabel: tabel,
+        id: id,
+      }, function (data) {
+        console.log(data);
+        bootbox.alert({
+          message: data,
+          callback: function(){
+            // $('.table').
+            window.location.reload($(location).attr('href'));
+          }
+        });
+
+        // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+      });
+    }
+  });
+})
+
+check("#file-pangkat");
+check("#file-jabatan");
+check("#file-skp");
+check("#file-gajiber");
+check("#file-angkre");
+check("#file-str");
+check("#file-pendum");
+check("#file-diknstr");
+check("#file-dikstr");
+check("#file-dikfung");
+check("#file-diktek");
+check("#file-sem");
+check("#file-tubel");
+check("#file-riwsk");
+check("#file-bkstambah");
+
+
+function check(params) {
+  $(params).bind('change', function() {
+    if (this.files[0].size/1024/1024 > 2) {
+      bootbox.alert('File Terlalu Besar');
+    } else {
+      var nameId = $(this).attr('id');
+      // var i = document.querySelector('input');
+      var file = $('#'+nameId)[0].files[0].name;
+      $(this).prev().text(file);
+    }
+  });
 }

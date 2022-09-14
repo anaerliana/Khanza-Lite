@@ -63,6 +63,60 @@
         </div>
     </form>
 </article>
+<article class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive no-margin">
+					<table class="table table-striped no-margin display" width="100%">
+						<thead>
+							<tr>
+								<th>Jenis Cuti</th>
+								<th>Alasan</th>
+								<th>Tanggal Mulai</th>
+								<th>Tanggal Akhir</th>
+								<th>Jumlah Hari</th>
+								<th>Tanggal Surat</th>
+								<!-- <th class="text-right">Aksi</th> -->
+							</tr>
+						</thead>
+						<tbody>
+							{if: !empty($cuti.list)}
+							{loop: $cuti.list}
+							<tr>
+								<td>{loop: $cuti.pilihCuti as $key => $val}
+									{if: $key == $value.jenis_cuti}{$val}{/if}
+									{/loop}</td>
+								<td>{$value.alasan}</td>
+								<td>{$value.tgl_awal}</td>
+								<td>{$value.tgl_akhir}</td>
+								<td>{$value.lama}</td>
+								<td>{$value.tgl_surat}</td>
+								<!-- <td class="text-right">
+									<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
+										<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
+									</a>
+									<a href="{$value.editURL}" class="btn btn-success btn-xs">
+										<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+									</a>
+								</td> -->
+							</tr>
+							{/loop}
+							{else}
+							<tr>
+								<td colspan="6" class="text-center">Kosong</td>
+							</tr>
+							{/if}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</article>
 <script type="text/javascript">
     $(function () {
         $('#tanggal_awal').datetimepicker({
@@ -98,6 +152,7 @@
                     var dateAwal = new Date($('#tanggal_awal').val());
                     dateAwal.setDate(dateAwal.getDate() + 90);
                     document.getElementById("tanggal_akhir").value = dateAwal.toISOString().split('T')[0];
+                    document.getElementById("tanggal_awal").off('dp.change');
                 });
             } else if($(this).val() == 7) {
                 $('.alamat').hide();
@@ -107,6 +162,8 @@
                 $('.alamat').hide();
                 $('.save').hide();
                 $('.telp').hide();
+            } else {
+                document.getElementById("tanggal_akhir").value = '';
             }
         })
     });

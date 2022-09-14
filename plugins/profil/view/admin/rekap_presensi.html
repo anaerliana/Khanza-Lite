@@ -52,12 +52,11 @@
             </thead>
             <tbody>
               {if: !empty($rekap.list)}
-              <form action="{?=url(ADMIN.'/profil/bridgingbkd')?}" id="form" method="POST">
               <div id="form">
                 <input type="hidden" name="bulan" value="{$rekap.getBulan}">
                 <input type="hidden" name="nik" value="{$rekap.getUser}">
                 <div class="col-md-6">
-                  <button class="btn btn-success form-inline form-control" id="manage" type="submit">Verifikasi</button>
+                  <button class="btn btn-success form-inline form-control" id="manage" type="submit">Verifikasi {if: $rekap.rekapBkd} Ada {$rekap.rekapBkd.jumlah_kehadiran} {else}{/if}</button>
                 </div>
                 <div class="col-md-6">
                   <a {if: $rekap.checkBa != ''} role="link" aria-disabled="true" style="pointer-events: none;cursor: default;" disabled {else} href="{$rekap.beritaAcara}" {/if} class="btn btn-info form-control form-inline" data-toggle="modal"
@@ -82,7 +81,6 @@
                 </tr>
                 {/loop}
               </div>
-              </form>
               {else}
               <tr>
                 <td colspan="4" class="text-center">Kosong</td>
