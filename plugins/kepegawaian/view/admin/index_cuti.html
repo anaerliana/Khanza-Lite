@@ -3,47 +3,51 @@
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<div class="btn-group pull-right" style="margin-top:-8px;">
-					<span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+					<!-- <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
 						<div id="btn_cetak" data-toggle="modal"><i class="fa fa-print"></i><span class="hidden-xs">
 								Cetak</span></div>
-					</span>
+					</span> -->
 				</div>
-				<h3 class="panel-title">Kelola Data Pegawai</h3>
+				<h3 class="panel-title">Kelola Data Izin & Cuti</h3>
 			</div>
 			<div class="panel-body">
 				<div class="table-responsive no-margin">
-					<table class="table table-striped no-margin display" width="100%">
+					<table class="table table-striped no-margin" id="pardah" width="100%">
 						<thead>
 							<tr>
-								<th>Kode Pegawai</th>
-								<th>Nama Pegawai</th>
-								<th>Tempat Lahir</th>
-								<th>Tanggal Lahir</th>
-								<th>Departemen</th>
-								<th>Bidang</th>
-								<th>Status</th>
-								<th class="text-right">Aksi</th>
+								<th>Nip Pegawai</th>
+								<th>Nama</th>
+								<th>Jenis Cuti</th>
+								<th>Alasan</th>
+								<th>Tanggal Mulai</th>
+								<th>Tanggal Akhir</th>
+								<th>Jumlah Hari</th>
+								<th>Tanggal Surat</th>
+								<!-- <th class="text-right">Aksi</th> -->
 							</tr>
 						</thead>
 						<tbody>
-							{if: !empty($pegawai.list)}
-							{loop: $pegawai.list}
+							{if: !empty($cuti.list)}
+							{loop: $cuti.list}
 							<tr>
-								<td>{$value.nik}</td>
+								<td>{$value.nip}</td>
 								<td>{$value.nama}</td>
-								<td>{$value.tmp_lahir}</td>
-								<td>{$value.tgl_lahir}</td>
-								<td>{$value.departemen}</td>
-								<td>{$value.bidang}</td>
-								<td>{$value.stts_aktif}</td>
-								<td class="text-right">
-									<!-- <a href="{$value.viewURL}" class="btn btn-primary btn-xs">
+								<td>{loop: $cuti.listCuti as $key => $val}
+									{if: $key == $value.jenis_cuti}{$val}{/if}
+									{/loop}</td>
+								<td>{$value.alasan}</td>
+								<td>{$value.tgl_awal}</td>
+								<td>{$value.tgl_akhir}</td>
+								<td>{$value.lama}</td>
+								<td>{$value.tgl_surat}</td>
+								<!-- <td class="text-right">
+									<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
 										<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
-									</a> -->
+									</a>
 									<a href="{$value.editURL}" class="btn btn-success btn-xs">
 										<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
 									</a>
-								</td>
+								</td> -->
 							</tr>
 							{/loop}
 							{else}

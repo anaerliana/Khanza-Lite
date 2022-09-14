@@ -102,7 +102,7 @@ class Admin extends AdminModule
           $this->core->addJS(url('assets/jscripts/responsivevoice.js'));
         }
         $this->_addHeaderFiles();
-
+        $username = $this->core->getUserInfo('username', null, true);
         $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->toArray();
@@ -126,8 +126,10 @@ class Admin extends AdminModule
           AND reg_periksa.kd_poli = poliklinik.kd_poli
           AND reg_periksa.kd_pj = penjab.kd_pj";
 
-        if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi','manajemen'],true)) {
-          $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+        if ($username != '197307171998032008') {
+          if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi','manajemen'],true)) {
+            $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+          }
         }
         if($status_periksa == 'belum') {
           $sql .= " AND reg_periksa.stts = 'Belum'";
@@ -256,7 +258,7 @@ class Admin extends AdminModule
           ->limit(1)
           ->oneArray();
           if($rawat) {
-            $stts_daftar = "Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
+            $stts_daftar = "Transaksi tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
             $stts_daftar_hidden = $stts_daftar;
             if($this->settings->get('settings.cekstatusbayar') == 'false'){
               $stts_daftar_hidden = 'Lama';

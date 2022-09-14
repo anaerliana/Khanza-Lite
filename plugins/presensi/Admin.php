@@ -33,6 +33,11 @@ class Admin extends AdminModule
                 'Jadwal Pegawai' => 'jadwal',
                 'Jadwal Tambahan' => 'jadwal_tambahan'
             ];
+        } else if($this->core->getUserInfo('username') == '198201092007011006'){
+            return [
+                'Kelola' => 'manage',
+                'Rekap BKD' => 'rekap_bkd',
+            ];
         } else {
             return [
                 'Kelola' => 'manage',
@@ -66,6 +71,10 @@ class Admin extends AdminModule
                 ['name' => 'Rekap BKD', 'url' => url([ADMIN, 'presensi', 'rekap_bkd']), 'icon' => 'cubes', 'desc' => 'Rekap Bridging Presensi Pegawai ke BKD'],
                 ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
                 ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai'],
+            ];
+        } else if($this->core->getUserInfo('username') == '198201092007011006'){
+            $sub_modules = [
+                ['name' => 'Rekap BKD', 'url' => url([ADMIN, 'presensi', 'rekap_bkd']), 'icon' => 'cubes', 'desc' => 'Rekap Bridging Presensi Pegawai ke BKD'],
             ];
         } else {
             $sub_modules = [
@@ -415,7 +424,7 @@ class Admin extends AdminModule
         if (!$id) {
             $location = url([ADMIN, 'presensi', 'jadwal']);
         } else {
-            $location = url([ADMIN, 'presensi', 'jadwaledit', $id]);
+            $location = url([ADMIN, 'presensi', 'jadwaledit', $id, $_POST['bulan'], $_POST['tahun']]);
         }
 
         //if (checkEmptyFields(['id'], $_POST)){
@@ -1919,6 +1928,8 @@ class Admin extends AdminModule
             $rows = $this->db('temporary_presensi')
                 ->select([
                     'nama' => 'pegawai.nama',
+                    'jbtn' => 'pegawai.jbtn',
+                    'bidang' => 'pegawai.bidang',
                     'id' => 'temporary_presensi.id',
                     'shift' => 'temporary_presensi.shift',
                     'jam_datang' => 'temporary_presensi.jam_datang',

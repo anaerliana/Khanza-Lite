@@ -27,9 +27,10 @@ class Admin extends AdminModule
         // $this->core->addJS(url([ADMIN, 'kepegawaian', 'jschart']), 'footer');
         $sub_modules = [
             ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
-            ['name' => 'Data Pegawai Kontrak', 'url' => url([ADMIN, 'kepegawaian', 'indexkontrak']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
-            ['name' => 'Data Pegawai Tidak Aktif', 'url' => url([ADMIN, 'kepegawaian', 'indexnon']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
-            ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
+            ['name' => 'Data Pegawai Kontrak', 'url' => url([ADMIN, 'kepegawaian', 'indexkontrak']), 'icon' => 'group', 'desc' => 'Data Pegawai Kontrak'],
+            ['name' => 'Data Pegawai Tidak Aktif', 'url' => url([ADMIN, 'kepegawaian', 'indexnon']), 'icon' => 'user-times', 'desc' => 'Data Pegawai Tidak Aktif'],
+            ['name' => 'Tambah Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'user-plus', 'desc' => 'Tambah Data Pegawai'],
+            ['name' => 'Data Izin / Cuti', 'url' => url([ADMIN, 'kepegawaian', 'cuti']), 'icon' => 'envelope', 'desc' => 'Daftar Izin / Cuti Pegawai'],
             //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
         ];
         $stats['KunjunganTahunChart'] = $this->KunjunganTahunChart();
@@ -44,8 +45,31 @@ class Admin extends AdminModule
     }
 
     public function postSearch(){
-        $id = $this->db('pegawai')->where('nik',$_POST['nip'])->oneArray();
-        $id = $id['id'];
+        if(isset($_POST["query"])){
+            $output = '';
+            $key = "%".$_POST["query"]."%";
+            if (is_numeric($_POST["query"]) == 1) {
+                # code...
+                $rows = $this->db('pegawai')->like('nik', $key)->limit(10)->toArray();
+            } else {
+                # code...
+                $rows = $this->db('pegawai')->like('nama', $key)->limit(10)->toArray();
+            }
+            $output = '';
+            if(count($rows)){
+              foreach ($rows as $row) {
+                $output .= '<li class="list-group-item link-class">'.$row["nama"].'</li>';
+              }
+            }
+            echo $output;
+        }
+        exit();
+    }
+
+    public function postSearchBy(){
+        $key = "%".$_POST["nama"]."%";
+        $rows = $this->db('pegawai')->like('nama', $key)->oneArray();
+        $id = $rows['id'];
         redirect(url([ADMIN, 'profil', 'biodata', $id]));
     }
 
@@ -62,6 +86,7 @@ class Admin extends AdminModule
                 $row = htmlspecialchars_array($row);
                 $row['editURL'] = url([ADMIN, 'profil', 'biodata', $row['id']]);
                 $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                $row['tgl_lahir'] = dateIndonesia($row['tgl_lahir']);
                 $this->assign['list'][] = $row;
             }
         }
@@ -85,6 +110,7 @@ class Admin extends AdminModule
                 $row = htmlspecialchars_array($row);
                 $row['editURL'] = url([ADMIN, 'profil', 'biodata', $row['id']]);
                 $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                $row['tgl_lahir'] = dateIndonesia($row['tgl_lahir']);
                 $this->assign['list'][] = $row;
             }
         }
@@ -108,6 +134,7 @@ class Admin extends AdminModule
                 $row = htmlspecialchars_array($row);
                 $row['editURL'] = url([ADMIN, 'kepegawaian', 'edit', $row['id']]);
                 $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                $row['tgl_lahir'] = dateIndonesia($row['tgl_lahir']);
                 $this->assign['list'][] = $row;
             }
         }
@@ -437,6 +464,37 @@ class Admin extends AdminModule
             }
 
         return $return;
+    }
+
+    public function getCuti()
+    {
+
+        $this->_addHeaderFiles();
+
+        $this->core->addCSS(url('https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css'));
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
+
+        $rows = $this->db('izin_cuti')->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $checkData = $this->db('pegawai')->select('nama')->where('nik',$row['nip'])->oneArray();
+                $row['nama'] = $checkData['nama'];
+                // $row['editURL'] = url([ADMIN, 'profil', 'biodata', $row['id']]);
+                // $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        $this->assign['listCuti'] = array('1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
+        $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
+
+        return $this->draw('index_cuti.html', ['cuti' => $this->assign]);
     }
 
     public function getCSS()

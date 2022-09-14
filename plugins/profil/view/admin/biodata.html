@@ -20,12 +20,13 @@
                     <li class="active">
                         <a href="#identitas" class="nav-link">Identitas</a>
                     </li>
-                    <li>
+                    {if: $biodata.form.stts_kerja != 'FT'}
+                    <!-- <li>
                         <a href="#cpns" class="nav-link">CPNS</a>
                     </li>
                     <li>
                         <a href="#pns" class="nav-link">PNS</a>
-                    </li>
+                    </li> -->
                     <li>
                         <a href="#pangter" class="nav-link">Pangkat Terakhir</a>
                     </li>
@@ -38,6 +39,11 @@
                     <li>
                         <a href="#jabter" class="nav-link">Jabatan Terakhir</a>
                     </li>
+                    {else}
+                    <li>
+                        <a href="#unker" class="nav-link">Unit Kerja</a>
+                    </li>
+                    {/if}
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="identitas">
@@ -104,9 +110,9 @@
                                                     <div class="form-group">
                                                         <label for="">Status Kepegawaian</label>
                                                         <select name="stts_kerja" class="form-control" id="">
-                                                            {loop: $biodata.stts_kerja}
-                                                            <option value="{$value.stts}" {if: $value.stts==$biodata.form.stts_kerja}selected{/if}>
-                                                                {$value.ktg}</option>
+                                                            {loop: $biodata.stts_kerja as $key => $value}
+                                                            <option value="{$key}" {if: $key==$biodata.form.stts_kerja}selected{/if}>
+                                                                {$value}</option>
                                                             {/loop}
                                                         </select>
                                                     </div>
@@ -123,6 +129,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            {if: $this->core->getUserInfo('role') == 'admin'}
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
@@ -137,7 +144,7 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>Bidang</label>
+                                                        <label>Sub Unit</label>
                                                         <select name="bidang" id="bidang" class="form-control">
                                                             {loop: $biodata.bidang}
                                                             <option value="{$value.nama}" {if: $value.nama==$biodata.form.bidang}selected{/if}>
@@ -147,6 +154,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            {/if}
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
@@ -219,9 +227,20 @@
                                                     value="{$biodata.form.mulai_kontrak}" />
                                             </div>
                                             <div class="form-group">
+                                                <label for="">Status Pegawai</label>
+                                                <select name="stts_aktif" class="form-control" id="">
+                                                    {loop: $biodata.stts_aktif as $key => $value}
+                                                    <option value="{$key}" {if: $key==$biodata.form.stts_aktif}selected{/if}>
+                                                        {$value}</option>
+                                                    {/loop}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
                                                 <input type="submit" name="save" class="btn btn-primary"
                                                     value="Simpan" />
+                                                {if: $biodata.title == 'Edit Biodata Pegawai'}
                                                 <a href="{?=url(ADMIN.'/kepegawaian/manage')?}" class="btn btn-warning">Kembali</a>
+                                                {/if}
                                             </div>
                                         </div>
                                     </div>
@@ -236,7 +255,258 @@
                         <p>unique all aaaaaacontent</p>
                     </div>
                     <div class="tab-pane fade" id="pangter">
-                        <p>Under Development</p>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"></h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="card">
+                                            {loop: $biodata.rpangkatlast}
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>Golongan</h4>
+                                                    <p>{loop: $biodata.golruang as $key => $val}
+                                                        {if: $key == $value.KGOLRU}{$val}{/if}
+                                                        {/loop}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h4>Kode Naik Pangkat</h4>
+                                                    <p>{loop: $biodata.knapang as $key => $val}
+                                                        {if: $key == $value.KNPANG}{$val}{/if}
+                                                        {/loop}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>TMT Pangkat</h4>
+                                                    <p>{$value.TMTPANG}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h4>No SK Naik Pangkat</h4>
+                                                    <p>{$value.NSKPANG}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>Pejabat</h4>
+                                                    <p>{$value.NPEJABAT}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h4>Tanggal SK Naik Pangkat</h4>
+                                                    <p>{$value.TSKPANG}</p>
+                                                </div>
+                                            </div>
+                                            {/loop}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="pendter">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"></h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="card">
+                                            {loop: $biodata.rpendum}
+                                            {if: $value.ISAKHIR == 1}
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>Tingkat Pendidikan</h4>
+                                                    <p>{loop: $biodata.tpu as $key => $val}
+                                                        {if: $key == $value.KTPU}{$val}{/if}
+                                                        {/loop}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h4>Program Studi</h4>
+                                                    <p>{$value.PROG_STUDI}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>Jurusan</h4>
+                                                    <p>{$value.JURUSAN}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h4>Negara</h4>
+                                                    <p>{$value.NEGARA}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>Nama Sekolah</h4>
+                                                    <p>{$value.NSEK}</p>
+                                                </div>
+                                            </div>
+                                            {/if}
+                                            {/loop}
+                                            <div class="row">
+                                            {loop: $biodata.rdikstr}
+                                            {if: $value.ISAKHIR == 1}
+                                                <div class="col-md-6">
+                                                    <h4>Nama Diklat Struktural</h4>
+                                                    <p>{$value.NSTTPP}</p>
+                                                </div>
+                                            {/if}
+                                            {/loop}
+                                            {loop: $biodata.rdikfung}
+                                            {if: $value.ISAKHIR == 1}
+                                                <div class="col-md-6">
+                                                    <h4>Nama Diklat Fungsional</h4>
+                                                    <p>{$value.NSTTPP}</p>
+                                                </div>
+                                            {/if}
+                                            {/loop}
+                                            </div>
+                                            <div class="row">
+                                                {loop: $biodata.rdiktek}
+                                                {if: $value.ISAKHIR == 1}
+                                                    <div class="col-md-6">
+                                                        <h4>Nama Diklat Teknis</h4>
+                                                        <p>{$value.NSTTPP}</p>
+                                                    </div>
+                                                {/if}
+                                                {/loop}
+                                                {loop: $biodata.rseminar}
+                                                    <div class="col-md-6">
+                                                        <h4>Nama Seminar</h4>
+                                                        <p>{$value.NSEMINAR}</p>
+                                                    </div>
+                                                {/loop}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="unker">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">{$biodata.title}</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Unit Kerja</th>
+                                                        <th>Sub Unit Kerja</th>
+                                                        <th>Sub Unit Kerja</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {loop: $biodata.runker}
+                                                    <tr>
+                                                        <td>
+                                                            {$value.UNIT}
+                                                        </td>
+                                                        <td>{$value.SUNIT}</td>
+                                                        <td>{$value.SSUNIT}</td>
+                                                    </tr>
+                                                    {/loop}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <form name="petugas"
+                                            action="{?=url(ADMIN.'/profil/unkersave/'.@$biodata.form.id)?}"
+                                            method="POST" enctype="multipart/form-data" id="unker">
+                                            <div class="row clearfix">
+                                                <div class="col-md-4">
+                                                    <input type="hidden" name="id" id="id">
+                                                    <div class="form-group gol">
+                                                        <label>Unit Kerja</label>
+                                                        <select name="UNIT" id="" class="form-control">
+                                                            {loop: $biodata.bidang}
+                                                            <option value="{$value.nama}">{$value.nama}</option>
+                                                            {/loop}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group npang">
+                                                        <label>Sub Unit Kerja</label>
+                                                        <select name="SUNIT" id="" class="form-control">
+                                                            {loop: $biodata.bidang}
+                                                            <option value="{$value.nama}">{$value.nama}</option>
+                                                            {/loop}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group npang">
+                                                        <label>Sub Unit Kerja</label>
+                                                        <select name="SSUNIT" id="" class="form-control">
+                                                            {loop: $biodata.bidang}
+                                                            <option value="{$value.nama}">{$value.nama}</option>
+                                                            {/loop}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row clearfix">
+                                                <div class="col-md-6">
+                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="jabter">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"></h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="card">
+                                            {loop: $biodata.rjabatan}
+                                            {if: $value.ISAKHIR == 1}
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>Nama Unit Kerja</h4>
+                                                    <p>{$value.NUNKER}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h4>Jenis Jabatan</h4>
+                                                    <p>{loop: $biodata.jnsjab as $key => $val}
+                                                        {if: $key == $value.JNSJAB}{$val}{/if}
+                                                        {/loop}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h4>Eselon Jabatan</h4>
+                                                    <p>{loop: $biodata.eselon as $key => $val}
+                                                        {if: $key == $value.KESELON}{$val}{/if}
+                                                        {/loop}</p>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <h4>Nama Jabatan</h4>
+                                                    <p>{$value.NJAB}</p>
+                                                </div>
+                                            </div>
+                                            {/if}
+                                            {/loop}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -244,6 +514,7 @@
         <div class="tab-pane fade" id="biopeg">
             <div class="tabbable">
                 <ul class="nav nav-tabs">
+                    {if: $biodata.form.stts_kerja != 'FT'}
                     <li class="active">
                         <a href="#pangkat" class="nav-link">Pangkat</a>
                     </li>
@@ -259,12 +530,21 @@
                     <li>
                         <a href="#angkre" class="nav-link">Angka Kredit</a>
                     </li>
+                    {/if}
                     <li>
                         <a href="#riwser" class="nav-link">Riwayat Sertifikasi</a>
                     </li>
+                    {if: $biodata.form.stts_kerja == 'FT'}
+                    <li>
+                        <a href="#riwsk" class="nav-link">Riwayat SK Kontrak</a>
+                    </li>
+                    {/if}
+                    <li>
+                        <a href="#bkstambah" class="nav-link">Berkas Tambahan</a>
+                    </li>
                 </ul>
                 <div class="tab-content">
-                    <div class="tab-pane fade active in" id="pangkat">
+                    <div class="tab-pane fade {if: $biodata.form.stts_kerja != 'FT'} active in {/if}" id="pangkat">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="panel panel-default">
@@ -283,6 +563,8 @@
                                                         <th>Pejabat</th>
                                                         <th>Tanggal SK Naik Pangkat</th>
                                                         <th>Pangkat Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -310,6 +592,10 @@
                                                         <td>{$value.NPEJABAT}</td>
                                                         <td>{$value.TSKPANG}</td>
                                                         <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatpangkat" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_PANGKAT}" data-tabel="pangkat"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -319,7 +605,7 @@
                                     <div class="panel-body">
                                         <form name="petugas"
                                             action="{?=url(ADMIN.'/profil/pangkatsave/'.@$biodata.form.id)?}"
-                                            method="POST" enctype="multipart/form-data">
+                                            method="POST" enctype="multipart/form-data" id="pangkat">
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <input type="hidden" name="ID_PANGKAT" id="ID_PANGKAT">
@@ -375,13 +661,19 @@
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-group">
                                                         <input type="checkbox" class="form-check-input" value="1"
                                                             name="ISAKHIR" id="isakhir_pangkat">
                                                         <label class="form-check-label" for="isakhir_pangkat">Pangkat
                                                             Terakhir</label>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-pangkat" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-pangkat" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <button type="submit" class="btn btn-primary">Simpan</button>
@@ -390,6 +682,13 @@
                                         </form>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatpangkat" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -413,6 +712,8 @@
                                                         <th>No SK Naik Jabatan</th>
                                                         <th>Tanggal SK Naik Jabatan</th>
                                                         <th>Pangkat Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -447,6 +748,10 @@
                                                         <td>{$value.NSKJABAT}</td>
                                                         <td>{$value.TSKJABAT}</td>
                                                         <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatjabatan" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_JAB}" data-tabel="jabatan"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -519,13 +824,19 @@
                                                             value="" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-group">
                                                         <input type="checkbox" class="form-check-input" value="1"
                                                             name="ISAKHIR" id="isakhir_jab">
-                                                        <label class="form-check-label" for="isakhir_jab">Pangkat
+                                                        <label class="form-check-label" for="isakhir_jab">Jabatan
                                                             Terakhir</label>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-jabatan" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-jabatan" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
@@ -536,6 +847,13 @@
                                         </form>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatjabatan" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -562,6 +880,8 @@
                                                         <th>Nilai SKP</th>
                                                         <th>Pejabat Penilai</th>
                                                         <th>Atasan Pejabat Penilai</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -598,6 +918,10 @@
                                                         <td>{$value.NPIMPIN}</td>
                                                         <td>{$value.jabat_nilai}</td>
                                                         <td>{$value.atasan_jabat_nilai}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatskp" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_DP3}" data-tabel="skp"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -691,13 +1015,26 @@
                                                             class="form-control">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
+                                                    <label for="file-skp" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-skp" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-3">
                                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                                 </div>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatskp" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -720,6 +1057,8 @@
                                                         <th>Golongan Ruang</th>
                                                         <th>Masa Kerja</th>
                                                         <th>Gaji Pokok</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -753,6 +1092,10 @@
                                                         </td>
                                                         <td>{$value.MSKERJA} Tahun {$value.MSKERJA_BLN} Bulan</td>
                                                         <td>{$value.GPOKKHIR}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatgajiber" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_KGB}" data-tabel="gkkhir"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -832,13 +1175,26 @@
                                                         value="" />
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-3">
+                                                <label for="file-gajiber" class="btn btn-info">
+                                                    <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                    <input id="file-gajiber" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                </label>
+                                            </div>
+                                            <div class="col-md-3">
                                                 <button type="submit" class="btn btn-primary">Simpan</button>
                                             </div>
                                         </div>
                                         </form>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatgajiber" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -857,6 +1213,8 @@
                                                         <th>No SK</th>
                                                         <th>Tanggal SK</th>
                                                         <th>Angka Kredit</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -878,14 +1236,18 @@
                                                         </td>
                                                         <td>Utama: {$value.utama} Penunjang: {$value.penunjang}
                                                             Total: {$value.total}</td>
-                                                        </tr>
-                                                        {/loop}
-                                                    </tbody>
-                                                </table>
-                                            </div>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatangkre" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.id}" data-tabel="angkre"><span class="fa fa-trash"></span></button></td>
+                                                    </tr>
+                                                    {/loop}
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <div class="panel-body">
-                                            <form name="petugas" action="{?=url(ADMIN.'/profil/rjabfungsave/'.@$biodata.form.id)?}"
+                                    </div>
+                                    <div class="panel-body">
+                                        <form name="petugas" action="{?=url(ADMIN.'/profil/rjabfungsave/'.@$biodata.form.id)?}"
                                                 method="POST" enctype="multipart/form-data">
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
@@ -927,6 +1289,12 @@
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
+                                                <div class="col-md-3">
+                                                    <label for="file-angkre" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-angkre" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                                 </div>
@@ -934,6 +1302,13 @@
                                         </form>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatangkre" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -953,9 +1328,11 @@
                                                         <th>No STR</th>
                                                         <th>Tanggal STR</th>
                                                         <th>Tanggal Berakhir STR</th>
-                                                        <th>No SIP</th>
-                                                        <th>Tanggal SIP</th>
-                                                        <th>Tanggal Berakhir SIP</th>
+                                                        <th>No SIP / SIK</th>
+                                                        <th>Tanggal SIP / SIK</th>
+                                                        <th>Tanggal Berakhir SIP / SIK</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -986,6 +1363,10 @@
                                                             {$value.tgl_sip}
                                                         </td>
                                                         <td>{$value.tgl_laku_sip}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatstr" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.id}" data-tabel="riwser"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -1033,13 +1414,13 @@
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>No SIP</label>
+                                                        <label>No SIP / SIK</label>
                                                         <input type="text" name="no_sip" id="" class="form-control">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>Tanggal SIP</label>
+                                                        <label>Tanggal SIP / SIK</label>
                                                         <input type="text" name="tgl_sip" id=""
                                                             class="form-control tanggal">
                                                     </div>
@@ -1048,11 +1429,221 @@
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>Tanggal Berakhir SIP</label>
+                                                        <label>Tanggal Berakhir SIP / SIK</label>
                                                         <input type="text" name="tgl_laku_sip" id=""
                                                             class="form-control tanggal">
                                                     </div>
                                                 </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-str" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-str" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="lihatstr" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="riwsk">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">{$biodata.title}</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Pejabat</th>
+                                                        <th>Nama Pejabat</th>
+                                                        <th>TMT SK</th>
+                                                        <th>No SK </th>
+                                                        <th>Tanggal SK</th>
+                                                        <th>SK Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {loop: $biodata.rsk}
+                                                    <tr>
+                                                        <td>
+                                                            <button class="btn btn-success btn-xs edit_pangkat"
+                                                                data-gol="{$value.kpej}" data-npang="{$value.npej}"
+                                                                data-tmt="{$value.tgl_tmt}" data-nsk="{$value.no_sk}"
+                                                                data-tsk="{$value.tgl_sk}" data-id = "{$value.id}"
+                                                                data-isakhir="{$value.ISAKHIR}"><span
+                                                                    class="fa fa-pencil"></span></button>
+                                                            {loop: $biodata.kpej as $key => $val}
+                                                            {if: $key == $value.kpej}{$val}{/if}
+                                                            {/loop}
+                                                        </td>
+                                                        <td>{$value.npej}</td>
+                                                        <td>{$value.tgl_tmt}</td>
+                                                        <td>{$value.no_sk}</td>
+                                                        <td>{$value.tgl_sk}</td>
+                                                        <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatskk" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.id}" data-tabel="skkontrak"><span class="fa fa-trash"></span></button></td>
+                                                    </tr>
+                                                    {/loop}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <form name="petugas"
+                                            action="{?=url(ADMIN.'/profil/skkontraksave/'.@$biodata.form.id)?}"
+                                            method="POST" enctype="multipart/form-data" id="pangkat">
+                                            <div class="row clearfix">
+                                                <div class="col-md-6">
+                                                    <input type="hidden" name="id" id="idsk">
+                                                    <div class="form-group gol">
+                                                        <label>Pejabat</label>
+                                                        <select name="kpej" id="gol" class="form-control">
+                                                            {loop: $biodata.kpej as $key => $val}
+                                                            <option value="{$key}">{$val}</option>
+                                                            {/loop}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Nama Pejabat</label>
+                                                        <input type="text" name="npej" class="form-control"
+                                                            value="" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row clearfix">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>TMT SK</label>
+                                                        <input type="text" name="tgl_tmt" class="form-control tanggal"
+                                                            value="" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>No SK</label>
+                                                        <input type="text" name="no_sk" class="form-control"
+                                                            value="" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row clearfix">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Tanggal SK</label>
+                                                        <input type="text" name="tgl_sk" class="form-control tanggal"
+                                                            value="" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-check form-group">
+                                                        <input type="checkbox" class="form-check-input" value="1"
+                                                            name="ISAKHIR" id="isakhir_pangkat">
+                                                        <label class="form-check-label" for="isakhir_pangkat">SK
+                                                            Terakhir</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="file-riwsk" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-riwsk" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="lihatskk" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="bkstambah">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">{$biodata.title}</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nama Berkas</th>
+                                                        <th>File Berkas</th>
+                                                        <th>X</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {loop: $biodata.bkstambah}
+                                                    <tr>
+                                                        <td>
+                                                            <button class="btn btn-success btn-xs edit_riwser"
+                                                            data-id = "{$value.id}"
+                                                            data-nm_berkas="{$value.nm_berkas}"><span
+                                                            class="fa fa-pencil"></span></button>
+                                                            {$value.nm_berkas}
+                                                        </td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatbkstambah" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.id}" data-tabel="bkstambah"><span class="fa fa-trash"></span></button></td>
+                                                    </tr>
+                                                    {/loop}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <form name="petugas" action="{?=url(ADMIN.'/profil/bkstambahsave/'.@$biodata.form.id)?}"
+                                            method="POST" enctype="multipart/form-data">
+                                            <div class="row clearfix">
+                                                <div class="col-md-6">
+                                                    <input type="hidden" name="id" id="id">
+                                                    <div class="form-group profesi">
+                                                        <label>Nama Berkas</label>
+                                                        <input type="text" name="nm_berkas" id="" class="form-control" style="text-transform: uppercase">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="">Pilih File</label>
+                                                    <label for="file-bkstambah" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-bkstambah" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                                 </div>
@@ -1060,6 +1651,13 @@
                                         </form>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatbkstambah" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -1090,9 +1688,9 @@
                     <li>
                         <a href="#tubel" class="nav-link">Tugas Belajar</a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a href="#ibel" class="nav-link">Izin Belajar</a>
-                    </li>
+                    </li> -->
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade active in" id="pendum">
@@ -1117,6 +1715,8 @@
                                                         <th>No STTB</th>
                                                         <th>Tanggal STTB</th>
                                                         <th>Pendidikan Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1146,6 +1746,10 @@
                                                         <td>{$value.NSTTB}</td>
                                                         <td>{$value.TSTTB}</td>
                                                         <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatpendum" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_PENDUM}" data-tabel="pendum"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -1228,13 +1832,19 @@
                                                         <input type="text" name="TSTTB" class="form-control tanggal" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-check form-group">
                                                         <input type="checkbox" class="form-check-input isakhir"
                                                             value="1" name="ISAKHIR" id="isakhir">
                                                         <label class="form-check-label" for="isakhir">Pendidikan
                                                             Terakhir</label>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-pendum" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-pendum" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
@@ -1245,6 +1855,13 @@
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatpendum" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -1270,6 +1887,8 @@
                                                         <th>No STTPP</th>
                                                         <th>Tanggal STTPP</th>
                                                         <th>Diklat Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1301,6 +1920,10 @@
                                                         <td>{$value.NSTTPP}</td>
                                                         <td>{$value.TSTTPP}</td>
                                                         <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatdiknon" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_DIKNSTR}" data-tabel="diknstr"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -1384,13 +2007,19 @@
                                                         <input type="text" name="TSTTPP" class="form-control tanggal" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-2">
                                                     <div class="form-check form-group">
                                                         <input type="checkbox" class="form-check-input isakhir"
                                                             value="1" name="ISAKHIR" id="isakhir">
                                                         <label class="form-check-label" for="isakhir">Diklat
                                                             Terakhir</label>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-diknstr" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-diknstr" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
@@ -1401,6 +2030,13 @@
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatdiknon" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -1426,6 +2062,8 @@
                                                         <th>No STTPP</th>
                                                         <th>Tanggal STTPP</th>
                                                         <th>Diklat Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1457,6 +2095,10 @@
                                                         <td>{$value.NSTTPP}</td>
                                                         <td>{$value.TSTTPP}</td>
                                                         <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatdikstr" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_DIKSTR}" data-tabel="dikstr"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -1540,13 +2182,19 @@
                                                         <input type="text" name="TSTTPP" class="form-control tanggal" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-2">
                                                     <div class="form-check form-group">
                                                         <input type="checkbox" class="form-check-input isakhir"
                                                             value="1" name="ISAKHIR" id="isakhir">
                                                         <label class="form-check-label" for="isakhir">Diklat
                                                             Terakhir</label>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-dikstr" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-dikstr" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
@@ -1557,6 +2205,13 @@
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatdikstr" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -1582,6 +2237,8 @@
                                                         <th>No STTPP</th>
                                                         <th>Tanggal STTPP</th>
                                                         <th>Diklat Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1611,6 +2268,10 @@
                                                         <td>{$value.NSTTPP}</td>
                                                         <td>{$value.TSTTPP}</td>
                                                         <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatdikfung" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_DIKFUNG}" data-tabel="dikfung"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -1690,13 +2351,19 @@
                                                         <input type="text" name="TSTTPP" class="form-control tanggal" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-2">
                                                     <div class="form-check form-group">
                                                         <input type="checkbox" class="form-check-input isakhir"
                                                             value="1" name="ISAKHIR" id="isakhir">
                                                         <label class="form-check-label" for="isakhir">Diklat
                                                             Terakhir</label>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-dikfung" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-dikfung" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
@@ -1707,6 +2374,13 @@
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatdikfung" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -1732,6 +2406,8 @@
                                                         <th>No STTPP</th>
                                                         <th>Tanggal STTPP</th>
                                                         <th>Diklat Terakhir</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1761,6 +2437,10 @@
                                                         <td>{$value.NSTTPP}</td>
                                                         <td>{$value.TSTTPP}</td>
                                                         <td>{if: $value.ISAKHIR == 1}✓{/if}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatdiktek" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_DIKTEK}" data-tabel="diktek"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -1840,13 +2520,19 @@
                                                         <input type="text" name="TSTTPP" class="form-control tanggal" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-2">
                                                     <div class="form-check form-group">
                                                         <input type="checkbox" class="form-check-input isakhir"
                                                             value="1" name="ISAKHIR" id="isakhir">
                                                         <label class="form-check-label" for="isakhir">Diklat
                                                             Terakhir</label>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="file-diktek" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-diktek" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
@@ -1857,6 +2543,13 @@
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatdiktek" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -1875,11 +2568,13 @@
                                                         <th>Nama Seminar</th>
                                                         <th>Tempat</th>
                                                         <th>Penyelenggara</th>
-                                                        <th>Tanggal Mulai</th>
-                                                        <th>Tanggal Akhir</th>
+                                                        <th>Tanggal Pelaksanaan</th>
+                                                        <th>Masa Berlaku</th>
                                                         <th>Jumlah Jam</th>
                                                         <th>No Piagam</th>
                                                         <th>Tanggal STTPP</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1900,11 +2595,15 @@
                                                         </td>
                                                         <td>{$value.TEMPAT}</td>
                                                         <td>{$value.PAN}</td>
-                                                        <td>{$value.TMULAI}</td>
+                                                        <td>{$value.TMULAI} - {$value.TAKHIR}</td>
                                                         <td>{$value.TAKHIR}</td>
                                                         <td>{$value.JAM}</td>
                                                         <td>{$value.NPIAGAM}</td>
                                                         <td>{$value.TPIAGAM}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihatsem" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_SEMINAR}" data-tabel="seminar"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -1939,19 +2638,26 @@
                                                         <input type="text" name="PAN" class="form-control" value="" />
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-3">
                                                     <div class="form-group">
                                                         <label>Tanggal Mulai</label>
                                                         <input type="text" name="TMULAI" id=""
                                                             class="form-control tanggal" value="">
                                                     </div>
                                                 </div>
+                                                <div class="col-md-3">
+                                                    <div class="form-group">
+                                                        <label>Tanggal Akhir</label>
+                                                        <input type="text" name="TAKHIR" id=""
+                                                            class="form-control tanggal">
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>Tanggal Akhir</label>
-                                                        <input type="text" name="TAKHIR" id=""
+                                                        <label>Masa Berlaku</label>
+                                                        <input type="text" name="MALAKU" id=""
                                                             class="form-control tanggal">
                                                     </div>
                                                 </div>
@@ -1978,6 +2684,12 @@
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
+                                                <div class="col-md-2">
+                                                    <label for="file-sem" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-sem" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                                 </div>
@@ -1985,6 +2697,13 @@
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihatsem" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -2006,6 +2725,8 @@
                                                         <th>No SK Tugas Belajar</th>
                                                         <th>Tanggal SK Tugas Belajar</th>
                                                         <th>Status Tugas Belajar</th>
+                                                        <th>Berkas</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2029,6 +2750,10 @@
                                                         <td>{loop: $biodata.sttstubel as $key => $val}
                                                             {if: $key == $value.STATUS}{$val}{/if}
                                                             {/loop}</td>
+                                                        <td>{if: $value.nm_file != ''}
+                                                            <a href="{?=url([ADMIN, 'profil', 'lihatberkas', $value.nm_file])?}" data-toggle="modal" data-target="#lihattubel" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> Lihat</a>
+                                                            {/if}</td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_TUBEL}" data-tabel="rtubel"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -2087,6 +2812,12 @@
                                                 </div>
                                             </div>
                                             <div class="row clearfix">
+                                                <div class="col-md-2">
+                                                    <label for="file-tubel" class="btn btn-info">
+                                                        <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
+                                                        <input id="file-tubel" class="check" accept=".pdf" name="file" type="file" style="display:none;">
+                                                    </label>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                                 </div>
@@ -2094,6 +2825,13 @@
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </div>
+                        <div id="lihattubel" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                ...
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -2143,6 +2881,7 @@
                                                         <th>No Telepon</th>
                                                         <th>Kabupaten / Kota</th>
                                                         <th>Kode Pos</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2167,6 +2906,7 @@
                                                         <td>{$value.NOTELP}</td>
                                                         <td>{$value.WIL}</td>
                                                         <td>{$value.KPOS}</td>
+                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -2263,6 +3003,7 @@
                                                         <th>No Telepon</th>
                                                         <th>Kabupaten / Kota</th>
                                                         <th>Kode Pos</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2287,6 +3028,7 @@
                                                         <td>{$value.NOTELP}</td>
                                                         <td>{$value.WIL}</td>
                                                         <td>{$value.KPOS}</td>
+                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -2383,6 +3125,7 @@
                                                         <th>Tanggal Nikah</th>
                                                         <th>Status Tunjangan</th>
                                                         <th>Status</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2413,6 +3156,7 @@
                                                         <td>{loop: $biodata.nikah as $key => $val}
                                                             {if: $key == $value.STATUS}{$val}{/if}
                                                             {/loop}</td>
+                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -2518,6 +3262,7 @@
                                                         <th>Pekerjaan</th>
                                                         <th>Pendidikan</th>
                                                         <th>Status</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2554,6 +3299,7 @@
                                                         <td>{loop: $biodata.statusHidup as $key => $val}
                                                             {if: $key == $value.STATUS}{$val}{/if}
                                                             {/loop}</td>
+                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -2674,6 +3420,7 @@
                                                         <th>Alamat</th>
                                                         <th>Kabupaten</th>
                                                         <th>Kode Pos</th>
+                                                        <th>X</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -2706,6 +3453,7 @@
                                                         <td>{$value.ALJALAN}</td>
                                                         <td>{$value.WIL}</td>
                                                         <td>{$value.KPOS}</td>
+                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -2810,3 +3558,6 @@
         </div>
     </div>
 </div>
+<script>
+    $('select').selectator();
+</script>

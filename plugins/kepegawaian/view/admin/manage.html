@@ -53,14 +53,18 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <div class="col-md-12">
-                    <form action="{?=url(ADMIN.'/kepegawaian/search/')?}" method="POST" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <h4>Pencarian Cepat</h4>
+                    <form action="{?=url(ADMIN.'/kepegawaian/searchby/')?}" method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4>Pencarian Cepat</h4>
+                            </div>
+                            <div class="col-md-12">
+                                <label for="">Silahkan Masukkan NIP / Nama Pegawai Yang Ingin Dicari</label>
+                                <input type="text" class="form-control" name="nama" id="nama" value="">
+                                <ul class="list-group" id="name_list" style="z-index:1000;position:absolute;width:100%;"></ul>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="">Silahkan Masukkan NIP Pegawai Yang Ingin Dicari</label>
-                            <input type="text" class="form-control" name="nip" placeholder="NIP">
-                        </div>
+                        <br>
                         <div class="form-group">
                             <button class="btn btn-primary col-md-2">Cari</button>
                         </div>
@@ -204,4 +208,29 @@ var myChart1 = new Chart(ctx1, {
     }
 });
 
+</script>
+<script>
+    $('input:text[name=nama]').on('input',function(e){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url    = baseURL + '/kepegawaian/search?t=' + mlite.token;
+      var query = $('input:text[name=nama]').val();
+      if(query!="") {
+          $.ajax({
+               url: url,
+               method:"POST",
+               data:{query:query},
+               success:function(data)
+               {
+                    $('#name_list').fadeIn();
+                    $('#name_list').html(data);
+               }
+          });
+      }
+      $('#name_list').fadeIn();
+    });
+
+    $('#name_list').on('click', 'li', function(){
+         $('input:text[name=nama]').val($(this).text());
+         $('#name_list').fadeOut();
+    });
 </script>
