@@ -1,0 +1,62 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Laporan Bundles Hais</h3>
+            </div>
+            <div class="panel-body">
+				<div class="table-responsive no-margin">
+					<table class="table table-striped no-margin dataTables" width="100%">
+						<thead>
+							<tr>
+								<th>No.</th>
+								<th>Tanggal</th>
+								<th>Jumlah Pasien</th>
+								<th>Hand Hygiene VAP</th>
+								<th>Tekhnik Steril VAP</th>
+								<th>Pemakaian APD VAP</th>
+								<th>Sedasi VAP</th>
+								<th>Hand Hygiene</th>
+							</tr>
+						</thead>
+						<tbody>
+                            {loop: $laporan_bundles_hais as $value}
+							<tr>
+                               <td>{$value.nomor}</td> 
+                                <td>{$value.tanggal}</td>
+								<td>{$value.jumlah_pasien}</td>
+								<td>{$value.hand_vap}</td>
+								<td>{$value.tehniksteril_vap}</td>
+								<td>{$value.apd_vap}</td>
+								<td>{$value.sedasi_vap}</td>
+								<td>{$value.hand_iadp}</td>
+							</tr>
+							{/loop}
+						</tbody>
+					</table>
+				</div>
+            </div>
+        </div>
+    </div>
+</article>
+<script type="text/javascript">
+	$('.dataTables').DataTable({
+	  "order": [[ 3, "desc" ]],
+	  "pagingType": "full",
+	  "language": {
+		"paginate": {
+		  "first": "&laquo;",
+		  "last": "&raquo;",
+		  "previous": "‹",
+		  "next":     "›"
+		},
+		"search": "",
+		"searchPlaceholder": "Search..."
+	  },
+	  "lengthChange": false,
+	  "scrollX": true,
+	  dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+	});
+	var t = $(".dataTables").DataTable().rows().count();
+	$(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  </script>

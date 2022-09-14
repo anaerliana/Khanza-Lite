@@ -922,7 +922,6 @@ class Admin extends AdminModule
       }
 
       exit();
-
     }
 
     public function postSaveJadwalOperasi()
@@ -935,7 +934,6 @@ class Admin extends AdminModule
       {
         $this->db('booking_operasi')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->save($_POST);
       }
-
       exit();
     }
 
@@ -944,6 +942,201 @@ class Admin extends AdminModule
       $this->db('booking_operasi')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->delete();
       exit();
     }
+
+    // public function anyFormKerohanian($no_rawat)
+    // {
+
+    //   $no_rawat = convertNorawat($no_rawat);
+    //  // $con_no_rawat = revertNorawat($no_rawat);
+    //  // $row['con_no_rawat'] = convertNorawat($row['no_rawat']);
+
+    //     $kerohanian = $this->db('permintaan_kerohanian')
+    //     ->where('no_rawat', $no_rawat)
+    //       ->oneArray();
+
+    //       $this->getSelectBootstrap();
+    //       $selectrohani = $this->getInfoJenisRoh(); 
+    //   echo $this->draw('kerohanian.html', ['rohani' => $no_rawat, 'select33' => $selectrohani]);
+    //   exit();
+    // }
+    //     $this->getSelectBootstrap();
+    //    $selectrohani = $this->getInfoJenisRoh(); 
+    //   return $this->draw('kerohanian.html', ['kerohanian' => $result, 'select33' => $selectrohani]);
+    // }
+  
+
+    public function anyFormKerohanian($no_rawat)
+    {
+      $this->_addHeaderFiles();
+      $no_rawat = revertNorawat($no_rawat);
+      //$no_rawat = convertNorawat($no_rawat);
+      $i = 1;
+
+      $rows = $this->db('permintaan_kerohanian')
+        ->where('no_rawat', $no_rawat)
+        ->toArray();
+
+     $result = [];
+      foreach ($rows as $row) {
+          $row['nomor'] = $i++;
+
+      $pasien = $this->db('reg_periksa') 
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->where('no_rawat', $row['no_rawat'])
+      ->oneArray();
+
+      $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+      $row['nm_pasien'] = $pasien['nm_pasien'];
+        
+      $kamar_inap = $this->db('kamar_inap') 
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+          $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+          
+      $petugas = $this->db('petugas') 
+          ->where('nip', $row['perujuk'])
+          ->oneArray();
+          $row['nama'] = $petugas['nama'];
+
+
+      $row['ppk'] = $this->db('permintaan_pemeriksaan_kerohanian')
+          ->select(['nama_rh' => 'jns_kerohanian.nama_rh'])
+          ->join('jns_kerohanian', 'jns_kerohanian.kd_rh=permintaan_pemeriksaan_kerohanian.kd_rh')
+          ->where('noorder', $row['noorder'])
+          ->toArray();
+      
+      $result[] = $row;
+      }
+
+      $this->getSelectBootstrap();
+     $selectrohani = $this->getInfoJenisRoh(); 
+    // var_dump($no_rawat);
+    //  die();
+    echo $this->draw('kerohanian.html', ['kerohanian' => $result, 'select33' => $selectrohani, 'no_rawat'=> $no_rawat]);
+      exit();
+    }
+
+    public function postSaveKerohanian() {
+      $no_rawat = $_POST['no_rawat'];
+      $noorder = $_POST['noorder'];
+      $_POST['kd_rh'] = implode(',', $_POST['kd_rh']);
+      $cek_noraw = $this->db('permintaan_kerohanian')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', $_POST['tgl_permintaan'])->oneArray();
+      if(!$cek_noraw) {
+        $max_id = $this->db('permintaan_kerohanian')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+          if(empty($max_id['noorder'])) {
+            $max_id['noorder'] = '0000';
+          }
+          $_next_noorder = sprintf('%04s', ($max_id['noorder'] + 1));
+          $noorder = 'PRH'.date('Ymd').''.$_next_noorder;
+          
+          $this->db('permintaan_kerohanian')
+            ->save([
+              'noorder' => $noorder,
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_kamar' => $_POST['kd_kamar'],
+              'tgl_permintaan' => $_POST['tgl_permintaan'],
+              'perujuk' => $_POST['perujuk'],
+              'petugas' => $this->core->getUserInfo('username', null, true),
+              'keterangan' => $_POST['keterangan']
+            ]);
+
+              $kd_rh =[];
+              $kd_rh = explode(',', $_POST['kd_rh']);
+                for ($i = 0; $i < count($kd_rh); $i++) {
+                $this->db('permintaan_pemeriksaan_kerohanian')
+                      ->save([
+                        'noorder' => $noorder,
+                        'kd_rh' => $kd_rh[$i],
+                        'stts' => 'Belum'
+                        ]);
+        }
+      $no_rawat = convertNorawat($_POST['no_rawat']);
+      echo $no_rawat;
+      return $no_rawat;
+      exit();
+      }    
+}
+
+// public function postHapusKerohanian()
+// {
+//       if(isset($_POST['kd_rh'])) {
+//         $this->db('permintaan_pemeriksaan_kerohanian')
+//         ->where('noorder', $_POST['noorder'])
+//         ->where('kd_rh', $_POST['kd_rh'])
+//         ->delete();
+//       } else {
+//         $this->db('permintaan_kerohanian')
+//         ->where('noorder', $_POST['noorder'])
+//         ->where('no_rawat', $_POST['no_rawat'])
+//         ->where('tgl_permintaan', $_POST['tgl_permintaan'])
+//         ->delete();
+//       }
+//       exit();
+// }
+
+    public function postPetugas()
+    {
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('petugas')->like('nama', $key)->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li data-id="'.$row['nip'].'" class="list-group-item link-class">'.$row["nama"].'</li>';
+          }
+        }
+        echo $output;
+      }
+      exit();
+    }
+
+    public function postNoRoh()
+    {
+        $date = date('Y-m-d');
+        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_kerohanian WHERE tgl_permintaan = '$date'");
+        $last_no_order->execute();
+        $last_no_order = $last_no_order->fetch();
+        if(empty($last_no_order[0])) {
+          $last_no_order[0] = '0000';
+        }
+        $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
+        $next_no_order = 'PRH'.date('Ymd').''.$next_no_order;
+
+        echo $next_no_order;
+        exit();
+    } 
+
+    public function getInfoJenisRoh($kd_rh = null)
+    {
+        $result = [];
+        $rows = $this->db()->pdo()->prepare("SELECT kd_rh, nama_rh FROM jns_kerohanian");
+        //SELECT `kd_rh`, `nama_rh` FROM `jns_kerohanian`;
+        $rows->execute();
+        $rows = $rows->fetchAll();
+
+        if (!$kd_rh) {
+            $kd_rhArray = [];
+        } else {
+            $kd_rhArray = explode(',', $kd_rh);
+        }
+
+        foreach ($rows as $row) {
+            if (empty($kd_rhArray)) {
+                $attr = '';
+            } else {
+                if (in_array($row['kd_rh'], $kd_rhArray)) {
+                    $attr = 'selected';
+                } else {
+                    $attr = '';
+                }
+            }
+            $result[] = ['kd_rh' => $row['kd_rh'], 'nama_rh' => $row['nama_rh'], 'attr' => $attr];
+        }
+        return $result;
+    }
+
+
 
     public function postProviderList()
     {
@@ -1022,6 +1215,12 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getSelectBootstrap(){
+      
+      $this->core->addCSS(url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css'));
+      $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js'));
+    }
+
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
@@ -1033,6 +1232,9 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
         $this->core->addJS(url([ADMIN, 'rawat_inap', 'javascript']), 'footer');
+        $this->getSelectBootstrap();
+        // $this->core->addJS(url([ADMIN, 'rawat_inap', 'selectbootstrap']), 'footer');
+        // var_dump(url([ADMIN, 'rawat_inap', 'selectbootstrap'])); die;
     }
 
     protected function data_icd($table)

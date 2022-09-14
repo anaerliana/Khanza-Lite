@@ -1,0 +1,178 @@
+<div class="row">
+    <div id="formkerohanian" class="mx-2">
+        <div class="col-md-3">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="no_rawat">No Rawat</label>
+                        <input type="text" id="no_rawat" name="no_rawat" placeholder="ID Pendaftaran" class="form-control" value=""
+                            readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="no_rkm_medis">Nomor RM</label>
+                        <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik"
+                            value="" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="nm_pasien">Nama Pasien</label>
+                        <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value=""
+                            readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="kd_kamar">Kode Kamar</label>
+                        <input type="text" name="kd_kamar" class="form-control" placeholder="Kode Kamar" value=""
+                            readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <label for="" class="control-label">Perujuk</label>
+                                <input type="text" name="nama" id="nama" class="form-control" value="">
+                                <ul class="list-group" id="namaList" style="z-index:1000;position:absolute;width:100%;">
+                                </ul>
+                                <input type="hidden" name="nip" id="nip" class="form-control" value="">
+                            </div>
+
+                            <div class="col-sm-4">
+                                <label for="noorder">No.Permintaan</label>
+                                <input type="text" id="noorder" name="noorder" class="form-control noorder" value="">
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="tanggal">Tanggal</label>
+                                <input type="text" name="tgl_permintaan" class="form-control tanggal" placeholder=""
+                                    value="{?=date('Y-m-d')?}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label for="keterangan">Keterangan :</label>
+                                <textarea name="keterangan" id="keterangan" rows="3" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <label> Jenis Kerohanian :</label>
+                                <select name="kd_rh[]" id="kd_rh" multiple class="selectpicker form-control" data-live-search="true" >
+                                    {loop: $select33}
+                                    <option value="{$value.kd_rh}">{$value.kd_rh} - {$value.nama_rh}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 m-b-xl">
+            <div class="text-center">
+                <button type="button" name="button" class="btn btn-primary " id="simpan_kerohanian"><i
+                        class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+                <button type="button" name="button" class="btn btn-success" id="selesai_kerohanian"><i
+                        class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<h4>Data Permintaan Kerohanian</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>No.Permintaan</th>
+                <th>No.Rawat</th>
+                <th>Nama Pasien</th>
+                <th>Kamar</th>
+                <th>Tanggal Permintaan</th>
+                <th>Perujuk</th>
+                <th>Petugas</th>
+                <th>Keterangan</th>
+                <th>Jenis Kerohanian</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $kerohanian}
+            <tr>
+                <td rowspan="2">{$value.nomor}</td>
+                <td>{$value.noorder}</td>
+                <td>{$value.no_rawat} </td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.kd_kamar}</td>
+                <td>{$value.tgl_permintaan}</td>
+                <td>{$value.nama}</td>
+                <td>{$value.petugas}</td>
+                <td>{$value.keterangan}</td>
+                <td>{loop: $value.ppk as $nama} {$nama.nama_rh} {/loop}</td>
+                
+            </tr>
+            <tr>
+                <td>
+                    <div class="">
+                        <button type="button" name="button" class="btn btn-success btn-xs edit_kerohanian"
+                            data-noorder="{$value.noorder}" data-no_rawat="{$value.no_rawat}"
+                            data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}"
+                            data-tgl_permintaan="{$value.tgl_permintaan}" data-perujuk="{$value.nama}"
+                            data-petugas="{$value.petugas}" data-keterangan="{$value.keterangan}">
+                            <span class="fa fa-edit"></span>
+                            <span class="hidden-xs"> Edit</span></button>
+                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_kerohanian"
+                            data-noorder="{$value.noorder}" data-no_rawat="{$value.no_rawat}"
+                            data-tanggal="{$value.tgl_permintaan}">
+                            <span class="fa fa-trash"></span>
+                            <span class="hidden-xs"> Hapus</span></button>
+                    </div>
+                </td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    $('input:text[name=nama]').on('input', function (e) {
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url = baseURL + '/rawat_inap/petugas?t=' + mlite.token;
+      var query = $('input:text[name=nama]').val();
+      if (query != "") {
+        $.ajax({
+          url: url,
+          method: "POST",
+          data: { query: query },
+          success: function (data) {
+            $('#namaList').fadeIn();
+            $('#namaList').html(data);
+          }
+        });
+      }
+      $('#namaList').fadeIn();
+    });
+  
+    $('#namaList').on('click', 'li', function () {
+      $('input:text[name=nama]').val($(this).text());
+      $('input:hidden[name=nip]').val($(this).data('id'))
+      $('#namaList').fadeOut();
+    });
+  </script>
+  
+  <script>
+  
+    $(function () {
+      $('.tanggal').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+    }); 
+  </script>

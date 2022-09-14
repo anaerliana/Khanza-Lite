@@ -6,8 +6,9 @@ $("#form_berkasdigital").hide();
 $("#histori_pelayanan").hide();
 $("#form_hais").hide();
 $("#hais").hide();
-$("#form_jadwaloperasi").hide()
-$("#form_dietpasien").hide()
+$("#form_jadwaloperasi").hide();
+$("#form_dietpasien").hide();
+$("#form_kerohanian").hide();
 $("#notif").hide();
 $('#provider').hide();
 $('#aturan_pakai').hide();
@@ -301,8 +302,9 @@ $('#manage').on('click', '#submit_periode_rawat_inap', function(event){
     $("#sep").hide();
     $("#soap").hide();
     $("#form_hais").hide();
-    $("#form_jadwaloperasi").hide()
+    $("#form_jadwaloperasi").hide();
     $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -335,10 +337,11 @@ $('#manage').on('click', '#masuk_periode_rawat_inap', function(event){
     $("#notif").hide();
     $("#rincian").hide();
     $("#sep").hide();
+    $("#soap").hide();
     $("#form_hais").hide();
-    $("#form_jadwaloperasi").hide()
-    $("#form_dietpasien").hide()("#soap").hide();
-
+    $("#form_jadwaloperasi").hide();
+    $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -373,8 +376,9 @@ $('#manage').on('click', '#pulang_periode_rawat_inap', function(event){
     $("#sep").hide();
     $("#soap").hide();
     $("#form_hais").hide();
-    $("#form_jadwaloperasi").hide()
-    $("#form_dietpasien").hide()
+    $("#form_jadwaloperasi").hide();
+    $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -409,8 +413,9 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
     $("#sep").hide();
     $("#soap").hide();
     $("#form_hais").hide();
-    $("#form_jadwaloperasi").hide()
-    $("#form_dietpasien").hide()
+    $("#form_jadwaloperasi").hide();
+    $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -658,8 +663,9 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#soap").hide();
   $("#berkasdigital").hide();
   $("#form_hais").hide();
-  $("#form_jadwaloperasi").hide()
-  $("#form_dietpasien").hide()
+  $("#form_jadwaloperasi").hide();
+  $("#form_dietpasien").hide();
+  $("#form_kerohanian").hide();
 });
 
 // tombol batal diklik
@@ -674,8 +680,9 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#soap").hide();
   $("#berkasdigital").hide();
   $("#form_hais").hide();
-  $("#form_jadwaloperasi").hide()
-  $("#form_dietpasien").hide()
+  $("#form_jadwaloperasi").hide();
+  $("#form_dietpasien").hide();
+  $("#form_kerohanian").hide();
 });
 
 $("#form_hais").on("click", "#simpan_hais", function(event){
@@ -885,8 +892,9 @@ $("#rincian").hide();
 $("#soap").hide();
 $("#berkasdigital").hide();
 $("#form_hais").hide();
-$("#form_jadwaloperasi").hide()
+$("#form_jadwaloperasi").hide();
 $("#form_dietpasien").hide();
+$("#form_kerohanian").hide();
 });
 
 // tombol batal diklik
@@ -902,10 +910,12 @@ $("#soap").hide();
 $("#berkasdigital").hide();
 $("#form_hais").hide();
 $("#hais").hide();
-$("#form_jadwaloperasi").hide()
-$("#jadwaloperasi").hide()
-$("#form_dietpasien").hide()
-$("#dietpasien").hide()
+$("#form_jadwaloperasi").hide();
+$("#jadwaloperasi").hide();
+$("#form_dietpasien").hide();
+$("#dietpasien").hide();
+$("#form_kerohanian").hide();
+$("#kerohanian").hide();
 });
 
 
@@ -1287,7 +1297,8 @@ $("#soap").hide();
 $("#berkasdigital").hide();
 $("#form_hais").hide();
 $("#form_jadwaloperasi").hide();
-$("#form_dietpasien").hide()
+$("#form_dietpasien").hide();
+$("#form_kerohanian").hide();
 });
 
 // tombol batal diklik
@@ -1305,8 +1316,10 @@ $("#form_hais").hide();
 $("#hais").hide();
 $("#form_jadwaloperasi").hide();
 $("#jadwaloperasi").hide();
-$("#form_dietpasien").hide()
-$("#dietpasien").hide()
+$("#form_dietpasien").hide();
+$("#dietpasien").hide();
+$("#form_kerohanian").hide();
+$("#kerohanian").hide();
 });
 
 //Jadwaloperasi
@@ -1450,7 +1463,8 @@ $("#soap").hide();
 $("#berkasdigital").hide();
 $("#form_hais").hide();
 $("#form_jadwaloperasi").hide();
-$("#form_dietpasien").hide()
+$("#form_dietpasien").hide();
+$("#form_kerohanian").hide();
 });
 
 // tombol batal diklik
@@ -1468,10 +1482,189 @@ $("#form_hais").hide();
 $("#hais").hide();
 $("#form_jadwaloperasi").hide();
 $("#jadwaloperasi").hide();
-$("#form_dietpasien").hide()
-$("#dietpasien").hide()
-
+$("#form_dietpasien").hide();
+$("#dietpasien").hide();
+$("#form_kerohanian").hide();
+$("#kerohanian").hide();
 });
+
+//form kerohanian
+$("#kerohanian").on("click", ".noorder", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/rawat_inap/noroh?t=' + mlite.token;
+  $.post(url, {} ,function(data) {
+    // tampilkan data
+    //console.log(data);
+    $("#noorder").val(data);
+  });
+});
+
+// ketika tombol simpan diklik
+$("#kerohanian").on("click", "#simpan_kerohanian", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat         = $('#no_rawat').val();
+  //document.getElementById("myText").value = "Johnny Bravo";
+ //  $('input:text[name=no_rawat]').val();
+  var kd_kamar        = $('input:text[name=kd_kamar]').val();
+  var noorder         = $('input:text[name=noorder]').val();
+  var tgl_permintaan  = $('input:text[name=tgl_permintaan]').val();
+  var perujuk         = $('input:hidden[name=nip]').val();
+  var kd_rh           = $("#kd_rh").val();
+ //var kd_rh           = document.getElementById("kd_rh").value;
+  var petugas         = $('input:text[name=petugas]').val();
+  var keterangan      = $('textarea[name=keterangan]').val();
+  // alert(no_rawat);
+  console.log({
+    no_rawat, kd_kamar, noorder,
+    tgl_permintaan, perujuk, kd_rh, keterangan
+  });
+
+  var url = baseURL + '/rawat_inap/savekerohanian?t=' + mlite.token;
+  $.post(url, {
+    no_rawat : no_rawat,
+    kd_kamar: kd_kamar,
+    noorder : noorder,
+    tgl_permintaan : tgl_permintaan,
+    perujuk : perujuk, 
+    kd_rh : kd_rh,
+    petugas : petugas,
+    keterangan : keterangan
+  }, function(data) {
+   // console.log(data);
+    var url = baseURL + '/rawat_inap/formkerohanian/' + data + '?t=' + mlite.token;
+    //var url = baseURL + '/rawat_inap/formkerohanian?t=' + mlite.token;
+    // tampilkan data
+   // $.post(url, {
+   // no_rawat : no_rawat,
+    // }, function(data) {
+    // //   // tampilkan data
+    //  console.log(data);
+    //  $("#kerohanian").html(data).show();
+    // });
+  // window.location = url;
+   window.location = window.location.pathname + '?foo=bar';
+  
+   
+    //location.reload();
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=noorder]').val("");
+    $('input:text[name=nama]').val("");
+    $('input:text[name=keterangan]').val("");
+   // $("#kd_rh").val("");
+    $('input:text[name=tgl_permintaan]').val("{?=date('Y-m-d')?}");
+
+    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    "Data Permintaan Kerohanian telah disimpan!"+
+    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    "</div>").show();
+  }); 
+   //alert("coba lagi");
+});
+
+// ketika tombol edit ditekan
+$("#kerohanian").on("click",".edit_kerohanian", function(event){
+  // var baseURL = mlite.url + '/' + mlite.admin;
+  // event.preventDefault();
+  // var no_rawat        = $(this).attr("data-no_rawat");
+  // var nm_pasien       = $(this).attr("data-nm_pasien");
+  // var tanggal         = $(this).attr("data-tanggal");
+  // var kd_kamar        = $(this).attr("data-kd_kamar");
+  // var kd_dokter       = $(this).attr("data-kd_dokter");
+  // var nm_dokter       = $(this).attr("data-nm_dokter");
+  
+  // $('input:hidden[name=edit]').val('1');
+  // $('input:text[name=no_rawat]').val(no_rawat);
+  // $('input:text[name=nm_pasien]').val(nm_pasien);
+  // $('input:text[name=tanggal_hari]').val(tanggal);
+  // $('select[name=status]').val(status).change();
+  // $('input:text[name=kd_kamar]').val(kd_kamar);
+  // $('input:hidden[name=kd_dokter]').val(kd_dokter);
+  // $('input:text[name=nm_dokter]').val(nm_dokter);
+  alert("coba lagi");
+  });
+
+  // ketika tombol hapus ditekan
+$("#kerohanian").on("click",".hapus_kerohanian", function(event){
+  // var baseURL = mlite.url + '/' + mlite.admin;
+  // event.preventDefault();
+  // var url = baseURL + '/rawat_inap/hapuskerohanian?t=' + mlite.token;
+  // var no_rawat = $(this).attr("data-no_rawat");
+  //  var tgl_permintaan  = $('input:text[name=tgl_permintaan]').val();
+  
+  // // tampilkan dialog konfirmasi
+  // bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+  //   // ketika ditekan tombol ok
+  //   if (result){
+  //     // mengirimkan perintah penghapusan
+  //     $.post(url, {
+  //       no_rawat: no_rawat,
+  //       tgl_permintaan: tgl_permintaan 
+  //     } ,function(data) {
+  //       var url = baseURL + '/rawat_inap/formkerohanian?t=' + mlite.token;
+  //       $.post(url, {no_rawat : no_rawat,
+  //       }, function(data) {
+  //         // tampilkan data
+  //         $("#kerohanian").html(data).show();
+  //       });
+            // $('input:text[name=no_rawat]').val(no_rawat);
+            // $('input:text[name=noorder]').val("");
+            // $('input:text[name=nama]').val("");
+            // $('input:text[name=keterangan]').val("");
+  //       $('input:text[name=tgl_permintaan]').val("{?=date('Y-m-d')?}");
+  //       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+  //       "Data Kerohanian telah dihapus!"+
+  //       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+  //       "</div>").show();
+  //     });
+  //   }
+  // });
+  alert("coba lagi");
+  });
+  
+
+
+// tombol batal diklik
+$("#form_rincian").on("click", "#selesai", function(event){
+  bersih();
+  $("#form_berkasdigital").hide();
+  $("#form_rincian").hide();
+  $("#form_soap").hide();
+  $("#form").show();
+  $("#display").show();
+  $("#rincian").hide();
+  $("#soap").hide();
+  $("#berkasdigital").hide();
+  $("#form_hais").hide();
+  $("#form_jadwaloperasi").hide();
+  $("#form_dietpasien").hide();
+  $("#form_kerohanian").hide();
+  });
+  
+  // tombol batal diklik
+  $("#kerohanian").on("click", "#selesai_kerohanian", function(event){
+  bersih();
+  $("#form_berkasdigital").hide();
+  $("#form_rincian").hide();
+  $("#form_soap").hide();
+  $("#form").show();
+  $("#display").show();
+  $("#rincian").hide();
+  $("#soap").hide();
+  $("#berkasdigital").hide();
+  $("#form_hais").hide();
+  $("#hais").hide();
+  $("#form_jadwaloperasi").hide();
+  $("#jadwaloperasi").hide();
+  $("#form_dietpasien").hide();
+  $("#dietpasien").hide();
+  $("#form_kerohanian").hide();
+  $("#kerohanian").hide();
+ //alert("coba lagi");
+  
+  });
 
 function bersih(){
   $('input:text[name=no_rawat]').val("");

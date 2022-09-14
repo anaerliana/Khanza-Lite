@@ -16,7 +16,7 @@ class BaseModule
         $this->tpl = $core->tpl;
         $this->router = $core->router;
         $this->settings = $core->settings;
-        $this->name = strtolower(str_replace(['Plugins\\', '\\Admin', '\\Site'], null, static::class));
+        $this->name = strtolower(str_replace(['Plugins\\', '\\Admin', '\\Site'], '', static::class));
     }
 
     public function init()
@@ -34,7 +34,7 @@ class BaseModule
                 $this->tpl->set($key, $value);
             }
         }
-
+        
         if (strpos($file, BASE_DIR) !== 0) {
             if ($this instanceof AdminModule) {
                 $file = MODULES.'/'.$this->name.'/view/admin/'.$file;
@@ -42,7 +42,8 @@ class BaseModule
                 $file = MODULES.'/'.$this->name.'/view/'.$file;
             }
         }
-
+       
+        
         return $this->tpl->draw($file);
     }
 

@@ -75,13 +75,6 @@ return [
     $core->db()->pdo()->exec("ALTER TABLE `bundles_hais`
     ADD CONSTRAINT `reg_periksa` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`),
     ADD CONSTRAINT `kamar` FOREIGN KEY (`kd_kamar`) REFERENCES `kamar` (`kd_kamar`);");
-
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('sirs_online', 'email', '')");
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('sirs_online', 'password_v3', '')");
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('sirs_online', 'url_v3', '')");
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('sirs_online', 'url', '')");
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('sirs_online', 'id_sirs', '')");
-    $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('sirs_online', 'password', '')");
 },
 'uninstall'     =>  function () use ($core) {
 }
