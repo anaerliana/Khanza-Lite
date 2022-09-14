@@ -693,7 +693,7 @@ $("#bundles_maintanance").on("click", "#simpan_maintanance", function (event) {
   var baglantai_mainisk     = $('input:radio[name=baglantai_mainisk]:checked').val();
   var bagrendah_mainisk     = $('input:radio[name=bagrendah_mainisk]:checked').val();
   var posisiselang_mainisk  = $('input:radio[name=posisiselang_mainisk]:checked').val();
-  var lepas_mainisk         = $('input:radio[name=kateter_mainisk]:checked').val();
+  var lepas_mainisk         = $('input:radio[name=lepas_mainisk]:checked').val();
 
   console.log({
     no_rawat, kd_kamar,
@@ -775,6 +775,7 @@ $("#bundles_maintanance").on("click", "#simpan_maintanance", function (event) {
     $('input:radio[name=bagrendah_mainisk]:checked').val("");
     $('input:radio[name=posisiselang_mainisk]:checked').val("");
     $('input:radio[name=kateter_mainisk]:checked').val("");
+    $('input:radio[name=lepas_mainisk]:checked').val("");
     $('input:text[name=tanggalbundles]').val("{?=date('Y-m-d')?}");
   });
 });
@@ -1231,12 +1232,12 @@ $("#bundles_maintanance").on("click", ".hapus_main_iadp", function (event) {
     var kd_kamar              = $(this).attr("data-kd_kamar");
     var no_rkm_medis          = $(this).attr("data-no_rkm_medis");
     var nm_pasien             = $(this).attr("data-nm_pasien");
-    var hand_mainisk          = $(this).attr("data-hand_mainisk ");
+    var hand_mainisk          = $(this).attr("data-hand_mainisk");
     var kateter_mainisk       = $(this).attr("data-kateter_mainisk");
     var baglantai_mainisk     = $(this).attr("data-baglantai_mainisk");
     var bagrendah_mainisk     = $(this).attr("data-bagrendah_mainisk");
     var posisiselang_mainisk  = $(this).attr("data-posisiselang_mainisk");
-    var lepas_mainisk         = $(this).attr("data-lepas_mainisk ");
+    var lepas_mainisk         = $(this).attr("data-lepas_mainisk");
     
     $('input:text[name=tanggalbundles]').val(tanggal);
     $('input:text[name=no_rawat]').val(no_rawat);
@@ -1245,20 +1246,19 @@ $("#bundles_maintanance").on("click", ".hapus_main_iadp", function (event) {
     $('input:text[name=kd_kamar]').val(kd_kamar);
   
    //hand_mainisk 
-    if (hand_mainisk  === '1') {
-      if ($('#hand_mainisk1').prop('checked')==false){
-        $('#hand_mainisk1').prop('checked', true).change();
-      } else if ($('#hand_mainisk1').prop('checked')==true){
-        $('#hand_mainisk1').prop('checked', false).change(); 
-      }
-      
-    } else if(hand_mainisk  === '0'){
-      if ($('#hand_mainisk0').prop('checked')==true){
-        $('#hand_mainisk0').prop('checked', false).change();
-      } else if ($('#hand_mainisk0').prop('checked')==false){
-        $('#hand_mainisk0').prop('checked', true).change();
-      }
+   if (hand_mainisk === '1') { 
+    if ($('#hand_mainisk1').prop('checked')==false){
+      $('#hand_mainisk1').prop('checked', true).change();
+    } else if ($('#hand_mainisk1').prop('checked')==true){
+      $('#hand_mainisk1').prop('checked', false).change(); 
     }
+  } else if(hand_mainisk === '0'){
+    if ($('#hand_mainisk0').prop('checked')==true){
+      $('#hand_mainisk0').prop('checked', false).change();
+    }else if ($('#hand_mainisk0').prop('checked')==false){
+      $('#hand_mainisk0').prop('checked', true).change();
+    }
+  }
     //kateter_mainisk
     if (kateter_mainisk === '1') {
       if ($('#kateter_mainisk1').prop('checked')==false){
@@ -1288,7 +1288,7 @@ $("#bundles_maintanance").on("click", ".hapus_main_iadp", function (event) {
       }
     }
     //bagrendah_mainisk 
-    if (bagrendah_mainisk  === '1') {
+    if (bagrendah_mainisk === '1') {
       if ($('#bagrendah_mainisk1').prop('checked')==false){
         $('#bagrendah_mainisk1').prop('checked', true).change();
       } else if ($('#bagrendah_mainisk1').prop('checked')==true){
@@ -1319,14 +1319,14 @@ $("#bundles_maintanance").on("click", ".hapus_main_iadp", function (event) {
     }
 
      //lepas_mainisk 
-     if (lepas_mainisk  === '1') {
+     if (lepas_mainisk === '1') {
       if ($('#lepas_mainisk1').prop('checked')==false){
         $('#lepas_mainisk1').prop('checked', true).change();
       } else if ($('#lepas_mainisk1').prop('checked')==true){
         $('#lepas_mainisk1').prop('checked', false).change(); 
       }
       
-    } else if(lepas_mainisk  === '0'){
+    } else if(lepas_mainisk === '0'){
       if ($('#lepas_mainisk0').prop('checked')==true){
         $('#lepas_mainisk0').prop('checked', false).change();
       } else if ($('#lepas_mainisk0').prop('checked')==false){
@@ -1345,12 +1345,12 @@ $("#bundles_maintanance").on("click", ".hapus_main_iadp", function (event) {
     var no_rawat              = $(this).attr("data-no_rawat");
     var tanggal               = $(this).attr("data-tanggal");
     var kd_kamar              = $(this).attr("data-kd_kamar");
-    var hand_mainisk          = $(this).attr("data-hand_mainisk ");
+    var hand_mainisk          = $(this).attr("data-hand_mainisk");
     var kateter_mainisk       = $(this).attr("data-kateter_mainisk");
     var baglantai_mainisk     = $(this).attr("data-baglantai_mainisk");
     var bagrendah_mainisk     = $(this).attr("data-bagrendah_mainisk");
     var posisiselang_mainisk  = $(this).attr("data-posisiselang_mainisk");
-    var lepas_mainisk         = $(this).attr("data-lepas_mainisk ");
+    var lepas_mainisk         = $(this).attr("data-lepas_mainisk");
   
    // tampilkan dialog konfirmasi
    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
