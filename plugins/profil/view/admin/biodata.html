@@ -129,8 +129,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            {if: $this->core->getUserInfo('role') == 'admin'}
-                                            <div class="row clearfix">
+                                            <div class="row clearfix" {if: $this->core->getUserInfo('role') != 'admin'} style="display: none;" {/if}>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Departemen</label>
@@ -154,7 +153,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            {/if}
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
@@ -2906,7 +2904,7 @@
                                                         <td>{$value.NOTELP}</td>
                                                         <td>{$value.WIL}</td>
                                                         <td>{$value.KPOS}</td>
-                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_AYAH}" data-tabel="ayah"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -3028,7 +3026,7 @@
                                                         <td>{$value.NOTELP}</td>
                                                         <td>{$value.WIL}</td>
                                                         <td>{$value.KPOS}</td>
-                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_IBU}" data-tabel="ibu"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -3156,7 +3154,7 @@
                                                         <td>{loop: $biodata.nikah as $key => $val}
                                                             {if: $key == $value.STATUS}{$val}{/if}
                                                             {/loop}</td>
-                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_ISTRI}" data-tabel="istri"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -3299,7 +3297,7 @@
                                                         <td>{loop: $biodata.statusHidup as $key => $val}
                                                             {if: $key == $value.STATUS}{$val}{/if}
                                                             {/loop}</td>
-                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_ANAK}" data-tabel="anak"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>
@@ -3453,7 +3451,7 @@
                                                         <td>{$value.ALJALAN}</td>
                                                         <td>{$value.WIL}</td>
                                                         <td>{$value.KPOS}</td>
-                                                        <td><button class="btn btn-xs btn-danger"><span class="fa fa-trash"></span></button></td>
+                                                        <td><button class="btn btn-xs btn-danger del" data-id = "{$value.ID_KELUARGA}" data-tabel="keluarga"><span class="fa fa-trash"></span></button></td>
                                                     </tr>
                                                     {/loop}
                                                 </tbody>

@@ -116,6 +116,12 @@ class Admin extends AdminModule
         $kel = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rkeluarga WHERE NIP IN ('$username','$nipk_baru')");
         $kel->execute();
         $this->assign['rkeluarga'] = $kel->fetchAll();
+        $diktek = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rdiktek WHERE NIP IN ('$username','$nipk_baru') ORDER BY TMULAI DESC");
+        $diktek->execute();
+        $this->assign['rdiktek'] = $diktek->fetchAll();
+        $seminar = $this->db()->pdo()->prepare("SELECT * FROM simpeg_rseminar WHERE NIP IN ('$username','$nipk_baru') ORDER BY TMULAI DESC");
+        $seminar->execute();
+        $this->assign['rseminar'] = $seminar->fetchAll();
         $this->assign['rpangkat'] = $this->db('simpeg_rpangkat')->where('NIP',$username)->desc('TMTPANG')->toArray();
         $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('NIP',$username)->desc('TMTJABAT')->toArray();
         $this->assign['rdppp'] = $this->db('simpeg_rdppp')->where('NIP',$username)->desc('THNILAI')->toArray();
@@ -123,8 +129,6 @@ class Admin extends AdminModule
         $this->assign['rdiknstr'] = $this->db('simpeg_rdiknstr')->where('NIP',$username)->desc('TMULAI')->toArray();
         $this->assign['rdikfung'] = $this->db('simpeg_rdikfung')->where('NIP',$username)->desc('TMULAI')->toArray();
         $this->assign['rdikstr'] = $this->db('simpeg_rdikstr')->where('NIP',$username)->desc('TMULAI')->toArray();
-        $this->assign['rdiktek'] = $this->db('simpeg_rdiktek')->where('NIP',$username)->desc('TMULAI')->toArray();
-        $this->assign['rseminar'] = $this->db('simpeg_rseminar')->where('NIP',$username)->desc('TMULAI')->toArray();
         $this->assign['rjabfung'] = $this->db('simpeg_rjabfung')->where('NIP',$username)->desc('tgl_sk')->toArray();
         $this->assign['rtubel'] = $this->db('simpeg_rtubel')->where('NIP',$username)->desc('TSTTB')->toArray();
         $this->assign['rpangkatlast'] = $this->db('simpeg_rpangkat')->where('NIP',$username)->where('ISAKHIR','1')->desc('TMTPANG')->toArray();
@@ -472,7 +476,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_bkstambah')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -541,7 +550,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rpangkat')->select('nm_file')->where('ID_PANGKAT', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -616,7 +630,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rjabatan')->select('nm_file')->where('ID_JAB', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -692,7 +711,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rdppp')->select('nm_file')->where('ID_DP3', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -777,7 +801,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_gkkhir')->select('nm_file')->where('ID_KGB', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -854,7 +883,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rjabfung')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -924,7 +958,12 @@ class Admin extends AdminModule
         }
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rsertifikasi')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1001,7 +1040,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_skkontrak')->select('nm_file')->where('id', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1075,7 +1119,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rpendum')->select('nm_file')->where('ID_PENDUM', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1157,7 +1206,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rdiknstr')->select('nm_file')->where('ID_DIKNSTR', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1241,7 +1295,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rdikstr')->select('nm_file')->where('ID_DIKSTR', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1325,7 +1384,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rdikfung')->select('nm_file')->where('ID_DIKFUNG', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1408,7 +1472,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rdiktek')->select('nm_file')->where('ID_DIKTEK', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1490,7 +1559,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rseminar')->select('nm_file')->where('ID_SEMINAR', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1568,7 +1642,12 @@ class Admin extends AdminModule
 
         if ($_FILES['file']['size'] == 0)
         {
-            $_POST['nm_file'] = '';
+            $checkBerkas = $this->db('simpeg_rtubel')->select('nm_file')->where('ID_TUBEL', $id)->oneArray();
+            if ($checkBerkas['nm_file'] != '') {
+                $_POST['nm_file'] = $checkBerkas['nm_file'];
+            } else {
+                $_POST['nm_file'] = '';
+            }
             // cover_image is empty (and not an error)
         } else {
             $targetFolder = UPLOADS.'/simpeg/'.$username;
@@ -1955,6 +2034,26 @@ class Admin extends AdminModule
             case 'bkstambah':
                 $tableTarget = 'simpeg_bkstambah';
                 $idTarget = 'id';
+                break;
+            case 'ayah':
+                $tableTarget = 'simpeg_rakand';
+                $idTarget = 'ID_AYAH';
+                break;
+            case 'ibu':
+                $tableTarget = 'simpeg_ribukand';
+                $idTarget = 'ID_IBU';
+                break;
+            case 'istri':
+                $tableTarget = 'simpeg_rsistri';
+                $idTarget = 'ID_ISTRI';
+                break;
+            case 'anak':
+                $tableTarget = 'simpeg_ranak';
+                $idTarget = 'ID_ANAK';
+                break;
+            case 'keluarga':
+                $tableTarget = 'simpeg_rkeluarga';
+                $idTarget = 'ID_KELUARGA';
                 break;
             default:
                 $tableTarget = '';
