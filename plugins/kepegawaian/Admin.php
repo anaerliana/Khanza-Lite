@@ -138,8 +138,6 @@ class Admin extends AdminModule
                 $this->assign['list'][] = $row;
             }
         }
-
-        $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
 
         return $this->draw('index.html', ['pegawai' => $this->assign]);
@@ -489,13 +487,63 @@ class Admin extends AdminModule
                 $this->assign['list'][] = $row;
             }
         }
-
         $this->assign['listCuti'] = array('1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
+        // $this->assign['cetakURL'] = url([ADMIN, 'kepegawaian', 'cetak']);
 
         return $this->draw('index_cuti.html', ['cuti' => $this->assign]);
     }
+
+    public function getSetStatus($id)
+  {
+
+    $pegawai = $this->db('pegawai')->select('nama')->where('nik', $id)->oneArray();
+
+    $cuti = $this->db('izin_cuti')->where('id', $id)->oneArray();
+    $set_status = $this->db('izin_cuti')->where('id', $id)->asc('id')->toArray();
+    $this->tpl->set('pegawai', $pegawai);
+    $this->tpl->set('cuti', $cuti);
+    $this->tpl->set('set_status', $set_status);
+    echo $this->tpl->draw(MODULES . '/kepegawaian/view/admin/setstatus.html', true);
+    exit();
+  }
+
+    public function postStatusSave()
+    {
+        $id = $_POST['id'];
+        $errors = 0;
+        $location = url([ADMIN, 'kepegawaian', 'cuti']);
+        $no_surat = $_POST['no_surat'];
+        $status = $_POST['status'];
+        $keterangan = $_POST['keterangan'];
+              $query = $this->db('izin_cuti')
+                ->where('id', $id)
+                ->save([
+                'no_surat' => $no_surat,
+                'status' => $status,
+                'keterangan' =>  $keterangan,
+                'updated_at' =>  date('Y-m-d H:i:s')
+                ]);
+            if ($query) {
+                $this->notify('success', 'Status Berhasil Disimpan');
+            } else {
+                $this->notify('failure', 'Status Gagal Disimpan');
+            }
+          redirect($location);
+         echo $status;
+    }
+
+    public function postStatusDel()
+  {
+    $this->db('izin_cuti')
+      ->where('id', $_POST['id'])
+      ->update([
+        'status' => NULL,
+        'updated_at' =>  date('Y-m-d H:i:s')
+      ]);
+    exit();
+  }
 
     public function getCSS()
     {

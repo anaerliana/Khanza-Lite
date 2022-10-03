@@ -12,12 +12,15 @@
                 <th>Perujuk</th>
                 <th>Petugas</th>
                 <th>Keterangan</th>
+                <th>Jenis Kerohanian</th>
+                <th>Aksi</th>
+
             </tr>
         </thead>
         <tbody>
             {loop: $kerohanian}
             <tr>
-                <td rowspan="3">{$value.nomor}</td>
+                <td>{$value.nomor}</td>
                 <td>{$value.noorder}</td>
                 <td>{$value.no_rawat} </td>
                 <td>{$value.nm_pasien}</td>
@@ -26,30 +29,17 @@
                 <td>{$value.nama}</td>
                 <td>{$value.petugas}</td>
                 <td>{$value.keterangan}</td>
+                <td>{loop: $value.ppk as $nama} - {$nama.nama_rh}<br> {/loop}</td>
+                <td> <div class="">
+                    <button type="button" name="button" class="btn btn-danger btn-xs hapus_kerohanian"
+                        data-noorder="{$value.noorder}" 
+                        data-no_rawat="{$value.no_rawat}"
+                        data-tgl_permintaan="{$value.tgl_permintaan}">
+                        <span class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </div></td>
+
             </tr>
-            <tr>
-                <td colspan="2" rowspan="2">
-                    <div class="">
-                        <button type="button" name="button" class="btn btn-success btn-xs edit_kerohanian"
-                            data-noorder="{$value.noorder}" data-no_rawat="{$value.no_rawat}"
-                            data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}"
-                            data-tgl_permintaan="{$value.tgl_permintaan}" data-perujuk="{$value.nama}"
-                            data-petugas="{$value.petugas}" data-keterangan="{$value.keterangan}">
-                            <span class="fa fa-edit"></span>
-                            <span class="hidden-xs"> Edit</span></button>
-                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_kerohanian"
-                            data-noorder="{$value.noorder}" data-no_rawat="{$value.no_rawat}"
-                            data-tanggal="{$value.tgl_permintaan}">
-                            <span class="fa fa-trash"></span>
-                            <span class="hidden-xs"> Hapus</span></button>
-                    </div>
-                </td>
-            </tr>
-            {loop: $rohani}
-            <tr>
-                <td colspan="6">{$value.nama_rh}</td>
-            </tr>
-            {/loop}
             {/loop}
         </tbody>
     </table>

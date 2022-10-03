@@ -1,0 +1,280 @@
+
+
+<div class="col-md-12">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<form action="" method="">
+				{if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
+				<a href="{?=url()?}/admin/laporan_bundles/lapbundles?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}"
+					target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span>
+					Print</a>
+				{else}
+				<a href="{?=url()?}/admin/laporan_bundles/lapbundles?action=print&t={?=$_SESSION['token']?}"
+					target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span>
+					Print</a>
+				{/if}
+			</form>
+			<h3 class="panel-title">Data Bundles Hais</h3>
+		</div>
+		<div class="panel-body">
+			<div class="table-responsive no-margin">
+				<table class="table table-bordered no-padding dataTables" width="100%">
+					<thead>
+						<tr>
+							<th rowspan="2">No.</th>
+							<th rowspan="2">Tanggal</th>
+							<th rowspan="2">Jumlah Pasien</th>
+							<th colspan="4" style="text-align: center;">Insersi VAP</th>
+							<th colspan="5" style="text-align: center;">Insersi IADP/CLABSI</th>
+							<th colspan="5" style="text-align: center;">Insersi VENA PERIPER</th>
+							<th colspan="4" style="text-align: center;">Insersi ISK</th>
+							<th colspan="5" style="text-align: center;">Maintanance VAP</th>
+							<th colspan="5" style="text-align: center;">Maintanance IADP</th>
+							<th colspan="5" style="text-align: center;">Maintanance VENA PERIFER</th>
+							<th colspan="6" style="text-align: center;">Maintanance ISK</th>
+							<th colspan="4" style="text-align: center;">IDO Pre Operasi</th>
+							<th colspan="6" style="text-align: center;">IDO Intra Operasi</th>
+							<th colspan="4" style="text-align: center;">IDO Post Operasi</th>
+						<tr>
+							<!-- Insersi VAP -->
+							<th>Hand Hygiene</th>
+							<th>Tehniksteril</th>
+							<th>APD</th>
+							<th>Sedasi</th>
+							<!-- Insersi IADP/CLABSI -->
+							<th>Hand Hygiene</th>
+							<th>Seleksi Area</th>
+							<th>Tehniksteril</th>
+							<th>Alcohol-based</th>
+							<th>APD</th>
+							<!-- Insersi VENA PERIPER -->
+							<th>Hand Hygiene</th>
+							<th>Kaji Kebutuhan</th>
+							<th>Tehniksteril</th>
+							<th>Petugas</th>
+							<th>Desinfeksi</th>
+							<!-- Insersi ISK -->
+							<th>Kaji Kebutuhan</th>
+							<th>Petugas</th>
+							<th>Kebersihan Tangan</th>
+							<th>Tehniksteril</th>
+							<!-- Maintanance VAP -->
+							<th>Hand Hygiene</th>
+							<th>Oral Hygiene</th>
+							<th>Oropharingeal</th>
+							<th>Sedasition</th>
+							<th>Posisi Kepala</th>
+							<!-- Maintanance IADP -->
+							<th>Hand Hygiene</th>
+							<th>Desinfeksi Hub</th>
+							<th>Perawatan Area</th>
+							<th>Ganti dreasing</th>
+							<th>Lepas infus</th>
+							<!-- Maintanance VENA -->
+							<th>Hand Hygiene</th>
+							<th>Perawatan area</th>
+							<th>Kaji Kebutuhan</th>
+							<th>Ganti administrasi</th>
+							<th>Edukasi</th>
+							<!-- Maintanance ISK -->
+							<th>Hand Hygiene</th>
+							<th>Perawatan kateter</th>
+							<th>Urinebag t.dilantai</th>
+							<th>Urinebag rendah></th>
+							<th>Posisi selang</th>
+							<th>Segera lepas</th>
+							<!-- IDO Pre Operasi -->
+							<th>Mandi</th>
+							<th>Pencukuran</th>
+							<th>Gula Darah</th>
+							<th>Antibiotik</th>
+							<!-- IDO Intra Operasi -->
+							<th>Hand Hygiene</th>
+							<th>Instrument Steril</th>
+							<th>Antiseptic</th>
+							<th>Teknik operasi</th>
+							<th>System mobile</th>
+							<th>Suhu 19-24ºC</th>
+							<!-- IDO Post Operasi -->
+							<th>Luka ditutup</th>
+							<th>Rawat Luka</th>
+							<th>APD</th>
+							<th >Kaji nutris</th>
+						</tr>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- {if: $lapbundles} -->
+						{loop: $lapbundles}
+						<tr>
+							<td>{$value.nomor}</td>
+							<td>{$value.tanggal}</td>
+							<td></td>
+
+							<td>{$value.hand_vap}</td>
+							<td>{$value.tehniksteril_vap}</td>
+							<td>{$value.apd_vap}</td>
+							<td>{$value.sedasi_vap}</td>
+
+							<td>{$value.hand_iadp}</td>
+							<td>{$value.area_iadp}</td>
+							<td>{$value.tehniksteril_iadp}</td>
+							<td>{$value.alcohol_iadp}</td>
+							<td>{$value.apd_iadp}</td>
+
+							<td>{$value.hand_vena}</td>
+							<td>{$value.kaji_vena}</td>
+							<td>{$value.tehnik_vena}</td>
+							<td>{$value.petugas_vena}</td>
+							<td>{$value.desinfeksi_vena}</td>
+
+							<td>{$value.kaji_isk}</td>
+							<td>{$value.petugas_isk}</td>
+							<td>{$value.tangan_isk}</td>
+							<td>{$value.tehniksteril_isk}</td>
+
+							<td>{$value.hand_mainvap}</td>
+							<td>{$value.oral_mainvap}</td>
+							<td>{$value.manage_mainvap}</td>
+							<td>{$value.sedasi_mainvap}</td>
+							<td>{$value.kepala_mainvap}</td>
+
+							<td>{$value.hand_mainiadp}</td>
+							<td>{$value.desinfeksi_mainiadp}</td>
+							<td>{$value.perawatan_mainiadp}</td>
+							<td>{$value.dreasing_mainiadp}</td>
+							<td>{$value.infus_mainiadp}</td>
+
+							<td>{$value.hand_mainvena}</td>
+							<td>{$value.perawatan_mainvena}</td>
+							<td>{$value.kaji_mainvena}</td>
+							<td>{$value.administrasi_mainvena}</td>
+							<td>{$value.edukasi_mainvena}</td>
+
+							<td>{$value.hand_mainisk}</td>
+							<td>{$value.kateter_mainisk}</td>
+							<td>{$value.baglantai_mainisk}</td>
+							<td>{$value.bagrendah_mainisk}</td>
+							<td>{$value.posisiselang_mainisk}</td>
+							<td>{$value.lepas_mainisk}</td>
+
+							<td>{$value.mandi_idopre}</td>
+							<td>{$value.cukur_idopre}</td>
+							<td>{$value.guladarah_idopre}</td>
+							<td>{$value.antibiotik_idopre}</td>
+
+							<td>{$value.hand_idointra}</td>
+							<td>{$value.steril_idointra}</td>
+							<td>{$value.antiseptic_idointra}</td>
+							<td>{$value.tehnik_idointra}</td>
+							<td>{$value.mobile_idointra}</td>
+							<td>{$value.suhu_idointra}</td>
+
+							<td>{$value.luka_idopost}</td>
+							<td>{$value.rawat_idopost}</td>
+							<td>{$value.apd_idopost}</td>
+							<td>{$value.kaji_idopost}</td>
+						</tr>
+						{/loop}
+						<!-- <tr>
+							<th colspan="2">Total :</th>
+							<td>{$value.jmlh_pasien}</td>
+
+							<td>{$value.hand_vap}</td>
+							<td>{$value.tehniksteril_vap}</td>
+							<td>{$value.apd_vap}</td>
+							<td>{$value.sedasi_vap}</td>
+
+							<td>{$value.hand_iadp}</td>
+							<td>{$value.area_iadp}</td>
+							<td>{$value.tehniksteril_iadp}</td>
+							<td>{$value.alcohol_iadp}</td>
+							<td>{$value.apd_iadp}</td>
+
+							<td>{$value.hand_vena}</td>
+							<td>{$value.kaji_vena}</td>
+							<td>{$value.tehnik_vena}</td>
+							<td>{$value.petugas_vena}</td>
+							<td>{$value.desinfeksi_vena}</td>
+
+							<td>{$value.kaji_isk}</td>
+							<td>{$value.petugas_isk}</td>
+							<td>{$value.tangan_isk}</td>
+							<td>{$value.tehniksteril_isk}</td>
+
+							<td>{$value.hand_mainvap}</td>
+							<td>{$value.oral_mainvap}</td>
+							<td>{$value.manage_mainvap}</td>
+							<td>{$value.sedasi_mainvap}</td>
+							<td>{$value.kepala_mainvap}</td>
+
+							<td>{$value.hand_mainiadp}</td>
+							<td>{$value.desinfeksi_mainiadp}</td>
+							<td>{$value.perawatan_mainiadp}</td>
+							<td>{$value.dreasing_mainiadp}</td>
+							<td>{$value.infus_mainiadp}</td>
+
+							<td>{$value.hand_mainvena}</td>
+							<td>{$value.perawatan_mainvena}</td>
+							<td>{$value.kaji_mainvena}</td>
+							<td>{$value.administrasi_mainvena}</td>
+							<td>{$value.edukasi_mainvena}</td>
+
+							<td>{$value.hand_mainisk}</td>
+							<td>{$value.kateter_mainisk}</td>
+							<td>{$value.baglantai_mainisk}</td>
+							<td>{$value.bagrendah_mainisk}</td>
+							<td>{$value.posisiselang_mainisk}</td>
+							<td>{$value.lepas_mainisk}</td>
+
+							<td>{$value.mandi_idopre}</td>
+							<td>{$value.cukur_idopre}</td>
+							<td>{$value.guladarah_idopre}</td>
+							<td>{$value.antibiotik_idopre}</td>
+
+							<td>{$value.hand_idointra}</td>
+							<td>{$value.steril_idointra}</td>
+							<td>{$value.antiseptic_idointra}</td>
+							<td>{$value.tehnik_idointra}</td>
+							<td>{$value.mobile_idointra}</td>
+							<td>{$value.suhu_idointra}</td>
+
+							<td>{$value.luka_idopost}</td>
+							<td>{$value.rawat_idopost}</td>
+							<td>{$value.apd_idopost}</td>
+							<td>{$value.kaji_idopost}</td>
+
+						</tr> -->
+						<!-- {else}
+						<tr>
+							<td colspan="37" class="text-center">Tidak ada data.</td>
+						</tr> -->
+						<!-- {/if} -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('.dataTables').DataTable({
+		"order": [[3, "desc"]],
+		"pagingType": "full",
+		"language": {
+			"paginate": {
+				"first": "&laquo;",
+				"last": "&raquo;",
+				"previous": "‹",
+				"next": "›"
+			},
+			"search": "",
+			"searchPlaceholder": "Search..."
+		},
+		"lengthChange": false,
+		"scrollX": true,
+		dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+	});
+	var t = $(".dataTables").DataTable().rows().count();
+	$(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+</script>

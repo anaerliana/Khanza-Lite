@@ -378,9 +378,6 @@
     var no_rawat = $(this).attr("data-no_rawat");
     var con_no_rawat = $(this).attr("data-con_no_rawat");
     console.log(no_rawat);
-    //const no_rawat = no_rawat; 
-      //var con_no_rawat = $('input:text[name=no_rawat]').val();
-      //var no_rawat = no_rawat.revertNorawat($no_rawat);  
     var no_rkm_medis = $(this).attr("data-no_rkm_medis");
     var nm_pasien = $(this).attr("data-nm_pasien");
     var kd_kamar = $(this).attr("data-kd_kamar");
@@ -388,9 +385,7 @@
     $("#display").hide();
    
     var url = baseURL + '/rawat_inap/formkerohanian/'+ con_no_rawat +'?t=' + mlite.token;
-   
     //var url = baseURL + '/rawat_inap/formkerohanian/' + no_rawat=convertNorawat($no_rawat) +'?t=' + mlite.token;
-
     $.post(url, {}, function(data) {
       // tampilkan data
       $("#form_rincian").hide();

@@ -1505,16 +1505,17 @@ $("#kerohanian").on("click", "#simpan_kerohanian", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat         = $('#no_rawat').val();
-  //document.getElementById("myText").value = "Johnny Bravo";
  //  $('input:text[name=no_rawat]').val();
   var kd_kamar        = $('input:text[name=kd_kamar]').val();
   var noorder         = $('input:text[name=noorder]').val();
   var tgl_permintaan  = $('input:text[name=tgl_permintaan]').val();
   var perujuk         = $('input:hidden[name=nip]').val();
+
   var kd_rh           = $("#kd_rh").val();
  //var kd_rh           = document.getElementById("kd_rh").value;
   var petugas         = $('input:text[name=petugas]').val();
   var keterangan      = $('textarea[name=keterangan]').val();
+  // var datanorawat      = '';
   // alert(no_rawat);
   console.log({
     no_rawat, kd_kamar, noorder,
@@ -1530,102 +1531,110 @@ $("#kerohanian").on("click", "#simpan_kerohanian", function(event){
     perujuk : perujuk, 
     kd_rh : kd_rh,
     petugas : petugas,
-    keterangan : keterangan
+    keterangan : keterangan,
   }, function(data) {
-   // console.log(data);
-    var url = baseURL + '/rawat_inap/formkerohanian/' + data + '?t=' + mlite.token;
-    //var url = baseURL + '/rawat_inap/formkerohanian?t=' + mlite.token;
-    // tampilkan data
-   // $.post(url, {
-   // no_rawat : no_rawat,
-    // }, function(data) {
-    // //   // tampilkan data
-    //  console.log(data);
-    //  $("#kerohanian").html(data).show();
-    // });
-  // window.location = url;
-   window.location = window.location.pathname + '?foo=bar';
-  
-   
-    //location.reload();
 
+    var datanorawat = data;
+    var url = baseURL + '/rawat_inap/formkerohanian/' + datanorawat + '?t=' + mlite.token;
+    // window.location = url;
+    $("#rohani").show().load(url);
+    // $.post(url, {
+    //   no_rawat : no_rawat,
+    // }, function(data) {
+    //   // tampilkan data
+      // console.log(data);
+    //   $("#kerohanian").html(data).show();
+    // });
     $('input:text[name=no_rawat]').val(no_rawat);
     $('input:text[name=noorder]').val("");
     $('input:text[name=nama]').val("");
     $('input:text[name=keterangan]').val("");
-   // $("#kd_rh").val("");
+    $("#kd_rh").val("");
+    $('input:hidden[name=nip]').val("");
     $('input:text[name=tgl_permintaan]').val("{?=date('Y-m-d')?}");
-
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data Permintaan Kerohanian telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
     "</div>").show();
   }); 
+  // var no_rawat   = $('#no_rawat').val();
+  // window.location = baseURL + '/rawat_inap/formkerohanian/' + no_rawat + '?t=' + mlite.token;
    //alert("coba lagi");
 });
 
 // ketika tombol edit ditekan
-$("#kerohanian").on("click",".edit_kerohanian", function(event){
-  // var baseURL = mlite.url + '/' + mlite.admin;
-  // event.preventDefault();
-  // var no_rawat        = $(this).attr("data-no_rawat");
-  // var nm_pasien       = $(this).attr("data-nm_pasien");
-  // var tanggal         = $(this).attr("data-tanggal");
-  // var kd_kamar        = $(this).attr("data-kd_kamar");
-  // var kd_dokter       = $(this).attr("data-kd_dokter");
-  // var nm_dokter       = $(this).attr("data-nm_dokter");
+// $("#kerohanian").on("click",".edit_kerohanian", function(event){
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+//   var no_rawat        = $(this).attr("data-no_rawat");
+//   var tgl_permintaan  = $(this).attr("data-tgl_permintaan");
+//   var kd_kamar        = $(this).attr("data-kd_kamar");
+//   var no_rkm_medis    = $(this).attr("data-no_rkm_medis");
+//   var nm_pasien       = $(this).attr("data-nm_pasien");
+//   var noorder         = $(this).attr("data-noorder");
+//   var perujuk         = $(this).attr("data-perujuk");
+//   var nama            = $(this).attr("data-nama");
+//   var kd_rh           = $(this).attr("data-kd_rh");
+//   var nama_rh         = $(this).attr("data-nama_rh");
+//   var keterangan      = $(this).attr("data-keterangan");
   
-  // $('input:hidden[name=edit]').val('1');
-  // $('input:text[name=no_rawat]').val(no_rawat);
-  // $('input:text[name=nm_pasien]').val(nm_pasien);
-  // $('input:text[name=tanggal_hari]').val(tanggal);
-  // $('select[name=status]').val(status).change();
-  // $('input:text[name=kd_kamar]').val(kd_kamar);
-  // $('input:hidden[name=kd_dokter]').val(kd_dokter);
-  // $('input:text[name=nm_dokter]').val(nm_dokter);
-  alert("coba lagi");
-  });
-
-  // ketika tombol hapus ditekan
+//   $('input:text[name=tgl_permintaan]').val(tgl_permintaan);
+//   $('input:text[name=no_rawat]').val(no_rawat);
+//   $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+//   $('input:text[name=nm_pasien]').val(nm_pasien);
+//   $('input:text[name=kd_kamar]').val(kd_kamar);
+//   $('input:text[name=noorder]').val(noorder);
+//   $('input:hidden[name=nip]').val(perujuk);
+//   $('input:text[name=nama]').val(nama);
+//   $('textarea[name=keterangan]').val(keterangan);
+//   $("#kd_rh").val(kd_rh).change();
+//   // $("#nama_rh").val(nama_rh).change();
+//  //alert("coba lagi");
+//   });
+  
+// ketika tombol hapus ditekan
 $("#kerohanian").on("click",".hapus_kerohanian", function(event){
-  // var baseURL = mlite.url + '/' + mlite.admin;
-  // event.preventDefault();
-  // var url = baseURL + '/rawat_inap/hapuskerohanian?t=' + mlite.token;
-  // var no_rawat = $(this).attr("data-no_rawat");
-  //  var tgl_permintaan  = $('input:text[name=tgl_permintaan]').val();
-  
-  // // tampilkan dialog konfirmasi
-  // bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
-  //   // ketika ditekan tombol ok
-  //   if (result){
-  //     // mengirimkan perintah penghapusan
-  //     $.post(url, {
-  //       no_rawat: no_rawat,
-  //       tgl_permintaan: tgl_permintaan 
-  //     } ,function(data) {
-  //       var url = baseURL + '/rawat_inap/formkerohanian?t=' + mlite.token;
-  //       $.post(url, {no_rawat : no_rawat,
-  //       }, function(data) {
-  //         // tampilkan data
-  //         $("#kerohanian").html(data).show();
-  //       });
-            // $('input:text[name=no_rawat]').val(no_rawat);
-            // $('input:text[name=noorder]').val("");
-            // $('input:text[name=nama]').val("");
-            // $('input:text[name=keterangan]').val("");
-  //       $('input:text[name=tgl_permintaan]').val("{?=date('Y-m-d')?}");
-  //       $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-  //       "Data Kerohanian telah dihapus!"+
-  //       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-  //       "</div>").show();
-  //     });
-  //   }
-  // });
-  alert("coba lagi");
-  });
-  
+  var baseURL = mlite.url + '/' + mlite.admin;
+event.preventDefault();
+var url = baseURL + '/rawat_inap/hapuskerohanian?t=' + mlite.token;
+var no_rawat = $(this).attr("data-no_rawat");
+var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+var noorder = $(this).attr("data-noorder");
+var kd_rh = $(this).attr("data-kd_rh");
 
+// tampilkan dialog konfirmasi
+bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+  // ketika ditekan tombol ok
+  if (result){
+    // mengirimkan perintah penghapusan
+    $.post(url, {
+      no_rawat: no_rawat,
+      tgl_permintaan: tgl_permintaan,
+      noorder: noorder,
+      kd_rh: kd_rh,
 
+    } ,function(data) {
+      var url = baseURL + '/rawat_inap/formkerohanian/' + data + '?t=' + mlite.token;
+      // window.location=url;
+      $.post(url, {no_rawat : no_rawat,
+      }, function(data) {
+        // tampilkan data
+        $("#kerohanian").html(data).show();
+        //document.location.href = baseURL + '/rawat_inap/manage?t=' + mlite.token;
+      });
+      $('input:text[name=noorder]').val("");
+      $('input:text[name=tgl_permintaan]').val("{?=date('Y-m-d')?}");
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Data telah dihapus!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    });
+  }
+ window.location.reload();
+});
+ // alert("coba lagi");
+});
+  
 // tombol batal diklik
 $("#form_rincian").on("click", "#selesai", function(event){
   bersih();

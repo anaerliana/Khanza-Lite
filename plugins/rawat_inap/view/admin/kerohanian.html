@@ -85,7 +85,11 @@
         </div>
     </div>
 </div>
-<h4>Data Permintaan Kerohanian</h4>
+<div>  {include: ../plugins/rawat_inap/view/admin/rohani.html}</div>
+<div>
+    <div id="rohani"></div>
+</div>
+<!-- <h4>Data Permintaan Kerohanian</h4>
 <div class="table-responsive no-margin">
     <table class="table table-bordered no-padding" width="100%">
         <thead>
@@ -122,10 +126,16 @@
                 <td>
                     <div class="">
                         <button type="button" name="button" class="btn btn-success btn-xs edit_kerohanian"
-                            data-noorder="{$value.noorder}" data-no_rawat="{$value.no_rawat}"
-                            data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}"
-                            data-tgl_permintaan="{$value.tgl_permintaan}" data-perujuk="{$value.nama}"
-                            data-petugas="{$value.petugas}" data-keterangan="{$value.keterangan}">
+                            data-noorder="{$value.noorder}" 
+                            data-no_rawat="{$value.no_rawat}"
+                            data-nm_pasien="{$value.nm_pasien}" 
+                            data-kd_kamar="{$value.kd_kamar}"
+                            data-tgl_permintaan="{$value.tgl_permintaan}" 
+                            data-perujuk="{$value.nama}"
+                            data-petugas="{$value.petugas}" 
+                            data-kd_rh="{$value.kd_rh}"
+                            data-nama_rh="{$value.nama_rh}"
+                            data-keterangan="{$value.keterangan}">
                             <span class="fa fa-edit"></span>
                             <span class="hidden-xs"> Edit</span></button>
                         <button type="button" name="button" class="btn btn-danger btn-xs hapus_kerohanian"
@@ -138,8 +148,9 @@
             </tr>
             {/loop}
         </tbody>
-    </table>
-</div>
+    </table> 
+</div>-->
+
 
 <script>
     $('input:text[name=nama]').on('input', function (e) {

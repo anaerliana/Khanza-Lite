@@ -1013,7 +1013,7 @@ class Admin extends AdminModule
     // var_dump($no_rawat);
     //  die();
     echo $this->draw('kerohanian.html', ['kerohanian' => $result, 'select33' => $selectrohani, 'no_rawat'=> $no_rawat]);
-      exit();
+     exit();
     }
 
     public function postSaveKerohanian() {
@@ -1051,28 +1051,30 @@ class Admin extends AdminModule
                         ]);
         }
       $no_rawat = convertNorawat($_POST['no_rawat']);
-      echo $no_rawat;
+      //echo $no_rawat;
       return $no_rawat;
       exit();
       }    
-}
+    }
 
-// public function postHapusKerohanian()
-// {
-//       if(isset($_POST['kd_rh'])) {
-//         $this->db('permintaan_pemeriksaan_kerohanian')
-//         ->where('noorder', $_POST['noorder'])
-//         ->where('kd_rh', $_POST['kd_rh'])
-//         ->delete();
-//       } else {
-//         $this->db('permintaan_kerohanian')
-//         ->where('noorder', $_POST['noorder'])
-//         ->where('no_rawat', $_POST['no_rawat'])
-//         ->where('tgl_permintaan', $_POST['tgl_permintaan'])
-//         ->delete();
-//       }
-//       exit();
-// }
+    public function postHapusKerohanian()
+    {
+     $this->db('permintaan_pemeriksaan_kerohanian')
+      ->where('noorder', $_POST['noorder'])
+      ->delete();
+
+      $cek_noorder = $this->db('permintaan_pemeriksaan_kerohanian')
+      ->where('noorder', $_POST['noorder'])
+      ->oneArray();
+
+      if(!$cek_noorder) {
+        $this->db('permintaan_kerohanian')
+        ->where('noorder', $_POST['noorder'])
+        ->where('tgl_permintaan', $_POST['tgl_permintaan'])
+        ->delete();
+      }
+      exit();
+    }
 
     public function postPetugas()
     {
