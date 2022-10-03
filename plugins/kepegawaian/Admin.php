@@ -31,6 +31,7 @@ class Admin extends AdminModule
             ['name' => 'Data Pegawai Tidak Aktif', 'url' => url([ADMIN, 'kepegawaian', 'indexnon']), 'icon' => 'user-times', 'desc' => 'Data Pegawai Tidak Aktif'],
             ['name' => 'Tambah Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'user-plus', 'desc' => 'Tambah Data Pegawai'],
             ['name' => 'Data Izin / Cuti', 'url' => url([ADMIN, 'kepegawaian', 'cuti']), 'icon' => 'envelope', 'desc' => 'Daftar Izin / Cuti Pegawai'],
+            ['name' => 'Ekspor Laporan', 'url' => url([ADMIN, 'kepegawaian', 'lap']), 'icon' => 'file', 'desc' => 'Ekspor Laporan Pegawai'],
             //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
         ];
         $stats['KunjunganTahunChart'] = $this->KunjunganTahunChart();
@@ -326,6 +327,98 @@ class Admin extends AdminModule
         }
 
         redirect($location, $_POST);
+    }
+
+    public function getLap($page = 1)
+    {
+
+        $this->_addHeaderFiles();
+
+        $this->core->addCSS(url('https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css'));
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
+
+        $rows = $this->db('pegawai')->select(['NIP' => 'nik','NAMA' => 'nama','Bidang' => 'bidang'])->where('stts_aktif','AKTIF')->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $nipk_baru = $row['NIP'];
+                $pdn = $pdnnot = $pdnnul = $sern = $sernnot = $sernnul = $dtn = $dtnnot = $dtnnul = $smn = $smnnot = $smnnul = 0;
+                $pd = $this->db('simpeg_rpendum')->select(['countNo' => 'COUNT(NIP)'])->where('simpeg_rpendum.NIP',$nipk_baru)->group('NIP')->oneArray();
+                $pdnot = $this->db('simpeg_rpendum')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $pdnul = $this->db('simpeg_rpendum')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $pg = $this->db('simpeg_rpangkat')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $pgnot = $this->db('simpeg_rpangkat')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $pgnul = $this->db('simpeg_rpangkat')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $jb = $this->db('simpeg_rjabatan')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $jbnot = $this->db('simpeg_rjabatan')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $jbnul = $this->db('simpeg_rjabatan')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $skp = $this->db('simpeg_rdppp')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $skpnot = $this->db('simpeg_rdppp')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $skpnul = $this->db('simpeg_rdppp')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $gk = $this->db('simpeg_gkkhir')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $gknot = $this->db('simpeg_gkkhir')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $gknul = $this->db('simpeg_gkkhir')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $akr = $this->db('simpeg_rjabfung')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $akrnot = $this->db('simpeg_rjabfung')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $akrnul = $this->db('simpeg_rjabfung')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $ser = $this->db('simpeg_rsertifikasi')->select(['countNo' => 'COUNT(nip)'])->where('nip',$nipk_baru)->group('nip')->oneArray();
+                $sernot = $this->db('simpeg_rsertifikasi')->select(['countNo' => 'COUNT(nip)'])->where('nip',$nipk_baru)->isNotNull('nm_file')->group('nip')->oneArray();
+                $sernul = $this->db('simpeg_rsertifikasi')->select(['countNo' => 'COUNT(nip)'])->where('nip',$nipk_baru)->isNull('nm_file')->group('nip')->oneArray();
+                $dns = $this->db('simpeg_rdiknstr')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $dnsnot = $this->db('simpeg_rdiknstr')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $dnsnul = $this->db('simpeg_rdiknstr')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $ds = $this->db('simpeg_rdikstr')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $dsnot = $this->db('simpeg_rdikstr')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $dsnul = $this->db('simpeg_rdikstr')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $df = $this->db('simpeg_rdikfung')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $dfnot = $this->db('simpeg_rdikfung')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $dfnul = $this->db('simpeg_rdikfung')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $dt = $this->db('simpeg_rdiktek')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $dtnot = $this->db('simpeg_rdiktek')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $dtnul = $this->db('simpeg_rdiktek')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $sm = $this->db('simpeg_rseminar')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->group('NIP')->oneArray();
+                $smnot = $this->db('simpeg_rseminar')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNotNull('nm_file')->group('NIP')->oneArray();
+                $smnul = $this->db('simpeg_rseminar')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$nipk_baru)->isNull('nm_file')->group('NIP')->oneArray();
+                $bks = $this->db('simpeg_bkstambah')->select(['countNo' => 'COUNT(nip)'])->where('nip',$nipk_baru)->group('nip')->oneArray();
+                $nipkBaru = $this->db('pegawai_mapping')->select('nipk')->where('nipk_baru',$row['NIP'])->oneArray();
+                if ($nipkBaru) {
+                    $username = $nipkBaru['nipk'];
+                    $pdn = $this->db('simpeg_rpendum')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->group('NIP')->oneArray();
+                    $pdnnot = $this->db('simpeg_rpendum')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->isNotNull('nm_file')->group('NIP')->oneArray();
+                    $pdnnul = $this->db('simpeg_rpendum')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->isNull('nm_file')->group('NIP')->oneArray();
+                    $sern = $this->db('simpeg_rsertifikasi')->select(['countNo' => 'COUNT(nip)'])->where('nip',$username)->group('nip')->oneArray();
+                    $sernnot = $this->db('simpeg_rsertifikasi')->select(['countNo' => 'COUNT(nip)'])->where('nip',$username)->isNotNull('nm_file')->group('nip')->oneArray();
+                    $sernnul = $this->db('simpeg_rsertifikasi')->select(['countNo' => 'COUNT(nip)'])->where('nip',$username)->isNull('nm_file')->group('nip')->oneArray();
+                    $dtn = $this->db('simpeg_rdiktek')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->group('NIP')->oneArray();
+                    $dtnnot = $this->db('simpeg_rdiktek')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->isNotNull('nm_file')->group('NIP')->oneArray();
+                    $dtnnul = $this->db('simpeg_rdiktek')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->isNull('nm_file')->group('NIP')->oneArray();
+                    $smn = $this->db('simpeg_rseminar')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->group('NIP')->oneArray();
+                    $smnnot = $this->db('simpeg_rseminar')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->isNotNull('nm_file')->group('NIP')->oneArray();
+                    $smnnul = $this->db('simpeg_rseminar')->select(['countNo' => 'COUNT(NIP)'])->where('NIP',$username)->isNull('nm_file')->group('NIP')->oneArray();
+                }
+                $row['pd'] = $pd['countNo'] + $pdn['countNo'] + $dns['countNo'] + $ds['countNo'] + $df['countNo'] + $dt['countNo'] + $dtn['countNo'] + $sm['countNo'] + $smn['countNo'];
+                $row['pdnot'] = $pdnot['countNo'] + $pdnnot['countNo'] + $dnsnot['countNo'] + $dsnot['countNo'] + $dfnot['countNo'] + $dtnot['countNo'] + $dtnnot['countNo'] + $smnot['countNo'] + $smnnot['countNo'];
+                $row['pdnul'] = $pdnul['countNo'] + $pdnnul['countNo'] + $dnsnul['countNo'] + $dsnul['countNo'] + $dfnul['countNo'] + $dtnul['countNo'] + $dtnnul['countNo'] + $smnul['countNo'] + $smnnul['countNo'];
+                $row['pg'] = $pg['countNo'] + $jb['countNo'] + $skp['countNo'] + $gk['countNo'] + $akr['countNo'] + $ser['countNo'] + $sern['countNo'] + 0;
+                $row['pgnot'] = $pgnot['countNo'] + $jbnot['countNo'] + $skpnot['countNo'] + $gknot['countNo'] + $akrnot['countNo'] + $sernot['countNo'] + $sernnot['countNo'] + 0;
+                $row['pgnul'] = $pgnul['countNo'] + $jbnul['countNo'] + $skpnul['countNo'] + $gknul['countNo'] + $akrnul['countNo'] + $sernul['countNo'] + $sernnul['countNo'] + 0;
+                $row['bks'] = $bks['countNo'] + 0;
+
+                // $row['editURL'] = url([ADMIN, 'profil', 'biodata', $row['id']]);
+                // $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                // $row['tgl_lahir'] = dateIndonesia($row['tgl_lahir']);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        // $this->assign['getStatus'] = isset($_GET['status']);
+        // $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
+
+        return $this->draw('laporan.html', ['laporan' => $this->assign]);
     }
 
     public function getPrint()

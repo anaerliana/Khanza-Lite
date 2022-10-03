@@ -52,6 +52,7 @@ class Site extends SiteModule
     $this->route('anjungan/baru/bikin/(:str)','getBaruBikin');
     $this->route('anjungan/baru/savesep','postSaveSepBaru');
     $this->route('anjungan/check','postCheckFungsi');
+    $this->route('anjungan/reset','getResetAnjungan');
   }
 
   public function getIndex()
@@ -3354,5 +3355,25 @@ class Site extends SiteModule
         $umur =  $y." Th ".$m." Bl ".$d." Hr";
       }
       return $umur;
+  }
+
+  public function getResetAnjungan(){
+    date_default_timezone_set($this->settings->get('settings.timezone'));
+    $date = date('Y-m-d');
+    $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+    if($checkAnjungan){
+      $this->db('mlite_antrian_loket')->where('postdate',$date)->delete();
+      echo 'Berhasil Reset Antrian Anjungan<br>';
+      $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+      if(!$checkAnjungan){
+        $this->db('mlite_antrian_loket')->save([
+          'type' => 'Loket',
+          'noantrian' => '1',
+          'postdate' => $date,
+          'start_time' => date('H:i:s')
+        ]);
+      }
+      echo 'Berhasil Memperbarui Antrian Anjungan';
+    }
   }
 }

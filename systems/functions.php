@@ -567,6 +567,10 @@ function htmlToPdf($url){
 
 }
 
+function templateprocessor($string){
+    return \PhpOffice\PhpWord\TemplateProcessor::__construct($string);
+}
+
 function postWagsApi($no_telp,$msg,$sender,$url)
 {
     $notif = "";
