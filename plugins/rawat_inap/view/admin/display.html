@@ -247,7 +247,7 @@
       $("#form_kerohanian").hide();
     });
   });
-  
+
   $('a[href="#layanan_obat"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -371,7 +371,7 @@
   });
 
   $('a[href="#form_kerohanian"]').click(function(event){
-    
+
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
@@ -381,12 +381,14 @@
     var no_rkm_medis = $(this).attr("data-no_rkm_medis");
     var nm_pasien = $(this).attr("data-nm_pasien");
     var kd_kamar = $(this).attr("data-kd_kamar");
-  
+
     $("#display").hide();
-   
-    var url = baseURL + '/rawat_inap/formkerohanian/'+ con_no_rawat +'?t=' + mlite.token;
+
+    var url = baseURL + '/rawat_inap/formkerohanian?t=' + mlite.token;
     //var url = baseURL + '/rawat_inap/formkerohanian/' + no_rawat=convertNorawat($no_rawat) +'?t=' + mlite.token;
-    $.post(url, {}, function(data) {
+    $.post(url, {
+      no_rawat : no_rawat,
+    }, function(data) {
       // tampilkan data
       $("#form_rincian").hide();
       $("#form").hide();
@@ -398,9 +400,8 @@
       $("#jadwaloperasi").hide();
       $("#form_dietpasien").hide();
       $("#dietpasien").hide();
-      console.log(no_rawat);
       $("#kerohanian").html(data).show();
-      // console.log(data);
+      // $("#rohani").html(data).show();
       $('input:text[name=no_rawat]').val(no_rawat);
       $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
       $('input:text[name=nm_pasien]').val(nm_pasien);
@@ -409,7 +410,7 @@
     });
   });
 
-  
+
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $('.dataTables').DataTable({
     "order": [[ 3, "desc" ]],
