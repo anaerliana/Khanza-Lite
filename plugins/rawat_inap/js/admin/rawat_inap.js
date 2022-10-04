@@ -1506,18 +1506,14 @@ $("#formkerohanian").on("click", "#simpan_kerohanian", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat         = $('#no_rawat').val();
- //  $('input:text[name=no_rawat]').val();
   var kd_kamar        = $('input:text[name=kd_kamar]').val();
   var noorder         = $('input:text[name=noorder]').val();
   var tgl_permintaan  = $('input:text[name=tgl_permintaan]').val();
   var perujuk         = $('input:hidden[name=nip]').val();
 
   var kd_rh           = $("#kd_rh").val();
- //var kd_rh           = document.getElementById("kd_rh").value;
   var petugas         = $('input:text[name=petugas]').val();
   var keterangan      = $('textarea[name=keterangan]').val();
-  // var datanorawat      = '';
-  // alert(no_rawat);
   console.log({
     no_rawat, kd_kamar, noorder,
     tgl_permintaan, perujuk, kd_rh, keterangan
@@ -1565,8 +1561,6 @@ $("#formkerohanian").on("click", "#simpan_kerohanian", function(event){
       "</div>").show();
     }
   });
-  // var no_rawat   = $('#no_rawat').val();
-  // window.location = baseURL + '/rawat_inap/formkerohanian/' + no_rawat + '?t=' + mlite.token;
    //alert("coba lagi");
 });
 
@@ -1592,13 +1586,7 @@ $("#formkerohanian").on("click",".hapus_kerohanian", function(event){
         kd_rh: kd_rh,
 
       } ,function(data) {
-        // var url = baseURL + '/rawat_inap/formkerohanian/' + data + '?t=' + mlite.token;
         var url = baseURL + '/rawat_inap/displaykerohanian/?t=' + mlite.token;
-        // $.post(url, {no_rawat : no_rawat,
-        // }, function(data) {
-        //   // tampilkan data
-        //   $("#rohani").html(data).show();
-        // });
         $.post(url, {
           no_rawat : no_rawat,
         }, function(val) {
@@ -1655,7 +1643,6 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#dietpasien").hide();
   $("#formkerohanian").hide();
   $("#rohani").hide();
- //alert("coba lagi");
 
   });
 
