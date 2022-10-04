@@ -646,7 +646,7 @@ class Admin extends AdminModule
     // $file_url = url().'/uploads/qrcode/dokter/'.$this->settings->get('settings.pj_laboratorium').'.png';
     // $qrCode = $file_url;
 
-    $pegawai = $this->db('pegawai')->select('nama')->where('nik',$row['nip'])->oneArray();
+    // $pegawai = $this->db('pegawai')->select('nama')->where('nik',$row['nip'])->oneArray();
     // $pasien = $this->db('reg_periksa')
     //   ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
     //   ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
