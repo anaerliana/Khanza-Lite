@@ -1051,7 +1051,7 @@ class Admin extends AdminModule
                         ]);
         }
       $no_rawat = convertNorawat($_POST['no_rawat']);
-      //echo $no_rawat;
+      // echo $no_rawat;
       return $no_rawat;
       exit();
       }    
@@ -1073,6 +1073,9 @@ class Admin extends AdminModule
         ->where('tgl_permintaan', $_POST['tgl_permintaan'])
         ->delete();
       }
+      $no_rawat = convertNorawat($_POST['no_rawat']);
+      return $no_rawat;
+      //echo $no_rawat;
       exit();
     }
 

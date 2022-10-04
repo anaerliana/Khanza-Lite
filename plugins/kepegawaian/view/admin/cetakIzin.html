@@ -37,17 +37,15 @@
             font-size: 1.3em;
         }
     </style>
-    <script>
-        function printContent(el) {
-          var restorepage = document.body.innerHTML;
-          var printcontent = document.getElementById(el).innerHTML;
-          document.body.innerHTML = printcontent;
-          window.print();
-          document.body.innerHTML = restorepage;
-          //window.close();
-          window.location.replace("{?=url()?}/kepegawaian//");
+ 	<script>
+        function printContent(el){
+        var restorepage = document.body.innerHTML;
+        var printcontent = document.getElementById(el).innerHTML;
+        document.body.innerHTML = printcontent;
+        window.print();
+        document.body.innerHTML = restorepage; window.close();
         }
-      </script>
+    </script>
 
     <title>SURAT IZIN TIDAK MASUK KERJA</title>
 </head>
@@ -133,9 +131,9 @@
                                 </td>
                                 <td width="700px">
                                     <?php echo $hari; ?><br>
-                                    <?php echo $tgl; ?><br>
-                                    <?php echo $selama; ?><br>
-                                    <?php echo $keperluan; ?><br><br>
+                                    <?php echo $tgl_awal; ?><br>
+                                    <?php echo $lama; ?><br>
+                                    <?php echo $alasan; ?><br><br>
                                 </td>
                             </tr>
                         </table>

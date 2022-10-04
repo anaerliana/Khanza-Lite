@@ -638,6 +638,58 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getCetak()
+  {
+    // $settings = $this->settings('settings');
+    // $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+    // $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
+    // $file_url = url().'/uploads/qrcode/dokter/'.$this->settings->get('settings.pj_laboratorium').'.png';
+    // $qrCode = $file_url;
+
+    $pegawai = $this->db('pegawai')->select('nama')->where('nik',$row['nip'])->oneArray();
+    // $pasien = $this->db('reg_periksa')
+    //   ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+    //   ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+    //   ->where('no_rawat', $_GET['no_rawat'])
+    //   ->oneArray();
+
+    // $dokter_perujuk = $this->db('periksa_lab')
+    //   ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
+    //   ->where('no_rawat', $_GET['no_rawat'])
+    //   ->group('no_rawat')
+    //   ->oneArray();
+
+    // $rows_periksa_lab = $this->db('periksa_lab')
+    // ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+    // ->where('no_rawat', $_GET['no_rawat'])
+    // ->toArray();
+
+    // $periksa_lab = [];
+    // $jumlah_total_lab = 0;
+    // $no_lab = 1;
+    // foreach ($rows_periksa_lab as $row) {
+    //   $jumlah_total_lab += $row['biaya'];
+    //   $row['nomor'] = $no_lab++;
+    //   $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+    //     ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+    //     ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+    //     ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
+    //     ->toArray();
+    //   $periksa_lab[] = $row;
+    // }
+    echo $this->draw('surat_izin.html', [
+      'nama' => $nama,
+      'nip' => $nip,
+      'jabatan' => $jabatan,
+      'tanggal' => $tgl_awal,
+      'lama' => $lama,
+      'keperluan' => $alasan
+    ]);
+    exit();
+  }
+
+
+
     public function getCSS()
     {
         header('Content-type: text/css');

@@ -1,5 +1,3 @@
-
-
 <div class="col-md-12">
 	<div class="panel panel-default">
 		<div class="panel-heading">
@@ -15,10 +13,42 @@
 				{/if}
 			</form>
 			<h3 class="panel-title">Data Bundles Hais</h3>
+
 		</div>
 		<div class="panel-body">
+			<div class="row clearfix">
+				<div class="col col-md-8">
+					<!-- <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} | Total
+						Kurang: {$rekap.totalminus} | Total Lebih: {$rekap.totalplus}</h3> -->
+				</div>
+				<div class="col col-md-2">
+					<div class="input-group">
+						<!-- <label for="bidang">Ruang</label> -->
+						<select name="bidang" id="bidang" data-use-search="true" data-options-height="10px"
+							class="form-control bidang" style="margin-top:5px;margin-bottom:15px;">
+							<option value="">--- Pilih Ruangan ---</option>
+							{loop: $lapbundles.bidang}
+							<option value="{$value.nama}" class="dropdown-item">{$value.nama}</option>
+							{/loop}
+						</select>
+					</div>
+				</div>
+				<div class="col col-md-2">
+					<!-- <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;"> -->
+					<div class="input-group">
+						<input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+						<!-- <input type="hidden" name="tanggal"> -->
+						<input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+						<span class="input-group-btn">
+							<button class="btn btn-default" id="cari" type="submit"><span
+									class="glyphicon glyphicon-search"></span></button>
+						</span>
+					</div>
+					<!-- </form> -->
+				</div>
+			</div><br>
 			<div class="table-responsive no-margin">
-				<table class="table table-bordered no-padding dataTables" width="100%">
+				<table class="table table-bordered no-padding" width="100%">
 					<thead>
 						<tr>
 							<th rowspan="2">No.</th>
@@ -99,7 +129,7 @@
 							<th>Luka ditutup</th>
 							<th>Rawat Luka</th>
 							<th>APD</th>
-							<th >Kaji nutris</th>
+							<th>Kaji nutris</th>
 						</tr>
 						</tr>
 					</thead>
@@ -257,7 +287,7 @@
 	</div>
 </div>
 
-<script type="text/javascript">
+<!-- <script type="text/javascript">
 	$('.dataTables').DataTable({
 		"order": [[3, "desc"]],
 		"pagingType": "full",
@@ -277,4 +307,4 @@
 	});
 	var t = $(".dataTables").DataTable().rows().count();
 	$(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
-</script>
+</script> -->
