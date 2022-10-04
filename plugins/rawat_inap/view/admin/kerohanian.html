@@ -1,5 +1,5 @@
-<div class="row">
-    <div id="formkerohanian" class="mx-2">
+<div id="formkerohanian">
+    <div class="row">
         <div class="col-md-3">
             <div class="panel panel-default">
                 <div class="panel-body">
@@ -62,7 +62,7 @@
                         <div class="row">
                             <div class="col-sm-12">
                                 <label> Jenis Kerohanian :</label>
-                                <select name="kd_rh[]" id="kd_rh" multiple class="selectpicker form-control" data-live-search="true" >
+                                <select name="kd_rh[]" id="kd_rh" multiple class="form-control selectpicker" >
                                     {loop: $select33}
                                     <option value="{$value.kd_rh}">{$value.kd_rh} - {$value.nama_rh}</option>
                                     {/loop}
@@ -83,10 +83,10 @@
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-    <div id="rohani">
-        {include: ../plugins/rawat_inap/view/admin/rohani.html}
+    <div class="row">
+        <div class="col-md-12">
+            {include: ../plugins/rawat_inap/view/admin/rohani.html}
+        </div>
     </div>
 </div>
 
