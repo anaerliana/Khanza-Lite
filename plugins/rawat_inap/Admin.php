@@ -936,28 +936,6 @@ class Admin extends AdminModule
     exit();
   }
 
-  // public function anyFormKerohanian($no_rawat)
-  // {
-
-  //   $no_rawat = convertNorawat($no_rawat);
-  //  // $con_no_rawat = revertNorawat($no_rawat);
-  //  // $row['con_no_rawat'] = convertNorawat($row['no_rawat']);
-
-  //     $kerohanian = $this->db('permintaan_kerohanian')
-  //     ->where('no_rawat', $no_rawat)
-  //       ->oneArray();
-
-  //       $this->getSelectBootstrap();
-  //       $selectrohani = $this->getInfoJenisRoh();
-  //   echo $this->draw('kerohanian.html', ['rohani' => $no_rawat, 'select33' => $selectrohani]);
-  //   exit();
-  // }
-  //     $this->getSelectBootstrap();
-  //    $selectrohani = $this->getInfoJenisRoh();
-  //   return $this->draw('kerohanian.html', ['kerohanian' => $result, 'select33' => $selectrohani]);
-  // }
-
-
   public function anyFormKerohanian()
   {
     $this->_addHeaderFiles();
@@ -966,7 +944,8 @@ class Admin extends AdminModule
     $this->getSelectBootstrap();
     $selectrohani = $this->getInfoJenisRoh();
     $this->anyKerohanian($_POST['no_rawat']);
-    return $this->draw('kerohanian.html', ['kerohanian' => $this->assign,'select33' => $selectrohani]);
+    echo $this->draw('kerohanian.html', ['kerohanian' => $this->assign,'select33' => $selectrohani]);
+    exit();
   }
 
   public function anyDisplayKerohanian()
