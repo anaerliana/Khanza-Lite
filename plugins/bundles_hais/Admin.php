@@ -2,6 +2,7 @@
 
 namespace Plugins\Bundles_Hais;
 
+use mysqli;
 use Systems\AdminModule;
 use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -14,6 +15,7 @@ class Admin extends AdminModule
       'Bundles Insersi' => 'bundles_insersi',
       'Bundles Maintanance' => 'bundles_maintanance',
       'Bundles IDO' => 'bundles_ido',
+      'Laporan Bundles' => 'laporan_bundles',
     ];
   }
 
@@ -27,6 +29,7 @@ class Admin extends AdminModule
       ['name' => 'Bundles Insersi', 'url' => url([ADMIN, 'bundles_hais', 'bundlesinsersi', $no_rawat]), 'icon' => 'pencil', 'desc' => 'Bundles Insersi'],
       ['name' => 'Bundles Maintanance', 'url' => url([ADMIN, 'bundles_hais', 'bundles_maintanance', $no_rawat]), 'icon' => 'pencil-square-o', 'desc' => 'Bundles Maintanance'],
       ['name' => 'Bundles IDO', 'url' => url([ADMIN, 'bundles_hais', 'bundles_ido', $no_rawat]), 'icon' => 'pencil-square', 'desc' => 'Bundles IDO'],
+      ['name' => 'Laporan Bundles', 'url' => url([ADMIN, 'bundles_hais', 'laporan_bundles', $no_rawat]), 'icon' => 'list-alt"', 'desc' => 'Laporan Bundles'],
     ];
     return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
   }
@@ -329,6 +332,65 @@ class Admin extends AdminModule
     echo $no_rawat;
     exit();
   }
+
+  public function anyLaporan_Bundles($no_rawat)
+  {
+
+    $this->_addHeaderFiles();
+    $id = revertNorawat($no_rawat);
+    $i = 1;
+
+      $rows = $this->db('bundles_hais')
+      ->where('no_rawat', $id)
+      ->toArray();
+
+    $result = [];
+    foreach ($rows as $row) {
+      $row['nomor'] = $i++;
+     // $jumlah_pasien = mysqli_num_rows($nama_pasien);
+
+    $laporan_bundles = $this->db('kamar_inap')
+      ->select('reg_periksa.no_rawat')
+      ->select('pasien.nm_pasien')
+      ->select('reg_periksa.no_rkm_medis')
+      ->select('kamar_inap.kd_kamar')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->where('kamar_inap.no_rawat', $id)
+      ->oneArray();
+
+    $result[] = $row;
+    }
+    return $this->draw('laporan.bundles.html', ['laporan_bundles_hais' => $result]);
+  }
+  // $rows = $this->db('bundles_hais')
+  //       ->where('no_rawat', $id)
+  //       ->toArray();
+
+  //     $result = [];
+  //    foreach ($rows as $row) {
+  //     // $row = $rows;
+  //       $row['nomor'] = $i++;
+        
+  //       $pasien = $this->db('reg_periksa') 
+  //         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+  //         ->where('no_rawat', $id)
+  //         ->oneArray();
+
+  //       $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+  //       $row['nm_pasien'] = $pasien['nm_pasien'];
+
+  //       $kamar_inap = $this->db('kamar_inap') 
+  //         ->where('no_rawat', $row['no_rawat'])
+  //         ->oneArray();
+  //         $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+
+  //       $result[] = $row;
+  //    }
+
+  //     echo $this->draw('laporan.bundles.html', ['laporanbundles' => $result]);
+  //     exit();
+  //   }
 
   public function getCSS()
   {

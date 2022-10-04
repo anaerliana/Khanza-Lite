@@ -1,0 +1,75 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Status Cuti / Izin</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <form action="{?=url(ADMIN.'/kepegawaian/statussave')?}" method="POST">
+            <input type="hidden" name="id" class="form-control" required value="{$set_status.id}" />
+            <!-- <div class="row"> -->
+            <div class="col-md-6">
+                <ul class="list-group list-group-horizontal">
+                    <!-- <li class="list-group-item">Nama Pegawai : {$pegawai.nama}</li> -->
+                    <li class="list-group-item">Tanggal Mulai : {$cuti.tgl_awal}</li>
+                    <li class="list-group-item">Tanggal Akhir Cuti : {$cuti.tgl_akhir}</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item">Alasan Cuti : {$cuti.alasan}</li>
+                    <li class="list-group-item">Lama : {$cuti.lama} Hari</li>
+                </ul>
+            </div>
+            <!-- <div class="col-md-12">
+                <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item">No Cuti : {$cuti.no_surat}</li>
+                </ul>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>No Cuti</label>
+                    <input type="text" name="no_surat" class="form-control" placeholder="Nomor Surat" required
+                        value="{$cuti.no_surat}" />
+                </div>
+            </div> -->
+
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Status Persetujuan</label>
+                    <input type="hidden" name="id" value="{$cuti.id}">
+                    <select id="status" name="status" class="form-control">
+                        <option value="Disetujui">Disetujui</option>
+                        <option value="Tidak Disetujui">Tidak Disetujui</option>
+                        <option value="Ditangguhkan">Ditangguhkan</option>
+                    </select>
+                </div>
+            </div>
+           
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Tanggal SK Cuti</label>
+                    <input type="text" name="tgl-surat" class="form-control" placeholder="Tanggal Surat" required
+                        value="{$cuti.tgl_surat}" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Keterangan</label>
+                    <textarea name="keterangan" rows="1" cols="10" class="form-control"></textarea>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <input type="submit" name="submit" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+    $('select').selectator();
+</script>

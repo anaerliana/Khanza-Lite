@@ -50,7 +50,7 @@
           {include: ../plugins/rawat_inap/view/admin/form.hais.html}
           {include: ../plugins/rawat_inap/view/admin/form.jadwaloperasi.html}
           {include: ../plugins/rawat_inap/view/admin/form.dietpasien.html}
-
+          
           {if: $cek_vclaim}
             {include: ../plugins/vclaim/view/admin/form.sep.html}
           {/if}
@@ -63,6 +63,7 @@
           <div id="hais"></div>
           <div id="jadwaloperasi"></div>
           <div id="dietpasien"></div>
+          <div id="kerohanian"></div>
         </div>
       </div>
     </div>
@@ -71,7 +72,7 @@
 <script type="text/javascript">
    $(function () {
        $('.periode_rawat_inap').datetimepicker({
-         defaultDate: '{?=date('Y-m-d')?}',
+         defaultDate: '{?=date("Y-m-d")?}',
          format: 'YYYY-MM-DD',
          locale: 'id'
        });

@@ -1,0 +1,46 @@
+<h4>Data Permintaan Kerohanian</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>No.Permintaan</th>
+                <th>No.Rawat</th>
+                <th>Nama Pasien</th>
+                <th>Kamar</th>
+                <th>Tanggal Permintaan</th>
+                <th>Perujuk</th>
+                <th>Petugas</th>
+                <th>Keterangan</th>
+                <th>Jenis Kerohanian</th>
+                <th>Aksi</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $kerohanian}
+            <tr>
+                <td>{$value.nomor}</td>
+                <td>{$value.noorder}</td>
+                <td>{$value.no_rawat} </td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.kd_kamar}</td>
+                <td>{$value.tgl_permintaan}</td>
+                <td>{$value.nama}</td>
+                <td>{$value.petugas}</td>
+                <td>{$value.keterangan}</td>
+                <td>{loop: $value.ppk as $nama} - {$nama.nama_rh}<br> {/loop}</td>
+                <td> <div class="">
+                    <button type="button" name="button" class="btn btn-danger btn-xs hapus_kerohanian"
+                        data-noorder="{$value.noorder}" 
+                        data-no_rawat="{$value.no_rawat}"
+                        data-tgl_permintaan="{$value.tgl_permintaan}">
+                        <span class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </div></td>
+
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+</div>

@@ -80,7 +80,8 @@
 								<th>Tanggal Akhir</th>
 								<th>Jumlah Hari</th>
 								<th>Tanggal Surat</th>
-								<!-- <th class="text-right">Aksi</th> -->
+                                <th>Status</th>
+								<th>Berkas</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -95,6 +96,14 @@
 								<td>{$value.tgl_akhir}</td>
 								<td>{$value.lama}</td>
 								<td>{$value.tgl_surat}</td>
+                                <td>{$value.status} </td>
+                                <td>
+                                    {if: $value.status == 'Disetujui'} 
+										<a href="{?=url([ADMIN, 'kepegawaian', 'cetak', $value.id])?}" class="btn btn-danger btn-xs"><i class="fa fa-print"></i> <span class="hidden-xs">Cetak</span></a>
+									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
+                                </td>
+                                
+
 								<!-- <td class="text-right">
 									<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
 										<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
