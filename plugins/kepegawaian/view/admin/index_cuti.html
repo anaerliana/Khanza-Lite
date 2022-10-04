@@ -55,10 +55,6 @@
 
 									</ol>
 									{else}
-									<!-- {include: ../plugins/kepegawaian/view/admin/status_persetujuan.html} -->
-									<!-- href="{?=url([ADMIN, 'kepegawaian', 'status', $value.id])?}" data-id="{$value.id}" -->
-									<!-- <a href="{?=url([ADMIN, 'kepegawaian', 'status', $value.id])?}" data-toggle="modal" data-target="#status" class="btn btn-primary btn-sm"><i
-											class="fa fa-plus"></i></a> -->
 									<a href="{?=url([ADMIN, 'kepegawaian', 'setstatus', $value.id])?}"
 										class="btn btn-primary btn-sm" data-toggle="modal" data-target="#statusModal">
 										<i class="fa fa-plus"></i>
