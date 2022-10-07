@@ -2317,6 +2317,7 @@ class Admin extends AdminModule
         // pagination
         $totalRecords = $this->db('rekap_presensi')
             ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+            ->where('stts_aktif','AKTIF')
             ->like('jam_datang', '%' . $tgl_kunjungan . '%')
             ->like('bidang', '%' . $ruang . '%')
             ->like('nama', '%' . $phrase . '%')
@@ -2340,7 +2341,7 @@ class Admin extends AdminModule
                 'id' => 'rekap_presensi.id',
             ])
             ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-            ->like('bidang', '%' . $ruang . '%')
+            ->where('stts_aktif','AKTIF')
             ->like('bidang', '%' . $ruang . '%')
             ->like('nama', '%' . $phrase . '%')
             ->group('rekap_presensi.id')
@@ -2379,7 +2380,7 @@ class Admin extends AdminModule
             $bulan = $_GET['b'];
         }
 
-        $username = $this->core->getUserInfo('username', null, true);
+        $username = $this->db('pegawai')->select('nik')->where('id',$id)->oneArray();
 
         $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
@@ -2460,7 +2461,7 @@ class Admin extends AdminModule
         $this->assign['totalRecords'] = $totalRecords;
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['getBulan'] = $bulan;
-        $this->assign['getUser'] = $username;
+        $this->assign['getUser'] = $username['nik'];
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         return $this->draw('rekap_presensi_byid.html', ['rekap' => $this->assign]);
     }
@@ -2478,7 +2479,8 @@ class Admin extends AdminModule
         $jml_pot_psw4 = 0;
         $year = date('Y');
         $biodata = $this->db('pegawai')->select(['id' => 'id', 'nama' => 'nama', 'nip' => 'nik', 'status' => 'stts_kerja'])->where('nik', $_POST['nik'])->oneArray();
-        $day = cal_days_in_month(CAL_GREGORIAN, $_POST['bulan'], $year);
+        // $day = cal_days_in_month(CAL_GREGORIAN, $_POST['bulan'], $year);
+        $day = $this->days_in_month($_POST['bulan'], $year);
         for ($i = 1; $i <= $day; $i++) {
             $jad = $this->db('jadwal_pegawai')->select('h' . $i)->where('id', $biodata['id'])->where('tahun', $year)->where('bulan', $_POST['bulan'])->oneArray();
             if ($jad['h' . $i] != "") {
@@ -2551,7 +2553,7 @@ class Admin extends AdminModule
                 'bulan' => $_POST['bulan'],
                 'jumlah_kehadiran' => $jlh,
                 'jumlah_hari_kerja' => $jadwal,
-                'persentase_hari_kerja' => '0.33',
+                'persentase_hari_kerja' => '1',
                 'jml_pot_keterlambatan' => $jml_pot_terlambat,
                 'jml_pot_pulang_lebih_awal' => $jml_pot_pulang,
                 'status' => $biodata['status'],
@@ -2560,7 +2562,7 @@ class Admin extends AdminModule
             $query = $this->db('bridging_bkd_presensi')->where('id',$biodata['id'])->where('bulan',$_POST['bulan'])->where('tahun',$year)->update([
                 'jumlah_kehadiran' => $jlh,
                 'jumlah_hari_kerja' => $jadwal,
-                'persentase_hari_kerja' => '0.33',
+                'persentase_hari_kerja' => '1',
                 'jml_pot_keterlambatan' => $jml_pot_terlambat,
                 'jml_pot_pulang_lebih_awal' => $jml_pot_pulang,
             ]);
@@ -2573,6 +2575,12 @@ class Admin extends AdminModule
             $this->notify('failure', 'Gagal Simpan');
         }
         exit();
+    }
+
+    private function days_in_month($month, $year)
+    {
+    // calculate number of days in a month
+    return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
     }
 
     public function getAuto_Verif()

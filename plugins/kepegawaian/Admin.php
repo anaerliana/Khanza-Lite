@@ -339,7 +339,7 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
 
-        $rows = $this->db('pegawai')->select(['NIP' => 'nik','NAMA' => 'nama','Bidang' => 'bidang'])->where('stts_aktif','AKTIF')->toArray();
+        $rows = $this->db('pegawai')->select(['NIP' => 'nik','NAMA' => 'nama','Bidang' => 'bidang'])->where('stts_aktif','AKTIF')->where('departemen','!=','-')->toArray();
 
         $this->assign['list'] = [];
         if (count($rows)) {
