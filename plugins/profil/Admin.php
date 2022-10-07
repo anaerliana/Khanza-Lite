@@ -2737,7 +2737,7 @@ class Admin extends AdminModule
       $nama2 = $cuti_pegawai['nama'];
       $nip2 = $cuti_pegawai['username'];   
   
-      $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/kepegawaian/profil/cetakIzin.docx');
+      $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/profil/template/cetakIzin.docx');
       $templateProcessor->setValues([
            'nama'      => $cuti_pegawai['nama'],
             'nip'      => $cuti_pegawai['username'],
