@@ -1643,7 +1643,6 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#dietpasien").hide();
   $("#formkerohanian").hide();
   $("#rohani").hide();
-
   });
 
 function bersih(){
