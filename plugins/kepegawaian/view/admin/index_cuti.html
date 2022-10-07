@@ -63,8 +63,11 @@
 								</td>
 								<td>
 									{if: $value.status == 'Disetujui'} 
-										<!-- <button type="button" class="btn btn-danger btn-xs" onclick="printSurat('cetakIzin');"><i class="fa fa-print"></i> <span class="hidden-xs">Cetak</span></button> -->
-										<a href="{?=url([ADMIN, 'kepegawaian', 'cetak', $value.id])?}" class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span class="hidden-xs">Cetak</span></a>
+									{if: $value.jenis_cuti =='7'}
+									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
+									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
+									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
+									{else} {/if}
 									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
 								</td>
 
@@ -126,15 +129,4 @@
 
 		return false;
 	});
-</script>
-<script type="text/javascript">
-function printSurat(eleId){
-	var PW = window.open('', '_blank', 'Print content');
-	PW.document.write(document.getElementById(eleId).innerHTML);
-	PW.document.close();
-	PW.focus();
-	PW.print();
-	PW.close();
-	window.location.href = "{?=url('kepegawaian/cetakIzin')?}";
-}
 </script>

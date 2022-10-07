@@ -17,6 +17,13 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tanggal Buat</label>
+                                <input type="text" name="tanggal_buat" id="tanggal_buat"
+                                    class="form-control" value="" />
+                            </div>
+                        </div>
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label>Alasan</label>
@@ -24,6 +31,7 @@
                                 <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nik}" />
                             </div>
                         </div>
+                       
                         <div class="col-md-4 telp">
                             <div class="form-group">
                                 <label for="">No Telepon</label>
@@ -98,10 +106,14 @@
 								<td>{$value.tgl_surat}</td>
                                 <td>{$value.status} </td>
                                 <td>
-                                    {if: $value.status == 'Disetujui'} 
-										<a href="{?=url([ADMIN, 'kepegawaian', 'cetak', $value.id])?}" class="btn btn-danger btn-xs"><i class="fa fa-print"></i> <span class="hidden-xs">Cetak</span></a>
+									{if: $value.status == 'Disetujui'} 
+									{if: $value.jenis_cuti =='7'}
+									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Izin</span></a>
+									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
+									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cuti</span></a>
+									{else} {/if}
 									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
-                                </td>
+								</td>
                                 
 
 								<!-- <td class="text-right">
@@ -128,6 +140,10 @@
 </article>
 <script type="text/javascript">
     $(function () {
+        $('#tanggal_buat').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
         $('#tanggal_awal').datetimepicker({
             format: 'YYYY-MM-DD',
             locale: 'id',

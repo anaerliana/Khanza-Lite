@@ -7,10 +7,9 @@
     <div class="row">
         <form action="{?=url(ADMIN.'/kepegawaian/statussave')?}" method="POST">
             <input type="hidden" name="id" class="form-control" required value="{$set_status.id}" />
-            <!-- <div class="row"> -->
             <div class="col-md-6">
                 <ul class="list-group list-group-horizontal">
-                    <!-- <li class="list-group-item">Nama Pegawai : {$pegawai.nama}</li> -->
+                    <li class="list-group-item">Tanggal Buat : {$cuti.tgl_buat}</li>
                     <li class="list-group-item">Tanggal Mulai : {$cuti.tgl_awal}</li>
                     <li class="list-group-item">Tanggal Akhir Cuti : {$cuti.tgl_akhir}</li>
                 </ul>

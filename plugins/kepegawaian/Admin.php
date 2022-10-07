@@ -633,62 +633,190 @@ class Admin extends AdminModule
       ->where('id', $_POST['id'])
       ->update([
         'status' => NULL,
+        'keterangan' => '',
         'updated_at' =>  date('Y-m-d H:i:s')
       ]);
     exit();
   }
 
-  public function getCetak()
+  public function getCetakIzin($id)
   {
-    // $settings = $this->settings('settings');
-    // $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-    // $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
-    // $file_url = url().'/uploads/qrcode/dokter/'.$this->settings->get('settings.pj_laboratorium').'.png';
-    // $qrCode = $file_url;
+    $cuti_pegawai = $this->db('izin_cuti')
+    ->select([
+        'tgl_buat' => 'izin_cuti.tgl_buat',
+        'tgl_awal' => 'izin_cuti.tgl_awal',
+        'tgl_akhir'=> 'izin_cuti.tgl_akhir',
+        'lama'     => 'izin_cuti.lama',
+        'alasan'   => 'izin_cuti.alasan',
+        'nama'     => 'pegawai.nama',
+        'jbtn'     => 'pegawai.jbtn',
+        'bidang'   => 'pegawai.bidang',
+        'username'  => 'mlite_users.username'
+        // 'nip'      => 'pegawai.nik',
+    ])
 
-    // $pegawai = $this->db('pegawai')->select('nama')->where('nik',$row['nip'])->oneArray();
-    // $pasien = $this->db('reg_periksa')
-    //   ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-    //   ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
-    //   ->where('no_rawat', $_GET['no_rawat'])
-    //   ->oneArray();
+    ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
+    ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
+    ->where('izin_cuti.id', $id)
+    ->oneArray();
 
-    // $dokter_perujuk = $this->db('periksa_lab')
-    //   ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
-    //   ->where('no_rawat', $_GET['no_rawat'])
-    //   ->group('no_rawat')
-    //   ->oneArray();
+    $tanggal_buat= $cuti_pegawai['tgl_buat'];
+    $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
 
-    // $rows_periksa_lab = $this->db('periksa_lab')
-    // ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
-    // ->where('no_rawat', $_GET['no_rawat'])
-    // ->toArray();
+    $tanggal_awal= $cuti_pegawai['tgl_awal'];
+    $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
 
-    // $periksa_lab = [];
-    // $jumlah_total_lab = 0;
-    // $no_lab = 1;
-    // foreach ($rows_periksa_lab as $row) {
-    //   $jumlah_total_lab += $row['biaya'];
-    //   $row['nomor'] = $no_lab++;
-    //   $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
-    //     ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
-    //     ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
-    //     ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
-    //     ->toArray();
-    //   $periksa_lab[] = $row;
-    // }
-    echo $this->draw('surat_izin.html', [
-      'nama' => $nama,
-      'nip' => $nip,
-      'jabatan' => $jabatan,
-      'tanggal' => $tgl_awal,
-      'lama' => $lama,
-      'keperluan' => $alasan
+    $tanggal_akhir= $cuti_pegawai['tgl_akhir'];
+    $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
+
+    $tentukan_hari1 = date('D', strtotime($tanggal_awal));
+    $day = array(
+        'Sun' => 'Minggu', 
+        'Mon' => 'Senin', 
+        'Tue' => 'Selasa', 
+        'Wed' => 'Rabu', 
+        'Thu' => 'Kamis', 
+        'Fri' => 'Jumat', 
+        'Sat' => 'Sabtu'
+    );
+    $hari = $day[$tentukan_hari1];
+
+    $tentukan_hari2 = date('D', strtotime($tanggal_akhir));
+    $hari2 = $day[$tentukan_hari2];
+
+    $nama2 = $cuti_pegawai['nama'];
+    $nip2 = $cuti_pegawai['username'];   
+
+    $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/kepegawaian/template/cetakIzin.docx');
+    $templateProcessor->setValues([
+         'nama'      => $cuti_pegawai['nama'],
+          'nip'      => $cuti_pegawai['username'],
+          'jbtn'     => $cuti_pegawai['jbtn'],
+          'hari'     => $hari,
+          'hari2'    => $hari2,
+          'tgl_buat' => $date,
+          'tgl_awal' => $date1,
+          'tgl_akhir'=> $date2,
+          'lama'     => $cuti_pegawai['lama'],
+          'alasan'   => $cuti_pegawai['alasan'],
+          'bidang'   => $cuti_pegawai['bidang'],
+          'nama2'    => $nama2,
+          'nip2'     => $nip2
+
     ]);
-    exit();
-  }
+      header("Content-Disposition: attachment; filename=Surat_Izin.docx");
+  
+      $templateProcessor->saveAs('php://output');
+      exit();
+    }
 
+    public function getCetakCuti($id)
+    {
+      $cuti_pegawai = $this->db('izin_cuti')
+      ->select([
+          'tgl_buat'            => 'izin_cuti.tgl_buat',
+          'tgl_awal'            => 'izin_cuti.tgl_awal',
+          'tgl_akhir'           => 'izin_cuti.tgl_akhir',
+          'lama'                => 'izin_cuti.lama',
+          'alasan'              => 'izin_cuti.alasan',
+          'sisa_cuti_tahunan'   => 'izin_cuti.sisa_cuti_tahunan',
+          'alamat'              => 'izin_cuti.alamat',
+          'no_telp'             => 'izin_cuti.no_telp',
+          'jenis_cuti'          => 'izin_cuti.jenis_cuti',
+          'nama'                => 'pegawai.nama',
+          'jbtn'                => 'pegawai.jbtn',
+        //   'nip'                 => 'pegawai.nik',
+          'bidang'              => 'pegawai.bidang',
+          'ms_kerja'            => 'pegawai.ms_kerja',
+          'username'            => 'mlite_users.username'
+          
+      ])
+  
+      ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
+      ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
+      ->where('izin_cuti.id', $id)
+      ->oneArray();
+  
+      $tanggal_buat = $cuti_pegawai['tgl_buat'];
+      $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
 
+      $tanggal_awal = $cuti_pegawai['tgl_awal'];
+      $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
+
+      $tanggal_akhir = $cuti_pegawai['tgl_akhir'];
+      $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
+       
+        $jns1 = '';
+        $jns2 = '';
+        $jns3 = '';
+        $jns4 = '';
+        $jns5 = '';
+        $jns6 = '';
+
+        switch ($cuti_pegawai['jenis_cuti']) {
+        case '1':
+            $jns1 = 'YA';
+            break;
+        case '2':
+            $jns2 = 'YA';
+            break;
+        case '3':
+            $jns3 = 'YA';
+            break;
+        case '4':
+            $jns4 = 'YA';
+            break;
+        case '5':
+            $jns5 = 'YA';
+            break;
+        case '6':
+            $jns6 = 'YA';
+            break;
+
+        default:
+        $jns1 = '';
+        $jns2 = '';
+        $jns3 = '';
+        $jns4 = '';
+        $jns5 = '';
+        $jns6 = '';
+            break;
+    }
+
+      $nama2 = $cuti_pegawai['nama'];
+      $nip2 = $cuti_pegawai['username'];   
+
+      $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/kepegawaian/template/cetakCuti.docx');
+      $templateProcessor->setValues([
+            'nama'              => $cuti_pegawai['nama'],
+            'nip'               => $cuti_pegawai['username'],
+            'jbtn'              => $cuti_pegawai['jbtn'],
+            'bidang'            => $cuti_pegawai['bidang'],
+            'ms_kerja'          => $cuti_pegawai['ms_kerja'],
+            'alasan'            => $cuti_pegawai['alasan'],
+            'lama'              => $cuti_pegawai['lama'],
+            'alamat'            => $cuti_pegawai['alamat'],
+            'tgl_buat'          => $date,
+            'tgl_awal'          => $date1,
+            'tgl_akhir'         => $date2,
+            'sisa_cuti_tahunan' => $cuti_pegawai['sisa_cuti_tahunan'],
+            'no_telp'           => $cuti_pegawai['no_telp'],
+            'nama2'             => $nama2,
+            'nip2'              => $nip2,
+            'jns1'              => $jns1,
+            'jns2'              => $jns2,
+            'jns3'              => $jns3,
+            'jns4'              => $jns4,
+            'jns5'              => $jns5,
+            'jns6'              => $jns6
+  
+      ]);
+        header("Content-Disposition: attachment; filename=Surat_Cuti.docx");
+    
+        $templateProcessor->saveAs('php://output');
+        exit();
+      }
+  
 
     public function getCSS()
     {
