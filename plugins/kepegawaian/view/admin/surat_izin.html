@@ -21,7 +21,7 @@
 
         .tab {
             display: inline-block;
-            margin-left: 60px;  
+            margin-left: 60px;
         }
 
         .no-border td {
@@ -41,7 +41,9 @@
             font-size: 1.3em;
         }
     </style>
-
+    <!-- <script>
+        window.print();
+    </script> -->
     <title>SURAT IZIN TIDAK MASUK KERJA</title>
 </head>
 
@@ -55,8 +57,10 @@
                         <td width="800px" style="text-align: center;">
                             <span class="teks_besar">PEMERINTAH KABUPATEN HULU SUNGAI TENGAH</span><br>
                             <span class="teks_besar">RSUD H. DAMANHURI BARABAI</span><br>
-                            <span class="teks_kecil">Jalan Murakata Nomor 4 Barabai 71314 Telepon (0517) 41779 - 41118 </span><br>
-                            <span class="tekslebih_kecil">Faks : (0517) 41287 Email : rshd@hulusungaitengahkab.go.id, website : www.rsud.hulusungaitengahkan.go.id</span>
+                            <span class="teks_kecil">Jalan Murakata Nomor 4 Barabai 71314 Telepon (0517) 41779 - 41118
+                            </span><br>
+                            <span class="tekslebih_kecil">Faks : (0517) 41287 Email : rshd@hulusungaitengahkab.go.id,
+                                website : www.rsud.hulusungaitengahkan.go.id</span>
                         </td>
                         <td width="124px"><img src="logorshd.png" height="70px"></td>
                     </tr>
@@ -82,12 +86,12 @@
                         </tr>
                     </table>
                     <table class="tab">
-                            <tr>
-                                <td width="125px">
-                                    Nama <br>
-                                    NIP <br>
-                                    Jabatan <br>
-                                </td>
+                        <tr>
+                            <td width="125px">
+                                Nama <br>
+                                NIP <br>
+                                Jabatan <br>
+                            </td>
                             <td width="30px">
                                 :<br>
                                 :<br>
@@ -122,78 +126,86 @@
                                 </td>
                                 <td width="700px">
                                     <?php echo $hari; ?><br>
-                                    <?php echo $tgl; ?><br>
-                                    <?php echo $selama; ?><br>
-                                    <?php echo $keperluan; ?><br><br>
+                                    <?php echo $tgl_awal; ?><br>
+                                    <?php echo $lama; ?><br>
+                                    <?php echo $alasan; ?><br><br>
                                 </td>
                             </tr>
                         </table>
                 </tr>
                 <hr>
                 <tr>
-                        <table class="no-border">
-                            <tr>
-                                <td>
-                                    Demikian permohonan dari saya, atas perkenan izin dari Bapak/Ibu saya ucapkan terima kasih
-                                </td>
-                            </tr>
-                        </table>
-                        <br>
+                    <table class="no-border">
+                        <tr>
+                            <td>
+                                Demikian permohonan dari saya, atas perkenan izin dari Bapak/Ibu saya ucapkan terima
+                                kasih
+                            </td>
+                        </tr>
+                    </table>
+                    <br>
                 </tr>
                 <hr>
-                 <div style="margin-bottom:50px;">
-        <table class="no-border">
- 	     <tr>
-                <td width="230px">
-                </td>
-                <td>
-                    <div style="font-size:15px;">
-                       Mengetahui :<br>
-                       <?php echo $ka_ruang; ?><br><br>
-                       <u>Nama Karu</u><br>
-                       NIP. 
-                    </div>
-                </td>
+                <div style="margin-bottom:50px;">
+                    <table class="no-border">
+                        <tr>
+                            <td width="230px">
+                            </td>
+                            <td>
+                                <div style="font-size:15px;">
+                                    Mengetahui :<br>
+                                    <?php echo $ka_ruang; ?><br><br>
+                                    <u>Nama Karu</u><br>
+                                    NIP.
+                                </div>
+                            </td>
 
-                 <td width="250px">
-                </td>
-                <td>
-                    <div style="font-size:15px;">
-                        Barabai,  <?php echo $tgl_buat; ?><br>
-                        Hormat saya, <br><br>
-                       <u>Nama<?php echo $nama2; ?></u><br>
-                       NIP. <?php echo $nip2; ?>
-                    </div>
-                </td>
-            </tr>
-        </table>
-             <table class="no-border">
-             <tr>
-                <td width="230px">
-                </td>
-                <td>
-                    <div style="font-size:15px;">
-                       Mengetahui :<br>
-                       <?php echo $kabid; ?><br><br>
-                       <u>Nama Kabid<?php echo $nama_kabid; ?></u><br>
-                       NIP. <?php echo $nip_kabid; ?>
-                    </div>
-                </td>
+                            <td width="250px">
+                            </td>
+                            <td>
+                                <div style="font-size:15px;">
+                                    Barabai,
+                                    <?php echo $tgl_buat; ?><br>
+                                    Hormat saya, <br><br>
+                                    <u>Nama
+                                        <?php echo $nama2; ?>
+                                    </u><br>
+                                    NIP.
+                                    <?php echo $nip2; ?>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <table class="no-border">
+                        <tr>
+                            <td width="230px">
+                            </td>
+                            <td>
+                                <div style="font-size:15px;">
+                                    Mengetahui :<br>
+                                    <?php echo $kabid; ?><br><br>
+                                    <u>Nama Kabid
+                                        <?php echo $nama_kabid; ?>
+                                    </u><br>
+                                    NIP.
+                                    <?php echo $nip_kabid; ?>
+                                </div>
+                            </td>
 
-                 <td width="250px">
-                </td>
-                <td>
-                    <div style="font-size:15px;">
-                        Menyetujui<br>
-                        Plt. Kepala Bagian Tata Usaha<br><br>
-                       <u>Hernadi, SKM</u><br>
-                       NIP.197103011991011003
-                    </div>
-                </td>
-            </tr>
+                            <td width="250px">
+                            </td>
+                            <td>
+                                <div style="font-size:15px;">
+                                    Menyetujui<br>
+                                    Plt. Kepala Bagian Tata Usaha<br><br>
+                                    <u>Hernadi, SKM</u><br>
+                                    NIP.197103011991011003
+                                </div>
+                            </td>
+                        </tr>
 
-        </table>
-    </div>
+                    </table>
+                </div>
     </header>
 </body>
 
