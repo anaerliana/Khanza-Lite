@@ -108,9 +108,9 @@
                                 <td>
 									{if: $value.status == 'Disetujui'} 
 									{if: $value.jenis_cuti =='7'}
-									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Izin</span></a>
+									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
 									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
-									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cuti</span></a>
+									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
 									{else} {/if}
 									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
 								</td>
