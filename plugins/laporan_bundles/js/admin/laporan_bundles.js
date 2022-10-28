@@ -9,13 +9,10 @@ $(document).ready(function () {
             'pdf'],
         footerCallback: function (row, data, start, end, display) {
             var api = this.api();
-
-            // Remove the formatting to get integer data for summation
             var intVal = function (i) {
                 return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
             };
 
-            // Total over all pages
             jumlah_pasien = api
                 .column(2)
                 .data()
@@ -870,13 +867,9 @@ $(document).ready(function () {
             'pdf'],
         footerCallback: function (row, data, start, end, display) {
             var api = this.api();
-
-            // Remove the formatting to get integer data for summation
             var intVal = function (i) {
                 return typeof i === 'string' ? i.replace(/[\$,]/g, '') * 1 : typeof i === 'number' ? i : 0;
             };
-
-            // Total over all pages
             jumlah_pasien = api
                 .column(2)
                 .data()
@@ -1255,7 +1248,6 @@ $(document).ready(function () {
                     return intVal(a) + intVal(b);
                 }, 0);
 
-            // Total over this page
             pageJumlah_pasien = api
                 .column(2, { page: 'current' })
                 .data()

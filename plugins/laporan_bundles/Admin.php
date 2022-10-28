@@ -14,7 +14,7 @@ class Admin extends AdminModule
       'Manage' => 'manage',
       'Bulanan Bundles HAIs' => 'laporanbundles',
       'Bundles Per Kamar/Bangsal' => 'bundleskamar',
-     
+
     ];
   }
 
@@ -219,7 +219,6 @@ class Admin extends AdminModule
 
       $this->assign['list'][] = $row;
     }
-
     $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
     $this->core->addCSS(url([ADMIN, 'laporan_bundles', 'css']));
     $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
@@ -337,7 +336,6 @@ class Admin extends AdminModule
         $this->getLaporanBundles();
       }
     }
-
     $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
     $this->core->addCSS(url([ADMIN, 'laporan_bundles', 'css']));
     $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
@@ -455,7 +453,6 @@ class Admin extends AdminModule
         $this->getBundlesKamar();
       }
     }
-
     $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
     $this->core->addCSS(url([ADMIN, 'laporan_bundles', 'css']));
     $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
