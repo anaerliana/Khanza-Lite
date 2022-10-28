@@ -11,22 +11,22 @@
 				<h3 class="panel-title">Kelola Data Izin & Cuti</h3>
 			</div>
 			<div class="panel-body">
+				<a href="{?=url([ADMIN,'kepegawaian','tambahcuti'])?}" class="input-group btn btn-default" type="button" id="tambahcuti" >Tambah Izin & Cuti</a><br>
 				<div class="table-responsive no-margin">
 					<table class="table table-striped no-margin" id="pardah" width="100%">
 						<thead>
 							<tr>
 								<th>Nip Pegawai</th>
 								<th>Nama</th>
-								<th>Jenis Cuti</th>
+								<th>Jenis</th>
 								<th>Alasan</th>
 								<th>Tanggal Mulai</th>
 								<th>Tanggal Akhir</th>
 								<th>Jumlah Hari</th>
 								<th>Tanggal Surat</th>
+								<th>Berkas</th>
 								<th>Status</th>
-								<th>Aksi</th>
-								<!-- <th>Aksi</th> -->
-								<!-- <th class="text-right">Aksi</th> -->
+								<th class="text-right">Aksi</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -43,42 +43,43 @@
 								<td>{$value.tgl_akhir}</td>
 								<td>{$value.lama}</td>
 								<td>{$value.tgl_surat}</td>
-								<td> {if: $value.status}
-									<li>
-										{$value.status}
-
-										<button class="btn btn-danger btn-sm" id="reset" data-id="{$value.id}"><i
-												class="fa fa-times"></i></button>
-									
-									</li>
-									<ol>
-
-									</ol>
+								<td>{if: $value.jenis_cuti =='7'}
+									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakizin', $value.id])?}"
+										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+											class="hidden-xs"> Izin</span></a>
+									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti
+									== '3' or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti
+									=='6'}
+									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakcuti', $value.id])?}"
+										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+											class="hidden-xs"> Cuti</span></a>
+									{else} {/if}
+								</td>
+								<td>{$value.status}</td>
+								<!-- <td class="text-right">
+									<a href="{?=url([ADMIN, 'kepegawaian', 'setstatus', $value.id])?}"
+										class="btn btn-xs btn-success" data-toggle="modal" data-target="#statusModal">
+										<i class="fa fa-pencil"></i><span class="hidden-xs"> Edit</span></a>
+								</td> -->
+								<!-- {if: $value.status}
+										<button class="btn btn-danger btn-sm" id="reset" data-id="{$value.id}"><i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span></button>
 									{else}
 									<a href="{?=url([ADMIN, 'kepegawaian', 'setstatus', $value.id])?}"
 										class="btn btn-primary btn-sm" data-toggle="modal" data-target="#statusModal">
 										<i class="fa fa-plus"></i>
 									</a>
-									{/if}
-								</td>
-								<td>
-									{if: $value.status == 'Disetujui'} 
-									{if: $value.jenis_cuti =='7'}
-									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
-									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
-									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
-									{else} {/if}
-									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
-								</td>
-
-								<!-- <td class="text-right">
-									<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
-										<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
+									{/if} -->
+								<td class="text-right">
+									<a href="{?=url([ADMIN, 'kepegawaian', 'editcuti', $value.id])?}"
+										class="btn btn-xs btn-success" data-toggle="modal" data-target="#editModal">
+										<i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
 									</a>
-									<a href="{$value.editURL}" class="btn btn-success btn-xs">
-										<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+									<a href="{$value.delURL}"
+										class="btn btn-xs btn-danger {if: $value.id==1 || $value.id==$myId}disabled{/if}"
+										data-confirm="Anda yakin akan menghapus data ini?">
+										<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
 									</a>
-								</td> -->
+								</td>
 							</tr>
 
 							{/loop}
@@ -108,7 +109,14 @@
 		</div>
 	</div>
 </div> -->
-<div class="modal fade" id="statusModal" tabindex="-1" role="dialog">
+<!-- <div class="modal fade" id="statusModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			...
+		</div>
+	</div>
+</div> -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			...

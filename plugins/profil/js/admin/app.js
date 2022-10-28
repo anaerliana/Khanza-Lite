@@ -392,6 +392,7 @@ $("#skp").on("click",".edit_skp",function(event) {
   var thn = $(this).attr("data-thn");
   var nsetia = $(this).attr("data-nsetia");
   var npres = $(this).attr("data-npres");
+  var ninisiatif = $(this).attr("data-ninisiatif");
   var ntjawab = $(this).attr("data-ntjawab");
   var ntaat = $(this).attr("data-ntaat");
   var njujur = $(this).attr("data-njujur");
@@ -405,6 +406,7 @@ $("#skp").on("click",".edit_skp",function(event) {
   $("input:text[name=THNILAI]").val(thn);
   $("input:text[name=NSETIA]").val(nsetia);
   $("input:text[name=NPRES]").val(npres);
+  $("input:text[name=NINISIATIF]").val(ninisiatif);
   $("input:text[name=NTJAWAB]").val(ntjawab);
   $("input:text[name=NTAAT]").val(ntaat);
   $("input:text[name=NJUJUR]").val(njujur);

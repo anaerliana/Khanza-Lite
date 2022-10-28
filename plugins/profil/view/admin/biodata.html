@@ -870,6 +870,7 @@
                                                         <th>Tahun Penilaian</th>
                                                         <th>Orientasi Pelayanan</th>
                                                         <th>Komitmen</th>
+                                                        <th>Inisiatif Kerja</th>
                                                         <th>Kerjasama</th>
                                                         <th>Integritas</th>
                                                         <th>Disiplin</th>
@@ -891,6 +892,7 @@
                                                             data-thn="{$value.THNILAI}"
                                                             data-nsetia="{$value.NSETIA}"
                                                             data-npres="{$value.NPRES}"
+                                                            data-ninisiatif="{$value.NINISIATIF}"
                                                             data-ntjawab="{$value.NTJAWAB}"
                                                             data-ntaat="{$value.NTAAT}"
                                                             data-njujur="{$value.NJUJUR}"
@@ -908,6 +910,7 @@
                                                         <td>
                                                             {$value.NPRES}
                                                         </td>
+                                                        <td>{$value.NINISIATIF}</td>
                                                         <td>{$value.NTJAWAB}</td>
                                                         <td>{$value.NTAAT}</td>
                                                         <td>{$value.NJUJUR}</td>
@@ -953,8 +956,8 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>Kerjasama</label>
-                                                        <input type="text" name="NTJAWAB" class="form-control"
+                                                        <label>Inisiatif Kerja</label>
+                                                        <input type="text" name="NINISIATIF" class="form-control"
                                                             value="" />
                                                     </div>
                                                 </div>
@@ -962,10 +965,20 @@
                                             <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
+                                                        <label>Kerjasama</label>
+                                                        <input type="text" name="NTJAWAB" class="form-control"
+                                                            value="" />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
                                                         <label>Integritas</label>
                                                         <input type="text" name="NTAAT" id="" class="form-control">
                                                     </div>
                                                 </div>
+                                               
+                                            </div>
+                                            <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Disiplin</label>
@@ -973,8 +986,6 @@
                                                             value="" />
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label>Kepemimpinan</label>
@@ -982,6 +993,10 @@
                                                             value="" />
                                                     </div>
                                                 </div>
+                                                
+                                              
+                                            </div>
+                                            <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-check form-group">
                                                         <label>Nilai Prestasi Kerja</label>
@@ -989,14 +1004,15 @@
                                                             value="" />
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="">Nilai SKP</label>
                                                         <input type="text" name="NPIMPIN" id="" class="form-control">
                                                     </div>
                                                 </div>
+                                                
+                                            </div>
+                                            <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="">Pejabat Penilai</label>
@@ -1004,8 +1020,6 @@
                                                             class="form-control">
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="row clearfix">
                                                 <div class="col-md-6">
                                                     <div class="form-group">
                                                         <label for="">Atasan Pejabat Penilai</label>
@@ -1013,15 +1027,16 @@
                                                             class="form-control">
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-6">
                                                     <label for="file-skp" class="btn btn-info">
                                                         <span><i class="fa fa-cloud-upload"></i> Upload Berkas</span>
                                                         <input id="file-skp" class="check" accept=".pdf" name="file" type="file" style="display:none;">
                                                     </label>
-                                                </div>
-                                                <div class="col-md-3">
                                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                                 </div>
+                                                <!-- <div class="col-md-3">
+                                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                                </div> -->
                                             </div>
                                         </form>
                                     </div>

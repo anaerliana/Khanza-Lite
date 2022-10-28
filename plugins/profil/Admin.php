@@ -745,6 +745,7 @@ class Admin extends AdminModule
                     'THNILAI' => $_POST['THNILAI'],
                     'NSETIA' => $_POST['NSETIA'],
                     'NPRES' => $_POST['NPRES'],
+                    'NINISIATIF' => $_POST['NINISIATIF'],
                     'NTJAWAB' => $_POST['NTJAWAB'],
                     'NTAAT' => $_POST['NTAAT'],
                     'NJUJUR' => $_POST['NJUJUR'],
@@ -762,6 +763,7 @@ class Admin extends AdminModule
                     'THNILAI' => $_POST['THNILAI'],
                     'NSETIA' => $_POST['NSETIA'],
                     'NPRES' => $_POST['NPRES'],
+                    'NINISIATIF' => $_POST['NINISIATIF'],
                     'NTJAWAB' => $_POST['NTJAWAB'],
                     'NTAAT' => $_POST['NTAAT'],
                     'NJUJUR' => $_POST['NJUJUR'],
@@ -2640,6 +2642,12 @@ class Admin extends AdminModule
         $numberDays = $numberDays + 1;
         $tahun = date('Y',$tanggalAwal);
 
+        $jenisCuti = $_POST['jenis_cuti'];
+        $noSurat = $this->db()->pdo()->prepare("SELECT max(SUBSTRING(no_surat, 5, 2)) FROM izin_cuti WHERE jenis_cuti = '$jenisCuti'");
+        $noSurat->execute();
+        $noSurat = $noSurat->fetch();
+        $noSurat = sprintf('%02s', ($noSurat[0] + 1));
+
         switch ($_POST['jenis_cuti']) {
             case '1':
                 $kodeSurat = '851';
@@ -2701,12 +2709,13 @@ class Admin extends AdminModule
           'nama'     => 'pegawai.nama',
           'jbtn'     => 'pegawai.jbtn',
           'bidang'   => 'pegawai.bidang',
-          'username'  => 'mlite_users.username'
-          // 'nip'      => 'pegawai.nik',
+          'nip' => 'pegawai.nik'
+          //'username'  => 'mlite_users.username'
+
       ])
   
       ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-      ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
+      //->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
       ->where('izin_cuti.id', $id)
       ->oneArray();
   
@@ -2735,12 +2744,12 @@ class Admin extends AdminModule
       $hari2 = $day[$tentukan_hari2];
   
       $nama2 = $cuti_pegawai['nama'];
-      $nip2 = $cuti_pegawai['username'];   
+      $nip2 = $cuti_pegawai['nip'];   
   
       $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/profil/template/cetakIzin.docx');
       $templateProcessor->setValues([
            'nama'      => $cuti_pegawai['nama'],
-            'nip'      => $cuti_pegawai['username'],
+            'nip'      => $cuti_pegawai['nip'],
             'jbtn'     => $cuti_pegawai['jbtn'],
             'hari'     => $hari,
             'hari2'    => $hari2,
@@ -2755,6 +2764,12 @@ class Admin extends AdminModule
   
       ]);
         header("Content-Disposition: attachment; filename=Surat_Izin.docx");
+        // header("Content-type: application/msword");
+        // header("Content-disposition: inline; filename=suratIjin.docx");
+        // header("Content-length: ".strlen($document));
+        // echo $document;
+        // header("Content-Disposition: attachment; filename=template.docx");
+        // $templateProcessor->saveAs('php://output');
     
         $templateProcessor->saveAs('php://output');
         exit();
@@ -2775,15 +2790,15 @@ class Admin extends AdminModule
             'jenis_cuti'          => 'izin_cuti.jenis_cuti',
             'nama'                => 'pegawai.nama',
             'jbtn'                => 'pegawai.jbtn',
-          //   'nip'                 => 'pegawai.nik',
+            'nip'                 => 'pegawai.nik',
             'bidang'              => 'pegawai.bidang',
-            'ms_kerja'            => 'pegawai.ms_kerja',
-            'username'            => 'mlite_users.username'
+            'ms_kerja'            => 'pegawai.ms_kerja'
+           // 'username'            => 'mlite_users.username'
             
         ])
     
         ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-        ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
+       // ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
         ->where('izin_cuti.id', $id)
         ->oneArray();
     
@@ -2834,12 +2849,12 @@ class Admin extends AdminModule
       }
   
         $nama2 = $cuti_pegawai['nama'];
-        $nip2 = $cuti_pegawai['username'];   
+        $nip2 = $cuti_pegawai['nip'];   
   
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/profil/template/cetakCuti.docx');
         $templateProcessor->setValues([
               'nama'              => $cuti_pegawai['nama'],
-              'nip'               => $cuti_pegawai['username'],
+              'nip'               => $cuti_pegawai['nip'],
               'jbtn'              => $cuti_pegawai['jbtn'],
               'bidang'            => $cuti_pegawai['bidang'],
               'ms_kerja'          => $cuti_pegawai['ms_kerja'],

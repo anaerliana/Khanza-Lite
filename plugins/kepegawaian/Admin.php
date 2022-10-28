@@ -575,69 +575,208 @@ class Admin extends AdminModule
                 $row = htmlspecialchars_array($row);
                 $checkData = $this->db('pegawai')->select('nama')->where('nik',$row['nip'])->oneArray();
                 $row['nama'] = $checkData['nama'];
-                // $row['editURL'] = url([ADMIN, 'profil', 'biodata', $row['id']]);
-                // $row['viewURL'] = url([ADMIN, 'kepegawaian', 'view', $row['id']]);
+                $row['delURL']  = url([ADMIN, 'kepegawaian', 'delete', $row['id']]);
                 $this->assign['list'][] = $row;
             }
         }
         $this->assign['listCuti'] = array('1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
-        // $this->assign['cetakURL'] = url([ADMIN, 'kepegawaian', 'cetak']);
 
         return $this->draw('index_cuti.html', ['cuti' => $this->assign]);
     }
 
-    public function getSetStatus($id)
-  {
-
-    $pegawai = $this->db('pegawai')->select('nama')->where('nik', $id)->oneArray();
-
-    $cuti = $this->db('izin_cuti')->where('id', $id)->oneArray();
-    $set_status = $this->db('izin_cuti')->where('id', $id)->asc('id')->toArray();
-    $this->tpl->set('pegawai', $pegawai);
-    $this->tpl->set('cuti', $cuti);
-    $this->tpl->set('set_status', $set_status);
-    echo $this->tpl->draw(MODULES . '/kepegawaian/view/admin/setstatus.html', true);
-    exit();
-  }
-
-    public function postStatusSave()
+    public function getTambahCuti()
     {
+        $this->_addHeaderFiles();
+        $this->_addInfoPegawai();
+        $this->assign['pilihCuti'] = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
+       
+       return $this->draw('tambah_cuti.html', ['addcuti' => $this->assign]);
+    }
+
+    public function postTambahCuti()
+    {
+        $this->_addHeaderFiles();
+        
+        $numberDays = '';
+        $kodeSurat = '';
+        $noSurat = '';
+        $noCuti = '';
+        $cutiTahunan = 12;
+        $sisaCuti = '';
+        $location = url([ADMIN, 'kepegawaian', 'cuti']);
+
+        $tanggalAwal = strtotime($_POST['tanggal_awal']);
+        $tanggalAkhir = strtotime($_POST['tanggal_akhir']);
+        $timeDiff = abs($tanggalAkhir - $tanggalAwal);
+        $numberDays = $timeDiff/86400;
+        $numberDays = $numberDays + 1;
+        $tahun = date('Y',$tanggalAwal);
+
+        $jenisCuti = $_POST['jenis_cuti'];
+        $noSurat = $this->db()->pdo()->prepare("SELECT max(SUBSTRING(no_surat, 5, 2)) FROM izin_cuti WHERE jenis_cuti = '$jenisCuti'");
+        $noSurat->execute();
+        $noSurat = $noSurat->fetch();
+        $noSurat = sprintf('%02s', ($noSurat[0] + 1));
+
+        switch ($_POST['jenis_cuti']) {
+            case '1':
+                $kodeSurat = '851';
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+                $sisaCuti = $cutiTahunan - $numberDays;
+                break;
+            case '5':
+                $kodeSurat = '850';
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+                break;
+            case '4':
+                $kodeSurat = '854';
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+                break;
+
+            default:
+                $noCuti = '';
+                break;
+        }
+
+        $lastId = $this->db('izin_cuti')->lastInsertId();
+        $this->db('izin_cuti')->save([
+            'id' => $lastId,
+            'nip' => $_POST['nik'],
+            'jenis_cuti' => $_POST['jenis_cuti'],
+            'alasan' => $_POST['alasan'],
+            'no_telp' => $_POST['telp'],
+            'lama' => $numberDays,
+            'sisa_cuti_tahunan' => $sisaCuti,
+            'tahun' => $tahun,
+            'tgl_buat' => $_POST['tanggal_buat'],
+            'tgl_awal' => $_POST['tanggal_awal'],
+            'tgl_akhir' => $_POST['tanggal_akhir'],
+            'alamat' => $_POST['alamat'],
+            'tgl_surat' => date('Y-m-d'),
+            'no_surat' => $noCuti,
+            'status' => '',
+            'created_at' => null,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+        if (!$lastId) {
+            $this->notify('success', 'Simpan sukses');
+        } else {
+            $this->notify('failure', 'Gagal Simpan');
+        }
+        redirect($location);
+ 
+        exit();
+    }
+
+    private function _addInfoPegawai() {
+        // get pegawai
+        $rows = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+
+        if (count($rows)) {
+          $this->assign['pegawai'] = [];
+          foreach($rows as $row) {
+              $this->assign['pegawai'][] = $row;
+          }
+        }
+    }
+
+    public function getEditCuti($id)
+    {
+        $this->_addHeaderFiles();
+        $infopegawai = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+        $pegawai = $this->db('pegawai')->select('nama')->where('nik', $id)->oneArray();
+        $cuti = $this->db('izin_cuti')->where('id', $id)->oneArray();
+       // $pilihCuti = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
+        $this->tpl->set('infopegawai', $infopegawai);
+        $this->tpl->set('pegawai', $pegawai);
+        $this->tpl->set('cuti', $cuti);
+       // $this->tpl->set('pilihCuti', $pilihCuti);
+      
+        echo $this->tpl->draw(MODULES . '/kepegawaian/view/admin/editcuti.html', true);
+        exit();
+    }
+
+    public function postEditCuti()
+    {
+       
+        $numberDays = '';
+        // $kodeSurat = '';
+        // $noSurat = '';
+       // $noCuti = '';
+        $cutiTahunan = 12;
+        $sisaCuti = '';
+        $location = url([ADMIN, 'profil', 'cuti']);
+
+        $tanggalAwal = strtotime($_POST['tanggal_awal']);
+        $tanggalAkhir = strtotime($_POST['tanggal_akhir']);
+        $timeDiff = abs($tanggalAkhir - $tanggalAwal);
+        $numberDays = $timeDiff/86400;
+        $numberDays = $numberDays + 1;
+        $tahun = date('Y',$tanggalAwal);
+
+        // switch ($_POST['jenis_cuti']) {
+        //     case '1':
+        //         $kodeSurat = '851';
+        //         $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+        //         $sisaCuti = $cutiTahunan - $numberDays;
+        //         break;
+        //     case '5':
+        //         $kodeSurat = '850';
+        //         $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+        //         break;
+        //     case '4':
+        //         $kodeSurat = '854';
+        //         $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
+        //         break;
+
+        //     default:
+        //         $noCuti = '';
+        //         break;
+        // }
+
         $id = $_POST['id'];
         $errors = 0;
         $location = url([ADMIN, 'kepegawaian', 'cuti']);
-        $no_surat = $_POST['no_surat'];
-        $status = $_POST['status'];
-        $keterangan = $_POST['keterangan'];
               $query = $this->db('izin_cuti')
                 ->where('id', $id)
                 ->save([
-                'no_surat' => $no_surat,
-                'status' => $status,
-                'keterangan' =>  $keterangan,
-                'updated_at' =>  date('Y-m-d H:i:s')
+                'nip' => $_POST['nik'],
+                //'jenis_cuti' => $_POST['jenis_cuti'],
+                'alasan' => $_POST['alasan'],
+                'no_telp' => $_POST['telp'],
+                'lama' => $numberDays,
+                'sisa_cuti_tahunan' => $sisaCuti,
+                'tahun' => $tahun,
+                'tgl_buat' => $_POST['tanggal_buat'],
+                'tgl_awal' => $_POST['tanggal_awal'],
+                'tgl_akhir' => $_POST['tanggal_akhir'],
+                'alamat' => $_POST['alamat'],
+                'tgl_surat' => date('Y-m-d'),
+                //'no_surat' => $noCuti,
+                'created_at' => null,
+                'updated_at' => date('Y-m-d H:i:s'),
+                'status' => $_POST['status'],
+                'keterangan' => $_POST['keterangan'],
                 ]);
             if ($query) {
-                $this->notify('success', 'Status Berhasil Disimpan');
+                $this->notify('success', 'Data Berhasil Update');
             } else {
-                $this->notify('failure', 'Status Gagal Disimpan');
+                $this->notify('failure', 'Gagal Update');
             }
           redirect($location);
-         echo $status;
     }
 
-    public function postStatusDel()
-  {
-    $this->db('izin_cuti')
-      ->where('id', $_POST['id'])
-      ->update([
-        'status' => NULL,
-        'keterangan' => '',
-        'updated_at' =>  date('Y-m-d H:i:s')
-      ]);
-    exit();
-  }
+    public function getDelete($id)
+    {
+            if ($this->db('izin_cuti')->delete($id)) {
+                $this->notify('success', 'Data berhasil dihapus.');
+            } else {
+                $this->notify('failure', 'Gagal dihapus.');
+            }
+        redirect(url([ADMIN, 'kepegawaian', 'cuti']));
+    }
 
   public function getCetakIzin($id)
   {
@@ -651,12 +790,12 @@ class Admin extends AdminModule
         'nama'     => 'pegawai.nama',
         'jbtn'     => 'pegawai.jbtn',
         'bidang'   => 'pegawai.bidang',
-        'username'  => 'mlite_users.username'
-        // 'nip'      => 'pegawai.nik',
+        //'username'  => 'mlite_users.username'
+         'nip'      => 'pegawai.nik',
     ])
 
     ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-    ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
+    //->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
     ->where('izin_cuti.id', $id)
     ->oneArray();
 
@@ -685,12 +824,13 @@ class Admin extends AdminModule
     $hari2 = $day[$tentukan_hari2];
 
     $nama2 = $cuti_pegawai['nama'];
-    $nip2 = $cuti_pegawai['username'];   
+    $nip2 = $cuti_pegawai['nip'];   
 
     $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/kepegawaian/template/cetakIzin.docx');
     $templateProcessor->setValues([
          'nama'      => $cuti_pegawai['nama'],
-          'nip'      => $cuti_pegawai['username'],
+         // 'nip'      => $cuti_pegawai['username'],
+          'nip'      => $cuti_pegawai['nip'],
           'jbtn'     => $cuti_pegawai['jbtn'],
           'hari'     => $hari,
           'hari2'    => $hari2,
@@ -704,8 +844,16 @@ class Admin extends AdminModule
           'nip2'     => $nip2
 
     ]);
-      header("Content-Disposition: attachment; filename=Surat_Izin.docx");
-  
+     // header("Content-Disposition: attachment; filename=Surat_Izin.docx");
+    //   header("Content-type: application/msword");
+        $file = 'Surat_Izin.docx';
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+      //$templateProcessor = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
       $templateProcessor->saveAs('php://output');
       exit();
     }
@@ -725,15 +873,15 @@ class Admin extends AdminModule
           'jenis_cuti'          => 'izin_cuti.jenis_cuti',
           'nama'                => 'pegawai.nama',
           'jbtn'                => 'pegawai.jbtn',
-        //   'nip'                 => 'pegawai.nik',
+          'nip'                 => 'pegawai.nik',
           'bidang'              => 'pegawai.bidang',
-          'ms_kerja'            => 'pegawai.ms_kerja',
-          'username'            => 'mlite_users.username'
+          'ms_kerja'            => 'pegawai.ms_kerja'
+         // 'username'            => 'mlite_users.username'
           
       ])
   
       ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-      ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
+     // ->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
       ->where('izin_cuti.id', $id)
       ->oneArray();
   
@@ -755,22 +903,22 @@ class Admin extends AdminModule
 
         switch ($cuti_pegawai['jenis_cuti']) {
         case '1':
-            $jns1 = 'YA';
+            $jns1 = 'v';
             break;
         case '2':
-            $jns2 = 'YA';
+            $jns2 = 'v';
             break;
         case '3':
-            $jns3 = 'YA';
+            $jns3 = 'v';
             break;
         case '4':
-            $jns4 = 'YA';
+            $jns4 = 'v';
             break;
         case '5':
-            $jns5 = 'YA';
+            $jns5 = 'v';
             break;
         case '6':
-            $jns6 = 'YA';
+            $jns6 = 'v';
             break;
 
         default:
@@ -784,12 +932,12 @@ class Admin extends AdminModule
     }
 
       $nama2 = $cuti_pegawai['nama'];
-      $nip2 = $cuti_pegawai['username'];   
+      $nip2 = $cuti_pegawai['nip'];   
 
       $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES.'/kepegawaian/template/cetakCuti.docx');
       $templateProcessor->setValues([
             'nama'              => $cuti_pegawai['nama'],
-            'nip'               => $cuti_pegawai['username'],
+            'nip'               => $cuti_pegawai['nip'],
             'jbtn'              => $cuti_pegawai['jbtn'],
             'bidang'            => $cuti_pegawai['bidang'],
             'ms_kerja'          => $cuti_pegawai['ms_kerja'],

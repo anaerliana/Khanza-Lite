@@ -88,8 +88,8 @@
 								<th>Tanggal Akhir</th>
 								<th>Jumlah Hari</th>
 								<th>Tanggal Surat</th>
+                                <th>Berkas</th>
                                 <th>Status</th>
-								<th>Berkas</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -104,16 +104,23 @@
 								<td>{$value.tgl_akhir}</td>
 								<td>{$value.lama}</td>
 								<td>{$value.tgl_surat}</td>
-                                <td>{$value.status} </td>
                                 <td>
+									{if: $value.jenis_cuti =='7'}
+									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Izin</span></a>
+									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
+									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cuti</span></a>
+									{else} {/if}
+								</td>
+                                <td>{$value.status} </td>
+                                <!-- <td>
 									{if: $value.status == 'Disetujui'} 
 									{if: $value.jenis_cuti =='7'}
-									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
+									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Izin</span></a>
 									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
-									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></a>
+									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cuti</span></a>
 									{else} {/if}
 									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
-								</td>
+								</td> -->
                                 
 
 								<!-- <td class="text-right">
