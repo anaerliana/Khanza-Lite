@@ -656,7 +656,7 @@ class Admin extends AdminModule
             'alamat' => $_POST['alamat'],
             'tgl_surat' => date('Y-m-d'),
             'no_surat' => $noCuti,
-            'status' => '',
+            'status' => 'Belum Disetujui',
             'created_at' => null,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
