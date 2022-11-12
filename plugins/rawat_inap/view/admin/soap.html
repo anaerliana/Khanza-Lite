@@ -106,8 +106,7 @@
       {loop: $pemeriksaan_ranap as $data}
       <tr {if: $data.verified_at !=null } style="background-color: #e5e8e3 !important;" {/if} 
       <?php if($data.bidang=='Ikhtiyar' ) { echo 'style="background-color:#e1fce1;"' ; }
-      else if($data.bidang=='Mubarak' ) { echo 'style="background-color:#fcfab8;"' ; } 
-      else if($data.departemen_petugas=='RI' ) { echo 'style="background-color:#d3e4f0;"' ; }
+      else if($data.bidang=='Mubarak' ) { echo 'style="background-color:#fcfab8;"' ; }
       else{ echo 'style="background-color:#FFFFFF;"' ; } ?>
       >
         <td rowspan="6" style="vertical-align:top;">{$data.nomor}</td>

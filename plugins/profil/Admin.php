@@ -2620,7 +2620,7 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengajuan Izin & Cuti';
         $this->assign['nik'] = $this->core->getUserInfo('username', null, true);
-        $this->assign['list'] = $this->db('izin_cuti')->where('nip',$this->assign['nik'])->toArray();
+        $this->assign['list'] = $this->db('izin_cuti')->where('nip',$this->assign['nik'])->desc('id')->toArray();
         $this->assign['pilihCuti'] = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         return $this->draw('cuti.html',['cuti' => $this->assign]);
     }
@@ -2696,6 +2696,74 @@ class Admin extends AdminModule
         redirect($location);
         exit();
     }
+
+    public function getEditCuti($id)
+    {
+        $this->_addHeaderFiles();
+        
+        $cuti = $this->db('izin_cuti')->where('id', $id)->oneArray();
+        $this->tpl->set('cuti', $cuti);
+      
+        echo $this->tpl->draw(MODULES . '/profil/view/admin/edit.cuti.html', true);
+        exit();
+    }
+
+    public function postEditCuti()
+    {
+        
+        $this->_addHeaderFiles();
+
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+        
+        $numberDays = '';
+        // $kodeSurat = '';
+        // $noSurat = '';
+       // $noCuti = '';
+        $cutiTahunan = 12;
+        $sisaCuti = '';
+        $location = url([ADMIN, 'profil', 'cuti']);
+
+        $tanggalAwal = strtotime($_POST['tanggal_awal']);
+        $tanggalAkhir = strtotime($_POST['tanggal_akhir']);
+        $timeDiff = abs($tanggalAkhir - $tanggalAwal);
+        $numberDays = $timeDiff/86400;
+        $numberDays = $numberDays + 1;
+        $tahun = date('Y',$tanggalAwal);
+
+        $id = $_POST['id'];
+        $errors = 0;
+        
+              $query = $this->db('izin_cuti')
+                ->where('id', $id)
+                ->save([
+                // 'nip' => $_POST['nik'],
+                //'jenis_cuti' => $_POST['jenis_cuti'],
+                'alasan' => $_POST['alasan'],
+                'no_telp' => $_POST['telp'],
+                'lama' => $numberDays,
+                'sisa_cuti_tahunan' => $sisaCuti,
+                'tahun' => $tahun,
+                'tgl_buat' => $_POST['tanggal_buat'],
+                'tgl_awal' => $_POST['tanggal_awal'],
+                'tgl_akhir' => $_POST['tanggal_akhir'],
+                'alamat' => $_POST['alamat'],
+                'tgl_surat' => date('Y-m-d'),
+                //'no_surat' => $noCuti,
+                'created_at' => null,
+                'updated_at' => date('Y-m-d H:i:s'),
+                'status' => 'Belum Disetujui',
+                'keterangan' => $_POST['keterangan'],
+                ]);
+            if ($query) {
+                $this->notify('success', 'Data Berhasil Update');
+            } else {
+                $this->notify('failure', 'Gagal Update');
+            }
+          redirect($location);
+    }
+
 
     public function getCetakIzin($id)
     {

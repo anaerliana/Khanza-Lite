@@ -24,7 +24,16 @@ $(document).ready(function(){
 $(document).ready(function() {
   $('#pardah').DataTable({
     "dom": 'Bfrtip',
-    "buttons": ['excel', 'pdf']
+   // "buttons": ['excel', 'pdf'],
+    "ordering": false,
+    "buttons" : [
+      {
+          extend: 'excel',
+          exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 9 ]
+          }
+      }
+    ]
   });
   $('#laporan').DataTable({
     "dom": 'Bfrtip',
