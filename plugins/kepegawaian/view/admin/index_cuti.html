@@ -16,6 +16,7 @@
 					<table class="table table-striped no-margin" id="pardah" width="100%">
 						<thead>
 							<tr>
+								<th></th>
 								<th>Nip Pegawai</th>
 								<th>Nama</th>
 								<th>Jenis</th>
@@ -33,6 +34,7 @@
 							{if: !empty($cuti.list)}
 							{loop: $cuti.list}
 							<tr>
+								<td>{$value.id}</td>
 								<td>{$value.nip}</td>
 								<td>{$value.nama}</td>
 								<td>{loop: $cuti.listCuti as $key => $val}

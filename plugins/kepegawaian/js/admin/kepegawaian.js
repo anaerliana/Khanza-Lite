@@ -24,8 +24,9 @@ $(document).ready(function(){
 $(document).ready(function() {
   $('#pardah').DataTable({
     "dom": 'Bfrtip',
+    "order": [[ 0, 'desc' ]],
    // "buttons": ['excel', 'pdf'],
-    "ordering": false,
+    //"ordering": true,
     "buttons" : [
       {
           extend: 'excel',
@@ -33,10 +34,32 @@ $(document).ready(function() {
               columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 9 ]
           }
       }
-    ]
+    ],
+    columnDefs: [
+      {   "targets": [0],
+          "visible": false,
+          "searchable": false
+      }],
+    
   });
   $('#laporan').DataTable({
     "dom": 'Bfrtip',
     "buttons": ['excel', 'pdf']
   });
 });
+
+$(document).ready(function() {
+  var t = $('#lapstr').DataTable({
+    "dom": 'Bfrtip',
+    "buttons": ['excel', 'pdf'],
+    order: [[0, 'asc']],
+  });
+  t.on('order.dt search.dt', function () {
+    let i = 1;
+
+    t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+        this.data(i++);
+    });
+}).draw();
+});
+
