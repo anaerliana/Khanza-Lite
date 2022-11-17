@@ -54,6 +54,9 @@
               <li><a href="#hais" data-no_rawat="{$value.no_rawat}" data-kd_kamar="{$value.kd_kamar}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-nm_kamar="{$value.nm_bangsal}">HaiS</a></li>
               <li><a href="{?=url([ADMIN, 'bundles_hais', 'manage', $value.con_no_rawat])?}" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Bundles HaiS</a></li>
               {/if}
+              {if: $this->core->getUserInfo('role') == 'ok'}
+              <li><a href="#form_jadwaloperasi" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Input Jadwal Operasi</a></li>
+              {/if}
             </ul>
           </td>
           <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>

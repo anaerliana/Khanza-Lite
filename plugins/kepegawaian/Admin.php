@@ -467,26 +467,31 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
      
-        $rows =  $this->db('simpeg_rsertifikasi')
-            ->toArray();
+        $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai WHERE stts_aktif='AKTIF' AND stts_kerja='PNS' OR stts_kerja='FT' ORDER BY stts_kerja DESC");
+        $rows->execute();
+        $rows = $rows->fetchAll();
 
         $this->assign['list'] = [];
-        foreach ($rows as $row) {
+        foreach ($rows as $low) {
+            $row['nik'] = $low['nik'];
+            $ceknik = $this->db('pegawai_mapping')->where('nipk', $row['nik'])->oneArray();
+            if($ceknik){
+                $row['nik'] = $ceknik['nipk_baru'];
+            }
+            $row['nama'] = $low['nama'];
+            $row['status'] = $low['stts_kerja'];
+            $row['bidang'] = $low['bidang'];
 
-            $pegawai = $this->db('pegawai')
-                ->where('nik', $row['nip'])
-                ->where('stts_aktif', 'AKTIF')
-                ->oneArray();
-            $row['nama'] = $pegawai['nama'];
-            $row['status'] = $pegawai['stts_kerja'];
-            $row['bidang'] = $pegawai['bidang'];
-
-            $sisa = $this->hitungSisa($row['tgl_laku_str']);
+            $pegawai = $this->db('simpeg_rsertifikasi')->where('nip', $row['nik'])->oneArray();
+            
+            $sisa = $this->hitungSisa($pegawai['tgl_laku_str']);
+            $row['tgl_laku_str'] = $pegawai['tgl_laku_str'];
+            $row['no_str'] = $pegawai['no_str'];
+            $row['tgl_str'] = $pegawai['tgl_str'];
             $row['sisa'] = $sisa;
 
             $this->assign['list'][] = $row;
         }
-        $this->assign['status'] = array('', 'CPNS/PNS', 'Tenaga Kontrak');
         return $this->draw('lapstr.html', ['lapstr' => $this->assign]);
     }
 
@@ -514,20 +519,28 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
 
-        $rows =  $this->db('simpeg_rsertifikasi')->toArray();
+       // $rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->toArray();
+        $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai WHERE stts_aktif='AKTIF' AND stts_kerja='PNS' OR stts_kerja='FT' ORDER BY stts_kerja DESC");
+        $rows->execute();
+        $rows = $rows->fetchAll();
 
         $this->assign['list'] = [];
-        foreach ($rows as $row) {
+        foreach ($rows as $low) {
+            $row['nik'] = $low['nik'];
+            $ceknik = $this->db('pegawai_mapping')->where('nipk', $row['nik'])->oneArray();
+            if($ceknik){
+                $row['nik'] = $ceknik['nipk_baru'];
+            }
+            $row['nama'] = $low['nama'];
+            $row['status'] = $low['stts_kerja'];
+            $row['bidang'] = $low['bidang'];
 
-            $pegawai = $this->db('pegawai')
-                ->where('nik', $row['nip'])
-                ->where('stts_aktif', 'AKTIF')
-                ->oneArray();
-            $row['nama'] = $pegawai['nama'];
-            $row['status'] = $pegawai['stts_kerja'];
-            $row['bidang'] = $pegawai['bidang'];
-
-            $sisa = $this->hitungSisa($row['tgl_laku_str']);
+            $pegawai = $this->db('simpeg_rsertifikasi')->where('nip', $row['nik'])->oneArray();
+            
+            $sisa = $this->hitungSisa($pegawai['tgl_laku_sip']);
+            $row['tgl_laku_sip'] = $pegawai['tgl_laku_sip'];
+            $row['no_sip'] = $pegawai['no_sip'];
+            $row['tgl_sip'] = $pegawai['tgl_sip'];
             $row['sisa'] = $sisa;
 
             $this->assign['list'][] = $row;

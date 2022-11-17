@@ -105,7 +105,7 @@ class Admin extends AdminModule
      $username = $this->core->getUserInfo('username', null, true);
   //  if ((!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi'],  true)) 
   //  && (!in_array ($this->core->getPegawaiInfo('bidang', $username), ['Mubarak'], true)) ) {
-    if (!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp'],  true)){
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'],  true)){
       $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
     }
     if ($status_pulang == '') {
