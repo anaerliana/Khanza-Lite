@@ -466,16 +466,19 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js'), 'footer');
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
-     
-        $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai WHERE stts_aktif='AKTIF' AND stts_kerja='PNS' OR stts_kerja='FT' ORDER BY stts_kerja DESC");
+
+        //$rows = $this->db('pegawai')->where('stts_aktif', 'AKTIF')->toArray(); 
+        // $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai WHERE stts_aktif='AKTIF' AND stts_kerja='PNS' OR stts_kerja='FT'");
+        $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai where stts_kerja in ('PNS', 'FT') and stts_aktif = 'AKTIF'");
         $rows->execute();
         $rows = $rows->fetchAll();
 
         $this->assign['list'] = [];
         foreach ($rows as $low) {
+            $row = htmlspecialchars_array($low);
             $row['nik'] = $low['nik'];
             $ceknik = $this->db('pegawai_mapping')->where('nipk', $row['nik'])->oneArray();
-            if($ceknik){
+            if ($ceknik) {
                 $row['nik'] = $ceknik['nipk_baru'];
             }
             $row['nama'] = $low['nama'];
@@ -483,7 +486,7 @@ class Admin extends AdminModule
             $row['bidang'] = $low['bidang'];
 
             $pegawai = $this->db('simpeg_rsertifikasi')->where('nip', $row['nik'])->oneArray();
-            
+
             $sisa = $this->hitungSisa($pegawai['tgl_laku_str']);
             $row['tgl_laku_str'] = $pegawai['tgl_laku_str'];
             $row['no_str'] = $pegawai['no_str'];
@@ -519,8 +522,9 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
 
-       // $rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->toArray();
-        $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai WHERE stts_aktif='AKTIF' AND stts_kerja='PNS' OR stts_kerja='FT' ORDER BY stts_kerja DESC");
+        //$rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->toArray();
+        //$rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai WHERE stts_aktif='AKTIF' AND stts_kerja='PNS' OR stts_kerja='FT' ORDER BY stts_kerja DESC");
+        $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai where stts_kerja in ('PNS', 'FT') and stts_aktif = 'AKTIF'");
         $rows->execute();
         $rows = $rows->fetchAll();
 
@@ -528,7 +532,7 @@ class Admin extends AdminModule
         foreach ($rows as $low) {
             $row['nik'] = $low['nik'];
             $ceknik = $this->db('pegawai_mapping')->where('nipk', $row['nik'])->oneArray();
-            if($ceknik){
+            if ($ceknik) {
                 $row['nik'] = $ceknik['nipk_baru'];
             }
             $row['nama'] = $low['nama'];
@@ -536,7 +540,7 @@ class Admin extends AdminModule
             $row['bidang'] = $low['bidang'];
 
             $pegawai = $this->db('simpeg_rsertifikasi')->where('nip', $row['nik'])->oneArray();
-            
+
             $sisa = $this->hitungSisa($pegawai['tgl_laku_sip']);
             $row['tgl_laku_sip'] = $pegawai['tgl_laku_sip'];
             $row['no_sip'] = $pegawai['no_sip'];
@@ -942,7 +946,8 @@ class Admin extends AdminModule
         ]);
         // header("Content-Disposition: attachment; filename=Surat_Izin.docx");
         //   header("Content-type: application/msword");
-        $file = 'Surat_Izin.docx';
+        // $file = 'Surat_Izin.docx';
+        $file = "Surat_Izin_" . date("d-m-Y") . ".docx";
         header("Content-Description: File Transfer");
         header('Content-Disposition: attachment; filename="' . $file . '"');
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
@@ -971,8 +976,8 @@ class Admin extends AdminModule
                 'jbtn'                => 'pegawai.jbtn',
                 'nip'                 => 'pegawai.nik',
                 'bidang'              => 'pegawai.bidang',
-                'ms_kerja'            => 'pegawai.ms_kerja'
-                // 'username'            => 'mlite_users.username'
+                // 'ms_kerja'            => 'pegawai.ms_kerja'
+                //'username'            => 'mlite_users.username'
 
             ])
 
@@ -999,22 +1004,22 @@ class Admin extends AdminModule
 
         switch ($cuti_pegawai['jenis_cuti']) {
             case '1':
-                $jns1 = 'v';
+                $jns1 = 'YA';
                 break;
             case '2':
-                $jns2 = 'v';
+                $jns2 = 'YA';
                 break;
             case '3':
-                $jns3 = 'v';
+                $jns3 = 'YA';
                 break;
             case '4':
-                $jns4 = 'v';
+                $jns4 = 'YA';
                 break;
             case '5':
-                $jns5 = 'v';
+                $jns5 = 'YA';
                 break;
             case '6':
-                $jns6 = 'v';
+                $jns6 = 'YA';
                 break;
 
             default:
@@ -1055,12 +1060,18 @@ class Admin extends AdminModule
             'jns6'              => $jns6
 
         ]);
-        header("Content-Disposition: attachment; filename=Surat_Cuti.docx");
 
+
+        $file = "Surat_Cuti_" . date("d-m-Y") . ".docx";
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
         $templateProcessor->saveAs('php://output');
         exit();
     }
-
 
     public function getCSS()
     {

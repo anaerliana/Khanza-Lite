@@ -36,7 +36,14 @@
                                 <td>{$value.tgl_str}</td>
                                 <td>{$value.tgl_laku_str}</td>
                                 <!-- <?php $hr_ini = date("Y-m-d"); ?> -->
-                                {if: $hr_ini >= $value.tgl_laku_str}
+                                <!-- {if: $hr_ini >= $value.tgl_laku_str}
+                                <td align="center" bgcolor="#e8f556">Telah Habis</td>
+                                {else}
+                                <td align="center">{$value.sisa}</td>
+                                {/if} -->
+                                {if: $value.tgl_laku_str == ''}
+                                <td align="center">Belum Input</td>
+                                {elseif: $hr_ini >= $value.tgl_laku_str}
                                 <td align="center" bgcolor="#e8f556">Telah Habis</td>
                                 {else}
                                 <td align="center">{$value.sisa}</td>
