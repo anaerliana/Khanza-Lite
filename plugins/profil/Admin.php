@@ -2763,12 +2763,10 @@ class Admin extends AdminModule
                 'jbtn'     => 'pegawai.jbtn',
                 'bidang'   => 'pegawai.bidang',
                 'nip' => 'pegawai.nik'
-                //'username'  => 'mlite_users.username'
 
             ])
 
             ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-            //->join('mlite_users', 'mlite_users.fullname = pegawai.nama')
             ->where('izin_cuti.id', $id)
             ->oneArray();
 
@@ -2791,7 +2789,7 @@ class Admin extends AdminModule
             'Fri' => 'Jumat',
             'Sat' => 'Sabtu'
         );
-        $hari = $day[$tentukan_hari1];
+        $hari1 = $day[$tentukan_hari1];
 
         $tentukan_hari2 = date('D', strtotime($tanggal_akhir));
         $hari2 = $day[$tentukan_hari2];
@@ -2799,16 +2797,21 @@ class Admin extends AdminModule
         $nama2 = $cuti_pegawai['nama'];
         $nip2 = $cuti_pegawai['nip'];
 
+        $lama = $cuti_pegawai['lama'] ;
+        $hari = $lama > 1 ? $hari1. ' s.d '.$hari2 :  ($lama = 1 ? $hari1 : '') ;
+        echo $hari;
+
+        $tanggal = $lama > 1 ? $date1. ' s.d '.$date2 :  ($lama = 1 ? $date1 : '') ;
+        echo $tanggal;
+
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/profil/template/cetakIzin.docx');
         $templateProcessor->setValues([
             'nama'      => $cuti_pegawai['nama'],
             'nip'      => $cuti_pegawai['nip'],
             'jbtn'     => $cuti_pegawai['jbtn'],
             'hari'     => $hari,
-            'hari2'    => $hari2,
             'tgl_buat' => $date,
-            'tgl_awal' => $date1,
-            'tgl_akhir' => $date2,
+            'tgl_awal' => $tanggal,
             'lama'     => $cuti_pegawai['lama'],
             'alasan'   => $cuti_pegawai['alasan'],
             'bidang'   => $cuti_pegawai['bidang'],
@@ -2817,15 +2820,12 @@ class Admin extends AdminModule
 
         ]);
         $file = "Surat_Izin_" . date("d-m-Y") . ".docx";
+        header("Content-Description: File Transfer");
         header('Content-Disposition: attachment; filename="' . $file . '"');
-        // header("Content-Disposition: attachment; filename=Surat_Izin.docx");
-        // header("Content-type: application/msword");
-        // header("Content-disposition: inline; filename=suratIjin.docx");
-        // header("Content-length: ".strlen($document));
-        // echo $document;
-        // header("Content-Disposition: attachment; filename=template.docx");
-        // $templateProcessor->saveAs('php://output');
-
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
         $templateProcessor->saveAs('php://output');
         exit();
     }
@@ -2931,7 +2931,6 @@ class Admin extends AdminModule
             'jns6'              => $jns6
 
         ]);
-
 
         $file = "Surat_Cuti_" . date("d-m-Y") . ".docx";
         header("Content-Description: File Transfer");
