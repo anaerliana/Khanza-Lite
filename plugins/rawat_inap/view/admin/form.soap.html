@@ -78,6 +78,8 @@
             </div>
           </div>
         </div>
+        {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis' 
+        || $this->core->getUserInfo('role') == 'apoteker' || $this->core->getUserInfo('role') == 'laboratorium'}
         <h4>SOAP</h4>
         <div class="form-group">
           <label for="jenis">Subyektif</label>
@@ -103,6 +105,33 @@
           <label for="jenis">Evaluasi</label>
           <textarea name="evaluasi" id="evaluasi" rows="2" class="form-control"></textarea>
         </div>
+        {elseif: $this->core->getPegawaiInfo('bidang', $username) == 'Mubarak'}
+        <h4>ADIME</h4>
+        <div class="form-group">
+        <label for="jenis">Assesment</label>
+          <textarea name="keluhan" id="keluhan" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="jenis">Diagnosa</label>
+          <textarea name="pemeriksaan" id="pemeriksaan" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="jenis">Intervensi</label>
+          <textarea name="penilaian" id="penilaian" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="jenis">Monitoring</label>
+          <textarea name="rtl" id="rtl" rows="2" class="form-control"></textarea>
+        </div>
+        <!-- <div class="form-group">
+          <label for="jenis">Evaluasi</label>
+          <textarea name="instruksi" id="instruksi" rows="2" class="form-control"></textarea>
+        </div> -->
+        <div class="form-group">
+          <label for="jenis">Evaluasi</label>
+          <textarea name="evaluasi" id="evaluasi" rows="2" class="form-control"></textarea>
+        </div>
+        {else}  {/if}
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
           <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>

@@ -17,13 +17,6 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Tanggal Buat</label>
-                                <input type="text" name="tanggal_buat" id="tanggal_buat"
-                                    class="form-control" value="" />
-                            </div>
-                        </div>
                         <div class="col-md-5">
                             <div class="form-group">
                                 <label>Alasan</label>
@@ -40,14 +33,21 @@
                         </div>
                     </div>
                     <div class="row clearfix">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Tanggal Buat</label>
+                                <input type="text" name="tanggal_buat" id="tanggal_buat"
+                                    class="form-control" value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Dari Tanggal</label>
                                 <input type="text" name="tanggal_awal" id="tanggal_awal"
                                     class="form-control" value="" />
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Sampai Tanggal</label>
                                 <input type="text" name="tanggal_akhir" id="tanggal_akhir"
@@ -88,8 +88,9 @@
 								<th>Tanggal Akhir</th>
 								<th>Jumlah Hari</th>
 								<th>Tanggal Surat</th>
+                                <th>Berkas</th>
                                 <th>Status</th>
-								<th>Berkas</th>
+                                <th class="text-right">Aksi</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -104,26 +105,27 @@
 								<td>{$value.tgl_akhir}</td>
 								<td>{$value.lama}</td>
 								<td>{$value.tgl_surat}</td>
-                                <td>{$value.status} </td>
                                 <td>
-									{if: $value.status == 'Disetujui'} 
 									{if: $value.jenis_cuti =='7'}
 									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Izin</span></a>
 									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
 									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cuti</span></a>
 									{else} {/if}
-									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
 								</td>
-                                
-
-								<!-- <td class="text-right">
-									<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
-										<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
+                                <td>{$value.status} </td>
+                                <td class="text-right">
+                                    {if: $value.status == '' or $value.status == 'Belum Disetujui'}
+									<a href="{?=url([ADMIN, 'profil', 'editcuti', $value.id])?}"
+										class="btn btn-xs btn-success" data-toggle="modal" data-target="#editcutiModal">
+										<i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
 									</a>
-									<a href="{$value.editURL}" class="btn btn-success btn-xs">
-										<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+                                    {elseif: $value.status == 'Disetujui' or $value.status == 'Ditangguhkan' or $value.status == 'Tidak Disetujui'}
+                                    <a href="{?=url([ADMIN, 'profil', 'editcuti', $value.id])?}"
+										class="btn btn-xs btn-success disabled" data-toggle="modal" data-target="#editcutiModal">
+										<i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
 									</a>
-								</td> -->
+                                    {else} {/if}
+								</td>
 							</tr>
 							{/loop}
 							{else}
@@ -137,7 +139,15 @@
 			</div>
 		</div>
 	</div>
+    
 </article>
+<div class="modal fade" id="editcutiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     $(function () {
         $('#tanggal_buat').datetimepicker({

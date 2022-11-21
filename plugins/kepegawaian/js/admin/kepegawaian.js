@@ -24,7 +24,23 @@ $(document).ready(function(){
 $(document).ready(function() {
   $('#pardah').DataTable({
     "dom": 'Bfrtip',
-    "buttons": ['excel', 'pdf']
+    "order": [[ 0, 'desc' ]],
+   // "buttons": ['excel', 'pdf'],
+    //"ordering": true,
+    "buttons" : [
+      {
+          extend: 'excel',
+          exportOptions: {
+              columns: [ 0, 1, 2, 3, 4, 5, 6, 7, 9 ]
+          }
+      }
+    ],
+    columnDefs: [
+      {   "targets": [0],
+          "visible": false,
+          "searchable": false
+      }],
+    
   });
   $('#laporan').DataTable({
     "dom": 'Bfrtip',
@@ -32,34 +48,18 @@ $(document).ready(function() {
   });
 });
 
-$("#index").on("click","#reset",function(event){
-  event.preventDefault();
-  var baseURL = mlite.url + '/' + mlite.admin;
-  var url = baseURL + '/kepegawaian/statusdel?t=' + mlite.token;
-  var id = $(this).attr("data-id");
-
-  // tampilkan dialog konfirmasi
-  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
-      // ketika ditekan tombol ok
-      if (result){
-      // mengirimkan perintah penghapusan
-      $.post(url, {
-          id: id
-      } ,function(data) {
-          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-          $("#display").load(baseURL + '/kepegawaian/cuti?t=' + mlite.token);
-          bersih();
-          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Data Status telah direset!"+
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-          "</div>").show();
-      });
-      }
+$(document).ready(function() {
+  var t = $('#lapstr').DataTable({
+    "dom": 'Bfrtip',
+    "buttons": ['excel', 'pdf'],
+    order: [[0, 'asc']],
   });
+  t.on('order.dt search.dt', function () {
+    let i = 1;
+
+    t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+        this.data(i++);
+    });
+}).draw();
 });
-
-function bersih(){
-  location.reload();
-}
-
 

@@ -24,6 +24,11 @@
        {
         $this->_addHeaderFiles();
         return $this->draw('form.html');
+
+        $pms = sprintf('%06s', ($pms['nomor_kegiatan'] + 1));
+        $pms = date('Ymd').$pms;
+        echo $pms;
+        exit();
        }
 
        public function postMlitePmsSave()
@@ -78,13 +83,10 @@
         } else {
           $query = $this->db('mlite_pms')->where('id',$id)->save([
             'nomor_kegiatan' => $_POST['nomor_kegiatan'],
-            'order_by' => $_POST['order_by'],
             'finish_by' => $_POST['finish_by'],
             'nama_kegiatan' => $_POST['nama_kegiatan'],
             'detail_kegiatan' => $_POST['detail_kegiatan'],
-            'tanggal_mulai' => $_POST['tanggal_mulai'],
             'tanggal_selesai' => $_POST['tanggal_selesai'],
-            'jam_mulai' => $_POST['jam_mulai'],
             'jam_selesai' => $_POST['jam_selesai'],
             'status' => $_POST['status'],
           ]);
@@ -171,4 +173,3 @@
    }
 
 ?>
-

@@ -236,7 +236,7 @@ class Admin extends AdminModule
     */
 
     private function _getInfoRole() {
-      $role = array('pengguna','kasir','rekammedis','radiologi','laboratorium','paramedis','apoteker','medis','manajemen','admin');
+      $role = array('pengguna','kasir','rekammedis','radiologi','laboratorium','paramedis','apoteker','medis','manajemen','admin','gizi', 'ppi/mpp', 'ok');
       if (count($role)) {
         $this->assign['role'] = [];
         foreach($role as $row) {

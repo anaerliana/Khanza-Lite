@@ -33,9 +33,12 @@ class Admin extends AdminModule
       $status_pulang = $_POST['status_pulang'];
     }
     $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+
+    $username = $this->core->getUserInfo('username', null, true);
+
     $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
     $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang);
-    return $this->draw('manage.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
+    return $this->draw('manage.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital, 'username' => $username]);
   }
 
   public function anyDisplay()
@@ -55,8 +58,11 @@ class Admin extends AdminModule
       $status_pulang = $_POST['status_pulang'];
     }
     $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+
+    $username = $this->core->getUserInfo('username', null, true);
+
     $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang);
-    echo $this->draw('display.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+    echo $this->draw('display.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'username' => $username]);
     exit();
   }
 
@@ -65,8 +71,8 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
 
     $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
-    $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
-    $this->assign['penjab']       = $this->db('penjab')->toArray();
+    $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
+    $this->assign['penjab']  = $this->db('penjab')->toArray();
     $this->assign['no_rawat'] = '';
 
     $bangsal = str_replace(",", "','", $this->core->getUserInfo('cap', null, true));
@@ -96,7 +102,10 @@ class Admin extends AdminModule
           AND
             reg_periksa.kd_pj=penjab.kd_pj";
 
-    if (!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen'], true)) {
+     $username = $this->core->getUserInfo('username', null, true);
+  //  if ((!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi'],  true)) 
+  //  && (!in_array ($this->core->getPegawaiInfo('bidang', $username), ['Mubarak'], true)) ) {
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'],  true)){
       $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
     }
     if ($status_pulang == '') {
@@ -548,6 +557,7 @@ class Admin extends AdminModule
   public function anySoap()
   {
 
+    $username = $this->core->getUserInfo('username', null, true);
     $prosedurs = $this->db('prosedur_pasien')
       ->where('no_rawat', $_POST['no_rawat'])
       ->asc('prioritas')
@@ -580,6 +590,7 @@ class Admin extends AdminModule
       $row['nomor'] = $i++;
       $row['nama_petugas'] = $this->core->getPegawaiInfo('nama', $row['nip']);
       $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen', $row['nip']));
+      $row['bidang'] = $this->core->getPegawaiInfo('bidang', $row['nip']);
       $result[] = $row;
     }
 
@@ -591,11 +602,14 @@ class Admin extends AdminModule
       $row['nomor'] = $i++;
       $row['nama_petugas'] = $this->core->getPegawaiInfo('nama', $row['nip']);
       $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen', $row['nip']));
+      $row['bidang'] = $this->core->getPegawaiInfo('bidang', $row['nip']);
+
       $result_ranap[] = $row;
     }
 
-    echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+    echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur, 'username' => $username]);
     exit();
+
   }
 
   public function postSaveSOAP()
