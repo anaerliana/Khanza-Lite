@@ -2762,7 +2762,8 @@ class Admin extends AdminModule
                 'nama'     => 'pegawai.nama',
                 'jbtn'     => 'pegawai.jbtn',
                 'bidang'   => 'pegawai.bidang',
-                'nip' => 'pegawai.nik'
+                'nip' => 'pegawai.nik',
+                'stts_kerja' => 'pegawai.stts_kerja'
 
             ])
 
@@ -2797,12 +2798,39 @@ class Admin extends AdminModule
         $nama2 = $cuti_pegawai['nama'];
         $nip2 = $cuti_pegawai['nip'];
 
-        $lama = $cuti_pegawai['lama'] ;
-        $hari = $lama > 1 ? $hari1. ' s.d '.$hari2 :  ($lama = 1 ? $hari1 : '') ;
+        $lama = $cuti_pegawai['lama'];
+        $hari = $lama > 1 ? $hari1 . ' s.d ' . $hari2 : ($lama = 1 ? $hari1 : '');
         echo $hari;
 
-        $tanggal = $lama > 1 ? $date1. ' s.d '.$date2 :  ($lama = 1 ? $date1 : '') ;
+        $tanggal = $lama > 1 ? $date1 . ' s.d ' . $date2 : ($lama = 1 ? $date1 : '');
         echo $tanggal;
+
+        $stts_kerja = $cuti_pegawai['stts_kerja'];
+        $ft = 'FT';
+        $pns = 'PNS';
+
+        $stts = $stts_kerja != $ft ? 'Direktur RSUD H. Damanhuri Barabai' : ($stts_kerja = $ft ? 'Plt. Kepala Bagian Tata Usaha' : '');
+        echo $stts;
+
+        $nm_kepala = $stts_kerja != $pns ? 'Hernadi, SKM' : ($stts_kerja = $pns ? 'dr. Nanda Sujud Andi Yudha Utama, Sp. B' : '');
+        echo $nm_kepala;
+
+        $nip_kpl1 = '';
+        $nip_kpl2 = '';
+
+        switch ($cuti_pegawai['stts_kerja']) {
+            case 'FT':
+                $nip_kpl1 = '19710301 199101 1 003';
+                break;
+            case 'PNS':
+                $nip_kpl2 = '19840920 201001 1 007';
+                break;
+
+            default:
+                $nip_kpl1 = '';
+                $nip_kpl2 = '';
+                break;
+        }
 
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/profil/template/cetakIzin.docx');
         $templateProcessor->setValues([
@@ -2816,7 +2844,12 @@ class Admin extends AdminModule
             'alasan'   => $cuti_pegawai['alasan'],
             'bidang'   => $cuti_pegawai['bidang'],
             'nama2'    => $nama2,
-            'nip2'     => $nip2
+            'nip2'     => $nip2,
+            'stts_kerja' => $cuti_pegawai['stts_kerja'],
+            'stts'       => $stts,
+            'nm_kepala'  => $nm_kepala,
+            'nip_kpl1'   => $nip_kpl1,
+            'nip_kpl2'   => $nip_kpl2
 
         ]);
         $file = "Surat_Izin_" . date("d-m-Y") . ".docx";
