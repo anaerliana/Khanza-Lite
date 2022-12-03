@@ -2607,7 +2607,8 @@ class Admin extends AdminModule
         $this->assign['nik'] = $this->core->getUserInfo('username', null, true);
         $this->assign['list'] = $this->db('izin_cuti')->where('nip', $this->assign['nik'])->desc('id')->toArray();
         $this->assign['pilihCuti'] = array('0' => '-- Pilih Izin --', '1' => 'Cuti Tahunan', '2' => 'Cuti Besar', '3' => 'Cuti Sakit', '4' => 'Cuti Melahirkan', '5' => 'Cuti Karena Alasan Penting', '6' => 'Cuti Di Luar Tanggungan Negara', '7' => 'Izin');
-        return $this->draw('cuti.html', ['cuti' => $this->assign]);
+        $username = $this->core->getUserInfo('username', null, true);
+        return $this->draw('cuti.html', ['cuti' => $this->assign, 'username'=> $username]);
     }
 
     public function postSimpanCuti()
@@ -2687,7 +2688,11 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
 
         $cuti = $this->db('izin_cuti')->where('id', $id)->oneArray();
+        //$pegawai = $this->db('pegawai')->select('departemen')->where('nik', $id)->oneArray();
+        $username = $this->core->getUserInfo('username', null, true);
+        // $pilihCuti = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         $this->tpl->set('cuti', $cuti);
+        $this->tpl->set('username', $username);
 
         echo $this->tpl->draw(MODULES . '/profil/view/admin/edit.cuti.html', true);
         exit();
@@ -2739,6 +2744,7 @@ class Admin extends AdminModule
                 'created_at' => null,
                 'updated_at' => date('Y-m-d H:i:s'),
                 'status' => 'Belum Disetujui',
+                'pengganti_visite' => $_POST['pengganti_visite'],
                 'keterangan' => $_POST['keterangan'],
             ]);
         if ($query) {
@@ -2975,6 +2981,209 @@ class Admin extends AdminModule
         $templateProcessor->saveAs('php://output');
         exit();
     }
+
+    public function getIzinDok($id)
+    {
+        $cuti_pegawai = $this->db('izin_cuti')
+            ->select([
+                'tgl_buat'         => 'izin_cuti.tgl_buat',
+                'tgl_awal'         => 'izin_cuti.tgl_awal',
+                'tgl_akhir'        => 'izin_cuti.tgl_akhir',
+                'lama'             => 'izin_cuti.lama',
+                'alasan'           => 'izin_cuti.alasan',
+                'pengganti_visite' => 'izin_cuti.pengganti_visite',
+                'nama'             => 'pegawai.nama',
+                'jbtn'             => 'pegawai.jbtn',
+                'bidang'           => 'pegawai.bidang',
+                'nip'              => 'pegawai.nik',
+                'departemen'       => 'pegawai.departemen',
+               // 'nipk_baru'        => 'pegawai_mapping.nipk_baru'
+            ])
+
+            ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
+           // ->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
+            ->where('izin_cuti.id', $id)
+            ->oneArray();
+
+        $tanggal_buat = $cuti_pegawai['tgl_buat'];
+        $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
+
+        $tanggal_awal = $cuti_pegawai['tgl_awal'];
+        $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
+
+        $tanggal_akhir = $cuti_pegawai['tgl_akhir'];
+        $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
+
+        $tentukan_hari1 = date('D', strtotime($tanggal_awal));
+        $day = array(
+            'Sun' => 'Minggu',
+            'Mon' => 'Senin',
+            'Tue' => 'Selasa',
+            'Wed' => 'Rabu',
+            'Thu' => 'Kamis',
+            'Fri' => 'Jumat',
+            'Sat' => 'Sabtu'
+        );
+        $hari1 = $day[$tentukan_hari1];
+
+        $tentukan_hari2 = date('D', strtotime($tanggal_akhir));
+        $hari2 = $day[$tentukan_hari2];
+
+        $nama2 = $cuti_pegawai['nama'];
+        // $nip2 = $cuti_pegawai['nipk_baru'];
+        $nip2 = $cuti_pegawai['nip'];
+
+        $lama = $cuti_pegawai['lama'];
+        $hari = $lama > 1 ? $hari1 . ' s.d ' . $hari2 : ($lama = 1 ? $hari1 : '');
+        echo $hari;
+
+        $tanggal = $lama > 1 ? $date1 . ' s.d ' . $date2 : ($lama = 1 ? $date1 : '');
+        echo $tanggal;
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/profil/template/izinDok.docx');
+        $templateProcessor->setValues([
+            'nama'             => $cuti_pegawai['nama'],
+            'nip'              => $cuti_pegawai['nip'],
+            // 'nip'              => $cuti_pegawai['nipk_baru'],
+            'jbtn'             => $cuti_pegawai['jbtn'],
+            'hari'             => $hari,
+            'tgl_buat'         => $date,
+            'tgl_awal'         => $tanggal,
+            'lama'             => $cuti_pegawai['lama'],
+            'alasan'           => $cuti_pegawai['alasan'],
+            'bidang'           => $cuti_pegawai['bidang'],
+            'nama2'            => $nama2,
+            'nip2'             => $nip2,
+            'pengganti_visite' => $cuti_pegawai['pengganti_visite']
+
+        ]);
+        $file = "Surat_Izin_Dokter" . date("d-m-Y") . ".docx";
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+        $templateProcessor->saveAs('php://output');
+        exit();
+    }
+
+    public function getCutiDok($id)
+    {
+        $cuti_pegawai = $this->db('izin_cuti')
+            ->select([
+                'tgl_buat'         => 'izin_cuti.tgl_buat',
+                'tgl_awal'         => 'izin_cuti.tgl_awal',
+                'tgl_akhir'        => 'izin_cuti.tgl_akhir',
+                'lama'             => 'izin_cuti.lama',
+                'alasan'           => 'izin_cuti.alasan',
+                'sisa_cuti_tahunan'=> 'izin_cuti.sisa_cuti_tahunan',
+                'alamat'           => 'izin_cuti.alamat',
+                'no_telp'          => 'izin_cuti.no_telp',
+                'jenis_cuti'       => 'izin_cuti.jenis_cuti',
+                'pengganti_visite' => 'izin_cuti.pengganti_visite',
+                'nama'             => 'pegawai.nama',
+                'jbtn'             => 'pegawai.jbtn',
+                'nip'              => 'pegawai.nik',
+                'bidang'           => 'pegawai.bidang',
+                'departemen'       => 'pegawai.departemen',
+                //'nipk_baru'        => 'pegawai_mapping.nipk_baru'
+            ])
+
+            ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
+            //->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
+            ->where('izin_cuti.id', $id)
+            ->oneArray();
+
+        $tanggal_buat = $cuti_pegawai['tgl_buat'];
+        $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
+
+        $tanggal_awal = $cuti_pegawai['tgl_awal'];
+        $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
+
+        $tanggal_akhir = $cuti_pegawai['tgl_akhir'];
+        $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
+
+        $jns1 = '';
+        $jns2 = '';
+        $jns3 = '';
+        $jns4 = '';
+        $jns5 = '';
+        $jns6 = '';
+
+        switch ($cuti_pegawai['jenis_cuti']) {
+            case '1':
+                $jns1 = 'YA';
+                break;
+            case '2':
+                $jns2 = 'YA';
+                break;
+            case '3':
+                $jns3 = 'YA';
+                break;
+            case '4':
+                $jns4 = 'YA';
+                break;
+            case '5':
+                $jns5 = 'YA';
+                break;
+            case '6':
+                $jns6 = 'YA';
+                break;
+
+            default:
+                $jns1 = '';
+                $jns2 = '';
+                $jns3 = '';
+                $jns4 = '';
+                $jns5 = '';
+                $jns6 = '';
+                break;
+        }
+
+        $nama2 = $cuti_pegawai['nama'];
+        $nip2 = $cuti_pegawai['nip'];
+       // $nip2 = $cuti_pegawai['nipk_baru'];
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/profil/template/cutiDok.docx');
+        $templateProcessor->setValues([
+            'nama'              => $cuti_pegawai['nama'],
+            'nip'               => $cuti_pegawai['nip'],
+           // 'nip'               => $cuti_pegawai['nipk_baru'],
+            'jbtn'              => $cuti_pegawai['jbtn'],
+            'bidang'            => $cuti_pegawai['bidang'],
+            'ms_kerja'          => $cuti_pegawai['ms_kerja'],
+            'alasan'            => $cuti_pegawai['alasan'],
+            'lama'              => $cuti_pegawai['lama'],
+            'alamat'            => $cuti_pegawai['alamat'],
+            'pengganti_visite'  => $cuti_pegawai['pengganti_visite'],
+            'tgl_buat'          => $date,
+            'tgl_awal'          => $date1,
+            'tgl_akhir'         => $date2,
+            'sisa_cuti_tahunan' => $cuti_pegawai['sisa_cuti_tahunan'],
+            'no_telp'           => $cuti_pegawai['no_telp'],
+            'nama2'             => $nama2,
+            'nip2'              => $nip2,
+            'jns1'              => $jns1,
+            'jns2'              => $jns2,
+            'jns3'              => $jns3,
+            'jns4'              => $jns4,
+            'jns5'              => $jns5,
+            'jns6'              => $jns6,
+
+        ]);
+
+        $file = "Surat_Cuti_Dokter" . date("d-m-Y") . ".docx";
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+        $templateProcessor->saveAs('php://output');
+        exit();
+    }
+
 
     public function getJavascript()
     {

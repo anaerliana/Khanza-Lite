@@ -11,15 +11,14 @@
                 <input type="hidden" name="id" value="{$cuti.id}">
                 <div class="form-group">
                     <label for="jenis_cuti">Jenis</label>
-                    <input type="text" name="jenis_cuti" id="jenis_cuti" class="form-control" 
-                    value="{if: $cuti.jenis_cuti == '1'}Cuti Tahunan 
+                    <input type="text" name="jenis_cuti" id="jenis_cuti" class="form-control" value="{if: $cuti.jenis_cuti == '1'}Cuti Tahunan 
                     {elseif: $cuti.jenis_cuti == '2'}Cuti Besar
                     {elseif: $cuti.jenis_cuti == '3'}Cuti Sakit
                     {elseif: $cuti.jenis_cuti == '4'}Cuti Melahirkan
                     {elseif: $cuti.jenis_cuti == '5'}Cuti Karena Alasan Penting
                     {elseif: $cuti.jenis_cuti == '6'}Cuti Di Luar Tanggungan Negara
                     {elseif: $cuti.jenis_cuti == '7'}Izin
-                    {else}{/if}" disabled/> 
+                    {else}{/if}" disabled />
                 </div>
             </div>
             <div class="col-md-12">
@@ -29,12 +28,24 @@
                     <!-- <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nip}" /> -->
                 </div>
             </div>
+            {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+            $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Pengganti Visite / Poliklinik</label>
+                    <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
+                        value="{$cuti.pengganti_visite}" />
+                </div>
+            </div>
+            {/if}
+            {if: $cuti.jenis_cuti != '7'}
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="">No Telepon</label>
                     <input type="text" name="telp" class="form-control" value="{$cuti.no_telp}">
                 </div>
             </div>
+            {/if}
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Tanggal Buat</label>
@@ -45,22 +56,25 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Dari Tanggal</label>
-                    <input type="text" name="tanggal_awal" id="tgl_awal" class="form-control" value="{$cuti.tgl_awal}" />
+                    <input type="text" name="tanggal_awal" id="tgl_awal" class="form-control"
+                        value="{$cuti.tgl_awal}" />
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Sampai Tanggal</label>
-                    <input type="text" name="tanggal_akhir" id="tgl_akhir" class="form-control" value="{$cuti.tgl_akhir}"
-                        required />
+                    <input type="text" name="tanggal_akhir" id="tgl_akhir" class="form-control"
+                        value="{$cuti.tgl_akhir}" required />
                 </div>
             </div>
+            {if: $cuti.jenis_cuti != '7'}
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="">Alamat</label>
                     <input type="text" name="alamat" class="form-control" value="{$cuti.alamat}">
                 </div>
             </div>
+            {/if}
             <div class="col-md-12">
                 <div class="form-group">
                     <input type="submit" name="submit" class="btn btn-primary" value="Simpan" />
@@ -72,26 +86,26 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" data-dismiss="modal">Kembali</button>
 </div>
-<script> 
-    $( function() { 
-       $("#tgl_buat").datetimepicker({
-        format: 'YYYY-MM-DD',
+<script>
+    $(function () {
+        $("#tgl_buat").datetimepicker({
+            format: 'YYYY-MM-DD',
             locale: 'id'
-        } ); 
+        });
         $("#tgl_awal").datetimepicker({
-        format: 'YYYY-MM-DD',
+            format: 'YYYY-MM-DD',
             locale: 'id'
-        } ); 
+        });
         $("#tgl_akhir").datetimepicker({
-        format: 'YYYY-MM-DD',
+            format: 'YYYY-MM-DD',
             locale: 'id'
-        } ); 
-      
-     } );
-     $('#tgl_awal').on('dp.change',function(e){
+        });
+
+    });
+    $('#tgl_awal').on('dp.change', function (e) {
         $('#tgl_akhir').data("DateTimePicker").minDate(e.date);
     });
-    $('#tgl_akhir').on('dp.change',function(e){
+    $('#tgl_akhir').on('dp.change', function (e) {
         $('#tgl_awal').data("DateTimePicker").maxDate(e.date);
     });
-     </script> 
+</script>

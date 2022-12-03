@@ -40,7 +40,6 @@ $(document).ready(function() {
           "visible": false,
           "searchable": false
       }],
-    
   });
   $('#laporan').DataTable({
     "dom": 'Bfrtip',
@@ -62,4 +61,49 @@ $(document).ready(function() {
     });
 }).draw();
 });
+
+$(document).ready(function() {
+  var t = $('#dukpns').DataTable({
+    "dom": 'Bfrtip',
+    // "buttons":['print', 'excel',  'pdf'],
+    "buttons" : [
+      {
+          extend:'pdf',
+          // footer: true,
+          title: ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH','%0Ag'],
+          //title: ['UNIT KERJA : RSUD H.DAMANHURI BARABAI'],
+          //KEADAAN : DESEMBER 2022
+          filename: 'DUK PNS', 
+          //messageTop: 'DAFTAR URUT KEPANGKATAN PNS',
+          // alignment: 'center',
+          orientation: 'landscape',
+          pageSize: 'TABLOID',
+          exportOptions: {
+              columns: ':visible'
+          },
+          
+      },
+      {
+        extend:'excel',
+        // footer: true,
+        title: ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH'],
+        filename: 'DUK PNS RSUD H.DAMANHURI BARABAI', 
+        exportOptions: {
+            columns: ':visible'
+        }
+    },
+
+    ],
+    order: [[3, 'desc']],
+  });
+  t.on('order.dt search.dt', function () {
+    let i = 1;
+
+    t.cells(null, 0, { search: 'applied', order: 'applied' }).every(function (cell) {
+        this.data(i++);
+    });
+}).draw();
+});
+
+
 

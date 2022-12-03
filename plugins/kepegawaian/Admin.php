@@ -34,6 +34,7 @@ class Admin extends AdminModule
             ['name' => 'Laporan Data Input', 'url' => url([ADMIN, 'kepegawaian', 'lap']), 'icon' => 'file', 'desc' => 'Laporan Data Input Pegawai'],
             ['name' => 'Laporan Data STR', 'url' => url([ADMIN, 'kepegawaian', 'lapstr']), 'icon' => 'file-text', 'desc' => 'Daftar STR Pegawai'],
             ['name' => 'Laporan Data SIP', 'url' => url([ADMIN, 'kepegawaian', 'lapsip']), 'icon' => 'file-text', 'desc' => 'Daftar SIP Pegawai'],
+            ['name' => 'DUK PNS', 'url' => url([ADMIN, 'kepegawaian', 'dukpns']), 'icon' => 'file', 'desc' => 'DUK PNS'],
 
             //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
         ];
@@ -552,6 +553,144 @@ class Admin extends AdminModule
         return $this->draw('lapsip.html', ['lapsip' => $this->assign]);
     }
 
+    public function hitungUsia($tanggal_lahir)
+    {
+        $birthDate = new \DateTime($tanggal_lahir);
+      	$today = new \DateTime("today");
+      	$umur = "0 Tahun 0 Bulan ";
+        if ($birthDate < $today) {
+        	$y = $today->diff($birthDate)->y;
+        	$m = $today->diff($birthDate)->m;
+        	// $d = $today->diff($birthDate)->d;
+          $umur =  $y." Tahun ".$m." Bulan ";
+        }
+      	return $umur;
+    }
+
+    public function getDukpns($id = null)
+    {
+
+        $this->_addHeaderFiles();
+
+        $this->core->addCSS(url('https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css'));
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js'), 'footer');
+
+        $rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('stts_kerja', 'PNS')->toArray();
+        
+        $this->assign['list'] = [];
+        foreach ($rows as $low) {
+            $row['nik'] = $low['nik'];
+
+            $ceknik = $this->db('pegawai_mapping')->where('nipk', $row['nik'])->oneArray();
+            if ($ceknik) {
+                $row['nik'] = $ceknik['nipk_baru'];
+            }
+            $row['nama'] = $low['nama'];
+            $row['jk'] = $low['jk'];
+           // $row['ms_kerja'] = $low['ms_kerja'];
+            $row['bidang'] = $low['bidang'];
+
+
+            $pegawai = $this->db('simpeg_rakand')->where('nip', $row['nik'])->oneArray();
+            $row['TLAHIR'] = $pegawai['TLAHIR'];
+            $row['TGLLAHIR'] = $pegawai['TGLLAHIR'];
+
+            $usia = $this->hitungUsia($pegawai['TGLLAHIR']);
+            $row['TGLLAHIR'] = $pegawai['TGLLAHIR'];
+            $row['usia'] = $usia;
+
+            $pangkat = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
+            $row['KGOLRU'] = $pangkat['KGOLRU'];
+            $date_tmtpang = date('d-m-Y', strtotime($pangkat['TMTPANG']));
+            $row['TMTPANG'] = $date_tmtpang;
+
+            $jabatan = $this->db('simpeg_rjabatan')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
+            $row['NJAB'] = $jabatan['NJAB'];
+            $date_tmtjab = date('d-m-Y', strtotime($jabatan['TMTJABAT']));
+            $row['TMTJABAT'] = $date_tmtjab;
+            $row['KESELON'] = $jabatan['KESELON'];
+
+            $pendum = $this->db('simpeg_rpendum')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
+            $row['NSEK'] = $pendum['NSEK'];
+            $row['PROG_STUDI'] = $pendum['PROG_STUDI'];
+            $row['KTPU'] = $pendum['KTPU'];
+
+            $tahun_lulus = $pendum['TSTTB'];
+            $datelulus = date('Y', strtotime($tahun_lulus));
+            $row['TSTTB'] = $datelulus;
+
+            $kerja = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->oneArray();
+            $mskerja = $this->hitungUsia($kerja['TMTPANG']);
+            $row['TMTKERJA'] = $mskerja;
+ 
+            $unker = $this->db('simpeg_unker')->where('nip', $row['nik'])->oneArray();
+            $row['UNIT'] = $unker['UNIT'];
+
+
+
+          //  $this->assign['rpangkatlast'] = $this->db('simpeg_rpangkat')->where('nip',  $row['nik'])->where('ISAKHIR', '1')->toArray();
+           // $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('nip', $row['nik'])->toArray();
+           
+
+            $this->assign['golruang'] = [
+                '145' => 'IV/e',
+                '144' => 'IV/d',
+                '143' => 'IV/c',
+                '142' => 'IV/b',
+                '141' => 'IV/a',
+                '134' => 'III/d',
+                '133' => 'III/c',
+                '132' => 'III/b',
+                '131' => 'III/a',
+                '124' => 'II/d',
+                '123' => 'II/c',
+                '122' => 'II/b',
+                '121' => 'II/a',
+                '114' => 'I/d',
+                '113' => 'I/c',
+                '112' => 'I/b',
+                '111' => 'I/a',
+            ];
+
+            $this->assign['tpu'] = [
+                '01' => 'SD',
+                '02' => 'SLTP',
+                '03' => 'SLTA',
+                '04' => 'D-I',
+                '05' => 'D-II',
+                '06' => 'D-III/SM/Akademi',
+                '07' => 'D-IV',
+                '08' => 'S-1',
+                '09' => 'S-2',
+                '10' => 'S-3',
+                '11' => 'Pendidikan Profesi'
+            ];
+
+            $this->assign['eselon'] = [
+                '11' => 'Eselon I. a',
+                '12' => 'Eselon I. b',
+                '21' => 'Eselon II. a',
+                '22' => 'Eselon II. b',
+                '31' => 'Eselon III. a',
+                '32' => 'Eselon III. b',
+                '41' => 'Eselon IV. a',
+                '42' => 'Eselon IV. b',
+                '51' => 'Eselon V. a',
+                '52' => 'Eselon V. b',
+                '99' => '',
+            ];
+
+            $this->assign['list'][] = $row;
+        }
+        return $this->draw('dukpns.html', ['dukpns' => $this->assign]);
+    }
+
     public function RujukTahunChart()
     {
 
@@ -672,8 +811,9 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                $checkData = $this->db('pegawai')->select('nama')->where('nik', $row['nip'])->oneArray();
+                $checkData = $this->db('pegawai')->select(['nama' => 'nama', 'departemen' => 'departemen'])->where('nik', $row['nip'])->oneArray();
                 $row['nama'] = $checkData['nama'];
+                $row['departemen'] = $checkData['departemen'];
                 $row['delURL']  = url([ADMIN, 'kepegawaian', 'delete', $row['id']]);
                 $this->assign['list'][] = $row;
             }
@@ -690,14 +830,12 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $this->_addInfoPegawai();
         $this->assign['pilihCuti'] = array('0' => '-- Pilih Izin --', '1' => 'Cuti Tahunan', '2' => 'Cuti Besar', '3' => 'Cuti Sakit', '4' => 'Cuti Melahirkan', '5' => 'Cuti Karena Alasan Penting', '6' => 'Cuti Di Luar Tanggungan Negara', '7' => 'Izin');
-
         return $this->draw('tambah_cuti.html', ['addcuti' => $this->assign]);
     }
 
     public function postTambahCuti()
     {
         $this->_addHeaderFiles();
-
         $numberDays = '';
         $kodeSurat = '';
         $noSurat = '';
@@ -756,6 +894,7 @@ class Admin extends AdminModule
             'tgl_surat' => date('Y-m-d'),
             'no_surat' => $noCuti,
             'status' => 'Belum Disetujui',
+            'pengganti_visite' => $_POST['pengganti_visite'],
             'created_at' => null,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
@@ -782,16 +921,27 @@ class Admin extends AdminModule
         }
     }
 
+    public function postDepartemen()
+    {
+        $dep = $this->core->getPegawaiInfo('departemen', $_POST['departemen']);
+        echo $dep;
+        exit();
+    }
+
     public function getEditCuti($id)
     {
         $this->_addHeaderFiles();
         $infopegawai = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
-        $pegawai = $this->db('pegawai')->select('nama')->where('nik', $id)->oneArray();
         $cuti = $this->db('izin_cuti')->where('id', $id)->oneArray();
+        $dep = $this->db('izin_cuti')->select([
+            'nip'  => 'izin_cuti.nip',
+            'departemen' => 'pegawai.departemen'
+        ])
+        ->join('pegawai', 'pegawai.nik = izin_cuti.nip')->where('izin_cuti.id', $id)->oneArray();
         // $pilihCuti = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         $this->tpl->set('infopegawai', $infopegawai);
-        $this->tpl->set('pegawai', $pegawai);
         $this->tpl->set('cuti', $cuti);
+        $this->tpl->set('dep', $dep);
         // $this->tpl->set('pilihCuti', $pilihCuti);
 
         echo $this->tpl->draw(MODULES . '/kepegawaian/view/admin/editcuti.html', true);
@@ -858,6 +1008,7 @@ class Admin extends AdminModule
                 'created_at' => null,
                 'updated_at' => date('Y-m-d H:i:s'),
                 'status' => $_POST['status'],
+                'pengganti_visite' => $_POST['pengganti_visite'],
                 'keterangan' => $_POST['keterangan'],
             ]);
         if ($query) {
@@ -882,16 +1033,16 @@ class Admin extends AdminModule
     {
         $cuti_pegawai = $this->db('izin_cuti')
             ->select([
-                'tgl_buat' => 'izin_cuti.tgl_buat',
-                'tgl_awal' => 'izin_cuti.tgl_awal',
+                'tgl_buat'  => 'izin_cuti.tgl_buat',
+                'tgl_awal'  => 'izin_cuti.tgl_awal',
                 'tgl_akhir' => 'izin_cuti.tgl_akhir',
-                'lama'     => 'izin_cuti.lama',
-                'alasan'   => 'izin_cuti.alasan',
-                'nama'     => 'pegawai.nama',
-                'jbtn'     => 'pegawai.jbtn',
-                'bidang'   => 'pegawai.bidang',
-                'nip'      => 'pegawai.nik',
-                'stts_kerja' => 'pegawai.stts_kerja'
+                'lama'      => 'izin_cuti.lama',
+                'alasan'    => 'izin_cuti.alasan',
+                'nama'      => 'pegawai.nama',
+                'jbtn'      => 'pegawai.jbtn',
+                'bidang'    => 'pegawai.bidang',
+                'nip'       => 'pegawai.nik',
+                'stts_kerja'=> 'pegawai.stts_kerja'
             ])
 
             ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
@@ -973,7 +1124,6 @@ class Admin extends AdminModule
             'alasan'   => $cuti_pegawai['alasan'],
             'bidang'   => $cuti_pegawai['bidang'],
             'nama2'    => $nama2,
-            'nip2'     => $nip2,
             'nip2'     => $nip2,
             'stts_kerja' => $cuti_pegawai['stts_kerja'],
             'stts'       => $stts,
@@ -1105,6 +1255,208 @@ class Admin extends AdminModule
 
 
         $file = "Surat_Cuti_" . date("d-m-Y") . ".docx";
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+        $templateProcessor->saveAs('php://output');
+        exit();
+    }
+
+    public function getIzinDok($id)
+    {
+        $cuti_pegawai = $this->db('izin_cuti')
+            ->select([
+                'tgl_buat'         => 'izin_cuti.tgl_buat',
+                'tgl_awal'         => 'izin_cuti.tgl_awal',
+                'tgl_akhir'        => 'izin_cuti.tgl_akhir',
+                'lama'             => 'izin_cuti.lama',
+                'alasan'           => 'izin_cuti.alasan',
+                'pengganti_visite' => 'izin_cuti.pengganti_visite',
+                'nama'             => 'pegawai.nama',
+                'jbtn'             => 'pegawai.jbtn',
+                'bidang'           => 'pegawai.bidang',
+                'nip'              => 'pegawai.nik',
+                'departemen'       => 'pegawai.departemen',
+               // 'nipk_baru'        => 'pegawai_mapping.nipk_baru'
+            ])
+
+            ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
+           // ->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
+            ->where('izin_cuti.id', $id)
+            ->oneArray();
+
+        $tanggal_buat = $cuti_pegawai['tgl_buat'];
+        $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
+
+        $tanggal_awal = $cuti_pegawai['tgl_awal'];
+        $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
+
+        $tanggal_akhir = $cuti_pegawai['tgl_akhir'];
+        $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
+
+        $tentukan_hari1 = date('D', strtotime($tanggal_awal));
+        $day = array(
+            'Sun' => 'Minggu',
+            'Mon' => 'Senin',
+            'Tue' => 'Selasa',
+            'Wed' => 'Rabu',
+            'Thu' => 'Kamis',
+            'Fri' => 'Jumat',
+            'Sat' => 'Sabtu'
+        );
+        $hari1 = $day[$tentukan_hari1];
+
+        $tentukan_hari2 = date('D', strtotime($tanggal_akhir));
+        $hari2 = $day[$tentukan_hari2];
+
+        $nama2 = $cuti_pegawai['nama'];
+        // $nip2 = $cuti_pegawai['nipk_baru'];
+        $nip2 = $cuti_pegawai['nip'];
+
+        $lama = $cuti_pegawai['lama'];
+        $hari = $lama > 1 ? $hari1 . ' s.d ' . $hari2 : ($lama = 1 ? $hari1 : '');
+        echo $hari;
+
+        $tanggal = $lama > 1 ? $date1 . ' s.d ' . $date2 : ($lama = 1 ? $date1 : '');
+        echo $tanggal;
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/izinDok.docx');
+        $templateProcessor->setValues([
+            'nama'             => $cuti_pegawai['nama'],
+            'nip'              => $cuti_pegawai['nip'],
+            // 'nip'              => $cuti_pegawai['nipk_baru'],
+            'jbtn'             => $cuti_pegawai['jbtn'],
+            'hari'             => $hari,
+            'tgl_buat'         => $date,
+            'tgl_awal'         => $tanggal,
+            'lama'             => $cuti_pegawai['lama'],
+            'alasan'           => $cuti_pegawai['alasan'],
+            'bidang'           => $cuti_pegawai['bidang'],
+            'nama2'            => $nama2,
+            'nip2'             => $nip2,
+            'pengganti_visite' => $cuti_pegawai['pengganti_visite']
+
+        ]);
+        $file = "Surat_Izin_Dokter" . date("d-m-Y") . ".docx";
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+        $templateProcessor->saveAs('php://output');
+        exit();
+    }
+
+    public function getCutiDok($id)
+    {
+        $cuti_pegawai = $this->db('izin_cuti')
+            ->select([
+                'tgl_buat'         => 'izin_cuti.tgl_buat',
+                'tgl_awal'         => 'izin_cuti.tgl_awal',
+                'tgl_akhir'        => 'izin_cuti.tgl_akhir',
+                'lama'             => 'izin_cuti.lama',
+                'alasan'           => 'izin_cuti.alasan',
+                'sisa_cuti_tahunan'=> 'izin_cuti.sisa_cuti_tahunan',
+                'alamat'           => 'izin_cuti.alamat',
+                'no_telp'          => 'izin_cuti.no_telp',
+                'jenis_cuti'       => 'izin_cuti.jenis_cuti',
+                'pengganti_visite' => 'izin_cuti.pengganti_visite',
+                'nama'             => 'pegawai.nama',
+                'jbtn'             => 'pegawai.jbtn',
+                'nip'              => 'pegawai.nik',
+                'bidang'           => 'pegawai.bidang',
+                'departemen'       => 'pegawai.departemen',
+                //'nipk_baru'        => 'pegawai_mapping.nipk_baru'
+            ])
+
+            ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
+            //->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
+            ->where('izin_cuti.id', $id)
+            ->oneArray();
+
+        $tanggal_buat = $cuti_pegawai['tgl_buat'];
+        $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
+
+        $tanggal_awal = $cuti_pegawai['tgl_awal'];
+        $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
+
+        $tanggal_akhir = $cuti_pegawai['tgl_akhir'];
+        $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
+
+        $jns1 = '';
+        $jns2 = '';
+        $jns3 = '';
+        $jns4 = '';
+        $jns5 = '';
+        $jns6 = '';
+
+        switch ($cuti_pegawai['jenis_cuti']) {
+            case '1':
+                $jns1 = 'YA';
+                break;
+            case '2':
+                $jns2 = 'YA';
+                break;
+            case '3':
+                $jns3 = 'YA';
+                break;
+            case '4':
+                $jns4 = 'YA';
+                break;
+            case '5':
+                $jns5 = 'YA';
+                break;
+            case '6':
+                $jns6 = 'YA';
+                break;
+
+            default:
+                $jns1 = '';
+                $jns2 = '';
+                $jns3 = '';
+                $jns4 = '';
+                $jns5 = '';
+                $jns6 = '';
+                break;
+        }
+
+        $nama2 = $cuti_pegawai['nama'];
+        $nip2 = $cuti_pegawai['nip'];
+       // $nip2 = $cuti_pegawai['nipk_baru'];
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/cutiDok.docx');
+        $templateProcessor->setValues([
+            'nama'              => $cuti_pegawai['nama'],
+            'nip'               => $cuti_pegawai['nip'],
+           // 'nip'               => $cuti_pegawai['nipk_baru'],
+            'jbtn'              => $cuti_pegawai['jbtn'],
+            'bidang'            => $cuti_pegawai['bidang'],
+            'ms_kerja'          => $cuti_pegawai['ms_kerja'],
+            'alasan'            => $cuti_pegawai['alasan'],
+            'lama'              => $cuti_pegawai['lama'],
+            'alamat'            => $cuti_pegawai['alamat'],
+            'pengganti_visite'  => $cuti_pegawai['pengganti_visite'],
+            'tgl_buat'          => $date,
+            'tgl_awal'          => $date1,
+            'tgl_akhir'         => $date2,
+            'sisa_cuti_tahunan' => $cuti_pegawai['sisa_cuti_tahunan'],
+            'no_telp'           => $cuti_pegawai['no_telp'],
+            'nama2'             => $nama2,
+            'nip2'              => $nip2,
+            'jns1'              => $jns1,
+            'jns2'              => $jns2,
+            'jns3'              => $jns3,
+            'jns4'              => $jns4,
+            'jns5'              => $jns5,
+            'jns6'              => $jns6,
+
+        ]);
+
+        $file = "Surat_Cuti_Dokter" . date("d-m-Y") . ".docx";
         header("Content-Description: File Transfer");
         header('Content-Disposition: attachment; filename="' . $file . '"');
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
