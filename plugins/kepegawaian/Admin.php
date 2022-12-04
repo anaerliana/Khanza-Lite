@@ -1323,6 +1323,12 @@ class Admin extends AdminModule
         $tanggal = $lama > 1 ? $date1 . ' s.d ' . $date2 : ($lama = 1 ? $date1 : '');
         echo $tanggal;
 
+        $cekdep =  $cuti_pegawai['departemen'];
+        $dokter = $cuti_pegawai['pengganti_visite'];
+
+        $dokpen = $cekdep != 'SP' ? '' : ($cekdep = 'SP' ? 'Pengganti Visite/Poliklinik	:	'.$dokter : '');
+        echo $dokpen;
+
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/izinDok.docx');
         $templateProcessor->setValues([
             'nama'             => $cuti_pegawai['nama'],
@@ -1337,7 +1343,8 @@ class Admin extends AdminModule
             'bidang'           => $cuti_pegawai['bidang'],
             'nama2'            => $nama2,
             'nip2'             => $nip2,
-            'pengganti_visite' => $cuti_pegawai['pengganti_visite']
+            'pengganti_visite' => $dokpen
+            // 'pengganti_visite' => $cuti_pegawai['pengganti_visite']
 
         ]);
         $file = "Surat_Izin_Dokter" . date("d-m-Y") . ".docx";

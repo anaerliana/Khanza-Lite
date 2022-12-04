@@ -28,8 +28,7 @@
                     <!-- <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nip}" /> -->
                 </div>
             </div>
-            {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-            $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+            {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Pengganti Visite / Poliklinik</label>

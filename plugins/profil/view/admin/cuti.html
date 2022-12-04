@@ -6,8 +6,7 @@
                     <h3 class="panel-title">{$cuti.title}</h3>
                 </div>
                 <div class="panel-body">
-                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-                    $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
                     <div class="row clearfix">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -97,8 +96,7 @@
                             <tr>
                                 <th>Jenis Cuti</th>
                                 <th>Alasan</th>
-                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-                                $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
                                 <th>Pengganti Visite/Poliklinik</th>
                                 {/if}
                                 <th>Tanggal Mulai</th>
@@ -118,8 +116,7 @@
                                     {if: $key == $value.jenis_cuti}{$val}{/if}
                                     {/loop}</td>
                                 <td>{$value.alasan}</td>
-                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-                                $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
                                 <td>{$value.pengganti_visite}</td>
                                 {/if}
                                 <td>{$value.tgl_awal}</td>
@@ -247,5 +244,4 @@
             }
         })
     });
-
 </script>
