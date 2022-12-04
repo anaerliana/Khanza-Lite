@@ -97,7 +97,7 @@
                                 <th>Jenis Cuti</th>
                                 <th>Alasan</th>
                                 {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
-                                <th>Pengganti Visite/Poliklinik</th>
+                                <th>Dokter Pengganti Visite/Poliklinik</th>
                                 {/if}
                                 <th>Tanggal Mulai</th>
                                 <th>Tanggal Akhir</th>
@@ -129,7 +129,7 @@
                                     $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
                                     <a href="{?=url([ADMIN, 'profil', 'izindok', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
-                                            class="hidden-xs"> IzinDok</span></a>
+                                            class="hidden-xs"> Izin</span></a>
                                     {else}
                                     <a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
@@ -138,12 +138,15 @@
                                     {elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti
                                     == '3' or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti
                                     =='6'}
-                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-                                    $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
                                     <a href="{?=url([ADMIN, 'profil', 'cutidok', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i>
-                                        <spanclass="hidden-xs"> CutiDok</span>
+                                        <spanclass="hidden-xs"> Cuti</span>
                                     </a>
+                                    {elseif: $this->core->getPegawaiInfo('departemen', $username) == 'UM'}
+                                    <a href="{?=url([ADMIN, 'profil', 'cutidokter', $value.id])?}"
+                                        class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+                                            class="hidden-xs"> Cuti</span></a>
                                     {else}
                                     <a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
