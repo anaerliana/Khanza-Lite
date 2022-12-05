@@ -38,7 +38,8 @@
                     </select> -->
                 </div>
             </div>
-            {if: $dep.departemen == 'SP' }
+            {if: $dep.departemen == 'SP' or $dep.departemen == 'UM' 
+            or $dep.nik == '197907062011012006' or $dep.nik == '198203092009032003' or $dep.nik == '07012022022201007' or $dep.nik == 'DR00023'}
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Dokter Pengganti Visite / Poliklinik</label>

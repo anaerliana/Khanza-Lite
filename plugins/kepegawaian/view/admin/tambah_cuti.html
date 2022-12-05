@@ -22,7 +22,7 @@
                     <div class="row clearfix pengganti_visite">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>Dokter Pengganti Visite / Poliklinik</label>
+                                <label>Dokter Pengganti Visite / Poliklinik</label><sub>Diisi jika yang mengajukan izin/cuti Dokter</sub>
                                 <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
                                     value="" />
                             </div>
@@ -119,7 +119,6 @@
         $('#tanggal_awal').data("DateTimePicker").maxDate(e.date);
     });
 
-
     $(document).ready(function () {
         $('.alamat').hide();
         $('.telp').hide();
@@ -148,6 +147,7 @@
         })
         $('#nik').on('change', function () {
             var departemen = this.value;
+            var nip = $('#nik').val();
             console.log(departemen);
             $.ajax({
                 type: 'POST',
@@ -157,8 +157,16 @@
                     console.log(data);
                     if (data == 'SP') {
                         $('.pengganti_visite').show();
-                    // } else if (data == 'UM') {
-                    //     $('.pengganti_visite').show();
+                    } else if (data == 'UM') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == '197907062011012006') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == '198203092009032003') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == '07012022022201007') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == 'DR00023') {
+                        $('.pengganti_visite').show();
                     } else {
                         $('.pengganti_visite').hide();
                     }

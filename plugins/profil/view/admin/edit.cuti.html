@@ -21,14 +21,11 @@
                     {else}{/if}" disabled />
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="form-group">
-                    <label>Alasan</label>
-                    <input type="text" name="alasan" id="alasan" class="form-control" value="{$cuti.alasan}" required />
-                    <!-- <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nip}" /> -->
-                </div>
-            </div>
-            {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+            {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' || 
+            $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+            $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+            $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+            $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Dokter Pengganti Visite / Poliklinik</label>
@@ -37,6 +34,13 @@
                 </div>
             </div>
             {/if}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Alasan</label>
+                    <input type="text" name="alasan" id="alasan" class="form-control" value="{$cuti.alasan}" required />
+                    <!-- <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nip}" /> -->
+                </div>
+            </div>
             {if: $cuti.jenis_cuti != '7'}
             <div class="col-md-12">
                 <div class="form-group">

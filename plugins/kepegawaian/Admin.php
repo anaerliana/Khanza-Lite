@@ -593,16 +593,18 @@ class Admin extends AdminModule
             }
             $row['nama'] = $low['nama'];
             $row['jk'] = $low['jk'];
+            $row['tgl_lahir'] = $low['tgl_lahir'];
+            $row['tmp_lahir'] = $low['tmp_lahir'];
            // $row['ms_kerja'] = $low['ms_kerja'];
             $row['bidang'] = $low['bidang'];
 
 
-            $pegawai = $this->db('simpeg_rakand')->where('nip', $row['nik'])->oneArray();
-            $row['TLAHIR'] = $pegawai['TLAHIR'];
-            $row['TGLLAHIR'] = $pegawai['TGLLAHIR'];
+            // $pegawai = $this->db('simpeg_rakand')->where('nip', $row['nik'])->oneArray();
+            // $row['TLAHIR'] = $pegawai['TLAHIR'];
+            // $row['TGLLAHIR'] = $pegawai['TGLLAHIR'];
 
-            $usia = $this->hitungUsia($pegawai['TGLLAHIR']);
-            $row['TGLLAHIR'] = $pegawai['TGLLAHIR'];
+            $usia = $this->hitungUsia($low['tgl_lahir']);
+            $row['tgl_lahir'] = $low['tgl_lahir'];
             $row['usia'] = $usia;
 
             $pangkat = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
@@ -911,7 +913,10 @@ class Admin extends AdminModule
     private function _addInfoPegawai()
     {
         // get pegawai
-        $rows = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+      //  $rows = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+        $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai where stts_kerja in ('PNS', 'FT') and stts_aktif = 'AKTIF'");
+        $rows->execute();
+        $rows = $rows->fetchAll();
 
         if (count($rows)) {
             $this->assign['pegawai'] = [];
@@ -935,6 +940,7 @@ class Admin extends AdminModule
         $cuti = $this->db('izin_cuti')->where('id', $id)->oneArray();
         $dep = $this->db('izin_cuti')->select([
             'nip'  => 'izin_cuti.nip',
+            'nik'  => 'pegawai.nik',
             'departemen' => 'pegawai.departemen'
         ])
         ->join('pegawai', 'pegawai.nik = izin_cuti.nip')->where('izin_cuti.id', $id)->oneArray();
@@ -1323,11 +1329,11 @@ class Admin extends AdminModule
         $tanggal = $lama > 1 ? $date1 . ' s.d ' . $date2 : ($lama = 1 ? $date1 : '');
         echo $tanggal;
 
-        $cekdep =  $cuti_pegawai['departemen'];
-        $dokter = $cuti_pegawai['pengganti_visite'];
+        // $cekdep =  $cuti_pegawai['departemen'];
+        // $dokter = $cuti_pegawai['pengganti_visite'];
 
-        $dokpen = $cekdep != 'SP' ? '' : ($cekdep = 'SP' ? 'Pengganti Visite/Poliklinik	:	'.$dokter : '');
-        echo $dokpen;
+        // $dokpen = $cekdep != 'SP' ? '' : ($cekdep = 'SP' ? 'Pengganti Visite/Poliklinik	:	'.$dokter : '');
+        // echo $dokpen;
 
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/izinDok.docx');
         $templateProcessor->setValues([
@@ -1343,8 +1349,8 @@ class Admin extends AdminModule
             'bidang'           => $cuti_pegawai['bidang'],
             'nama2'            => $nama2,
             'nip2'             => $nip2,
-            'pengganti_visite' => $dokpen
-            // 'pengganti_visite' => $cuti_pegawai['pengganti_visite']
+            //'pengganti_visite' => $dokpen
+            'pengganti_visite' => $cuti_pegawai['pengganti_visite']
 
         ]);
         $file = "Surat_Izin_Dokter" . date("d-m-Y") . ".docx";
@@ -1435,7 +1441,7 @@ class Admin extends AdminModule
         $nip2 = $cuti_pegawai['nip'];
        // $nip2 = $cuti_pegawai['nipk_baru'];
 
-        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/cutiDokSP.docx');
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/cutiDok.docx');
         $templateProcessor->setValues([
             'nama'              => $cuti_pegawai['nama'],
             'nip'               => $cuti_pegawai['nip'],
@@ -1473,122 +1479,6 @@ class Admin extends AdminModule
         $templateProcessor->saveAs('php://output');
         exit();
     }
-
-    public function getCutiDokter($id)
-    {
-        $cuti_pegawai = $this->db('izin_cuti')
-            ->select([
-                'tgl_buat'         => 'izin_cuti.tgl_buat',
-                'tgl_awal'         => 'izin_cuti.tgl_awal',
-                'tgl_akhir'        => 'izin_cuti.tgl_akhir',
-                'lama'             => 'izin_cuti.lama',
-                'alasan'           => 'izin_cuti.alasan',
-                'sisa_cuti_tahunan'=> 'izin_cuti.sisa_cuti_tahunan',
-                'alamat'           => 'izin_cuti.alamat',
-                'no_telp'          => 'izin_cuti.no_telp',
-                'jenis_cuti'       => 'izin_cuti.jenis_cuti',
-                'pengganti_visite' => 'izin_cuti.pengganti_visite',
-                'nama'             => 'pegawai.nama',
-                'jbtn'             => 'pegawai.jbtn',
-                'nip'              => 'pegawai.nik',
-                'bidang'           => 'pegawai.bidang',
-                'departemen'       => 'pegawai.departemen',
-                //'nipk_baru'        => 'pegawai_mapping.nipk_baru'
-            ])
-
-            ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-            //->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
-            ->where('izin_cuti.id', $id)
-            ->oneArray();
-
-        $tanggal_buat = $cuti_pegawai['tgl_buat'];
-        $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
-
-        $tanggal_awal = $cuti_pegawai['tgl_awal'];
-        $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
-
-        $tanggal_akhir = $cuti_pegawai['tgl_akhir'];
-        $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
-
-        $jns1 = '';
-        $jns2 = '';
-        $jns3 = '';
-        $jns4 = '';
-        $jns5 = '';
-        $jns6 = '';
-
-        switch ($cuti_pegawai['jenis_cuti']) {
-            case '1':
-                $jns1 = 'YA';
-                break;
-            case '2':
-                $jns2 = 'YA';
-                break;
-            case '3':
-                $jns3 = 'YA';
-                break;
-            case '4':
-                $jns4 = 'YA';
-                break;
-            case '5':
-                $jns5 = 'YA';
-                break;
-            case '6':
-                $jns6 = 'YA';
-                break;
-
-            default:
-                $jns1 = '';
-                $jns2 = '';
-                $jns3 = '';
-                $jns4 = '';
-                $jns5 = '';
-                $jns6 = '';
-                break;
-        }
-
-        $nama2 = $cuti_pegawai['nama'];
-        $nip2 = $cuti_pegawai['nip'];
-       // $nip2 = $cuti_pegawai['nipk_baru'];
-
-        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/cutiDok.docx');
-        $templateProcessor->setValues([
-            'nama'              => $cuti_pegawai['nama'],
-            'nip'               => $cuti_pegawai['nip'],
-           // 'nip'               => $cuti_pegawai['nipk_baru'],
-            'jbtn'              => $cuti_pegawai['jbtn'],
-            'bidang'            => $cuti_pegawai['bidang'],
-            'ms_kerja'          => $cuti_pegawai['ms_kerja'],
-            'alasan'            => $cuti_pegawai['alasan'],
-            'lama'              => $cuti_pegawai['lama'],
-            'alamat'            => $cuti_pegawai['alamat'],
-            'tgl_buat'          => $date,
-            'tgl_awal'          => $date1,
-            'tgl_akhir'         => $date2,
-            'sisa_cuti_tahunan' => $cuti_pegawai['sisa_cuti_tahunan'],
-            'no_telp'           => $cuti_pegawai['no_telp'],
-            'nama2'             => $nama2,
-            'nip2'              => $nip2,
-            'jns1'              => $jns1,
-            'jns2'              => $jns2,
-            'jns3'              => $jns3,
-            'jns4'              => $jns4,
-            'jns5'              => $jns5,
-            'jns6'              => $jns6,
-
-        ]);
-
-        $file = "Surat_Cuti_Dokter" . date("d-m-Y") . ".docx";
-        header("Content-Description: File Transfer");
-        header('Content-Disposition: attachment; filename="' . $file . '"');
-        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        header('Content-Transfer-Encoding: binary');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Expires: 0');
-        $templateProcessor->saveAs('php://output');
-        exit();
-    }
-
 
     public function getCSS()
     {

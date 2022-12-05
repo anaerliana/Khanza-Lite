@@ -6,7 +6,11 @@
                     <h3 class="panel-title">{$cuti.title}</h3>
                 </div>
                 <div class="panel-body">
-                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' || 
+                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                    $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                     <div class="row clearfix">
                         <div class="col-md-12">
                             <div class="form-group">
@@ -95,10 +99,13 @@
                         <thead>
                             <tr>
                                 <th>Jenis Cuti</th>
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||  
+                                $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
+                                <th>Dokter Pengganti Visite/Poliklinik</th>{/if}
                                 <th>Alasan</th>
-                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
-                                <th>Dokter Pengganti Visite/Poliklinik</th>
-                                {/if}
                                 <th>Tanggal Mulai</th>
                                 <th>Tanggal Akhir</th>
                                 <th>Jumlah Hari</th>
@@ -115,10 +122,14 @@
                                 <td>{loop: $cuti.pilihCuti as $key => $val}
                                     {if: $key == $value.jenis_cuti}{$val}{/if}
                                     {/loop}</td>
-                                <td>{$value.alasan}</td>
-                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                                 <td>{$value.pengganti_visite}</td>
                                 {/if}
+                                <td>{$value.alasan}</td>
                                 <td>{$value.tgl_awal}</td>
                                 <td>{$value.tgl_akhir}</td>
                                 <td>{$value.lama}</td>
@@ -126,7 +137,11 @@
                                 <td>
                                     {if: $value.jenis_cuti =='7'}
                                     {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-                                    $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                                    $this->core->getPegawaiInfo('departemen', $username) == 'SP' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                                     <a href="{?=url([ADMIN, 'profil', 'izindok', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
                                             class="hidden-xs"> Izin</span></a>
@@ -135,18 +150,16 @@
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
                                             class="hidden-xs"> Izin</span></a>
                                     {/if}
-                                    {elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti
-                                    == '3' or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti
-                                    =='6'}
-                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' }
+                                    {elseif: $value.jenis_cuti != '7'}
+                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                                     <a href="{?=url([ADMIN, 'profil', 'cutidok', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i>
                                         <spanclass="hidden-xs"> Cuti</span>
                                     </a>
-                                    {elseif: $this->core->getPegawaiInfo('departemen', $username) == 'UM'}
-                                    <a href="{?=url([ADMIN, 'profil', 'cutidokter', $value.id])?}"
-                                        class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
-                                            class="hidden-xs"> Cuti</span></a>
                                     {else}
                                     <a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span

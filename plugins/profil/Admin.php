@@ -2671,6 +2671,7 @@ class Admin extends AdminModule
             'tgl_surat' => date('Y-m-d'),
             'no_surat' => $noCuti,
             'status' => 'Belum Disetujui',
+            'pengganti_visite' => $_POST['pengganti_visite'],
             'created_at' => null,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
@@ -3040,12 +3041,6 @@ class Admin extends AdminModule
         $tanggal = $lama > 1 ? $date1 . ' s.d ' . $date2 : ($lama = 1 ? $date1 : '');
         echo $tanggal;
 
-        $cekdep =  $cuti_pegawai['departemen'];
-        $dokter = $cuti_pegawai['pengganti_visite'];
-
-        $dokpen = $cekdep != 'SP' ? '' : ($cekdep = 'SP' ? 'Pengganti Visite/Poliklinik	:	'.$dokter : '');
-        echo $dokpen;
-
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/profil/template/izinDok.docx');
         $templateProcessor->setValues([
             'nama'             => $cuti_pegawai['nama'],
@@ -3060,8 +3055,8 @@ class Admin extends AdminModule
             'bidang'           => $cuti_pegawai['bidang'],
             'nama2'            => $nama2,
             'nip2'             => $nip2,
-            'pengganti_visite' => $dokpen
-            // 'pengganti_visite' => $cuti_pegawai['pengganti_visite']
+            //'pengganti_visite' => $dokpen
+            'pengganti_visite' => $cuti_pegawai['pengganti_visite']
 
         ]);
         $file = "Surat_Izin_Dokter" . date("d-m-Y") . ".docx";
@@ -3152,122 +3147,6 @@ class Admin extends AdminModule
         $nip2 = $cuti_pegawai['nip'];
        // $nip2 = $cuti_pegawai['nipk_baru'];
 
-        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/profil/template/cutiDokSP.docx');
-        $templateProcessor->setValues([
-            'nama'              => $cuti_pegawai['nama'],
-            'nip'               => $cuti_pegawai['nip'],
-           // 'nip'               => $cuti_pegawai['nipk_baru'],
-            'jbtn'              => $cuti_pegawai['jbtn'],
-            'bidang'            => $cuti_pegawai['bidang'],
-            'ms_kerja'          => $cuti_pegawai['ms_kerja'],
-            'alasan'            => $cuti_pegawai['alasan'],
-            'lama'              => $cuti_pegawai['lama'],
-            'alamat'            => $cuti_pegawai['alamat'],
-            'pengganti_visite'  => $cuti_pegawai['pengganti_visite'],
-            'tgl_buat'          => $date,
-            'tgl_awal'          => $date1,
-            'tgl_akhir'         => $date2,
-            'sisa_cuti_tahunan' => $cuti_pegawai['sisa_cuti_tahunan'],
-            'no_telp'           => $cuti_pegawai['no_telp'],
-            'nama2'             => $nama2,
-            'nip2'              => $nip2,
-            'jns1'              => $jns1,
-            'jns2'              => $jns2,
-            'jns3'              => $jns3,
-            'jns4'              => $jns4,
-            'jns5'              => $jns5,
-            'jns6'              => $jns6,
-
-        ]);
-
-        $file = "Surat_Cuti_Dokter" . date("d-m-Y") . ".docx";
-        header("Content-Description: File Transfer");
-        header('Content-Disposition: attachment; filename="' . $file . '"');
-        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-        header('Content-Transfer-Encoding: binary');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Expires: 0');
-        $templateProcessor->saveAs('php://output');
-        exit();
-    }
-
-    public function getCutiDokter($id)
-    {
-        $cuti_pegawai = $this->db('izin_cuti')
-            ->select([
-                'tgl_buat'         => 'izin_cuti.tgl_buat',
-                'tgl_awal'         => 'izin_cuti.tgl_awal',
-                'tgl_akhir'        => 'izin_cuti.tgl_akhir',
-                'lama'             => 'izin_cuti.lama',
-                'alasan'           => 'izin_cuti.alasan',
-                'sisa_cuti_tahunan'=> 'izin_cuti.sisa_cuti_tahunan',
-                'alamat'           => 'izin_cuti.alamat',
-                'no_telp'          => 'izin_cuti.no_telp',
-                'jenis_cuti'       => 'izin_cuti.jenis_cuti',
-                'pengganti_visite' => 'izin_cuti.pengganti_visite',
-                'nama'             => 'pegawai.nama',
-                'jbtn'             => 'pegawai.jbtn',
-                'nip'              => 'pegawai.nik',
-                'bidang'           => 'pegawai.bidang',
-                'departemen'       => 'pegawai.departemen',
-                //'nipk_baru'        => 'pegawai_mapping.nipk_baru'
-            ])
-
-            ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-            //->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
-            ->where('izin_cuti.id', $id)
-            ->oneArray();
-
-        $tanggal_buat = $cuti_pegawai['tgl_buat'];
-        $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_buat)));
-
-        $tanggal_awal = $cuti_pegawai['tgl_awal'];
-        $date1 = dateIndonesia(date('Y-m-d', strtotime($tanggal_awal)));
-
-        $tanggal_akhir = $cuti_pegawai['tgl_akhir'];
-        $date2 = dateIndonesia(date('Y-m-d', strtotime($tanggal_akhir)));
-
-        $jns1 = '';
-        $jns2 = '';
-        $jns3 = '';
-        $jns4 = '';
-        $jns5 = '';
-        $jns6 = '';
-
-        switch ($cuti_pegawai['jenis_cuti']) {
-            case '1':
-                $jns1 = 'YA';
-                break;
-            case '2':
-                $jns2 = 'YA';
-                break;
-            case '3':
-                $jns3 = 'YA';
-                break;
-            case '4':
-                $jns4 = 'YA';
-                break;
-            case '5':
-                $jns5 = 'YA';
-                break;
-            case '6':
-                $jns6 = 'YA';
-                break;
-
-            default:
-                $jns1 = '';
-                $jns2 = '';
-                $jns3 = '';
-                $jns4 = '';
-                $jns5 = '';
-                $jns6 = '';
-                break;
-        }
-
-        $nama2 = $cuti_pegawai['nama'];
-        $nip2 = $cuti_pegawai['nip'];
-       // $nip2 = $cuti_pegawai['nipk_baru'];
-
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/profil/template/cutiDok.docx');
         $templateProcessor->setValues([
             'nama'              => $cuti_pegawai['nama'],
@@ -3279,6 +3158,7 @@ class Admin extends AdminModule
             'alasan'            => $cuti_pegawai['alasan'],
             'lama'              => $cuti_pegawai['lama'],
             'alamat'            => $cuti_pegawai['alamat'],
+            'pengganti_visite'  => $cuti_pegawai['pengganti_visite'],
             'tgl_buat'          => $date,
             'tgl_awal'          => $date1,
             'tgl_akhir'         => $date2,
