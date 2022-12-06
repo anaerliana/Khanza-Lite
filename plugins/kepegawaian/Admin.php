@@ -593,15 +593,11 @@ class Admin extends AdminModule
             }
             $row['nama'] = $low['nama'];
             $row['jk'] = $low['jk'];
-            $row['tgl_lahir'] = $low['tgl_lahir'];
+            $date_tgllahir = date('d-m-Y', strtotime($low['tgl_lahir']));
+            $row['lahir'] = $date_tgllahir;
             $row['tmp_lahir'] = $low['tmp_lahir'];
            // $row['ms_kerja'] = $low['ms_kerja'];
             $row['bidang'] = $low['bidang'];
-
-
-            // $pegawai = $this->db('simpeg_rakand')->where('nip', $row['nik'])->oneArray();
-            // $row['TLAHIR'] = $pegawai['TLAHIR'];
-            // $row['TGLLAHIR'] = $pegawai['TGLLAHIR'];
 
             $usia = $this->hitungUsia($low['tgl_lahir']);
             $row['tgl_lahir'] = $low['tgl_lahir'];

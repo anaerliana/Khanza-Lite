@@ -62,7 +62,30 @@ $(document).ready(function() {
 }).draw();
 });
 
+document.write("\n");
+// document.write(new Date().getMonth());
+//bulan = date.getMonth();
+// document.write(arrbulan[bulan]);
+// arrbulan = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+ // bulan = date.getMonth();
 $(document).ready(function() {
+  var date = new Date();
+  var tahun = date.getFullYear();
+  var bulan = date.getMonth();
+  switch(bulan) {
+    case 0: bulan = "JANUARI"; break;
+    case 1: bulan = "FEBRUARI"; break;
+    case 2: bulan = "MARET"; break;
+    case 3: bulan = "APRIL"; break;
+    case 4: bulan = "MEI"; break;
+    case 5: bulan = "JUNI"; break;
+    case 6: bulan = "JULI"; break;
+    case 7: bulan = "AGUSTUS"; break;
+    case 8: bulan = "SEPTEMBER"; break;
+    case 9: bulan = "OKTOBER"; break;
+    case 10: bulan = "NOVEMBER"; break;
+    case 11: bulan = "DESEMBER"; break;
+   }
   var t = $('#dukpns').DataTable({
     "dom": 'Bfrtip',
     // "buttons":['print', 'excel',  'pdf'],
@@ -70,23 +93,19 @@ $(document).ready(function() {
       {
           extend:'pdf',
           // footer: true,
-          title: ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH','%0Ag'],
-          //title: ['UNIT KERJA : RSUD H.DAMANHURI BARABAI'],
-          //KEADAAN : DESEMBER 2022
-          filename: 'DUK PNS', 
-          //messageTop: 'DAFTAR URUT KEPANGKATAN PNS',
+          title: ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL \n DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH \n UNIT KERJA: RSUD H.DAMANHURI BARABAI \n KEADAAN : '+bulan + " " + tahun],
+          filename: 'DUK PNS RSUD H.DAMANHURI BARABAI', 
           // alignment: 'center',
           orientation: 'landscape',
           pageSize: 'TABLOID',
           exportOptions: {
               columns: ':visible'
           },
-          
       },
       {
         extend:'excel',
         // footer: true,
-        title: ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH'],
+        title:  ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL \n DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH \n UNIT KERJA: RSUD H.DAMANHURI BARABAI \n KEADAAN : '+bulan + " " + tahun],
         filename: 'DUK PNS RSUD H.DAMANHURI BARABAI', 
         exportOptions: {
             columns: ':visible'
