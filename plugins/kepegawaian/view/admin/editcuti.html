@@ -30,7 +30,7 @@
                     {elseif: $cuti.jenis_cuti == '5'}Cuti Karena Alasan Penting
                     {elseif: $cuti.jenis_cuti == '6'}Cuti Di Luar Tanggungan Negara
                     {elseif: $cuti.jenis_cuti == '7'}Izin
-                    {else}{/if}" disabled/>    
+                    {else}{/if}" disabled />
                     <!-- <select name="jenis_cuti" id="jenis_cuti" class="form-control" onselect="doSomething();">
                         {loop: $pilihCuti}
                         <option value="{$key}" {if: $cuti.jenis_cuti==$key} selected{/if} disabled>{$value}</option>
@@ -38,6 +38,16 @@
                     </select> -->
                 </div>
             </div>
+            {if: $dep.departemen == 'SP' or $dep.departemen == 'UM' 
+            or $dep.nik == '197907062011012006' or $dep.nik == '198203092009032003' or $dep.nik == '07012022022201007' or $dep.nik == 'DR00023'}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Dokter Pengganti Visite / Poliklinik</label>
+                    <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
+                        value="{$cuti.pengganti_visite}" />
+                </div>
+            </div>
+            {/if}
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Alasan</label>
@@ -45,38 +55,43 @@
                     <!-- <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nip}" /> -->
                 </div>
             </div>
+            {if: $cuti.jenis_cuti != '7'}
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="">No Telepon</label>
                     <input type="text" name="telp" class="form-control" value="{$cuti.no_telp}" required>
                 </div>
             </div>
+            {/if}
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Tanggal Buat</label>
-                    <input type="text" name="tanggal_buat" id="tanggal_buat" class="form-control" value="{$cuti.tgl_buat}"
-                        required />
+                    <input type="text" name="tanggal_buat" id="tanggal_buat" class="form-control"
+                        value="{$cuti.tgl_buat}" required />
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Dari Tanggal</label>
-                    <input type="text" name="tanggal_awal" id="tanggal_awal" class="form-control" value="{$cuti.tgl_awal}" />
+                    <input type="text" name="tanggal_awal" id="tanggal_awal" class="form-control"
+                        value="{$cuti.tgl_awal}" />
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Sampai Tanggal</label>
-                    <input type="text" name="tanggal_akhir" id="tanggal_akhir" class="form-control" value="{$cuti.tgl_akhir}"
-                        required />
+                    <input type="text" name="tanggal_akhir" id="tanggal_akhir" class="form-control"
+                        value="{$cuti.tgl_akhir}" required />
                 </div>
             </div>
+            {if: $cuti.jenis_cuti != '7'}
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="">Alamat</label>
                     <input type="text" name="alamat" class="form-control" value="{$cuti.alamat}" required>
                 </div>
             </div>
+            {/if}
             <div class="col-md-12">
                 <div class="form-group">
                     <label>Status Persetujuan</label>
@@ -126,11 +141,11 @@
             locale: 'id'
         });
     });
-    $('#tanggal_awal').on('dp.change',function(e){
+    $('#tanggal_awal').on('dp.change', function (e) {
         $('#tanggal_akhir').data("DateTimePicker").minDate(e.date);
     });
 
-    $('#tanggal_akhir').on('dp.change',function(e){
+    $('#tanggal_akhir').on('dp.change', function (e) {
         $('#tanggal_awal').data("DateTimePicker").maxDate(e.date);
     });
 

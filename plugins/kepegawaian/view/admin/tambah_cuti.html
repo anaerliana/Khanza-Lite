@@ -19,6 +19,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row clearfix pengganti_visite">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Dokter Pengganti Visite / Poliklinik</label><sub>Diisi jika yang mengajukan izin/cuti Dokter</sub>
+                                <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
+                                    value="" />
+                            </div>
+                        </div>
+                    </div>
                     <div class="row clearfix">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -113,16 +122,18 @@
     $(document).ready(function () {
         $('.alamat').hide();
         $('.telp').hide();
+        $('.pengganti_visite').hide();
         $('#jenis_cuti').on('change', function () {
             // alert($(this).val());
             $('.alamat').show();
             $('.telp').show();
+            //$('.pengganti_visite').show();
             if ($(this).val() == 4) {
                 $('#tanggal_awal').on('dp.change', function (e) {
                     var dateAwal = new Date($('#tanggal_awal').val());
                     dateAwal.setDate(dateAwal.getDate() + 90);
                     document.getElementById("tanggal_akhir").value = dateAwal.toISOString().split('T')[0];
-                   // document.getElementById("tanggal_awal").off('dp.change');
+                    // document.getElementById("tanggal_awal").off('dp.change');
                 });
             } else if ($(this).val() == 7) {
                 $('.alamat').hide();
@@ -133,6 +144,34 @@
             } else {
                 document.getElementById("tanggal_akhir").value = '';
             }
+        })
+        $('#nik').on('change', function () {
+            var departemen = this.value;
+            var nip = $('#nik').val();
+            console.log(departemen);
+            $.ajax({
+                type: 'POST',
+                url: "{?=url([ADMIN,'kepegawaian','departemen'])?}",
+                data: { departemen: departemen },
+                success: function (data) {
+                    console.log(data);
+                    if (data == 'SP') {
+                        $('.pengganti_visite').show();
+                    } else if (data == 'UM') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == '197907062011012006') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == '198203092009032003') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == '07012022022201007') {
+                        $('.pengganti_visite').show();
+                    } else if (nip == 'DR00023') {
+                        $('.pengganti_visite').show();
+                    } else {
+                        $('.pengganti_visite').hide();
+                    }
+                }
+            });
         })
     });
 </script>

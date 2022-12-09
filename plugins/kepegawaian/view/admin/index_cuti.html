@@ -11,7 +11,8 @@
 				<h3 class="panel-title">Kelola Data Izin & Cuti</h3>
 			</div>
 			<div class="panel-body">
-				<a href="{?=url([ADMIN,'kepegawaian','tambahcuti'])?}" class="input-group btn btn-default" type="button" id="tambahcuti">Tambah Izin & Cuti</a><br>
+				<a href="{?=url([ADMIN,'kepegawaian','tambahcuti'])?}" class="input-group btn btn-default" type="button"
+					id="tambahcuti">Tambah Izin & Cuti</a><br>
 				<div class="table-responsive no-margin">
 					<table class="table table-striped no-margin" id="pardah" width="100%">
 						<thead>
@@ -46,15 +47,27 @@
 								<td>{$value.lama}</td>
 								<td>{$value.tgl_surat}</td>
 								<td>{if: $value.jenis_cuti =='7'}
+									{if: $value.departemen == 'UM' or $value.departemen == 'SP' 
+									or $value.nip == '197907062011012006' or $value.nip == '198203092009032003' or $value.nip == '07012022022201007' or $value.nip == 'DR00023'}
+									<a href="{?=url([ADMIN, 'kepegawaian', 'izindok', $value.id])?}"
+										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+											class="hidden-xs"> Izin</span></a>
+									{else}
 									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakizin', $value.id])?}"
 										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
 											class="hidden-xs"> Izin</span></a>
-									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti
-									== '3' or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti
-									=='6'}
+									{/if}
+									{elseif: $value.jenis_cuti != '7'}
+									{if: $value.departemen == 'SP' or $value.departemen == 'UM' 
+									or $value.nip == '197907062011012006' or $value.nip == '198203092009032003' or $value.nip == '07012022022201007' or $value.nip == 'DR00023'}
+									<a href="{?=url([ADMIN, 'kepegawaian', 'cutidok', $value.id])?}"
+										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+											class="hidden-xs"> Cuti</span></a>
+									{else}
 									<a href="{?=url([ADMIN, 'kepegawaian', 'cetakcuti', $value.id])?}"
 										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
 											class="hidden-xs"> Cuti</span></a>
+									{/if}
 									{else} {/if}
 								</td>
 								<td>{$value.status}</td>

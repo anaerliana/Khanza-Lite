@@ -1,0 +1,113 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Daftar Urut Kepangkatan PNS</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped no-margin table-bordered" id="dukpns" width="100%">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">
+                                    <center>NO</center>
+                                </th>
+                                <th rowspan="2">
+                                    <center>NAMA LENGKAP<br> NIP/TGL LAHIR</center>
+                                </th>
+                                <th rowspan="2">
+                                    <center>JK</center>
+                                </th>
+                                <th colspan="2">
+                                    <center>PANGKAT</center>
+                                </th>
+                                <th colspan="2">
+                                    <center>JABATAN TERAKHIR</center>
+                                </th>
+                                <th rowspan="2">
+                                    <center>MASA<br> KERJA</center>
+                                </th>
+                                <th colspan="4">
+                                    <center>PENDIDIKAN UMUM</center>
+                                </th>
+                                <th rowspan="2">
+                                    <center>USIA</center>
+                                </th>
+                                <th rowspan="2">
+                                    <center>INSTANSI/<br>UNIT KERJA</center>
+                                </th>
+                                <th rowspan="2">
+                                    <center>KET</center>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th scope="col"><center>GOL</center></th>
+                                <th scope="col"><center>TMT</center></th>
+                                <th scope="col"><center>NAMA JABATAN<br> ESELON</center></th>
+                                <th scope="col"><center>TMT</center></th>
+                                <th scope="col"><center>NAMA SEKOLAH/<br> P.T</center></th>
+                                <th scope="col"><center>JURUSAN</center></th>
+                                <th scope="col"><center>TAHUN<br> LULUS</center></th>
+                                <th scope="col"><center>TK<br> IJAZAH</center></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $dukpns.list}
+                            <tr>
+                                <td align="center"></td>
+                                <td>{$value.nama}<br>
+                                    {$value.nik}
+                                    <p>{$value.tmp_lahir}, {$value.lahir}</p>
+                                </td>
+                                <td align="center">{if: $value.jk == 'Pria'}L
+                                    {elseif: $value.jk == 'Wanita'}P{else}{/if}</td>
+                                <td align="center">{loop: $dukpns.golruang as $key => $val}
+                                    {if: $key == $value.KGOLRU}{$val}{/if}
+                                    {/loop}</td>
+                                <td align="center">{$value.TMTPANG}</td>
+                                <td align="center">{$value.NJAB}<br>{loop: $dukpns.eselon as $key => $val}
+                                    {if: $key == $value.KESELON}{$val}{/if}
+                                    {/loop}</td>
+                                <td align="center">{$value.TMTJABAT}</td>
+                                <td align="center">{$value.TMTKERJA}</td>
+                                <td align="center">{$value.NSEK}</td>
+                                <td align="center">{$value.PROG_STUDI}</td>
+                                <td align="center">{$value.TSTTB}</td>
+                                <td align="center">{loop: $dukpns.tpu as $key => $val}
+                                    {if: $key == $value.KTPU}{$val}{/if}
+                                    {/loop}</td>
+                                <!-- <?php $hr_ini = date("Y-m-d"); ?> -->
+                                <td align="center">{$value.usia}</td>
+                                <td align="center">{$value.UNIT}</td>
+                                <td></td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			...
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+	$("#btn_cetak").click(function () {
+		var baseURL = mlite.url + '/' + mlite.admin;
+		//var url    = baseURL + '/kepegawaian/print?t=' + mlite.token;
+		//var cari = $('input:text[name=cari]').val();
+
+		//$.post(url, {cari: cari} ,function(data) {
+		//window.open(baseURL + '/kepegawaian/cetakpdf?t=' + mlite.token);
+		$("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/kepegawaian/print?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+		//});
+
+		return false;
+	});
+</script>
