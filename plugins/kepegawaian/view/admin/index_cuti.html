@@ -48,7 +48,7 @@
 								<td>{$value.tgl_surat}</td>
 								<td>{if: $value.jenis_cuti =='7'}
 									{if: $value.departemen == 'UM' or $value.departemen == 'SP' 
-									or $value.nip == '197907062011012006' or $value.nip == '198203092009032003' or $value.nip == '07012022022201007' or $value.nip == 'DR00023'}
+									or $value.nip == '197907062011012006' or $value.nip == '198203092009032003' or $value.nip == '07012022022201007'  or $value.nip == 'DR00025' or $value.nip == 'DR00023'}
 									<a href="{?=url([ADMIN, 'kepegawaian', 'izindok', $value.id])?}"
 										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
 											class="hidden-xs"> Izin</span></a>
@@ -59,7 +59,7 @@
 									{/if}
 									{elseif: $value.jenis_cuti != '7'}
 									{if: $value.departemen == 'SP' or $value.departemen == 'UM' 
-									or $value.nip == '197907062011012006' or $value.nip == '198203092009032003' or $value.nip == '07012022022201007' or $value.nip == 'DR00023'}
+									or $value.nip == '197907062011012006' or $value.nip == '198203092009032003' or $value.nip == '07012022022201007'  or $value.nip == 'DR00025' or $value.nip == 'DR00023'}
 									<a href="{?=url([ADMIN, 'kepegawaian', 'cutidok', $value.id])?}"
 										class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
 											class="hidden-xs"> Cuti</span></a>

@@ -616,6 +616,7 @@ class Admin extends AdminModule
 
             $pendum = $this->db('simpeg_rpendum')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
             $row['NSEK'] = $pendum['NSEK'];
+            $row['JURUSAN'] = $pendum['JURUSAN'];
             $row['PROG_STUDI'] = $pendum['PROG_STUDI'];
             $row['KTPU'] = $pendum['KTPU'];
 
@@ -623,14 +624,15 @@ class Admin extends AdminModule
             $datelulus = date('Y', strtotime($tahun_lulus));
             $row['TSTTB'] = $datelulus;
 
-            $kerja = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->oneArray();
+            $kerja = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->asc('KGOLRU')->limit(1)->oneArray();
+            //kerja = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->oneArray();
+            $masa = $kerja['TMTPANG'];
+            $row['TMTKERJA'] = $masa;
             $mskerja = $this->hitungUsia($kerja['TMTPANG']);
-            $row['TMTKERJA'] = $mskerja;
+            $row['mskerja'] = $mskerja;
  
             $unker = $this->db('simpeg_unker')->where('nip', $row['nik'])->oneArray();
             $row['UNIT'] = $unker['UNIT'];
-
-
 
           //  $this->assign['rpangkatlast'] = $this->db('simpeg_rpangkat')->where('nip',  $row['nik'])->where('ISAKHIR', '1')->toArray();
            // $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('nip', $row['nik'])->toArray();

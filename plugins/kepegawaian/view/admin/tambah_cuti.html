@@ -22,7 +22,7 @@
                     <div class="row clearfix pengganti_visite">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>Dokter Pengganti Visite / Poliklinik</label><sub>Diisi jika yang mengajukan izin/cuti Dokter</sub>
+                                <label>Dokter Pengganti Visite / Poliklinik</label><sub> Diisi jika yang mengajukan izin/cuti Dokter</sub>
                                 <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
                                     value="" />
                             </div>
@@ -45,6 +45,7 @@
                                 <label>Alasan</label>
                                 <input type="text" name="alasan" id="alasan" class="form-control" value="" required />
                                 <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nik}" />
+                                <input type="text" name="dep" id="dep" class="form-control" value="" style="display: none;" />
                             </div>
                         </div>
                         <div class="col-md-4 telp">
@@ -145,33 +146,30 @@
                 document.getElementById("tanggal_akhir").value = '';
             }
         })
+      
         $('#nik').on('change', function () {
-            var departemen = this.value;
-            var nip = $('#nik').val();
-            console.log(departemen);
-            $.ajax({
-                type: 'POST',
-                url: "{?=url([ADMIN,'kepegawaian','departemen'])?}",
-                data: { departemen: departemen },
-                success: function (data) {
-                    console.log(data);
-                    if (data == 'SP') {
-                        $('.pengganti_visite').show();
-                    } else if (data == 'UM') {
-                        $('.pengganti_visite').show();
-                    } else if (nip == '197907062011012006') {
-                        $('.pengganti_visite').show();
-                    } else if (nip == '198203092009032003') {
-                        $('.pengganti_visite').show();
-                    } else if (nip == '07012022022201007') {
-                        $('.pengganti_visite').show();
-                    } else if (nip == 'DR00023') {
-                        $('.pengganti_visite').show();
-                    } else {
-                        $('.pengganti_visite').hide();
-                    }
-                }
-            });
-        })
+                  var kd_peg = this.value;
+                  console.log(kd_peg);
+                  $.ajax({
+                      type: 'POST',
+                      url: "{?=url([ADMIN,'kepegawaian','departemen'])?}",
+                      data: { departemen: kd_peg },
+                      success: function (depe) {
+                          console.log(depe);
+                       	  document.getElementById("dep").value = depe;
+                          if (document.getElementById("dep").value == 'SP') {
+                              $('.pengganti_visite').show();
+                          } else if (document.getElementById("dep").value == "UM") {
+                              $('.pengganti_visite').show();
+                          } else if (document.getElementById("dep").value == "-") {
+                              $('.pengganti_visite').show();
+                            } else if (document.getElementById("nik").value == "DR00023" || document.getElementById("nik").value == "198203092009032003" ||  document.getElementById("nik").value == "197907062011012006" || document.getElementById("nik").value == "07012022022201007") {
+                              $('.pengganti_visite').show();
+                          } else if (document.getElementById("dep").value != "UM" || document.getElementById("dep").value != "SP" ||  document.getElementById("dep").value != "-") {
+                              $('.pengganti_visite').hide();
+                          }
+                      }
+                  });
+              })
     });
 </script>

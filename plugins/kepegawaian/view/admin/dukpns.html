@@ -64,15 +64,17 @@
                                 <td align="center">{loop: $dukpns.golruang as $key => $val}
                                     {if: $key == $value.KGOLRU}{$val}{/if}
                                     {/loop}</td>
-                                <td align="center">{$value.TMTPANG}</td>
-                                <td align="center">{$value.NJAB}<br>{loop: $dukpns.eselon as $key => $val}
+                                <td align="center">{if: $value.TMTPANG == '30-11--0001'}TMT Belum Input{else}{$value.TMTPANG}{/if}</td>
+                                <td align="center">{if: $value.NJAB== ''}Jabatan Belum Input{else}{$value.NJAB}{/if}<br>{loop: $dukpns.eselon as $key => $val}
                                     {if: $key == $value.KESELON}{$val}{/if}
                                     {/loop}</td>
-                                <td align="center">{$value.TMTJABAT}</td>
-                                <td align="center">{$value.TMTKERJA}</td>
+                                    <!-- 30-11--0001 -->
+                                <td align="center">{if: $value.TMTJABAT == '30-11--0001'}TMT Belum Input{else}{$value.TMTJABAT}{/if}</td>
+                                <td align="center">{if: $value.TMTKERJA == '0000-00-00'}TMT Pangkat Pertama<br> Belum Input{elseif: $value.TMTKERJA != '0000-00-00'}{$value.mskerja}{else}{/if}</td>
                                 <td align="center">{$value.NSEK}</td>
-                                <td align="center">{$value.PROG_STUDI}</td>
-                                <td align="center">{$value.TSTTB}</td>
+                                <!-- <td align="center">{$value.PROG_STUDI}</td> -->
+                                <td align="center">{$value.JURUSAN}</td>
+                                <td align="center">{if: $value.TSTTB == '-0001'}Belum Input{else}{$value.TSTTB}{/if}</td>
                                 <td align="center">{loop: $dukpns.tpu as $key => $val}
                                     {if: $key == $value.KTPU}{$val}{/if}
                                     {/loop}</td>

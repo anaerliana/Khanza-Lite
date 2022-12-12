@@ -86,32 +86,37 @@ $(document).ready(function() {
     case 10: bulan = "NOVEMBER"; break;
     case 11: bulan = "DESEMBER"; break;
    }
+
   var t = $('#dukpns').DataTable({
     "dom": 'Bfrtip',
     // "buttons":['print', 'excel',  'pdf'],
     "buttons" : [
       {
           extend:'pdf',
-          // footer: true,
+          footer: true,
+          header: true,
           title: ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL \n DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH \n UNIT KERJA: RSUD H.DAMANHURI BARABAI \n KEADAAN : '+bulan + " " + tahun],
           filename: 'DUK PNS RSUD H.DAMANHURI BARABAI', 
-          // alignment: 'center',
           orientation: 'landscape',
-          pageSize: 'TABLOID',
+          pageSize: 'TABLOID', 
           exportOptions: {
-              columns: ':visible'
-          },
+            columns: ':visible'
+        }  ,
+        customize : function(doc) {
+          doc.styles['td:nth-child(2)'] = { 
+            width: '100px',
+            'max-width': '100px'
+          }
+       }
       },
       {
-        extend:'excel',
-        // footer: true,
-        title:  ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL \n DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH \n UNIT KERJA: RSUD H.DAMANHURI BARABAI \n KEADAAN : '+bulan + " " + tahun],
+       extend:'excel',
+       title:  ['DAFTAR URUT KEPANGKATAN PEGAWAI NEGERI SIPIL \n DI LINGKUNGAN PEMERINTAH KABUPATEN HULU SUNGAI TENGAH \n UNIT KERJA: RSUD H.DAMANHURI BARABAI \n KEADAAN : '+bulan + " " + tahun],
         filename: 'DUK PNS RSUD H.DAMANHURI BARABAI', 
         exportOptions: {
-            columns: ':visible'
-        }
+            columns: ':visible',
+        },
     },
-
     ],
     order: [[3, 'desc']],
   });

@@ -6,15 +6,17 @@
                     <h3 class="panel-title">{$cuti.title}</h3>
                 </div>
                 <div class="panel-body">
-                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' || 
-                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                    $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
                     $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                    $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
                     $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                     <div class="row clearfix">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>Pengganti Visite / Poliklinik</label>
+                                <label>Dokter Pengganti Visite / Poliklinik</label>
                                 <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
                                     value="" />
                             </div>
@@ -99,10 +101,12 @@
                         <thead>
                             <tr>
                                 <th>Jenis Cuti</th>
-                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||  
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                                $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
                                 $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
-                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
-                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
                                 $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                                 <th>Dokter Pengganti Visite/Poliklinik</th>{/if}
                                 <th>Alasan</th>
@@ -122,10 +126,12 @@
                                 <td>{loop: $cuti.pilihCuti as $key => $val}
                                     {if: $key == $value.jenis_cuti}{$val}{/if}
                                     {/loop}</td>
-                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                                $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
                                 $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
-                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
-                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
                                 $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                                 <td>{$value.pengganti_visite}</td>
                                 {/if}
@@ -137,10 +143,11 @@
                                 <td>
                                     {if: $value.jenis_cuti =='7'}
                                     {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
-                                    $this->core->getPegawaiInfo('departemen', $username) == 'SP' || 
+                                    $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
                                     $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
-                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
-                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
                                     $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                                     <a href="{?=url([ADMIN, 'profil', 'izindok', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
@@ -151,10 +158,12 @@
                                             class="hidden-xs"> Izin</span></a>
                                     {/if}
                                     {elseif: $value.jenis_cuti != '7'}
-                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' || 
+                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                                    $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
                                     $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
-                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
-                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' || 
+                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
                                     $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
                                     <a href="{?=url([ADMIN, 'profil', 'cutidok', $value.id])?}"
                                         class="btn btn-danger btn-xs"><i class="fa fa-print"></i>
@@ -234,7 +243,6 @@
         $('.alamat').hide();
         $('.save').hide();
         $('.telp').hide();
-        $('.pengganti_visite').hide();
         $('#jenis_cuti').on('change', function () {
             // alert($(this).val());
             $('.alamat').show();
