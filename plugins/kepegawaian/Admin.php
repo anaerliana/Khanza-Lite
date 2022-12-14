@@ -35,6 +35,7 @@ class Admin extends AdminModule
             ['name' => 'Laporan Data STR', 'url' => url([ADMIN, 'kepegawaian', 'lapstr']), 'icon' => 'file-text', 'desc' => 'Daftar STR Pegawai'],
             ['name' => 'Laporan Data SIP', 'url' => url([ADMIN, 'kepegawaian', 'lapsip']), 'icon' => 'file-text', 'desc' => 'Daftar SIP Pegawai'],
             ['name' => 'DUK PNS', 'url' => url([ADMIN, 'kepegawaian', 'dukpns']), 'icon' => 'file', 'desc' => 'DUK PNS'],
+            ['name' => 'Perkiraan Pensiun PNS', 'url' => url([ADMIN, 'kepegawaian', 'lappns']), 'icon' => 'file', 'desc' => 'Perkiraan Pensiun PNS'],
 
             //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
         ];
@@ -523,8 +524,6 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
 
-        //$rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->toArray();
-        //$rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai WHERE stts_aktif='AKTIF' AND stts_kerja='PNS' OR stts_kerja='FT' ORDER BY stts_kerja DESC");
         $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai where stts_kerja in ('PNS', 'FT') and stts_aktif = 'AKTIF'");
         $rows->execute();
         $rows = $rows->fetchAll();
@@ -556,15 +555,14 @@ class Admin extends AdminModule
     public function hitungUsia($tanggal_lahir)
     {
         $birthDate = new \DateTime($tanggal_lahir);
-      	$today = new \DateTime("today");
-      	$umur = "0 Tahun 0 Bulan ";
+        $today = new \DateTime("today");
+        $umur = "0 Tahun 0 Bulan ";
         if ($birthDate < $today) {
-        	$y = $today->diff($birthDate)->y;
-        	$m = $today->diff($birthDate)->m;
-        	// $d = $today->diff($birthDate)->d;
-          $umur =  $y." Tahun ".$m." Bulan ";
+            $y = $today->diff($birthDate)->y;
+            $m = $today->diff($birthDate)->m;
+            $umur =  $y . " Tahun " . $m . " Bulan ";
         }
-      	return $umur;
+        return $umur;
     }
 
     public function getDukpns($id = null)
@@ -582,7 +580,7 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js'), 'footer');
 
         $rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('stts_kerja', 'PNS')->toArray();
-        
+
         $this->assign['list'] = [];
         foreach ($rows as $low) {
             $row['nik'] = $low['nik'];
@@ -596,7 +594,7 @@ class Admin extends AdminModule
             $date_tgllahir = date('d-m-Y', strtotime($low['tgl_lahir']));
             $row['lahir'] = $date_tgllahir;
             $row['tmp_lahir'] = $low['tmp_lahir'];
-           // $row['ms_kerja'] = $low['ms_kerja'];
+            // $row['ms_kerja'] = $low['ms_kerja'];
             $row['bidang'] = $low['bidang'];
 
             $usia = $this->hitungUsia($low['tgl_lahir']);
@@ -630,13 +628,13 @@ class Admin extends AdminModule
             $row['TMTKERJA'] = $masa;
             $mskerja = $this->hitungUsia($kerja['TMTPANG']);
             $row['mskerja'] = $mskerja;
- 
+
             $unker = $this->db('simpeg_unker')->where('nip', $row['nik'])->oneArray();
             $row['UNIT'] = $unker['UNIT'];
 
-          //  $this->assign['rpangkatlast'] = $this->db('simpeg_rpangkat')->where('nip',  $row['nik'])->where('ISAKHIR', '1')->toArray();
-           // $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('nip', $row['nik'])->toArray();
-           
+            //  $this->assign['rpangkatlast'] = $this->db('simpeg_rpangkat')->where('nip',  $row['nik'])->where('ISAKHIR', '1')->toArray();
+            // $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('nip', $row['nik'])->toArray();
+
 
             $this->assign['golruang'] = [
                 '145' => 'IV/e',
@@ -689,6 +687,95 @@ class Admin extends AdminModule
             $this->assign['list'][] = $row;
         }
         return $this->draw('dukpns.html', ['dukpns' => $this->assign]);
+    }
+
+    public function getLappns($id = null)
+    {
+
+        $this->_addHeaderFiles();
+
+        $this->core->addCSS(url('https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css'));
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js'), 'footer');
+
+        $rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('stts_kerja', 'PNS')->toArray();
+
+        $this->assign['list'] = [];
+        foreach ($rows as $low) {
+            $row['nik'] = $low['nik'];
+
+            $ceknik = $this->db('pegawai_mapping')->where('nipk', $row['nik'])->oneArray();
+            if ($ceknik) {
+                $row['nik'] = $ceknik['nipk_baru'];
+            }
+            $row['nama'] = $low['nama'];
+            $row['jk'] = $low['jk'];
+            $date_tgllahir = date('d-m-Y', strtotime($low['tgl_lahir']));
+            $row['lahir'] = $date_tgllahir;
+            $row['bidang'] = $low['bidang'];
+
+            $usia = $this->hitungUsia($low['tgl_lahir']);
+            $row['tgl_lahir'] = $low['tgl_lahir'];
+            $row['usia'] = $usia;
+
+            $pangkat = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
+            $row['KGOLRU'] = $pangkat['KGOLRU'];
+            $date_tmtpang = date('d-m-Y', strtotime($pangkat['TMTPANG']));
+            $row['TMTPANG'] = $date_tmtpang;
+
+            $batas_pensiun = '';
+
+            switch ($pangkat['KGOLRU']) {
+                case ($pangkat['KGOLRU'] == 145 || $pangkat['KGOLRU'] == 144 || $pangkat['KGOLRU'] == 143 || $pangkat['KGOLRU'] == 142 || $pangkat['KGOLRU'] == 141):
+                    $batas_pensiun = '60';
+                    break;
+                case ($pangkat['KGOLRU'] == 134 || $pangkat['KGOLRU'] == 133 || $pangkat['KGOLRU'] == 132 || $pangkat['KGOLRU'] == 131 ||
+                    $pangkat['KGOLRU'] == 124 || $pangkat['KGOLRU'] == 123 || $pangkat['KGOLRU'] == 122 || $pangkat['KGOLRU'] == 121 ||
+                    $pangkat['KGOLRU'] == 114 || $pangkat['KGOLRU'] == 113 || $pangkat['KGOLRU'] == 112 || $pangkat['KGOLRU'] == 111):
+                    $batas_pensiun = '58';
+                    break;
+            }
+
+            $date = date_create($low['tgl_lahir']);
+            date_modify($date, "+ $batas_pensiun years");
+
+            $row['waktu_pensiun'] = date_format($date, "d-m-Y");
+            $pensiun =  $row['waktu_pensiun'];
+
+            $sisa = $this->hitungSisa($pensiun);
+            $row['sisa'] = $sisa;
+
+            $unker = $this->db('simpeg_unker')->where('nip', $row['nik'])->oneArray();
+            $row['UNIT'] = $unker['UNIT'];
+
+            $this->assign['golruang'] = [
+                '145' => 'IV/e',
+                '144' => 'IV/d',
+                '143' => 'IV/c',
+                '142' => 'IV/b',
+                '141' => 'IV/a',
+                '134' => 'III/d',
+                '133' => 'III/c',
+                '132' => 'III/b',
+                '131' => 'III/a',
+                '124' => 'II/d',
+                '123' => 'II/c',
+                '122' => 'II/b',
+                '121' => 'II/a',
+                '114' => 'I/d',
+                '113' => 'I/c',
+                '112' => 'I/b',
+                '111' => 'I/a',
+            ];
+
+            $this->assign['list'][] = $row;
+        }
+        return $this->draw('pensiunpns.html', ['pensiunpns' => $this->assign]);
     }
 
     public function RujukTahunChart()
@@ -911,7 +998,7 @@ class Admin extends AdminModule
     private function _addInfoPegawai()
     {
         // get pegawai
-      //  $rows = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+        //  $rows = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
         $rows = $this->db()->pdo()->prepare("SELECT * FROM pegawai where stts_kerja in ('PNS', 'FT') and stts_aktif = 'AKTIF'");
         $rows->execute();
         $rows = $rows->fetchAll();
@@ -941,7 +1028,7 @@ class Admin extends AdminModule
             'nik'  => 'pegawai.nik',
             'departemen' => 'pegawai.departemen'
         ])
-        ->join('pegawai', 'pegawai.nik = izin_cuti.nip')->where('izin_cuti.id', $id)->oneArray();
+            ->join('pegawai', 'pegawai.nik = izin_cuti.nip')->where('izin_cuti.id', $id)->oneArray();
         // $pilihCuti = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         $this->tpl->set('infopegawai', $infopegawai);
         $this->tpl->set('cuti', $cuti);
@@ -1046,7 +1133,7 @@ class Admin extends AdminModule
                 'jbtn'      => 'pegawai.jbtn',
                 'bidang'    => 'pegawai.bidang',
                 'nip'       => 'pegawai.nik',
-                'stts_kerja'=> 'pegawai.stts_kerja'
+                'stts_kerja' => 'pegawai.stts_kerja'
             ])
 
             ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
@@ -1091,7 +1178,7 @@ class Admin extends AdminModule
         $ft = 'FT';
         $pns = 'PNS';
 
-        $stts = $stts_kerja != $ft ? 'Direktur RSUD H. Damanhuri Barabai' : ($stts_kerja = $ft ? 'Plt. Kepala Bagian Tata Usaha' : '');
+        $stts = $stts_kerja != $ft ? 'Direktur RSUD H. Damanhuri Barabai' : ($stts_kerja = $ft ? 'Kepala Bagian Tata Usaha' : '');
         echo $stts;
 
         $nm_kepala = $stts_kerja != $pns ? 'Hernadi, SKM' : ($stts_kerja = $pns ? 'dr. Nanda Sujud Andi Yudha Utama, Sp. B' : '');
@@ -1284,11 +1371,11 @@ class Admin extends AdminModule
                 'bidang'           => 'pegawai.bidang',
                 'nip'              => 'pegawai.nik',
                 'departemen'       => 'pegawai.departemen',
-               // 'nipk_baru'        => 'pegawai_mapping.nipk_baru'
+                // 'nipk_baru'        => 'pegawai_mapping.nipk_baru'
             ])
 
             ->join('pegawai', 'pegawai.nik = izin_cuti.nip')
-           // ->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
+            // ->join('pegawai_mapping', 'pegawai_mapping.nipk = pegawai.nik')
             ->where('izin_cuti.id', $id)
             ->oneArray();
 
@@ -1371,7 +1458,7 @@ class Admin extends AdminModule
                 'tgl_akhir'        => 'izin_cuti.tgl_akhir',
                 'lama'             => 'izin_cuti.lama',
                 'alasan'           => 'izin_cuti.alasan',
-                'sisa_cuti_tahunan'=> 'izin_cuti.sisa_cuti_tahunan',
+                'sisa_cuti_tahunan' => 'izin_cuti.sisa_cuti_tahunan',
                 'alamat'           => 'izin_cuti.alamat',
                 'no_telp'          => 'izin_cuti.no_telp',
                 'jenis_cuti'       => 'izin_cuti.jenis_cuti',
@@ -1437,13 +1524,13 @@ class Admin extends AdminModule
 
         $nama2 = $cuti_pegawai['nama'];
         $nip2 = $cuti_pegawai['nip'];
-       // $nip2 = $cuti_pegawai['nipk_baru'];
+        // $nip2 = $cuti_pegawai['nipk_baru'];
 
         $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/kepegawaian/template/cutiDok.docx');
         $templateProcessor->setValues([
             'nama'              => $cuti_pegawai['nama'],
             'nip'               => $cuti_pegawai['nip'],
-           // 'nip'               => $cuti_pegawai['nipk_baru'],
+            // 'nip'               => $cuti_pegawai['nipk_baru'],
             'jbtn'              => $cuti_pegawai['jbtn'],
             'bidang'            => $cuti_pegawai['bidang'],
             'ms_kerja'          => $cuti_pegawai['ms_kerja'],

@@ -1,0 +1,57 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Daftar Perkiraan Pensiun PNS</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped no-margin table-bordered" id="pensiunpns" width="100%">
+                        <thead>
+                            <tr>
+                                <th><center>NO</center></th>
+                                <th><center>NIP</center> </th>
+                                <th><center>Nama Lengkap</center> </th>
+                                <th><center>JK</center></th>
+                                <th><center>Gol</center></th>
+                                <th><center>Unit Kerja</center></th>
+                                <th><center>Tanggal Lahir</center></th>
+                                <th><center>Usia</center></th>
+                                <th><center>Perkiraan Pensiun</center></th>
+                                <th><center>Sisa Waktu Sebelum Pensiun</center></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $pensiunpns.list}
+                            <tr>
+                                <td align="center"></td>
+                                <td>{$value.nik}</td>
+                                <td>{$value.nama}</td>
+                                <td align="center">{if: $value.jk == 'Pria'}L{elseif: $value.jk == 'Wanita'}P{else}{/if}
+                                </td>
+                                <td align="center">{loop: $pensiunpns.golruang as $key => $val}
+                                    {if: $key == $value.KGOLRU}{$val}{/if}
+                                    {/loop}</td>
+                                <td align="center">{$value.bidang}</td>
+                                <!-- <?php $hr_ini = date("Y-m-d"); ?> -->
+                                <td align="center">{$value.lahir}</td>
+                                <td align="center">{$value.usia}</td>
+                                {if: $value.KGOLRU == ''}
+                                <td align="center" bgcolor="#e8f556">Belum Input Pangkat Golongan</td>
+                                {else}
+                                <td align="center">{$value.waktu_pensiun}</td>
+                                {/if}
+                                {if: $value.KGOLRU == ''}
+                                <td align="center" bgcolor="#e8f556">Belum Input Pangkat Golongan</td>
+                                {else}
+                                <td align="center">{$value.sisa}</td>
+                                {/if}
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>

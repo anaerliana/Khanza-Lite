@@ -9,36 +9,16 @@
                     <table class="table table-striped no-margin table-bordered" id="dukpns" width="100%">
                         <thead>
                             <tr>
-                                <th rowspan="2">
-                                    <center>NO</center>
-                                </th>
-                                <th rowspan="2">
-                                    <center>NAMA LENGKAP<br> NIP/TGL LAHIR</center>
-                                </th>
-                                <th rowspan="2">
-                                    <center>JK</center>
-                                </th>
-                                <th colspan="2">
-                                    <center>PANGKAT</center>
-                                </th>
-                                <th colspan="2">
-                                    <center>JABATAN TERAKHIR</center>
-                                </th>
-                                <th rowspan="2">
-                                    <center>MASA<br> KERJA</center>
-                                </th>
-                                <th colspan="4">
-                                    <center>PENDIDIKAN UMUM</center>
-                                </th>
-                                <th rowspan="2">
-                                    <center>USIA</center>
-                                </th>
-                                <th rowspan="2">
-                                    <center>INSTANSI/<br>UNIT KERJA</center>
-                                </th>
-                                <th rowspan="2">
-                                    <center>KET</center>
-                                </th>
+                                <th rowspan="2"><center>NO</center></th>
+                                <th rowspan="2"><center>NAMA LENGKAP<br> NIP/TGL LAHIR</center></th>
+                                <th rowspan="2"><center>JK</center></th>
+                                <th colspan="2"><center>PANGKAT</center></th>
+                                <th colspan="2"><center>JABATAN TERAKHIR</center></th>
+                                <th rowspan="2"><center>MASA<br> KERJA</center></th>
+                                <th colspan="4"><center>PENDIDIKAN UMUM</center></th>
+                                <th rowspan="2"><center>USIA</center></th>
+                                <th rowspan="2"><center>INSTANSI/<br>UNIT KERJA</center></th>
+                                <th rowspan="2"><center>KET</center></th>
                             </tr>
                             <tr>
                                 <th scope="col"><center>GOL</center></th>
@@ -65,7 +45,7 @@
                                     {if: $key == $value.KGOLRU}{$val}{/if}
                                     {/loop}</td>
                                 <td align="center">{if: $value.TMTPANG == '30-11--0001'}TMT Belum Input{else}{$value.TMTPANG}{/if}</td>
-                                <td align="center">{if: $value.NJAB== ''}Jabatan Belum Input{else}{$value.NJAB}{/if}<br>{loop: $dukpns.eselon as $key => $val}
+                                <td align="center">{if: $value.NJAB== ''}Jabatan Terakhir Belum Input{else}{$value.NJAB}{/if}<br>{loop: $dukpns.eselon as $key => $val}
                                     {if: $key == $value.KESELON}{$val}{/if}
                                     {/loop}</td>
                                     <!-- 30-11--0001 -->
