@@ -594,7 +594,6 @@ class Admin extends AdminModule
             $date_tgllahir = date('d-m-Y', strtotime($low['tgl_lahir']));
             $row['lahir'] = $date_tgllahir;
             $row['tmp_lahir'] = $low['tmp_lahir'];
-            // $row['ms_kerja'] = $low['ms_kerja'];
             $row['bidang'] = $low['bidang'];
 
             $usia = $this->hitungUsia($low['tgl_lahir']);
@@ -623,7 +622,6 @@ class Admin extends AdminModule
             $row['TSTTB'] = $datelulus;
 
             $kerja = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->asc('KGOLRU')->limit(1)->oneArray();
-            //kerja = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->oneArray();
             $masa = $kerja['TMTPANG'];
             $row['TMTKERJA'] = $masa;
             $mskerja = $this->hitungUsia($kerja['TMTPANG']);
@@ -634,7 +632,6 @@ class Admin extends AdminModule
 
             //  $this->assign['rpangkatlast'] = $this->db('simpeg_rpangkat')->where('nip',  $row['nik'])->where('ISAKHIR', '1')->toArray();
             // $this->assign['rjabatan'] = $this->db('simpeg_rjabatan')->where('nip', $row['nik'])->toArray();
-
 
             $this->assign['golruang'] = [
                 '145' => 'IV/e',
@@ -702,6 +699,8 @@ class Admin extends AdminModule
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js'), 'footer');
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.html5.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.print.min.js'), 'footer');
+        $this->core->addJS(url('https://cdn.datatables.net/buttons/2.3.2/js/buttons.colVis.min.js'), 'footer');
 
         $rows =  $this->db('pegawai')->where('stts_aktif', 'AKTIF')->where('stts_kerja', 'PNS')->toArray();
 
@@ -721,6 +720,7 @@ class Admin extends AdminModule
 
             $usia = $this->hitungUsia($low['tgl_lahir']);
             $row['tgl_lahir'] = $low['tgl_lahir'];
+            $row['tmp_lahir'] = $low['tmp_lahir'];
             $row['usia'] = $usia;
 
             $pangkat = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
@@ -750,6 +750,28 @@ class Admin extends AdminModule
             $sisa = $this->hitungSisa($pensiun);
             $row['sisa'] = $sisa;
 
+            $jabatan = $this->db('simpeg_rjabatan')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
+            $row['NJAB'] = $jabatan['NJAB'];
+            $date_tmtjab = date('d-m-Y', strtotime($jabatan['TMTJABAT']));
+            $row['TMTJABAT'] = $date_tmtjab;
+            $row['KESELON'] = $jabatan['KESELON'];
+
+            $pendum = $this->db('simpeg_rpendum')->where('nip', $row['nik'])->where('ISAKHIR', '1')->oneArray();
+            $row['NSEK'] = $pendum['NSEK'];
+            $row['JURUSAN'] = $pendum['JURUSAN'];
+            $row['PROG_STUDI'] = $pendum['PROG_STUDI'];
+            $row['KTPU'] = $pendum['KTPU'];
+
+            $tahun_lulus = $pendum['TSTTB'];
+            $datelulus = date('Y', strtotime($tahun_lulus));
+            $row['TSTTB'] = $datelulus;
+
+            $kerja = $this->db('simpeg_rpangkat')->where('nip', $row['nik'])->asc('KGOLRU')->limit(1)->oneArray();
+            $masa = $kerja['TMTPANG'];
+            $row['TMTKERJA'] = $masa;
+            $mskerja = $this->hitungUsia($kerja['TMTPANG']);
+            $row['mskerja'] = $mskerja;
+
             $unker = $this->db('simpeg_unker')->where('nip', $row['nik'])->oneArray();
             $row['UNIT'] = $unker['UNIT'];
 
@@ -771,6 +793,34 @@ class Admin extends AdminModule
                 '113' => 'I/c',
                 '112' => 'I/b',
                 '111' => 'I/a',
+            ];
+
+            $this->assign['tpu'] = [
+                '01' => 'SD',
+                '02' => 'SLTP',
+                '03' => 'SLTA',
+                '04' => 'D-I',
+                '05' => 'D-II',
+                '06' => 'D-III/SM/Akademi',
+                '07' => 'D-IV',
+                '08' => 'S-1',
+                '09' => 'S-2',
+                '10' => 'S-3',
+                '11' => 'Pendidikan Profesi'
+            ];
+
+            $this->assign['eselon'] = [
+                '11' => 'Eselon I. a',
+                '12' => 'Eselon I. b',
+                '21' => 'Eselon II. a',
+                '22' => 'Eselon II. b',
+                '31' => 'Eselon III. a',
+                '32' => 'Eselon III. b',
+                '41' => 'Eselon IV. a',
+                '42' => 'Eselon IV. b',
+                '51' => 'Eselon V. a',
+                '52' => 'Eselon V. b',
+                '99' => '',
             ];
 
             $this->assign['list'][] = $row;
