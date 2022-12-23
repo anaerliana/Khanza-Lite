@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="180">
+    <meta http-equiv="refresh" content="30">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -17,8 +17,9 @@
     <style media="screen">
       body {
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        color: #fff;
-      	background: #0264d6;
+        font-weight: bold;
+        color: #337ab7;
+      	/* background: #2f2ce7; */
       	height:calc(100vh);
       	width:100%;
       }
@@ -34,38 +35,34 @@
       footer a, footer a:hover {
         color: #fff;
       }
-      tr:nth-child(even) {color: #ffffff;}
 
-      .marquee {
-        width: 100%;
-        overflow: scroll;
-        /* border: 1px solid #ccc; */
-        background:#0264d6;
+      td{
+        font-weight: bold;
+        font-size: 45px;
       }
+
+      tr:nth-child(even) {color: #000000;}
+
     </style>
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Bed Management {$settings.nama_instansi}</h1>
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Triase IGD {$settings.nama_instansi}</h1>
   <table class="table table-bordered table-striped lead text-primary">
     <thead class="bg-primary">
       <tr>
-        <th width="30%">Bangsal</th>
-        <th width="20%">Kelas</th>
-        <th>Status</th>
+        <th width="30%">Nama Pasien</th>
+        <th width="20%">Bed</th>
       </tr>
     </thead>
   </table>
   <div class="marquee" data-direction='up' data-duration='20000' startVisible='true' data-gap='10' data-duplicated='true' >
-  <table class="table table-bordered table-striped lead text-primary">
+  <table class="table table-bordered table-striped lead ">
     <tbody>
       {loop: $display}
-      <tr>
-        <td width="30%">{$value.nm_bangsal}</td>
-        <td width="20%">{$value.kelas}</td>
-        <td>
-          Jumlah Kosong : {if: $value.kosong.jumlah == ''}0{else}{$value.kosong.jumlah}{/if} | Jumlah Terisi : {$value.isi.jumlah}
-        </td>
+      <tr {if: $value.warna == 'merah'} style="background-color: red !important; color: black;"{/if}{if: $value.warna == 'hijau'} style="background-color: rgb(50, 182, 50) !important;"{/if}{if: $value.warna == 'kuning'} style="background-color: yellow !important;"{/if}>
+        <td width="30%">{$value.nm_pasien}</td>
+        <td width="20%">{$value.bed}</td>
       </tr>
       {/loop}
     </tbody>
@@ -83,6 +80,3 @@
 </footer>
 </body>
 </html>
-<script>
-$('.marquee').marquee()
-</script>

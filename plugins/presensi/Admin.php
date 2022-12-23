@@ -61,6 +61,7 @@ class Admin extends AdminModule
                 ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
                 ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai'],
                 ['name' => 'Validasi Presensi', 'url' => url([ADMIN, 'presensi', 'validasi_presensi']), 'icon' => 'check-square', 'desc' => 'Validasi Rekap Presensi'],
+                ['name' => 'Validasi Manual Presensi', 'url' => url([ADMIN, 'presensi', 'validasi_manual']), 'icon' => 'check-square', 'desc' => 'Validasi Manual Rekap Presensi'],
                 ['name' => 'Auto Verif Presensi', 'url' => url([ADMIN, 'presensi', 'auto_verif']), 'icon' => 'check-square', 'desc' => 'Cek Auto Verif Presensi'],
                 ['name' => 'Pengaturan API', 'url' => url([ADMIN, 'presensi', 'pengaturan_api']), 'icon' => 'gear', 'desc' => 'Pengaturan API Presensi'],
             ];
@@ -2464,6 +2465,74 @@ class Admin extends AdminModule
         $this->assign['getUser'] = $username['nik'];
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         return $this->draw('rekap_presensi_byid.html', ['rekap' => $this->assign]);
+    }
+
+    public function getValidasi_Manual($page = 1)
+    {
+        $this->_addHeaderFiles();
+
+        $perpage = '10';
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        // $tgl_kunjungan = '2021-01';
+        $tgl_kunjungan_akhir = date('Y-m-d');
+
+        if (isset($_GET['awal'])) {
+            $tgl_kunjungan = $_GET['awal'];
+        }
+        if (isset($_GET['akhir'])) {
+            $tgl_kunjungan_akhir = $_GET['akhir'];
+        }
+
+        $ruang = '';
+        if (isset($_GET['ruang'])) {
+            $ruang = $_GET['ruang'];
+        }
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        // pagination
+        $totalRecords = $this->db('pegawai')
+            ->where('stts_aktif','AKTIF')
+            ->in('departemen',array("SP","UM"))
+            ->like('nama', '%' . $phrase . '%')
+            ->toArray();
+
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'validasi_manual', '%d?s=' . $phrase]));
+        $this->assign['pagination'] = $pagination->nav('pagination', '5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+
+        $rows = $this->db('pegawai')
+            ->select([
+                'nama' => 'pegawai.nama',
+                'departemen' => 'pegawai.departemen',
+                'jbtn' => 'pegawai.jbtn',
+                'bidang' => 'pegawai.bidang',
+                'id' => 'pegawai.id',
+            ])
+            ->where('stts_aktif','AKTIF')
+            ->in('departemen',array("SP","UM"))
+            ->like('nama', '%' . $phrase . '%')
+            ->offset($offset)
+            ->limit($perpage)
+            ->toArray();
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['editURL'] = url([ADMIN, 'presensi', 'rekappresensibyid', $row['id']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+        $this->assign['bidang'] = $this->db('bidang')->toArray();
+        $this->assign['title'] = 'Validasi Manual Presensi';
+
+        return $this->draw('validasi.manual.html', ['rekap' => $this->assign]);
     }
 
     public function postBridgingBkd()
