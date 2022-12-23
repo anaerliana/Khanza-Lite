@@ -2605,10 +2605,11 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengajuan Izin & Cuti';
         $this->assign['nik'] = $this->core->getUserInfo('username', null, true);
-        $this->assign['list'] = $this->db('izin_cuti')->where('nip', $this->assign['nik'])->desc('id')->toArray();
-        $this->assign['pilihCuti'] = array('0' => '-- Pilih Izin --', '1' => 'Cuti Tahunan', '2' => 'Cuti Besar', '3' => 'Cuti Sakit', '4' => 'Cuti Melahirkan', '5' => 'Cuti Karena Alasan Penting', '6' => 'Cuti Di Luar Tanggungan Negara', '7' => 'Izin');
+        $this->assign['list'] = $this->db('izin_cuti')->where('nip',$this->assign['nik'])->desc('id')->toArray();
+        $this->assign['pilihCuti'] = array('0'=>'-- Pilih Izin --','1' => 'Cuti Tahunan', '2'=>'Cuti Besar', '3'=>'Cuti Sakit', '4'=>'Cuti Melahirkan', '5'=>'Cuti Karena Alasan Penting', '6'=>'Cuti Di Luar Tanggungan Negara', '7'=>'Izin');
         $username = $this->core->getUserInfo('username', null, true);
-        return $this->draw('cuti.html', ['cuti' => $this->assign, 'username'=> $username]);
+      
+      return $this->draw('cuti.html',['cuti' => $this->assign, 'username'=> $username]);
     }
 
     public function postSimpanCuti()
@@ -2624,10 +2625,10 @@ class Admin extends AdminModule
         $tanggalAwal = strtotime($_POST['tanggal_awal']);
         $tanggalAkhir = strtotime($_POST['tanggal_akhir']);
         $timeDiff = abs($tanggalAkhir - $tanggalAwal);
-        $numberDays = $timeDiff / 86400;
+        $numberDays = $timeDiff/86400;
         $numberDays = $numberDays + 1;
-        $tahun = date('Y', $tanggalAwal);
-
+        $tahun = date('Y',$tanggalAwal);
+      
         $jenisCuti = $_POST['jenis_cuti'];
         $noSurat = $this->db()->pdo()->prepare("SELECT max(SUBSTRING(no_surat, 5, 2)) FROM izin_cuti WHERE jenis_cuti = '$jenisCuti'");
         $noSurat->execute();
@@ -2637,16 +2638,16 @@ class Admin extends AdminModule
         switch ($_POST['jenis_cuti']) {
             case '1':
                 $kodeSurat = '851';
-                $noCuti = $kodeSurat . '/' . $noSurat . '/' . 'RSUD-UMPEG' . '/' . date('Y');
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
                 $sisaCuti = $cutiTahunan - $numberDays;
                 break;
             case '5':
                 $kodeSurat = '850';
-                $noCuti = $kodeSurat . '/' . $noSurat . '/' . 'RSUD-UMPEG' . '/' . date('Y');
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
                 break;
             case '4':
                 $kodeSurat = '854';
-                $noCuti = $kodeSurat . '/' . $noSurat . '/' . 'RSUD-UMPEG' . '/' . date('Y');
+                $noCuti = $kodeSurat.'/'.$noSurat.'/'.'RSUD-UMPEG'.'/'.date('Y');
                 break;
 
             default:
@@ -2671,7 +2672,7 @@ class Admin extends AdminModule
             'tgl_surat' => date('Y-m-d'),
             'no_surat' => $noCuti,
             'status' => 'Belum Disetujui',
-            'pengganti_visite' => $_POST['pengganti_visite'],
+            'pengganti_visite' =>  $_POST['pengganti_visite'],
             'created_at' => null,
             'updated_at' => date('Y-m-d H:i:s')
         ]);
@@ -2683,6 +2684,7 @@ class Admin extends AdminModule
         redirect($location);
         exit();
     }
+  
 
     public function getEditCuti($id)
     {
@@ -2816,7 +2818,7 @@ class Admin extends AdminModule
         $ft = 'FT';
         $pns = 'PNS';
 
-        $stts = $stts_kerja != $ft ? 'Direktur RSUD H. Damanhuri Barabai' : ($stts_kerja = $ft ? 'Plt. Kepala Bagian Tata Usaha' : '');
+        $stts = $stts_kerja != $ft ? 'Direktur RSUD H. Damanhuri Barabai' : ($stts_kerja = $ft ? 'Kepala Bagian Tata Usaha' : '');
         echo $stts;
 
         $nm_kepala = $stts_kerja != $pns ? 'Hernadi, SKM' : ($stts_kerja = $pns ? 'dr. Nanda Sujud Andi Yudha Utama, Sp. B' : '');
