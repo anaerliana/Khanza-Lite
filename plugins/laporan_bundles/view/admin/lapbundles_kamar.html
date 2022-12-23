@@ -24,15 +24,15 @@
 						</form>
 					</ul>
 				</div>
-				<h3 class="panel-title">Laporan Bulanan Bundles HAIs</h3>
+				<h3 class="panel-title">Laporan Bundles HAIs Per Kamar/Bangsal</h3>
 			</div>
 			<div class="panel-body">
 				<div class="table-responsive no-margin">
-					<table class="table table-striped no-margin table-bordered" id="lapbundleshais" width="100%">
+					<table class="table table-striped no-margin table-bordered" id="lap" width="100%">
 						<thead>
 							<tr>
 								<th rowspan="2">No.</th>
-								<th rowspan="2">Tanggal</th>
+								<th rowspan="2">Kamar</th>
 								<th rowspan="2">Jumlah Pasien</th>
 								<th colspan="4" style="text-align: center;">Insersi VAP</th>
 								<th colspan="5" style="text-align: center;">Insersi IADP/CLABSI</th>
@@ -45,6 +45,7 @@
 								<th colspan="4" style="text-align: center;">IDO Pre Operasi</th>
 								<th colspan="6" style="text-align: center;">IDO Intra Operasi</th>
 								<th colspan="4" style="text-align: center;">IDO Post Operasi</th>
+							</tr>
 							<tr>
 								<!-- Insersi VAP -->
 								<th>Hand Hygiene</th>
@@ -111,14 +112,13 @@
 								<th>APD</th>
 								<th>Kaji nutris</th>
 							</tr>
-							</tr>
 						</thead>
 						<tbody>
-							{loop: $lapbundles.list}
+							{loop: $bundleskamar.list}
 							<tr>
 								<td></td>
+								<td>{$value.nm_bangsal}</td>
 								{loop: $value.jumlah as $total}
-								<td>{$total.tanggal}</td>
 								<td>{$total.jml_no_rawat}</td>
 
 								<td>{$total.jml_hand_vap}</td>

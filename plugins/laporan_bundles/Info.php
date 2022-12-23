@@ -1,7 +1,7 @@
 <?php
 return [
-    'name'          =>  'Laporan Bundles Hais',
-    'description'   =>  'Data Laporan Bundles Hais KhanzaLITE.',
+    'name'          =>  'Laporan Bundles HAIs',
+    'description'   =>  'Data Laporan Bundles HAIs KhanzaLITE.',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
     'compatibility' =>  '2021',

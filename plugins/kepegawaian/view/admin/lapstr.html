@@ -1,0 +1,59 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Daftar Surat Tanda Registrasi (STR) Pegawai</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped no-margin" id="lapstr" width="100%">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>NIP</th>
+                                <th>Nama</th>
+                                <th>Status Pegawai</th>
+                                <th>Ruangan</th>
+                                <th>No STR</th>
+                                <th>Tanggal STR</th>
+                                <th>Tanggal Berakhir STR</th>
+                                <th>Sisa Waktu Berlaku STR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $lapstr.list}
+                            <tr>
+                                <td></td>
+                                <td>{$value.nik}</td>
+                                <td>{$value.nama}</td>
+                                <td>
+                                    {if: $value.status =='FT'} Tenaga Kontrak
+                                    {elseif: $value.status == 'PNS'} PNS
+                                    {else} {/if}
+                                </td>
+                                <td>{$value.bidang}</td>
+                                <td>{$value.no_str}</td>
+                                <td>{$value.tgl_str}</td>
+                                <td>{$value.tgl_laku_str}</td>
+                                <!-- <?php $hr_ini = date("Y-m-d"); ?> -->
+                                <!-- {if: $hr_ini >= $value.tgl_laku_str}
+                                <td align="center" bgcolor="#e8f556">Telah Habis</td>
+                                {else}
+                                <td align="center">{$value.sisa}</td>
+                                {/if} -->
+                                {if: $value.tgl_laku_str == ''}
+                                <td align="center">Belum Input</td>
+                                {elseif: $hr_ini >= $value.tgl_laku_str}
+                                <td align="center" bgcolor="#e8f556">Telah Habis</td>
+                                {else}
+                                <td align="center">{$value.sisa}</td>
+                                {/if}
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>

@@ -6,33 +6,45 @@
                     <h3 class="panel-title">{$cuti.title}</h3>
                 </div>
                 <div class="panel-body">
+                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                    $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                    $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
+                    $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
+                    <div class="row clearfix">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Dokter Pengganti Visite / Poliklinik</label>
+                                <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
+                                    value="" />
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
                     <div class="row clearfix">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <input type="hidden" name="id_cuti">
                                 <label for="jenis_cuti">Jenis Izin</label>
-                                <select name="jenis_cuti" id="jenis_cuti" class="form-control" onselect="doSomething();">
+                                <select name="jenis_cuti" id="jenis_cuti" class="form-control"
+                                    onselect="doSomething();">
                                     {loop: $cuti.pilihCuti}
                                     <option value="{$key}">{$value}</option>
                                     {/loop}
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Tanggal Buat</label>
-                                <input type="text" name="tanggal_buat" id="tanggal_buat"
-                                    class="form-control" value="" />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
+                        <div class="col-md-5">
                             <div class="form-group">
                                 <label>Alasan</label>
                                 <input type="text" name="alasan" id="alasan" class="form-control" value="" />
                                 <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nik}" />
                             </div>
                         </div>
-                        <div class="col-md-3 telp">
+
+                        <div class="col-md-4 telp">
                             <div class="form-group">
                                 <label for="">No Telepon</label>
                                 <input type="text" name="telp" class="form-control" value="">
@@ -40,18 +52,25 @@
                         </div>
                     </div>
                     <div class="row clearfix">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
-                                <label>Dari Tanggal</label>
-                                <input type="text" name="tanggal_awal" id="tanggal_awal"
-                                    class="form-control" value="" />
+                                <label>Tanggal Buat</label>
+                                <input type="text" name="tanggal_buat" id="tanggal_buat" class="form-control"
+                                    value="" />
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Dari Tanggal</label>
+                                <input type="text" name="tanggal_awal" id="tanggal_awal" class="form-control"
+                                    value="" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Sampai Tanggal</label>
-                                <input type="text" name="tanggal_akhir" id="tanggal_akhir"
-                                    class="form-control" value="" />
+                                <input type="text" name="tanggal_akhir" id="tanggal_akhir" class="form-control"
+                                    value="" />
                             </div>
                         </div>
                     </div>
@@ -71,24 +90,41 @@
         </div>
     </form>
 </article>
+<<<<<<< HEAD
 <article class="row" id="cuti">
 	<div class="col-md-12">
 		<div class="panel panel-default">
 			<div class="panel-heading">
+=======
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+>>>>>>> 0b7b92c1e69da39b7f0dcc420d81bd1972a9e936
 
-			</div>
-			<div class="panel-body">
-				<div class="table-responsive no-margin">
-					<table class="table table-striped no-margin display" width="100%">
-						<thead>
-							<tr>
-								<th>Jenis Cuti</th>
-								<th>Alasan</th>
-								<th>Tanggal Mulai</th>
-								<th>Tanggal Akhir</th>
-								<th>Jumlah Hari</th>
-								<th>Tanggal Surat</th>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped no-margin display" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Jenis Cuti</th>
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                                $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
+                                <th>Dokter Pengganti Visite/Poliklinik</th>{/if}
+                                <th>Alasan</th>
+                                <th>Tanggal Mulai</th>
+                                <th>Tanggal Akhir</th>
+                                <th>Jumlah Hari</th>
+                                <th>Tanggal Surat</th>
+                                <th>Berkas</th>
                                 <th>Status</th>
+<<<<<<< HEAD
 								<th>Berkas</th>
 							</tr>
 						</thead>
@@ -117,29 +153,106 @@
                                 <td>
                                     <button class="btn btn-xs btn-info edit-cuti" data-id="{$value.id}"><span class="fa fa-pencil"></span></button>
                                 </td>
+=======
+                                <th class="text-right">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {if: !empty($cuti.list)}
+                            {loop: $cuti.list}
+                            <tr>
+                                <td>{loop: $cuti.pilihCuti as $key => $val}
+                                    {if: $key == $value.jenis_cuti}{$val}{/if}
+                                    {/loop}</td>
+                                {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                                $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
+                                $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
+                                <td>{$value.pengganti_visite}</td>
+                                {/if}
+                                <td>{$value.alasan}</td>
+                                <td>{$value.tgl_awal}</td>
+                                <td>{$value.tgl_akhir}</td>
+                                <td>{$value.lama}</td>
+                                <td>{$value.tgl_surat}</td>
+                                <td>
+                                    {if: $value.jenis_cuti =='7'}
+                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                                    $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
+                                    <a href="{?=url([ADMIN, 'profil', 'izindok', $value.id])?}"
+                                        class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+                                            class="hidden-xs"> Izin</span></a>
+                                    {else}
+                                    <a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}"
+                                        class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+                                            class="hidden-xs"> Izin</span></a>
+                                    {/if}
+                                    {elseif: $value.jenis_cuti != '7'}
+                                    {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' ||
+                                    $this->core->getPegawaiInfo('departemen', $username) == 'UM' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
+                                    $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
+                                    <a href="{?=url([ADMIN, 'profil', 'cutidok', $value.id])?}"
+                                        class="btn btn-danger btn-xs"><i class="fa fa-print"></i>
+                                        <spanclass="hidden-xs"> Cuti</span>
+                                    </a>
+                                    {else}
+                                    <a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}"
+                                        class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span
+                                            class="hidden-xs"> Cuti</span></a>
+                                    {/if}
+                                    {else} {/if}
+                                </td>
+                                <td>{$value.status} </td>
+                                <td class="text-right">
+                                    {if: $value.status == '' or $value.status == 'Belum Disetujui'}
+                                    <a href="{?=url([ADMIN, 'profil', 'editcuti', $value.id])?}"
+                                        class="btn btn-xs btn-success" data-toggle="modal" data-target="#editcutiModal">
+                                        <i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
+                                    </a>
+                                    {elseif: $value.status == 'Disetujui' or $value.status == 'Ditangguhkan' or
+                                    $value.status == 'Tidak Disetujui'}
+                                    <a href="{?=url([ADMIN, 'profil', 'editcuti', $value.id])?}"
+                                        class="btn btn-xs btn-success disabled" data-toggle="modal"
+                                        data-target="#editcutiModal">
+                                        <i class="fa fa-pencil"></i> <span class="hidden-xs">Edit</span>
+                                    </a>
+                                    {else} {/if}
+                                </td>
+                            </tr>
+                            {/loop}
+                            {else}
+                            <tr>
+                                <td colspan="6" class="text-center">Kosong</td>
+                            </tr>
+                            {/if}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+>>>>>>> 0b7b92c1e69da39b7f0dcc420d81bd1972a9e936
 
-								<!-- <td class="text-right">
-									<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
-										<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
-									</a>
-									<a href="{$value.editURL}" class="btn btn-success btn-xs">
-										<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
-									</a>
-								</td> -->
-							</tr>
-							{/loop}
-							{else}
-							<tr>
-								<td colspan="6" class="text-center">Kosong</td>
-							</tr>
-							{/if}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
 </article>
+<div class="modal fade" id="editcutiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     $(function () {
         $('#tanggal_buat').datetimepicker({
@@ -157,35 +270,35 @@
             useCurrent: false
         });
     });
-    $('#tanggal_awal').on('dp.change',function(e){
+    $('#tanggal_awal').on('dp.change', function (e) {
         $('#tanggal_akhir').data("DateTimePicker").minDate(e.date);
     });
 
-    $('#tanggal_akhir').on('dp.change',function(e){
+    $('#tanggal_akhir').on('dp.change', function (e) {
         $('#tanggal_awal').data("DateTimePicker").maxDate(e.date);
     });
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         $('.alamat').hide();
         $('.save').hide();
         $('.telp').hide();
-        $('#jenis_cuti').on('change',function(){
+        $('#jenis_cuti').on('change', function () {
             // alert($(this).val());
             $('.alamat').show();
             $('.save').show();
             $('.telp').show();
             if ($(this).val() == 4) {
-                $('#tanggal_awal').on('dp.change',function(e){
+                $('#tanggal_awal').on('dp.change', function (e) {
                     var dateAwal = new Date($('#tanggal_awal').val());
                     dateAwal.setDate(dateAwal.getDate() + 90);
                     document.getElementById("tanggal_akhir").value = dateAwal.toISOString().split('T')[0];
                     document.getElementById("tanggal_awal").off('dp.change');
                 });
-            } else if($(this).val() == 7) {
+            } else if ($(this).val() == 7) {
                 $('.alamat').hide();
                 $('.save').show();
                 $('.telp').hide();
-            }else if($(this).val() == 0){
+            } else if ($(this).val() == 0) {
                 $('.alamat').hide();
                 $('.save').hide();
                 $('.telp').hide();
@@ -194,5 +307,4 @@
             }
         })
     });
-
 </script>

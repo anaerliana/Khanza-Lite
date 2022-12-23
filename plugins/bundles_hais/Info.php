@@ -1,7 +1,7 @@
 <?php
 return [
     'name'          =>  'Bundles Hais',
-    'description'   =>  'Pengelolaan data Bundles Hais KhanzaLITE.',
+    'description'   =>  'Pengelolaan Data Bundles Hais KhanzaLITE.',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
     'compatibility' =>  '2021',
