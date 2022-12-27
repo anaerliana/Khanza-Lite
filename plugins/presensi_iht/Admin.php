@@ -3,7 +3,7 @@
 namespace Plugins\Presensi_Iht;
 
 use Systems\AdminModule;
-use Systems\Lib\Fpdf\PDF_MC_Table;
+use Systems\Lib\QRCode;
 
 class Admin extends AdminModule
 {
@@ -33,9 +33,12 @@ class Admin extends AdminModule
     public function getRekap_Presensi($page = 1)
     {
         $this->_addHeaderFiles();
+        // $qrcode = new Generator;
         $this->core->addCSS(url('https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css'));
         $this->core->addJS(url('https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js'), 'footer');
         $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js'), 'footer');
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js'), 'footer');
         $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
         $perpage = '10';
         $phrase = '';
@@ -51,20 +54,29 @@ class Admin extends AdminModule
         // list
 
         $rows = $this->db('presensi_iht')
-            ->join('pegawai', 'pegawai.id = presensi_iht.id_user')
-            ->where('tanggal', $tgl_kunjungan)
+            ->join('pegawai', 'pegawai.nik = presensi_iht.nip_')
+            // ->where('tanggal', $tgl_kunjungan)
             ->toArray();
 
-
+        $src = '';
         $this->assign['list'] = [];
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
+
+
+                $im = url().'/systems/lib/Barcode.php?codetype=codabar&size=40&text='.$row['nik'];
+                $type = pathinfo($im, PATHINFO_EXTENSION);
+                $data = file_get_contents($im);
+
+                $imgData = base64_encode($data);
+                $src = 'data:image/'.$type.';base64,'.$imgData;
+
                 $this->assign['list'][] = $row;
             }
         }
 
-        return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
+        return $this->draw('rekap_presensi.html', ['rekap' => $this->assign,'src' => $src]);
     }
 
     public function getPengaturan_Api()

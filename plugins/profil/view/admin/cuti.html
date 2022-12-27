@@ -26,6 +26,7 @@
                     <div class="row clearfix">
                         <div class="col-md-3">
                             <div class="form-group">
+                                <input type="hidden" name="id_cuti">
                                 <label for="jenis_cuti">Jenis Izin</label>
                                 <select name="jenis_cuti" id="jenis_cuti" class="form-control"
                                     onselect="doSomething();">
@@ -89,10 +90,17 @@
         </div>
     </form>
 </article>
+<<<<<<< HEAD
+<article class="row" id="cuti">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+=======
 <article class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
+>>>>>>> 0b7b92c1e69da39b7f0dcc420d81bd1972a9e936
 
             </div>
             <div class="panel-body">
@@ -116,6 +124,36 @@
                                 <th>Tanggal Surat</th>
                                 <th>Berkas</th>
                                 <th>Status</th>
+<<<<<<< HEAD
+								<th>Berkas</th>
+							</tr>
+						</thead>
+						<tbody>
+							{if: !empty($cuti.list)}
+							{loop: $cuti.list}
+							<tr>
+								<td>{loop: $cuti.pilihCuti as $key => $val}
+									{if: $key == $value.jenis_cuti}{$val}{/if}
+									{/loop}</td>
+								<td>{$value.alasan}</td>
+								<td>{$value.tgl_awal}</td>
+								<td>{$value.tgl_akhir}</td>
+								<td>{$value.lama}</td>
+								<td>{$value.tgl_surat}</td>
+                                <td>{$value.status}</td>
+                                <td>
+									{if: $value.status == 'Disetujui'}
+									{if: $value.jenis_cuti =='7'}
+									<a href="{?=url([ADMIN, 'profil', 'cetakizin', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Izin</span></a>
+									{elseif: $value.jenis_cuti == '1' or $value.jenis_cuti == '2' or $value.jenis_cuti == '3'  or $value.jenis_cuti == '4' or $value.jenis_cuti =='5' or $value.jenis_cuti =='6'}
+									<a href="{?=url([ADMIN, 'profil', 'cetakcuti', $value.id])?}" class="btn btn-danger btn-xs" ><i class="fa fa-print"></i><span class="hidden-xs"> Cuti</span></a>
+									{else} {/if}
+									{elseif: $value.status == 'Tidak Disetujui'} {else} {/if}
+								</td>
+                                <td>
+                                    <button class="btn btn-xs btn-info edit-cuti" data-id="{$value.id}"><span class="fa fa-pencil"></span></button>
+                                </td>
+=======
                                 <th class="text-right">Aksi</th>
                             </tr>
                         </thead>
@@ -205,6 +243,7 @@
             </div>
         </div>
     </div>
+>>>>>>> 0b7b92c1e69da39b7f0dcc420d81bd1972a9e936
 
 </article>
 <div class="modal fade" id="editcutiModal" tabindex="-1" role="dialog">
