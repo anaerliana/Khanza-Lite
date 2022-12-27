@@ -809,6 +809,14 @@ class Site extends SiteModule
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
         $this->tpl->set('print_sep', $print_sep);
 
+        $print_spri = array();
+        if (!empty($this->_getSPRIInfo('no_surat', $no_rawat))) {
+          $print_spri['bridging_surat_pri_bpjs'] = $this->db('bridging_surat_pri_bpjs')->where('no_surat', $this->_getSPRIInfo('no_surat', $no_rawat))->oneArray();
+        }
+        $print_spri['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+        $print_spri['logoURL'] = url(MODULES . '/vclaim/img/bpjslogo.png');
+        $this->tpl->set('print_spri', $print_spri);
+
         $resume_pasien = $this->db('resume_pasien')
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
@@ -1244,6 +1252,12 @@ class Site extends SiteModule
     {
         $row = $this->db('bridging_sep')->where('no_rawat', $no_rawat)->oneArray();
         return $row[$field];
+    }
+
+    private function _getSPRIInfo($field, $no_rawat)
+    {
+      $row = $this->db('bridging_surat_pri_bpjs')->where('no_rawat', $no_rawat)->oneArray();
+      return $row[$field];
     }
 
     private function _getDiagnosa($field, $no_rawat, $status_lanjut)
