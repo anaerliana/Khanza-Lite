@@ -16,7 +16,8 @@ class Admin extends AdminModule
             'Rawat Jalan'         => 'manage',
             'Booking Registrasi'  => 'booking',
             'Booking Periksa'     => 'bookingperiksa',
-            'Jadwal Dokter'       => 'jadwal'
+            'Jadwal Dokter'       => 'jadwal',
+            'Rujukan Internal Poli'=> 'rujukaninternal'
         ];
     }
 
@@ -27,6 +28,7 @@ class Admin extends AdminModule
         ['name' => 'Booking Registrasi', 'url' => url([ADMIN, 'rawat_jalan', 'booking']), 'icon' => 'file-o', 'desc' => 'Pendaftaran pasien booking rawat jalan'],
         ['name' => 'Booking Periksa', 'url' => url([ADMIN, 'rawat_jalan', 'bookingperiksa']), 'icon' => 'file-o', 'desc' => 'Booking periksa pasien rawat jalan via Online'],
         ['name' => 'Jadwal Dokter', 'url' => url([ADMIN, 'rawat_jalan', 'jadwal']), 'icon' => 'user-md', 'desc' => 'Jadwal dokter rawat jalan'],
+        ['name' => 'Rujukan Internal Poli', 'url' => url([ADMIN, 'rawat_jalan', 'rujukaninternal']), 'icon' => 'file-text-o', 'desc' => 'Rujukan Internal Poli'],
       ];
       return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
@@ -102,7 +104,7 @@ class Admin extends AdminModule
           $this->core->addJS(url('assets/jscripts/responsivevoice.js'));
         }
         $this->_addHeaderFiles();
-        $username = $this->core->getUserInfo('username', null, true);
+		$username = $this->core->getUserInfo('username', null, true);
         $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->toArray();
@@ -125,8 +127,8 @@ class Admin extends AdminModule
           AND reg_periksa.kd_dokter = dokter.kd_dokter
           AND reg_periksa.kd_poli = poliklinik.kd_poli
           AND reg_periksa.kd_pj = penjab.kd_pj";
-
-        if ($username != '197307171998032008') {
+      
+		if ($username != '197307171998032008') {
           if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi','manajemen'],true)) {
             $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
           }
@@ -258,7 +260,7 @@ class Admin extends AdminModule
           ->limit(1)
           ->oneArray();
           if($rawat) {
-            $stts_daftar = "Transaksi tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
+            $stts_daftar = "Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
             $stts_daftar_hidden = $stts_daftar;
             if($this->settings->get('settings.cekstatusbayar') == 'false'){
               $stts_daftar_hidden = 'Lama';
@@ -1333,6 +1335,87 @@ class Admin extends AdminModule
       exit();
     }
 
+       public function anyRujukanInternal()
+    {
+
+      $this->_addHeaderFiles();
+
+        $rows = $this->db('rujukan_internal_poli')
+          ->join('reg_periksa', 'reg_periksa.no_rawat=rujukan_internal_poli.no_rawat')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->join('dokter', ' rujukan_internal_poli.kd_dokter=dokter.kd_dokter')
+          ->join('poliklinik', 'poliklinik.kd_poli=rujukan_internal_poli.kd_poli')
+          ->join('poliklinik as poli', 'poli.kd_poli=reg_periksa.kd_poli')
+          ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+          ->select(['tgl_registrasi'=> 'reg_periksa.tgl_registrasi',
+                    'jam_reg'       => 'reg_periksa.jam_reg',
+                    'no_rkm_medis'  => 'reg_periksa.no_rkm_medis',
+                    'p_jawab'       => 'reg_periksa.p_jawab',
+                    'almt_pj'       => 'reg_periksa.almt_pj',
+                    'hubunganpj'    => 'reg_periksa.hubunganpj',
+                    'stts_daftar'   => 'reg_periksa.stts_daftar',
+                    'stts'          => 'reg_periksa.stts'])
+          ->select(['png_jawab'     => 'penjab.png_jawab'])   
+          ->select(['poli_awal'     => 'poli.nm_poli',])   
+          ->select(['nm_pasien'     => 'pasien.nm_pasien',
+                    'umur'          => 'pasien.umur',
+                    'jk'            => 'pasien.jk',
+                    'no_tlp'        => 'pasien.no_tlp'])         
+          ->select(['dokter_rujukan'=> 'dokter.nm_dokter'])
+          ->select(['poli_rujukan'  => 'poliklinik.nm_poli'])
+          ->select(['no_rawat'      => 'rujukan_internal_poli.no_rawat',
+                    'dokter'        => 'rujukan_internal_poli.kd_dokter',
+                    'kdpoli_rujukan'=> 'rujukan_internal_poli.kd_poli'])
+          ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+          ->desc('reg_periksa.jam_reg')
+          ->toArray();
+
+      $this->assign['list'] = [];
+      foreach ($rows as $row) {
+        $this->assign['list'][] = $row;
+      }
+      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign]);
+    }
+
+    public function postRujukanInternal()
+    {
+      $this->_addHeaderFiles();
+
+      if (isset($_POST['submit'])) {
+
+        $date1 = $_POST['periode_rawat_jalan'];
+        $date2 = $_POST['periode_rawat_jalan_akhir'];
+
+        if (!empty($date1) && !empty($date2)) {
+          $sql = "SELECT a.no_rawat, a.kd_dokter as dokter, a.kd_poli as kdpoli_rujukan,
+          b.tgl_registrasi, b.jam_reg, b.no_rkm_medis, b.p_jawab, b.almt_pj, b.hubunganpj, b.stts_daftar, b.stts,
+          poli.nm_poli as poli_awal, c.nm_pasien, c.umur, c.jk, c.no_tlp, d.nm_dokter as dokter_rujukan, e.nm_poli as poli_rujukan, f.png_jawab
+          FROM rujukan_internal_poli as a, reg_periksa as b , pasien as c, dokter as d , poliklinik as e, penjab as f , poliklinik as poli
+          WHERE b.no_rawat = a.no_rawat
+          AND c.no_rkm_medis=b.no_rkm_medis
+          AND a.kd_dokter=d.kd_dokter
+          AND e.kd_poli=a.kd_poli
+          AND poli.kd_poli=b.kd_poli
+          AND f.kd_pj=b.kd_pj
+          AND b.tgl_registrasi BETWEEN '$date1' AND '$date2'
+          ORDER BY b.jam_reg DESC";
+
+          $stmt = $this->db()->pdo()->prepare($sql);
+          $stmt->execute();
+          $rows = $stmt->fetchAll();
+
+          $this->assign['list'] = [];
+          foreach ($rows as $row) {
+
+            $this->assign['list'][] = $row;
+          }
+        } else {
+          $this->anyRujukanInternal();
+        }
+      }
+      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign]);
+    }
+  
     public function getJavascript()
     {
         header('Content-type: text/javascript');
