@@ -28,7 +28,6 @@ class Admin extends AdminModule
         ['name' => 'Booking Registrasi', 'url' => url([ADMIN, 'rawat_jalan', 'booking']), 'icon' => 'file-o', 'desc' => 'Pendaftaran pasien booking rawat jalan'],
         ['name' => 'Booking Periksa', 'url' => url([ADMIN, 'rawat_jalan', 'bookingperiksa']), 'icon' => 'file-o', 'desc' => 'Booking periksa pasien rawat jalan via Online'],
         ['name' => 'Jadwal Dokter', 'url' => url([ADMIN, 'rawat_jalan', 'jadwal']), 'icon' => 'user-md', 'desc' => 'Jadwal dokter rawat jalan'],
-        ['name' => 'Rujukan Internal Poli', 'url' => url([ADMIN, 'rawat_jalan', 'rujukaninternal']), 'icon' => 'file-text-o', 'desc' => 'Rujukan Internal Poli'],
       ];
       return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }

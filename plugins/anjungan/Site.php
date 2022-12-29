@@ -816,69 +816,7 @@ class Site extends SiteModule
     return $rows;
   }
 
-  public function getDisplayStokDarah()
-  {
-    $logo  = $this->settings->get('settings.logo');
-    $title = 'Display Info Stok Darah';
-    $display = $this->_resultDisplayStokDarah();
-
-    $_username = $this->core->getUserInfo('fullname', null, true);
-    $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
-    $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
-
-    $content = $this->draw('display.stok_darah.html', [
-      'logo' => $logo,
-      'title' => $title,
-      'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
-      'username' => $username,
-      'tanggal' => $tanggal,
-      'running_text' => '*STOK DARAH SEWAKTU-WAKTU BISA BERUBAH - PELAYANAN DONOR DARAH BUKA 24 JAM - WA: 081347233143',
-      'display' => $display,
-    ]);
-
-    $assign = [
-      'title' => $this->settings->get('settings.nama_instansi'),
-      'desc' => $this->settings->get('settings.alamat'),
-      'content' => $content
-    ];
-
-    $this->setTemplate("canvas.html");
-
-    $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-  }
-
-  public function _resultDisplayStokDarah()
-  {
-   $rows = $this->db('utd_stok_darah')->toArray();
-
-    $result = [];
-    // if (count($rows)) {
-      foreach ($rows as $row) {
-        $row['goldar_a'] = $this->db('utd_stok_darah')
-          ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-          ->where('utd_stok_darah.golongan_darah', 'A')
-          ->oneArray();
-        $row['goldar_b'] = $this->db('utd_stok_darah')
-        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-        ->where('utd_stok_darah.golongan_darah', 'B')
-        ->oneArray();
-
-        $row['goldar_o'] = $this->db('utd_stok_darah')
-        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-        ->where('utd_stok_darah.golongan_darah', 'O')
-        ->oneArray();
-
-        $row['goldar_ab'] = $this->db('utd_stok_darah')
-        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-        ->where('utd_stok_darah.golongan_darah', 'AB')
-        ->oneArray();
-        $result[] = $row;
-      }
-    // }
-    return $result;
-  }
-
+  
   public function getDisplayAntrianApotek()
   {
     $logo  = $this->settings->get('settings.logo');
@@ -1001,6 +939,70 @@ class Site extends SiteModule
     }
     return $rows;
   }
+
+  public function getDisplayStokDarah()
+  {
+    $logo  = $this->settings->get('settings.logo');
+    $title = 'Display Info Stok Darah';
+    $display = $this->_resultDisplayStokDarah();
+
+    $_username = $this->core->getUserInfo('fullname', null, true);
+    $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
+    $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+    $content = $this->draw('display.stok_darah.html', [
+      'logo' => $logo,
+      'title' => $title,
+      'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+      'username' => $username,
+      'tanggal' => $tanggal,
+      'running_text' => '*STOK DARAH SEWAKTU-WAKTU BISA BERUBAH - PELAYANAN DONOR DARAH BUKA 24 JAM - WA: 081347233143',
+      'display' => $display,
+    ]);
+
+    $assign = [
+      'title' => $this->settings->get('settings.nama_instansi'),
+      'desc' => $this->settings->get('settings.alamat'),
+      'content' => $content
+    ];
+
+    $this->setTemplate("canvas.html");
+
+    $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+  }
+
+  public function _resultDisplayStokDarah()
+  {
+   $rows = $this->db('utd_stok_darah')->toArray();
+
+    $result = [];
+    // if (count($rows)) {
+      foreach ($rows as $row) {
+        $row['goldar_a'] = $this->db('utd_stok_darah')
+          ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+          ->where('utd_stok_darah.golongan_darah', 'A')
+          ->oneArray();
+        $row['goldar_b'] = $this->db('utd_stok_darah')
+        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+        ->where('utd_stok_darah.golongan_darah', 'B')
+        ->oneArray();
+
+        $row['goldar_o'] = $this->db('utd_stok_darah')
+        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+        ->where('utd_stok_darah.golongan_darah', 'O')
+        ->oneArray();
+
+        $row['goldar_ab'] = $this->db('utd_stok_darah')
+        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+        ->where('utd_stok_darah.golongan_darah', 'AB')
+        ->oneArray();
+        $result[] = $row;
+      }
+    // }
+    return $result;
+  }
+
 
   public function getPanggilAntrian()
   {
