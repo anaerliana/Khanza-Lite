@@ -239,6 +239,7 @@ class Admin extends AdminModule
                 ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
                 ->where('jadwal_pegawai.tahun', $tahun)
                 ->like('jadwal_pegawai.bulan', $bulan . '%')
+                ->like('jadwal_pegawai.tahun', $tahun . '%')
                 ->like('pegawai.nama', '%' . $phrase . '%')
                 ->toArray();
         } else {
@@ -261,6 +262,7 @@ class Admin extends AdminModule
             $rows = $this->db('jadwal_pegawai')
                 ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
                 ->where('jadwal_pegawai.tahun', $tahun)
+                ->like('jadwal_pegawai.tahun', $tahun . '%')
                 ->like('jadwal_pegawai.bulan', $bulan . '%')
                 ->like('pegawai.nama', '%' . $phrase . '%')
                 ->offset($offset)
@@ -306,7 +308,16 @@ class Admin extends AdminModule
             '11' => 'NOV',
             '12' => 'DES',
         );
+
+       $year = array( 
+        '2020' => '2020', 
+        '2021' => '2021', 
+        '2022' => '2022', 
+        '2023' => '2023'
+        );
+        
         $this->assign['showBulan'] = $month[$bulan];
+        $this->assign['showTahun'] = $year[$tahun];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $this->assign['tahun'] = array('', '2020', '2021', '2022', '2023');

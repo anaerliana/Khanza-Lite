@@ -16,7 +16,6 @@ class Site extends SiteModule
         $this->mlite['version']        = $this->core->settings->get('settings.version');
         $this->mlite['token']          = '  ';
         if ($this->_loginCheck()) {
-            //$vedika = $this->db('mlite_users')->where('username', $_SESSION['vedika_user'])->oneArray();
             $this->mlite['vedika_user']    = $_SESSION['vedika_user'];
             $this->mlite['vedika_token']   = $_SESSION['vedika_token'];
         }
@@ -503,7 +502,7 @@ class Site extends SiteModule
         $display[] = $row;
       }
       $content = $this->draw('perbaikan_excel.html', [
-        'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'display' => $display
       ]);
 
@@ -808,7 +807,10 @@ class Site extends SiteModule
 
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
         $this->tpl->set('print_sep', $print_sep);
-
+        
+        $cek_spri = $this->db('bridging_surat_pri_bpjs')->where('no_rawat', $this->revertNorawat($id))->oneArray();
+        $this->tpl->set('cek_spri', $cek_spri);
+    
         $print_spri = array();
         if (!empty($this->_getSPRIInfo('no_surat', $no_rawat))) {
           $print_spri['bridging_surat_pri_bpjs'] = $this->db('bridging_surat_pri_bpjs')->where('no_surat', $this->_getSPRIInfo('no_surat', $no_rawat))->oneArray();
@@ -821,6 +823,12 @@ class Site extends SiteModule
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
+        if(!$this->db('resume_pasien')->where('no_rawat', $this->revertNorawat($id))->oneArray()) {
+          $resume_pasien = $this->db('resume_pasien_ranap')
+            ->join('dokter', 'dokter.kd_dokter = resume_pasien_ranap.kd_dokter')
+            ->where('no_rawat', $this->revertNorawat($id))
+            ->oneArray();
+        }
         $this->tpl->set('resume_pasien', $resume_pasien);
 
         $pasien = $this->db('pasien')
@@ -928,8 +936,6 @@ class Site extends SiteModule
             ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
             ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
             ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
-            ->where('detail_periksa_lab.tgl_periksa', $value['tgl_periksa'])
-            ->where('detail_periksa_lab.jam', $value['jam'])
             ->toArray();
           $pemeriksaan_laboratorium[] = $value;
         }
@@ -1253,8 +1259,8 @@ class Site extends SiteModule
         $row = $this->db('bridging_sep')->where('no_rawat', $no_rawat)->oneArray();
         return $row[$field];
     }
-
-    private function _getSPRIInfo($field, $no_rawat)
+  
+  	private function _getSPRIInfo($field, $no_rawat)
     {
       $row = $this->db('bridging_surat_pri_bpjs')->where('no_rawat', $no_rawat)->oneArray();
       return $row[$field];
@@ -1393,13 +1399,10 @@ class Site extends SiteModule
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
-        //$this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
-        //$this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
-        //$this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
         // MODULE SCRIPTS
         $this->core->addCSS(url(['veda', 'css']));

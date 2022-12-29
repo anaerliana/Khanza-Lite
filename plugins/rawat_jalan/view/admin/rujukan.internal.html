@@ -1,0 +1,142 @@
+<div class="row" id="rujukaninternal" style="margin-bottom:100px;">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="btn-group pull-right" style="margin-top:-8px;">
+            <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rujukan Internal</span>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <form method="POST" action="" class="form-inline mt-3">
+                <!-- <label for="date1">Tanggal mulai </label> -->
+                <li style="padding-left:5px;padding-right:5px;">
+                  <input type="text" name="periode_rawat_jalan" id="periode_rawat_jalan"
+                  class="form-control periode_rawat_jalan">
+                </li>
+                <!-- <label for="date2">sampai </label> -->
+                <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                  <input type="text" name="periode_rawat_jalan_akhir" id="periode_rawat_jalan_akhir"
+                  class="form-control periode_rawat_jalan">
+                </li>
+                <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                  <button type="submit" name="submit" class="btn btn-primary btn-block">Cari</button>
+                </li>
+              </form>
+            </ul>
+          </div>
+          <h3 class="panel-title">Rujukan Internal Poli</h3>
+        </div>
+        <div class="panel-body">
+          <div class="row">
+            <div id="notif"></div>
+          </div>
+          <div class="rujukan">
+            <!-- {include: ../plugins/rawat_jalan/view/admin/rujukaninternal.html} -->
+            <div class="table-responsive no-margin">
+              <table class="table table-striped no-padding dataTables" width="100%">
+                <thead>
+                  <tr>
+                    <th style="white-space: nowrap;">No. Rawat</th>
+                    <th style="white-space: nowrap;">Tanggal</th>
+                    <th style="white-space: nowrap;">Jam</th>
+                    <th style="white-space: nowrap;">Kd.Dokter</th>
+                    <th style="white-space: nowrap;">Dokter Rujukan</th>
+                    <th style="white-space: nowrap;">No.RM</th>
+                    <th style="white-space: nowrap;">Pasien</th>
+                    <th style="white-space: nowrap;">J.K</th>
+                    <th style="white-space: nowrap;">Umur</th>
+                    <th style="white-space: nowrap;">Poliklinik Rujukan</th>
+                    <th style="white-space: nowrap;">Poliklinik Perujuk</th>
+                    <th style="white-space: nowrap;">Jenis Bayar</th>
+                    <th style="white-space: nowrap;">Penanggung Jawab</th>
+                    <th style="white-space: nowrap;">Alamat P.J</th>
+                    <th style="white-space: nowrap;">Hubungan P.J</th>
+                    <th style="white-space: nowrap;">Status</th>
+                    <th style="white-space: nowrap;">No. Telp</th>
+                    <th style="white-space: nowrap;">Stts Rawat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loop: $rujukaninternal.list}
+                  <tr>
+                    <td>{$value.no_rawat}</td>
+                    <td>{$value.tgl_registrasi}</td>
+                    <td>{$value.jam_reg}</td>
+                    <td>{$value.dokter}</td>
+                    <td>{$value.dokter_rujukan}</td>
+                    <td>{$value.no_rkm_medis}</td>
+                    <td>{$value.nm_pasien}</td>
+                    <td>{$value.jk}</td>
+                    <td>{$value.umur}</td>
+                    <td>{$value.poli_rujukan}</td>
+                    <td>{$value.poli_awal}</td>
+                    <td>{$value.png_jawab}</td>
+                    <td>{$value.p_jawab}</td>
+                    <td>{$value.almt_pj}</td>
+                    <td>{$value.hubunganpj}</td>
+                    <td>{$value.stts_daftar}</td>
+                    <td>{$value.no_tlp}</td>
+                    <td>{$value.stts}</td>
+                  </tr>
+                  {/loop}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+     $(function () {
+         $('.periode_rawat_jalan').datetimepicker({
+           defaultDate: '{?=date('Y-m-d')?}',
+           format: 'YYYY-MM-DD',
+           locale: 'id'
+         });
+     });
+  </script>
+  
+<script type="text/javascript"> 
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  $('.dataTables').DataTable({
+    "order": [[1, "desc"]],
+    "pagingType": "full",
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next": "›"
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+    //event.stopPropagation();
+</script>
+<script type="text/javascript">
+  $(function () {
+    $('.tanggal').datetimepicker({
+      format: 'YYYY-MM-DD',
+      locale: 'id'
+    });
+  });
+  $(function () {
+    $('.jam').datetimepicker({
+      format: 'HH:mm:ss',
+      locale: 'id'
+    });
+  });
+</script>
+<script>
+  $('body').on('hidden.bs.modal', '.modal', function () {
+    $(this).removeData('bs.modal');
+  });
+</script>
+  

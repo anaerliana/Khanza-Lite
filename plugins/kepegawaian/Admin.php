@@ -34,8 +34,8 @@ class Admin extends AdminModule
             ['name' => 'Laporan Data Input', 'url' => url([ADMIN, 'kepegawaian', 'lap']), 'icon' => 'file', 'desc' => 'Laporan Data Input Pegawai'],
             ['name' => 'Laporan Data STR', 'url' => url([ADMIN, 'kepegawaian', 'lapstr']), 'icon' => 'file-text', 'desc' => 'Daftar STR Pegawai'],
             ['name' => 'Laporan Data SIP', 'url' => url([ADMIN, 'kepegawaian', 'lapsip']), 'icon' => 'file-text', 'desc' => 'Daftar SIP Pegawai'],
-            ['name' => 'DUK PNS', 'url' => url([ADMIN, 'kepegawaian', 'dukpns']), 'icon' => 'file', 'desc' => 'DUK PNS'],
-            ['name' => 'Perkiraan Pensiun PNS', 'url' => url([ADMIN, 'kepegawaian', 'lappns']), 'icon' => 'file', 'desc' => 'Perkiraan Pensiun PNS'],
+            ['name' => 'DUK PNS', 'url' => url([ADMIN, 'kepegawaian', 'dukpns']), 'icon' => 'list', 'desc' => 'DUK PNS'],
+            ['name' => 'Perkiraan Pensiun PNS', 'url' => url([ADMIN, 'kepegawaian', 'pensiunpns']), 'icon' => 'list', 'desc' => 'Perkiraan Pensiun PNS'],
 
             //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
         ];
@@ -686,7 +686,7 @@ class Admin extends AdminModule
         return $this->draw('dukpns.html', ['dukpns' => $this->assign]);
     }
 
-    public function getLappns($id = null)
+    public function getPensiunpns($id = null)
     {
 
         $this->_addHeaderFiles();
