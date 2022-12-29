@@ -64,7 +64,7 @@
         <td width="30%">{$value.nm_bangsal}</td>
         <td width="20%">{$value.kelas}</td>
         <td>
-          Jumlah Kosong : {$value.kosong.jumlah} | Jumlah Terisi : {$value.isi.jumlah}
+          Jumlah Kosong : {if: $value.kosong.jumlah == ''}0{else}{$value.kosong.jumlah}{/if} | Jumlah Terisi : {$value.isi.jumlah}
         </td>
       </tr>
       {/loop}

@@ -11,20 +11,22 @@
 							<tr>
 								<th>Kode Pegawai</th>
 								<th>Nama Pegawai</th>
-								<th>Departemen</th>
-								<th>Bidang</th>
+								<th>Unit Kerja</th>
+								<th>Tanggal</th>
 								<th>Jam</th>
+								<th>Ttd</th>
 							</tr>
 						</thead>
 						<tbody>
-              {if: !empty($rekap.list)}
+							{if: !empty($rekap.list)}
 							{loop: $rekap.list}
 							<tr>
 								<td>{$value.nik}</td>
 								<td>{$value.nama}</td>
-								<td>{$value.departemen}</td>
 								<td>{$value.bidang}</td>
+								<td>{$value.tanggal}</td>
 								<td>{$value.jam}</td>
+								<td><img src="{$src}" alt="" width="200px"></td>
 							</tr>
 							{/loop}
 							{else}
@@ -48,4 +50,25 @@
 </div>
 <script type="text/javascript">
 	$(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+	$(document).ready(function() {
+		$('#pardah').DataTable({
+			"dom": 'Bfrtip',
+			"buttons": [{
+				extend: 'pdfHtml5',
+				orientation: 'landscape',
+				customize: function (doc) {
+					if (doc) {
+					for (let i = 1; i < doc.content[1].table.body.length; i++) {
+							doc.content[1].table.body[i][5] = {
+								margin: [ 0, 0, 0, 12 ],
+								alignment: 'center',
+								image: '{$src}',
+							}
+						}
+					}
+				}
+			}]
+		});
+	});
+
 </script>

@@ -43,7 +43,7 @@ $("#form").on("click", "#manage", function (event) {
         jam_pulang: jam_pulang,
       }, function (data) {
         console.log(data == 200);
-        if (data == 'Sukses') {
+        if (data == 200) {
           $("#display").load(baseURL + '/profil/rekap_presensi?t=' + mlite.token);
           $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
             "Data presensi telah dikirim!" +
