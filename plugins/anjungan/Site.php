@@ -876,7 +876,7 @@ class Site extends SiteModule
       ->where('stts', 'Sudah')
       ->where('reg_periksa.kd_poli','<>','IGDK')
       ->where('antrian_apotek.jam_penyerahan', '00:00:00')
-      ->asc('resep_obat.jam_peresepan')
+      ->asc('antrian_apotek.no_antrian')
       ->toArray();
 
     $rows = [];
@@ -923,7 +923,7 @@ class Site extends SiteModule
     ->select('antrian_apotek.jam_penyerahan')
     ->where('jam_selesai','<>','00:00:00')
     ->where('resep_obat.tgl_perawatan', date('Y-m-d'))
-    ->asc('antrian_apotek.no_antrian')
+    ->desc('antrian_apotek.no_antrian')
     ->limit(1)
     ->toArray();
 

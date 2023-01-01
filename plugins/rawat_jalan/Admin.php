@@ -1344,24 +1344,28 @@ class Admin extends AdminModule
           ->join('reg_periksa', 'reg_periksa.no_rawat=rujukan_internal_poli.no_rawat')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->join('dokter', ' rujukan_internal_poli.kd_dokter=dokter.kd_dokter')
+          ->join('dokter as dok' , ' dok.kd_dokter=reg_periksa.kd_dokter')
           ->join('poliklinik', 'poliklinik.kd_poli=rujukan_internal_poli.kd_poli')
           ->join('poliklinik as poli', 'poli.kd_poli=reg_periksa.kd_poli')
           ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
           ->select(['tgl_registrasi'=> 'reg_periksa.tgl_registrasi',
                     'jam_reg'       => 'reg_periksa.jam_reg',
                     'no_rkm_medis'  => 'reg_periksa.no_rkm_medis',
+                    'kd_dokter'       => 'reg_periksa.kd_dokter',
                     'p_jawab'       => 'reg_periksa.p_jawab',
                     'almt_pj'       => 'reg_periksa.almt_pj',
                     'hubunganpj'    => 'reg_periksa.hubunganpj',
-                    'stts_daftar'   => 'reg_periksa.stts_daftar',
-                    'stts'          => 'reg_periksa.stts'])
+                    'stts'          => 'reg_periksa.stts',
+                    'status_lanjut' => 'reg_periksa.status_lanjut',
+                    'status_bayar'  => 'reg_periksa.status_bayar'])
           ->select(['png_jawab'     => 'penjab.png_jawab'])   
           ->select(['poli_awal'     => 'poli.nm_poli',])   
           ->select(['nm_pasien'     => 'pasien.nm_pasien',
                     'umur'          => 'pasien.umur',
                     'jk'            => 'pasien.jk',
-                    'no_tlp'        => 'pasien.no_tlp'])         
-          ->select(['dokter_rujukan'=> 'dokter.nm_dokter'])
+                    'no_tlp'        => 'pasien.no_tlp'])    
+          ->select(['dokter_perujuk'=> 'dok.nm_dokter',
+                    'dokter_rujukan'=> 'dokter.nm_dokter'])
           ->select(['poli_rujukan'  => 'poliklinik.nm_poli'])
           ->select(['no_rawat'      => 'rujukan_internal_poli.no_rawat',
                     'dokter'        => 'rujukan_internal_poli.kd_dokter',
@@ -1370,11 +1374,13 @@ class Admin extends AdminModule
           ->desc('reg_periksa.jam_reg')
           ->toArray();
 
+          $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
+
       $this->assign['list'] = [];
       foreach ($rows as $row) {
         $this->assign['list'][] = $row;
       }
-      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign]);
+      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign, 'master_berkas_digital' => $master_berkas_digital]);
     }
 
     public function postRujukanInternal()
@@ -1387,13 +1393,17 @@ class Admin extends AdminModule
         $date2 = $_POST['periode_rawat_jalan_akhir'];
 
         if (!empty($date1) && !empty($date2)) {
+          // 'stts'          => 'reg_periksa.stts',
+          // 'status_lanjut' => 'reg_periksa.status_lanjut',
+          // 'status_bayar'  => 'reg_periksa.status_bayar'])
           $sql = "SELECT a.no_rawat, a.kd_dokter as dokter, a.kd_poli as kdpoli_rujukan,
-          b.tgl_registrasi, b.jam_reg, b.no_rkm_medis, b.p_jawab, b.almt_pj, b.hubunganpj, b.stts_daftar, b.stts,
-          poli.nm_poli as poli_awal, c.nm_pasien, c.umur, c.jk, c.no_tlp, d.nm_dokter as dokter_rujukan, e.nm_poli as poli_rujukan, f.png_jawab
-          FROM rujukan_internal_poli as a, reg_periksa as b , pasien as c, dokter as d , poliklinik as e, penjab as f , poliklinik as poli
+          b.tgl_registrasi, b.jam_reg, b.no_rkm_medis, b.p_jawab, b.almt_pj, b.hubunganpj, b.stts, b.status_lanjut,  b.status_bayar,
+          poli.nm_poli as poli_awal, c.nm_pasien, c.umur, c.jk, c.no_tlp, d.nm_dokter as dokter_rujukan, e.nm_poli as poli_rujukan, f.png_jawab, dok.nm_dokter as dokter_perujuk
+          FROM rujukan_internal_poli as a, reg_periksa as b , pasien as c, dokter as d , poliklinik as e, penjab as f , poliklinik as poli, dokter as dok
           WHERE b.no_rawat = a.no_rawat
           AND c.no_rkm_medis=b.no_rkm_medis
           AND a.kd_dokter=d.kd_dokter
+          AND dok.kd_dokter=b.kd_dokter
           AND e.kd_poli=a.kd_poli
           AND poli.kd_poli=b.kd_poli
           AND f.kd_pj=b.kd_pj
@@ -1404,6 +1414,8 @@ class Admin extends AdminModule
           $stmt->execute();
           $rows = $stmt->fetchAll();
 
+          $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
+
           $this->assign['list'] = [];
           foreach ($rows as $row) {
 
@@ -1413,7 +1425,7 @@ class Admin extends AdminModule
           $this->anyRujukanInternal();
         }
       }
-      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign]);
+      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign, 'master_berkas_digital' => $master_berkas_digital]);
     }
   
     public function getJavascript()
