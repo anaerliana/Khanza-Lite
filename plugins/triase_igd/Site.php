@@ -49,13 +49,13 @@ class Site extends SiteModule
 
     public function _getDisplay()
     {
-        $rows = $this->db('reg_periksa')->join('pasien', 'reg_periksa.no_rkm_medis=pasien.no_rkm_medis')->where('kd_poli', 'IGDK')->where('tgl_registrasi','2021-11-22')->where('stts','Belum')->toArray();
+        $rows = $this->db('reg_periksa')->join('pasien', 'reg_periksa.no_rkm_medis=pasien.no_rkm_medis')->where('kd_poli', 'IGDK')->where('tgl_registrasi', date('Y-m-d'))->where('stts','Belum')->toArray();
         $result = [];
         foreach ($rows as $row) {
             $triage = $this->db('triase_igd')->where('no_rawat', $row['no_rawat'])->where('status', 1)->oneArray();
             $row['warna'] = $triage['warna_triase'];
             $row['bed'] = $triage['bed'];
-            $row['nm_pasien'] = substr($row['nm_pasien'],0,4).'***';
+          	$row['nm_pasien'] = substr($row['nm_pasien'],0,3).'***';
             $result[] = $row;
         }
         return $result;

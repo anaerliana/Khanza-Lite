@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="180">
+    <meta http-equiv="refresh" content="60">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -35,11 +35,35 @@
       footer a, footer a:hover {
         color: #fff;
       }
+       .kanan {
+      position: absolute;
+      right: 20px;
+      top: 0px;
+      width: 20%;
+      padding: 30px;
+      padding-top: 0;
+      padding-bottom: 0;  
+    } 
+    .panel-footer .no_antrian {
+     /* font-size: 65px; */
+      color: #000;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
     </style>
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Apotek {$settings.nama_instansi}</h1>
+  <h1 class="display-3 text-left text-white m-3"  style="font-size: 40px;"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="110px" height="115px"> Antrian Apotek {$settings.nama_instansi}</h1>
+  <h1 class="display-3 text-center kanan">
+      {loop: $antrian}
+        <div class="panel border-success">
+          <div class="panel-footer bg-transparent border-success">
+            <div class="no_antrian"><p style="font-size: 20px; font-weight:bold;">NOMOR ANTRIAN</p><b style="font-size: 55px;">{$value.no_antrian}</b></div>
+          </div>
+        </div>
+      {/loop}
+  </h1>
   <table class="table table-bordered text-primary">
     <tbody class="bg-primary">
       <tr>
@@ -49,7 +73,7 @@
               <ul class="list-unstyled">
                 {loop: $display}
                 <li style="padding:10px;">
-                  {$value.nm_pasien} - [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} <span class="pull-right">Status: <b {if: $value.status_resep == 'Sudah'}style="color:red;"{/if}>{$value.status_resep}</b></span><br>
+                  <button type="button" class="btn btn-lg btn-warning" style="color:black;"><b style="font-size: 25px;">{$value.no_antrian}</b></button> {$value.nm_pasien} - [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} - [ {$value.jns_racikan} ] <span class="pull-right">Status: <b {if: $value.status_selesai == 'Sudah'}style="color:red;"{/if}>{$value.status_selesai}</b></span><br>
                 </li>
                 {/loop}
               </ul>
@@ -60,7 +84,7 @@
     </tbody>
   </table>
   <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-  	<h3><marquee>{loop: $running_text}<i class="fa fa-user-md"></i> {$value.nm_dokter} [{$value.nm_poli}] - {$value.jam_mulai} s/d  {$value.jam_selesai} WITA {/loop}</marquee></h3>
+  	<h3><marquee><i class="fa fa-fw fa-clock-o"></i> {$running_text}<i class="fa fa-fw fa-clock-o"></i></marquee></h3>
   </div>
 </div>
 <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
@@ -74,3 +98,141 @@
 </footer>
 </body>
 </html>
+
+<!-- <!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="180">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <title>{$title} - {$settings.nama_instansi}</title>
+  <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+  <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+  <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+  <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+  <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+  <style media="screen">
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #fff;
+      background: #0264d6;
+      height: calc(100vh);
+      width: 100%;
+    }
+
+    li:nth-child(even) {
+      background: #0264d6;
+      color: #ffffff;
+    }
+
+    li:nth-child(odd) {
+      background: #ffffff;
+      color: #0264d6;
+    }
+
+    footer {
+      position: fixed;
+      right: 0px;
+      bottom: 0px;
+      height: 40px;
+      width: calc(100% - 0px);
+      font-size: 14px;
+      color: #fff;
+    }
+
+    footer a,
+    footer a:hover {
+      color: #fff;
+    }
+
+    /* .kiri {
+      float: left;
+      width: 80%;
+      padding: 10px;
+      height: 10px;
+      padding-bottom: 10px;
+    } */
+    .kanan {
+      position: absolute;
+      right: 20px;
+      top: 0px;
+      width: 18%;
+      padding: 30px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .panel-footer .no_antrian {
+      /* font-size: 50px; */
+      color: #000;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <h1 class="display-3 text-left text-white m-3" style="font-size: 40px;">
+      <img class="logo" src="{?=url()?}/{$logo}" alt="" width="110px" height="135px"> Antrian Apotek
+      {$settings.nama_instansi}
+     
+    </h1>
+    <h1 class="display-3 text-center kanan">
+      {loop: $antrian}
+      <div class="panel border-success">
+        <div class="panel-footer bg-transparent border-success">
+          <div class="no_antrian"><b style="font-size: 15px; font-weight:bold;">NOMOR ANTRIAN</b><br><b
+              style="font-size: 65px;">{$value.no_antrian}</b></div>
+        </div>
+      </div>
+      {/loop}
+    </h1>
+    <table class="table table-bordered text-primary">
+      <tbody class="bg-primary">
+        <tr>
+          <td>
+            <marquee direction="up" scrollamount="3" height="700">
+              <div id="list_lab" style="font-size: 24px; font-weight:bold;">
+                <ul class="list-unstyled">
+                  {loop: $display}
+                  <li style="padding:10px;">
+                    <button type="button" class="btn btn-lg btn-warning"
+                      style="color:black; font-weight:bold;">{$value.no_antrian}</button> {$value.nm_pasien}
+                    - [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} - [ {$value.jns_racikan} ] <span
+                      class="pull-right">Status: <b class="text-center" {if: $value.status_selesai=='Sudah'
+                        }style="color:red;" {/if}>{$value.status_selesai}</b></span><br>
+                  </li>
+                  {/loop}
+                </ul>
+              </div>
+            </marquee>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="row"
+      style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
+      <h3>
+        <marquee><i class="fa fa-fw fa-clock-o"></i> {$running_text} <i class="fa fa-fw fa-clock-o"></i></marquee>
+      </h3>
+    </div>
+  </div>
+  <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+    <div class="canvas">
+      <p class="pull-right">
+        Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F.
+            Basoro</b>.</a>
+        {$powered}.
+      </p>
+      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span
+          id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>',
+          $username) ?}</span></p>
+    </div>
+  </footer>
+</body>
+
+</html> -->

@@ -955,3 +955,11 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
 $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
 });
+
+$(document).ready(function() {
+  $('#laporan').DataTable({
+    "dom": 'Bfrtip',
+    "buttons": ['excel'],
+    order: [[1, 'desc']],
+  });
+});

@@ -53,6 +53,8 @@ class Site extends SiteModule
     $this->route('anjungan/baru/savesep','postSaveSepBaru');
     $this->route('anjungan/check','postCheckFungsi');
     $this->route('anjungan/reset','getResetAnjungan');
+    $this->route('anjungan/jadwaloperasi', 'getDisplayJadwalOperasi');
+    $this->route('anjungan/stokdarah', 'getDisplayStokDarah');
   }
 
   public function getIndex()
@@ -755,11 +757,72 @@ class Site extends SiteModule
     return $rows;
   }
 
+  public function getDisplayJadwalOperasi()
+  {
+    $logo  = $this->settings->get('settings.logo');
+    $title = 'Display Jadwal Operasi';
+    $display = $this->_resultDisplayJadwalOperasi();
+
+    $_username = $this->core->getUserInfo('fullname', null, true);
+    $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
+    $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+    $content = $this->draw('display.jadwal.operasi.html', [
+      'logo' => $logo,
+      'title' => $title,
+      'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+      'username' => $username,
+      'tanggal' => $tanggal,
+      'running_text' => $this->settings->get('anjungan.text_laboratorium'),
+      'display' => $display
+    ]);
+
+    $assign = [
+      'title' => $this->settings->get('settings.nama_instansi'),
+      'desc' => $this->settings->get('settings.alamat'),
+      'content' => $content
+    ];
+
+    $this->setTemplate("canvas.html");
+
+    $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    //exit();
+  }
+
+  public function _resultDisplayJadwalOperasi()
+  {
+    $date = date('Y-m-d');
+    $tentukan_hari = date('D', strtotime(date('Y-m-d')));
+    $day = array(
+      'Sun' => 'AKHAD',
+      'Mon' => 'SENIN',
+      'Tue' => 'SELASA',
+      'Wed' => 'RABU',
+      'Thu' => 'KAMIS',
+      'Fri' => 'JUMAT',
+      'Sat' => 'SABTU'
+    );
+    $hari = $day[$tentukan_hari];
+
+    $poliklinik = $this->settings('settings', 'laboratorium');
+    $rows = $this->db('booking_operasi')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=booking_operasi.no_rawat')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->where('tanggal', date('Y-m-d'))
+      //->asc('no_reg')
+      ->toArray();
+
+    return $rows;
+  }
+
+  
   public function getDisplayAntrianApotek()
   {
     $logo  = $this->settings->get('settings.logo');
-    $title = 'Display Antrian Laboratorium';
+    $title = 'Display Antrian Apotek';
     $display = $this->_resultDisplayAntrianApotek();
+    $antrian = $this->_noDisplayAntrianApotek();
 
     $date = date('Y-m-d');
     $tentukan_hari = date('D', strtotime(date('Y-m-d')));
@@ -774,15 +837,11 @@ class Site extends SiteModule
     );
     $hari = $day[$tentukan_hari];
 
-    $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
+    //$jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
 
     $_username = $this->core->getUserInfo('fullname', null, true);
-    $__username = $this->core->getUserInfo('username');
-    if ($this->core->getUserInfo('username') !== '') {
-      $__username = 'Tamu';
-    }
     $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
-    $username      = !empty($_username) ? $_username : $__username;
+    $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
 
     $content = $this->draw('display.antrian.apotek.html', [
       'logo' => $logo,
@@ -790,8 +849,10 @@ class Site extends SiteModule
       'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
       'username' => $username,
       'tanggal' => $tanggal,
-      'running_text' => $jadwal,
-      'display' => $display
+      'running_text' => $this->settings->get('anjungan.text_apotek'),
+      //'Perkiraan Waktu Tunggu Non Racikan 15 Menit - Perkiraan Waktu Tunggu Racikan 45 Menit',
+      'display' => $display,
+      'antrian' => $antrian
     ]);
 
     $assign = [
@@ -810,22 +871,138 @@ class Site extends SiteModule
     $query = $this->db('reg_periksa')
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
       ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
+      ->join('antrian_apotek', 'antrian_apotek.no_resep=resep_obat.no_resep')
       ->where('tgl_registrasi', date('Y-m-d'))
-      ->where('reg_periksa.kd_poli', '<>', 'IGDK')
       ->where('stts', 'Sudah')
-      ->asc('resep_obat.jam_peresepan')
+      ->where('reg_periksa.kd_poli','<>','IGDK')
+      ->where('antrian_apotek.jam_penyerahan', '00:00:00')
+      ->asc('antrian_apotek.no_antrian')
       ->toArray();
+
     $rows = [];
     foreach ($query as $row) {
-      $row['status_resep'] = 'Sudah';
-      if ($row['jam'] == $row['jam_peresepan']) {
-        $row['status_resep'] = 'Belum';
+      $norawat = $row['no_rawat'];
+      $racikan = $this->db('obat_racikan')
+      ->join('resep_obat', 'resep_obat.no_rawat=obat_racikan.no_rawat')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('antrian_apotek', 'antrian_apotek.no_resep=resep_obat.no_resep')
+      ->select('obat_racikan.kd_racik')
+      ->where('resep_obat.no_rawat', $norawat)
+      ->where('tgl_registrasi', date('Y-m-d'))
+      ->where('antrian_apotek.jam_penyerahan', '00:00:00')
+      ->oneArray();
+
+      // $row['status_resep'] = 'Sudah';
+      // if ($row['jam'] == $row['jam_peresepan']) {
+      //   $row['status_resep'] = 'Belum';
+      // }
+
+      $row['jns_racikan'] = 'Racikan';
+      if ($racikan['kd_racik'] == '') {
+        $row['jns_racikan'] = 'Non Racikan';
+      }
+      
+      $row['status_selesai'] = 'Sudah';
+      if ( $row['jam_selesai'] == '00:00:00') {
+        $row['status_selesai'] = 'Belum';
       }
       $rows[] = $row;
-    }
 
+    }
     return $rows;
   }
+
+  public function _noDisplayAntrianApotek()
+  {
+    $query =  $this->db('antrian_apotek')
+    ->join('resep_obat', 'resep_obat.no_resep = antrian_apotek.no_resep')
+    ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
+    ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+    ->select('antrian_apotek.no_antrian')
+    ->select('antrian_apotek.jam_penyerahan')
+    ->where('jam_selesai','<>','00:00:00')
+    ->where('resep_obat.tgl_perawatan', date('Y-m-d'))
+    ->desc('antrian_apotek.no_antrian')
+    ->limit(1)
+    ->toArray();
+
+    $rows = [];
+    foreach ($query as $row) {
+
+      $row['status_penyerahan'] = 'Sudah';
+      if ( $row['jam_penyerahan'] == '00:00:00') {
+        $row['status_penyerahan'] = 'Belum';
+      }
+      $rows[] = $row;
+
+    }
+    return $rows;
+  }
+
+  public function getDisplayStokDarah()
+  {
+    $logo  = $this->settings->get('settings.logo');
+    $title = 'Display Info Stok Darah';
+    $display = $this->_resultDisplayStokDarah();
+
+    $_username = $this->core->getUserInfo('fullname', null, true);
+    $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
+    $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+    $content = $this->draw('display.stok_darah.html', [
+      'logo' => $logo,
+      'title' => $title,
+      'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+      'username' => $username,
+      'tanggal' => $tanggal,
+      'running_text' => '*STOK DARAH SEWAKTU-WAKTU BISA BERUBAH - PELAYANAN DONOR DARAH BUKA 24 JAM - WA: 081347233143',
+      'display' => $display,
+    ]);
+
+    $assign = [
+      'title' => $this->settings->get('settings.nama_instansi'),
+      'desc' => $this->settings->get('settings.alamat'),
+      'content' => $content
+    ];
+
+    $this->setTemplate("canvas.html");
+
+    $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+  }
+
+  public function _resultDisplayStokDarah()
+  {
+   $rows = $this->db('utd_stok_darah')->toArray();
+
+    $result = [];
+    // if (count($rows)) {
+      foreach ($rows as $row) {
+        $row['goldar_a'] = $this->db('utd_stok_darah')
+          ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+          ->where('utd_stok_darah.golongan_darah', 'A')
+          ->oneArray();
+        $row['goldar_b'] = $this->db('utd_stok_darah')
+        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+        ->where('utd_stok_darah.golongan_darah', 'B')
+        ->oneArray();
+
+        $row['goldar_o'] = $this->db('utd_stok_darah')
+        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+        ->where('utd_stok_darah.golongan_darah', 'O')
+        ->oneArray();
+
+        $row['goldar_ab'] = $this->db('utd_stok_darah')
+        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
+        ->where('utd_stok_darah.golongan_darah', 'AB')
+        ->oneArray();
+        $result[] = $row;
+      }
+    // }
+    return $result;
+  }
+
 
   public function getPanggilAntrian()
   {

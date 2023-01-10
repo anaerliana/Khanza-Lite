@@ -7,7 +7,7 @@ $(document).ready(function(){
     var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
     var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
     var s  = $('input:text[name=s]').val();
-
+  
     if(periode_rawat_jalan == '') {
       alert('Tanggal awal masih kosong!')
     }
@@ -22,34 +22,34 @@ $(document).ready(function(){
     var opt = decodeURI(option);
 
     window.location.href = baseURL+'/presensi/rekap_presensi?awal='+periode_rawat_jalan+'&akhir='+periode_rawat_jalan_akhir+'&ruang='+opt+'&s='+ss+'&t=' + mlite.token;
-
+    
     event.stopPropagation();
-
+  
   });
   $('#manage').on('click', '#cari', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url    = baseURL + '/presensi/rekap_presensi?t=' + mlite.token;
     var s  = $('input:text[name=s]').val();
-
-
+  
+    
     var optionText = document.getElementById("bidang").value;
     var option = optionText.toLowerCase();
     var opt = decodeURI(option);
 
     window.location.href = baseURL+'/presensi/rekap_presensi?s='+s+'&ruang='+opt+'&t=' + mlite.token;
-
-
+    
+  
     event.stopPropagation();
-
+  
   });
   $('#presensi_masuk').on('click', '#cari', function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url    = baseURL + '/presensi/presensi?t=' + mlite.token;
     var s  = $('input:text[name=s]').val();
-
-
+  
+    
     var optionText = document.getElementById("bidang").value;
     var option = optionText.toLowerCase();
     var opt = decodeURI(option);
@@ -59,10 +59,10 @@ $(document).ready(function(){
     var dep = decodeURI(depo);
 
     window.location.href = baseURL+'/presensi/presensi?s='+s+'&ruang='+opt+'&dep='+dep+'&t=' + mlite.token;
-
-
+    
+  
     event.stopPropagation();
-
+  
   });
 })
 
