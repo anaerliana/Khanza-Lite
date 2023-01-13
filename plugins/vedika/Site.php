@@ -871,7 +871,13 @@ class Site extends SiteModule
           ->asc('tgl_perawatan')
           ->asc('jam_rawat')
           ->toArray();
+        // $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+        //   ->where('no_rawat', $this->revertNorawat($id))
+        //   ->asc('tgl_perawatan')
+        //   ->asc('jam_rawat')
+        //   ->toArray();
         $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+          ->join('pegawai', 'pemeriksaan_ranap.nip=pegawai.nik')
           ->where('no_rawat', $this->revertNorawat($id))
           ->asc('tgl_perawatan')
           ->asc('jam_rawat')
@@ -954,6 +960,11 @@ class Site extends SiteModule
         $laporan_operasi = $this->db('laporan_operasi')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
+      
+          $rujukan_internal_poli_detail = $this->db('rujukan_internal_poli_detail')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->oneArray();
+          $this->tpl->set('rujukan_internal_poli_detail', $rujukan_internal_poli_detail);
 
         $this->tpl->set('pasien', $pasien);
         $this->tpl->set('reg_periksa', $reg_periksa);

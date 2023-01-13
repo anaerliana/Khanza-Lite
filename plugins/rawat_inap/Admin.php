@@ -105,7 +105,7 @@ class Admin extends AdminModule
      $username = $this->core->getUserInfo('username', null, true);
   //  if ((!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi'],  true)) 
   //  && (!in_array ($this->core->getPegawaiInfo('bidang', $username), ['Mubarak'], true)) ) {
-    if (!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'],  true)){
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'medis','apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok', 'paramedis'],  true)){
       $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
     }
     if ($status_pulang == '') {
@@ -591,10 +591,12 @@ class Admin extends AdminModule
       $row['nama_petugas'] = $this->core->getPegawaiInfo('nama', $row['nip']);
       $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen', $row['nip']));
       $row['bidang'] = $this->core->getPegawaiInfo('bidang', $row['nip']);
+      $row['jbtn_petugas'] = $this->core->getPegawaiInfo('jbtn', $row['nip']);
       $result[] = $row;
     }
 
     $rows_ranap = $this->db('pemeriksaan_ranap')
+    //  ->join('petugas', 'pemeriksaan_ranap.nip=petugas.nip')
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
     $result_ranap = [];
@@ -603,7 +605,7 @@ class Admin extends AdminModule
       $row['nama_petugas'] = $this->core->getPegawaiInfo('nama', $row['nip']);
       $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen', $row['nip']));
       $row['bidang'] = $this->core->getPegawaiInfo('bidang', $row['nip']);
-
+      $row['jbtn_petugas'] = $this->core->getPegawaiInfo('jbtn', $row['nip']);
       $result_ranap[] = $row;
     }
 
