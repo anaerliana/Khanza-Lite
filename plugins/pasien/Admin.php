@@ -550,9 +550,12 @@ class Admin extends AdminModule
         $row['periksa_radiologi'] = $this->db('periksa_radiologi')
           ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+          ->join('permintaan_radiologi', 'permintaan_radiologi.no_rawat=periksa_radiologi.no_rawat')
+          ->join('saran_kesan_rad', 'saran_kesan_rad.no_rawat=periksa_radiologi.no_rawat')
+          ->join('diagnosa_pasien_klinis', 'diagnosa_pasien_klinis.noorder=permintaan_radiologi.noorder')
           ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
           ->toArray();
-
+           
         $row['detail_pemberian_obat__'] = $this->db('aturan_pakai')
           ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
           ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
@@ -683,9 +686,12 @@ class Admin extends AdminModule
           $row['periksa_lab'][] = $value;
         }
 
-        $row['periksa_radiologi'] = $this->db('periksa_radiologi')
+          $row['periksa_radiologi'] = $this->db('periksa_radiologi')
           ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+          ->join('permintaan_radiologi', 'permintaan_radiologi.no_rawat=periksa_radiologi.no_rawat')
+          ->join('saran_kesan_rad', 'saran_kesan_rad.no_rawat=periksa_radiologi.no_rawat')
+          ->join('diagnosa_pasien_klinis', 'diagnosa_pasien_klinis.noorder=permintaan_radiologi.noorder')
           ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
           ->toArray();
 
@@ -701,7 +707,7 @@ class Admin extends AdminModule
           //->select('detail_pemberian_obat.jml')
           //->select('resep_dokter.aturan_pakai')
           ->toArray();
-
+        
         $row['hasil_radiologi'] = $this->db('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
         $row['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
         $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
