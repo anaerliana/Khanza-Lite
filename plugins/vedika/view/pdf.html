@@ -905,6 +905,26 @@ Ralan :
               <td valign='top'>{$value.tgl_periksa} {$value.jam}</td>
               <td valign='top'>{$value.hasil}</td>
             </tr>
+            {loop: $klinis_radiologi}
+            <tr>
+              <td valign='top'>Klinis</td>
+              <td>{$value.klinis}</td>
+            </tr>
+            {/loop}
+            {loop: $saran_rad}
+            <tr>
+              <td valign='top'>Judul</td>
+              <td>{$value.judul}</td>
+            </tr>
+            <tr>
+              <td valign='top'>Kesan</td>
+              <td>{$value.kesan}</td>
+            </tr>
+            <tr>
+              <td valign='top'>Saran</td>
+              <td>{$value.saran}</td>
+            </tr>
+            {/loop}
             {/loop}
           </table>
         </td>

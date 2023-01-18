@@ -1584,6 +1584,16 @@ class Admin extends AdminModule
     $hasil_radiologi = $this->db('hasil_radiologi')
       ->where('no_rawat', $this->revertNorawat($id))
       ->toArray();
+
+    $klinis_radiologi = $this->db('diagnosa_pasien_klinis')
+      ->join('permintaan_radiologi', 'permintaan_radiologi.noorder=diagnosa_pasien_klinis.noorder')
+      ->where('no_rawat', $this->revertNorawat($id))
+      ->toArray();
+
+    $saran_rad = $this->db('saran_kesan_rad')
+      ->where('no_rawat', $this->revertNorawat($id))
+      ->toArray();
+
     $pemeriksaan_laboratorium = [];
     $rows_pemeriksaan_laboratorium = $this->db('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
@@ -1613,10 +1623,6 @@ class Admin extends AdminModule
       ->where('no_rawat', $this->revertNorawat($id))
       ->oneArray();
 
-    // $cekrujukan_internal = $this->db('rujukan_internal_poli')
-    //   ->where('no_rawat', $this->revertNorawat($id))
-    //   ->oneArray();
-    // $this->tpl->set('cekrujukan_internal', $cekrujukan_internal);
 
     $rujukan_internal = $this->db('rujukan_internal_poli')
     ->join('dokter', ' rujukan_internal_poli.kd_dokter=dokter.kd_dokter')
@@ -1647,6 +1653,8 @@ class Admin extends AdminModule
     $this->tpl->set('operasi', $operasi);
     $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
     $this->tpl->set('hasil_radiologi', $hasil_radiologi);
+    $this->tpl->set('klinis_radiologi', $klinis_radiologi);
+    $this->tpl->set('saran_rad', $saran_rad);
     $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
     $this->tpl->set('pemberian_obat', $pemberian_obat);
     $this->tpl->set('obat_operasi', $obat_operasi);
