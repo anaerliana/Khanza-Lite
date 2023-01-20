@@ -563,13 +563,13 @@
             <tr align="center">
               <td valign="top" width="20%" bgcolor="#eee">Tanggal</td>
               <td valign="top" width="30%" bgcolor="#eee">Nama Tindakan</td>
-              <td valign="top" width="50%" bgcolor="#eee">Keterangan</td>
+              <!-- <td valign="top" width="50%" bgcolor="#eee">Keterangan</td> -->
             </tr>
             {loop: $value.periksa_radiologi as $data}
             <tr>
               <td valign="top" width="20%">{$data.tgl_periksa}</td>
               <td valign="top" width="30%">{$data.nm_perawatan}</td>
-              <td valign="top" width="50%">{?=nl2br($data.hasil)?}</td>
+              <!-- <td valign="top" width="50%">{?=nl2br($data.hasil)?}</td> -->
             </tr>
             <tr>
               <td valign='top'>Klinis</td>
@@ -578,6 +578,10 @@
             <tr>
               <td valign='top'>Judul</td>
               <td colspan="2">{$data.judul}</td>
+            </tr>
+            <tr>
+              <td valign='top'>Hasil Interpretasi</td>
+              <td colspan="2">{?=nl2br($data.hasil)?}</td>
             </tr>
             <tr>
               <td valign='top'>Kesan</td>

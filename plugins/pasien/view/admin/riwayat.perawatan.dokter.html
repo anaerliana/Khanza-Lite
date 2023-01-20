@@ -514,10 +514,6 @@
             <div class="col-sm-12 col-md-12">
               {loop: $value.periksa_radiologi as $data}
               <h4>{$data.nm_perawatan}</h4>
-              <div><b>Interpretasi :</b></div>
-              <div class="caption">
-                {?=nl2br($data.hasil)?}
-              </div>
               <div><b>Klinis :</b></div>
               <div class="caption">
                 {$data.klinis}
@@ -525,6 +521,10 @@
               <div><b>Judul :</b></div>
               <div class="caption">
                 {$data.judul}
+              </div>
+              <div><b>Hasil Interpretasi :</b></div>
+              <div class="caption">
+                {?=nl2br($data.hasil)?}
               </div>
               <div><b>Kesan :</b></div>
               <div class="caption">
