@@ -1069,6 +1069,140 @@ Ralan :
     </div>
   </fieldset>
   <br><br><br>
+  {if: $reg_periksa.status_lanjut == 'Ralan'}
+  <fieldset style="page-break-before:always;">
+    <h3>
+      <center>RESUME MEDIS RAWAT JALAN JKN</center>
+    </h3>
+    <h4>
+      <center>RSUD H. DAMANHURI</center>
+    </h4>
+    <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+      {*Diagnosa Penyakit*}
+      <tr class="isi">
+        <td valign="top" width="20%">Diagnosa</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr>
+              <td valign="top" width="1%">1</td>
+              <td valign="top">{$resume_pasien.diagnosa_utama}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="1%">2</td>
+              <td valign="top">{$resume_pasien.diagnosa_sekunder}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="1%">3</td>
+              <td valign="top">{$resume_pasien.diagnosa_sekunder2}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="1%">4</td>
+              <td valign="top">{$resume_pasien.diagnosa_sekunder3}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="1%">5</td>
+              <td valign="top">{$resume_pasien.diagnosa_sekunder4}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      {*Prosedur Tindakan*}
+      <tr class="isi">
+        <td valign="top" width="20%">Prosedur/Tindakan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr>
+              <td valign="top" width="1%">1</td>
+              <td valign="top">{$resume_pasien.prosedur_utama}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="1%">2</td>
+              <td valign="top">{$resume_pasien.prosedur_sekunder}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="1%">3</td>
+              <td valign="top">{$resume_pasien.prosedur_sekunder2}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="1%">4</td>
+              <td valign="top">{$resume_pasien.prosedur_sekunder3}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      {*Laporan Tindakan*}
+      <tr class="isi">
+        <td valign="top" width="20%">Laporan Tindakan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr>
+              <td valign="top" width="10%">Keluhan</td>
+              <td valign="top" width="90%"> : {loop: $pemeriksaan_ralan}{$value.keluhan}{/loop}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="10%">Pemeriksaan</td>
+              <td valign="top" width="90%"> : {loop: $pemeriksaan_ralan}{$value.pemeriksaan}{/loop}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="10%">Tensi</td>
+              <td valign="top" width="90%"> : {loop: $pemeriksaan_ralan}{$value.tensi}{/loop}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="10%">Respirasi</td>
+              <td valign="top" width="90%"> : {loop: $pemeriksaan_ralan}{$value.respirasi}{/loop}</td>
+            </tr>
+            <tr>
+              <td valign="top" width="10%">Nadi</td>
+              <td valign="top" width="90%"> : {loop: $pemeriksaan_ralan}{$value.nadi}{/loop}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Dirawat Inapkan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{if: $reg_periksa.status_lanjut == 'Ralan'}Tidak{else}Ya{/if}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Kunjungan Awal</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{if: $reg_periksa.status_poli == 'Lama'}Tidak{else}Ya{/if}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Kunjungan Lanjutan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{if: $reg_periksa.status_poli == 'Baru'}Tidak{else}Ya{/if}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Observasi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%"></td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Post Operasi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%"></td>
+      </tr>
+    </table>
+    <div style="float: right;">
+      <br><br>
+      <h5>Dokter</h5>
+      <p>
+      <div class="qrcodeDPJPralan" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
+      {$reg_periksa.nm_dokter}
+      <script>
+        jQuery('.qrcodeDPJPralan').qrcode({
+          text: "Dokter : {$reg_periksa.nm_dokter}"
+        });
+      </script>
+      </p>
+    </div>
+  </fieldset>
+  {/if}
+  <br><br><br>
   <fieldset style="page-break-before:always;">
     <h2>
       <center>Billing</center>
