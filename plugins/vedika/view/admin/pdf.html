@@ -1080,6 +1080,13 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
+              <td valign="top">{$resume_pasien.diagnosa_utama}<br>
+                {$resume_pasien.diagnosa_sekunder}<br>
+                {$resume_pasien.diagnosa_sekunder2}<br>
+                {$resume_pasien.diagnosa_sekunder3}<br>
+                {$resume_pasien.diagnosa_sekunder4}</td>
+            </tr>
+            <!-- <tr>
               <td valign="top" width="1%">1</td>
               <td valign="top">{$resume_pasien.diagnosa_utama}</td>
             </tr>
@@ -1098,7 +1105,7 @@ Ralan :
             <tr>
               <td valign="top" width="1%">5</td>
               <td valign="top">{$resume_pasien.diagnosa_sekunder4}</td>
-            </tr>
+            </tr>-->
           </table>
         </td>
       </tr>
@@ -1109,6 +1116,12 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
+              <td valign="top">{$resume_pasien.prosedur_utama}<br>
+                {$resume_pasien.prosedur_sekunder}<br>
+                {$resume_pasien.prosedur_sekunder2}<br>
+                {$resume_pasien.prosedur_sekunder3}</td>
+            </tr>
+            <!-- <tr>
               <td valign="top" width="1%">1</td>
               <td valign="top">{$resume_pasien.prosedur_utama}</td>
             </tr>
@@ -1123,7 +1136,7 @@ Ralan :
             <tr>
               <td valign="top" width="1%">4</td>
               <td valign="top">{$resume_pasien.prosedur_sekunder3}</td>
-            </tr>
+            </tr> -->
           </table>
         </td>
       </tr>
@@ -1804,6 +1817,120 @@ Ralan :
   {/if}
   <br><br><br>
   {if: $resume_pasien}
+  {if: $reg_periksa.status_lanjut == 'Ranap'}
+  <fieldset style="page-break-before:always;">
+    <h3>
+      <center>RESUME MEDIS RAWAT INAP</center>
+    </h3>
+    <h4>
+      <center>RSUD H. DAMANHURI</center>
+    </h4>
+    <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+      <tr>
+        <td valign="top" width="20%">Dokter DPJP</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.nm_dokter}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Nomor Rawat</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.no_rawat}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Diagnosa Masuk</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%"> {if: !empty($resume_pasien.diagnosa_awal)}
+          {$resume_pasien.diagnosa_awal}<br>{/if}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Keluhan Utama Riwayat Penyakit Yang Positif</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.keluhan_utama}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Jalannya Penyakit Selama Perawatan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.jalannya_penyakit}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Pemeriksaan Fisik</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <!-- <td valign="top" width="79%">{$resume_pasien.pemeriksaan_fisik}</td> -->
+        <td valign="top" width="79%"> {if: !empty($resume_pasien.pemeriksaan_fisik)}
+          {$resume_pasien.pemeriksaan_fisik}<br>{/if}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Pemeriksaan Penunjang yang Penting</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.pemeriksaan_penunjang}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Pemeriksaan Laboratorium</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.hasil_laborat}</td>
+      </tr>
+      {*Diagnosa Penyakit*}
+      <tr>
+        <td valign="top" width="20%">Diagnosa</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr>
+              <td valign="top">{$resume_pasien.diagnosa_utama}<br>
+                {$resume_pasien.diagnosa_sekunder}<br>
+                {$resume_pasien.diagnosa_sekunder2}<br>
+                {$resume_pasien.diagnosa_sekunder3}<br>
+                {$resume_pasien.diagnosa_sekunder4}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      {*Prosedur Tindakan*}
+      <tr>
+        <td valign="top" width="20%">Prosedur/Tindakan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr>
+              <td valign="top">{$resume_pasien.prosedur_utama}<br>
+                {$resume_pasien.prosedur_sekunder}<br>
+                {$resume_pasien.prosedur_sekunder2}<br>
+                {$resume_pasien.prosedur_sekunder3}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Obat-obatan Waktu Pulang/Nasihat</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.obat_pulang}<br></td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Kondisi Pulang</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <!-- {if: !empty($data.pemeriksaan)}Pemeriksaan: {$data.pemeriksaan}<br>{/if} -->
+        <td valign="top" width="79%"> {if: !empty($resume_pasien.kondisi_pulang)}
+          {$resume_pasien.kondisi_pulang}<br>{/if}</td>
+      </tr>
+    </table>
+    <div style="float: right;">
+      <br><br>
+      <h5>Dokter Penanggung Jawab</h5>
+      <p>
+      <div class="qrcodeDPJPResumeRanap" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
+      {$resume_pasien.nm_dokter}<br>
+      <script>
+        jQuery('.qrcodeDPJPResumeRanap').qrcode({
+          text: "DPJP: {$resume_pasien.nm_dokter}"
+        });
+      </script>
+      </p>
+    </div>
+  </fieldset>
+  {/if}
+  {/if}
+  <br><br><br>
+  <!-- {if: $resume_pasien}
   <fieldset style="page-break-before:always;">
     <div class="block-header">
       <h2>
@@ -1913,8 +2040,8 @@ Ralan :
       </p>
     </div>
   </fieldset>
+  {/if} -->
   <br><br><br>
-  {/if}
   <!-- Rujukan Internal -->
   {if: $rujukan_internal}
   <fieldset style="page-break-before:always;">
