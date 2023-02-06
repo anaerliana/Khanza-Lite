@@ -104,7 +104,7 @@
                         data-nm_pasien="{?=strtolower($value.nm_pasien)?}"
                         data-no_antrian="{?=strtolower($value.no_antrian)?}"
                         data-nm_poli="{?=strtolower($value.nm_poli)?}" data-jam_selesai="{$value.jam_selesai}"
-                        data-panggil="coba_{$value.no_antrian}" id="merah()"><i class="
+                        data-panggil="coba_{$value.no_antrian}"><i class="
                         fa fa-bullhorn"></i><span class="hidden-xs hidden-sm">
                           Panggil</span></button>{/if}
                       <button type="button" name="button" class="btn btn-xs btn-warning diserahkan"
@@ -169,8 +169,6 @@
 
             document.getElementById(panggil).textContent = "Sudah";
             document.getElementById(panggil).style.color = "#ff0000";
-            // var warna = document.getElementById(panggil);
-            $('#panggil').css('color', 'red');
             console.log("sudah");
           }
         },
@@ -185,11 +183,7 @@
     play();
   });
 </script>
-<script>
-  function merah() {
-    warna.style.color = "red";
-  }
-</script>
+
 
 <script type="text/javascript">
   $("#display").on("click", ".diserahkan", function (event) {
