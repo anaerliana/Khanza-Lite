@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="40">
+  <meta http-equiv="refresh" content="60">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
@@ -93,20 +93,24 @@
                 <li style="padding:10px;">
                   <button type="button" class="btn btn-lg btn-warning" style="color:black;"><b
                       style="font-size: 20px;">{$value.no_antrian}</b></button> {$value.nm_pasien} -
-                  [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} - [ {$value.jns_racikan} ] <span
-                    style="font-size: 18px;" class="pull-right">Status: <b {if: $value.status_selesai=='Sudah'
-                      }style="color:red;" {/if}>{$value.status_selesai}</b>
+                  [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} - [ {$value.jns_racikan} ]
+                  <span style="font-size: 18px;" class="pull-right">Status:
+                    <!-- <b style="color:red;" id="coba"></b> -->
+                    <!-- {$value.status_selesai} -->
+                    <b id="coba_{$value.no_antrian}" {if: $value.status_selesai=='Sudah' }style="color:red;"
+                      {/if}>{$value.status_selesai}</b>
                     <p>{if: $responsivevoice == 'true'}
-                      <!-- onclick="panggil();" -->
                       <button type="button" name="button" class="btn btn-xs btn-primary panggil"
                         data-nm_pasien="{?=strtolower($value.nm_pasien)?}"
                         data-no_antrian="{?=strtolower($value.no_antrian)?}"
-                        data-nm_poli="{?=strtolower($value.nm_poli)?}" data-jam_selesai="{$value.jam_selesai}"><i class="
+                        data-nm_poli="{?=strtolower($value.nm_poli)?}" data-jam_selesai="{$value.jam_selesai}"
+                        data-panggil="coba_{$value.no_antrian}" id="merah()"><i class="
                         fa fa-bullhorn"></i><span class="hidden-xs hidden-sm">
                           Panggil</span></button>{/if}
                       <button type="button" name="button" class="btn btn-xs btn-warning diserahkan"
-                        data-no_antrian="{$value.no_antrian}" data-jam_penyerahan="{$value.jam_penyerahan}"
-                        onclick="history.go(0);"><span>Diserahkan</span></button>
+                        data-no_antrian="{$value.no_antrian}"
+                        data-jam_penyerahan="{$value.jam_penyerahan}"><span>Diserahkan</span></button>
+                      <!-- onClick="window.location.reload(true)" -->
                     </p>
                   </span>
                 </li>
@@ -130,7 +134,6 @@
           $username) ?}</span></p>
     </div>
   </footer>
-
 </body>
 
 </html>
@@ -143,8 +146,9 @@
     var nm_poli = $(this).attr("data-nm_poli");
     var no_antrian = $(this).attr("data-no_antrian");
     var jam_selesai = $(this).attr("data-jam_selesai");
+    var panggil = $(this).attr("data-panggil");
     console.log({
-      nm_pasien, nm_poli, no_antrian,
+      nm_pasien, nm_poli, no_antrian, panggil
     });
     function play() {
       responsiveVoice.speak(
@@ -154,6 +158,7 @@
       console.log({
         no_antrian, jam_selesai
       });
+
       $.ajax({
         url: '{?=url()?}/anjungan/setselesaiobat',
         dataType: 'json',
@@ -161,7 +166,12 @@
         success: function (xhr) {
           console.log(xhr.status);
           if (xhr.status == true) {
-            // alert('Obat sudah selesai!!')
+
+            document.getElementById(panggil).textContent = "Sudah";
+            document.getElementById(panggil).style.color = "#ff0000";
+            // var warna = document.getElementById(panggil);
+            $('#panggil').css('color', 'red');
+            console.log("sudah");
           }
         },
         error: function (xhr) {
@@ -173,12 +183,16 @@
       });
     }
     play();
-
   });
 </script>
+<script>
+  function merah() {
+    warna.style.color = "red";
+  }
+</script>
+
 <script type="text/javascript">
   $("#display").on("click", ".diserahkan", function (event) {
-    //   alert('Obat Diserahkan')
     var no_antrian = $(this).attr("data-no_antrian");
     var jam_penyerahan = $(this).attr("data-jam_penyerahan");
     console.log({
@@ -191,16 +205,23 @@
       success: function (xhr) {
         console.log(xhr.status);
         if (xhr.status == true) {
-          alert('Obat Sudah diserahkan!!')
+
+          //alert('Obat Sudah diserahkan')
+          const tes = setInterval(refresh, 1000);
+
+          function refresh() {
+            window.location.reload(true)
+          }
         }
       },
       error: function (xhr) {
         console.log(xhr.status);
         if (xhr.status == false) {
-          alert('Obat Gagal Diserahkan')
+          //alert('Obat Gagal Diserahkan')
         }
       }
     });
 
-  }); 
+  });
+
 </script>

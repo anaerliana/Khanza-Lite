@@ -886,43 +886,47 @@ Ralan :
       {/if}
       {*Hasil Radiologi*}
       {if: $hasil_radiologi}
-      <tr class="isi">
-        <td valign="top" width="20%">Hasil Radiologi/Interpretasi</td>
-        <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">
-          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-            <tr align='center'>
-              <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
-              <td valign='top' width='90%' bgcolor='#FFFAF8'>Hasil Pemeriksaan</td>
-            </tr>
-            {loop: $hasil_radiologi}
-            <tr>
-              <td valign='top'>{$value.tgl_periksa} {$value.jam}</td>
-              <td valign='top'>{?=nl2br($value.hasil)?}</td>
-            </tr>
-            {loop: $klinis_radiologi}
-            <tr>
-              <td valign='top'>Klinis</td>
-              <td>{$value.klinis}</td>
-            </tr>
-            {/loop}
-            {loop: $saran_rad}
-            <tr>
-              <td valign='top'>Judul</td>
-              <td>{$value.judul}</td>
-            </tr>
-            <tr>
-              <td valign='top'>Kesan</td>
-              <td>{$value.kesan}</td>
-            </tr>
-            <tr>
-              <td valign='top'>Saran</td>
-              <td>{$value.saran}</td>
-            </tr>
-            {/loop}
-            {/loop}
-          </table>
-        </td>
+      <!-- <tr class="isi"> -->
+      <td valign="top" width="20%">Hasil Radiologi/Interpretasi</td>
+      <td valign="top" width="1%" align="center">:</td>
+      <td valign="top" width="79%">
+        <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+          <tr align='center'>
+            <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
+            <td valign='top' width='90%' bgcolor='#FFFAF8' colspan="2">Hasil Pemeriksaan</td>
+          </tr>
+          {loop: $hasil_radiologi}
+          <tr>
+            <td valign='top'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' colspan="2">{?=nl2br($value.hasil)?}</td>
+          </tr>
+          {/loop}
+          {loop: $klinis_radiologi}
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_hasil} {$value.jam_hasil}</td>
+            <td valign='top' width='10%'>Klinis</td>
+            <td valign='top' width='80%'>{$value.klinis}</td>
+          </tr>
+          {/loop}
+          {loop: $saran_rad}
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' width='10%'>Judul</td>
+            <td valign='top' width='80%'>{$value.judul}</td>
+          </tr>
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' width='10%'>Kesan</td>
+            <td valign='top' width='80%'>{$value.kesan}</td>
+          </tr>
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' width='10%'>Saran</td>
+            <td valign='top' width='80%'>{$value.saran}</td>
+          </tr>
+          {/loop}
+        </table>
+      </td>
       </tr>
       {/if}
       {*Pemeriksaan Laboratorium*}
@@ -1064,6 +1068,7 @@ Ralan :
     </div>
   </fieldset>
   <br><br><br>
+
   {if: $reg_periksa.status_lanjut == 'Ralan'}
   <fieldset style="page-break-before:always;">
     <h3>
@@ -1080,7 +1085,8 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
-              <td valign="top">{$resume_pasien.diagnosa_utama}<br>
+              <!-- {$resume_pasien.diagnosa_utama} -->
+              <td valign="top">{?=nl2br($resume_pasien.diagnosa_utama)?}<br>
                 {$resume_pasien.diagnosa_sekunder}<br>
                 {$resume_pasien.diagnosa_sekunder2}<br>
                 {$resume_pasien.diagnosa_sekunder3}<br>
@@ -1908,7 +1914,6 @@ Ralan :
       <tr>
         <td valign="top" width="20%">Kondisi Pulang</td>
         <td valign="top" width="1%" align="center">:</td>
-        <!-- {if: !empty($data.pemeriksaan)}Pemeriksaan: {$data.pemeriksaan}<br>{/if} -->
         <td valign="top" width="79%"> {if: !empty($resume_pasien.kondisi_pulang)}
           {$resume_pasien.kondisi_pulang}<br>{/if}</td>
       </tr>

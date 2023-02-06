@@ -522,6 +522,53 @@
         </td>
       </tr>
       {/if}
+      {if: $value.resep_obat}
+      <tr class="isi">
+        <td valign="top" width="20%">Pemberian Obat </td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align="center">
+              <!-- <td valign="top" width="20%" bgcolor="#eee">No Resep</td> -->
+              <td valign="top" width="10%" bgcolor="#eee">Tanggal/Jam</td>
+              <td valign="top" width="40%" bgcolor="#eee">Nama Obat</td>
+              <!-- <td valign="top" width="5%" bgcolor="#eee">Jumlah</td> -->
+              <td valign="top" width="10%" bgcolor="#eee">Aturan Pakai</td>
+            </tr>
+            {loop: $value.resep_obat as $data1}
+            <tr>
+              <th width="10%">{$data1.tgl_perawatan} {$data1.jam}</th>
+              <th colspan="3" valign="top" width="90%">No Resep : {$data1.no_resep} ({$data1.nm_dokter})</th>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                {loop: $data1.detail_pemberian_obat as $data2}
+                <li>{$data2.nama_brng} <b>[ {$data2.jml} ]</b> </li>
+                {/loop}
+              </td>
+              <!-- <td>{$data1.jml}</td> -->
+              <td>
+                {loop: $data1.aturan_pakai as $data3}
+                <li>{if: $data3.aturan_pakai == ''}<b>-</b>{else}{$data3.aturan_pakai}{/if}</li>
+                {/loop}
+              </td>
+            </tr>
+            <!-- {loop: $data1.detail_pemberian_obat as $data2}
+            <tr>
+              <td>{$data2.tgl_perawatan} {$data2.jam}</td>
+              <td>{$data2.kode_brng} {$data2.nama_brng}</td>
+              <td align="center">{$data2.jml}</td>
+              <td>
+                {if: $data2.aturan_pakai ==''}-{else}{$data2.aturan_pakai}{/if}
+              </td>
+            </tr>
+            {/loop} -->
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
       {if: $value.periksa_lab}
       <tr class="isi">
         <td valign="top" width="20%">Laboratorium </td>
@@ -555,7 +602,7 @@
       </tr>
       {/if}
       {if: $value.periksa_radiologi}
-      <tr class="isi">
+      <!-- <tr class="isi">
         <td valign="top" width="20%">Radiologi</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
@@ -563,33 +610,81 @@
             <tr align="center">
               <td valign="top" width="20%" bgcolor="#eee">Tanggal</td>
               <td valign="top" width="30%" bgcolor="#eee">Nama Tindakan</td>
-              <!-- <td valign="top" width="50%" bgcolor="#eee">Keterangan</td> -->
+              <td valign="top" width="50%" bgcolor="#eee">Keterangan</td>
             </tr>
             {loop: $value.periksa_radiologi as $data}
             <tr>
               <td valign="top" width="20%">{$data.tgl_periksa}</td>
               <td valign="top" width="30%">{$data.nm_perawatan}</td>
-              <!-- <td valign="top" width="50%">{?=nl2br($data.hasil)?}</td> -->
+              <td valign="top" width="50%">{?=nl2br($data.hasil)?}</td>
+            </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr> -->
+      <tr class="isi">
+        <td valign="top" width="20%">Radiologi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align="center">
+              <td valign="top" width="20%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="30%" bgcolor="#eee" colspan="2">Nama Tindakan</td>
+            </tr>
+
+            {loop: $value.periksa_radiologi as $data}
+            <tr>
+              <td valign="top" width="20%">{$data.tgl_periksa} {$data.jam}</td>
+              <td valign="top" width="30%" colspan="2">{$data.nm_perawatan}</td>
+            </tr>
+
+            <!-- {loop: $value.diagnosa_pasien_klinis as $value1}
+            <tr>
+              <td valign="top" width="20%"></td>
+              <td valign="top" width="20%">Klinis</td>
+              <td valign="top" width="60%">{if: !empty($value1.klinis)}
+                {$value1.klinis}<br>{/if}</td>
+            </tr>
+            {/loop} -->
+            <!-- <td>
+              {loop: $value.klinis as $data2}
+              <li>{if: $data2.klinis == ''}<b>-</b>{else}{$data2.klinis}{/if}</li>
+              {/loop}
+            </td> -->
+
+            {loop: $data.saran_kesan_rad as $value2}
+            <tr>
+              <td valign="top" width="20%">{$value2.tgl_periksa} {$value2.jam}</td>
+              <td valign="top" width="20%">Judul</td>
+              <td valign="top" width="60%">{$value2.judul}</td>
+            </tr>
+
+            <tr>
+              {loop: $data.hasil_radiologi as $value3}
+              <td valign="top" width="20%">{$value3.tgl_periksa} {$value3.jam}</td>
+              <td valign="top" width="20%">Hasil Interpretasi</td>
+              <td valign="top" width="60%">{?=nl2br($value3.hasil)?}</td>
+              {/loop}
+            </tr>
+
+            <tr>
+              <td valign="top" width="20%">{$value2.tgl_periksa} {$value2.jam}</td>
+              <td valign="top" width="20%">Kesan</td>
+              <td valign="top" width="60%">{?=nl2br($value2.kesan)?}</td>
             </tr>
             <tr>
-              <td valign='top'>Klinis</td>
-              <td colspan="2">{$data.klinis}</td>
+              <td valign="top" width="20%">{$value2.tgl_periksa} {$value2.jam}</td>
+              <td valign="top" width="20%">Saran</td>
+              <td valign="top" width="60%">{$value2.saran}</td>
             </tr>
+            {/loop}
+            {/loop}
+
+            {loop: $value.klinis as $data2}
             <tr>
-              <td valign='top'>Judul</td>
-              <td colspan="2">{$data.judul}</td>
-            </tr>
-            <tr>
-              <td valign='top'>Hasil Interpretasi</td>
-              <td colspan="2">{?=nl2br($data.hasil)?}</td>
-            </tr>
-            <tr>
-              <td valign='top'>Kesan</td>
-              <td colspan="2">{$data.kesan}</td>
-            </tr>
-            <tr>
-              <td valign='top'>Saran</td>
-              <td colspan="2">{$data.saran}</td>
+              <td valign='top' width='10%'>{$data2.tgl_hasil} {$data2.jam_hasil}</td>
+              <td valign='top' width='10%'>Klinis</td>
+              <td valign='top' width='80%'>{$data2.klinis}</td>
             </tr>
             {/loop}
           </table>

@@ -946,7 +946,7 @@ class Site extends SiteModule
   public function getDisplayPanggilApotek()
   {
     $logo  = $this->settings->get('settings.logo');
-    $title = 'Display Antrian Apotek';
+    $title = 'Display Pemanggil Antrian Apotek';
     $display = $this->_resultDisplayPanggilApotek();
     $antrian = $this->_noDisplayAntrianApotek();
     $responsivevoice =  $this->settings->get('settings.responsivevoice');
@@ -992,9 +992,6 @@ class Site extends SiteModule
 
   public function _resultDisplayPanggilApotek()
   {
-    // $date = date('Y-m-d');
-    // $jam = date('h:i:s');
-    // $sql = $this->db()->pdo()->prepare("SELECT * FROM antrian_apotek WHERE jam_penyerahan', '00:00:00' ORDER BY no_antrian ASC");
     $query=  $this->db('reg_periksa')
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
       ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
@@ -1064,7 +1061,8 @@ class Site extends SiteModule
   {
     $jam = date('h:i:s');
     $noantrian  = $_GET['no_antrian'];
-    $query = $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->update('jam_penyerahan', $jam);
+    $query = 
+    $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->update('jam_penyerahan', $jam);
     if ($query) {
       $res = [
         'status' => true,
