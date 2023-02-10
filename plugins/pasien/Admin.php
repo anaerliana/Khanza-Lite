@@ -553,6 +553,19 @@ class Admin extends AdminModule
         //  ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
         //  ->toArray();
 
+      //   $row['periksa_radiologi'] = $this->db('periksa_radiologi')
+      //   ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
+      //   ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+      //   ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
+      //   ->toArray();
+      
+      //  $row['saran_kesan_rad'] = $this->db('saran_kesan_rad')
+      //   ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=saran_kesan_rad.no_rawat')
+      //   ->join('permintaan_radiologi', 'permintaan_radiologi.no_rawat=hasil_radiologi.no_rawat')
+      //   ->join('diagnosa_pasien_klinis', 'diagnosa_pasien_klinis.noorder=permintaan_radiologi.noorder')
+      //   ->where('saran_kesan_rad.no_rawat', $row['no_rawat'])
+      //   ->toArray();
+
 
         $rows_periksa_radiologi = $this->db('periksa_radiologi')
             ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
@@ -603,7 +616,7 @@ class Admin extends AdminModule
           //->select('resep_dokter.aturan_pakai')
           ->toArray();
 
-          $rows_resep_obat= $this->db('resep_obat')
+        $rows_resep_obat= $this->db('resep_obat')
           ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
@@ -742,18 +755,19 @@ class Admin extends AdminModule
           $row['periksa_lab'][] = $value;
         }
 
-      //   $row['periksa_radiologi'] = $this->db('periksa_radiologi')
-      //   //->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
-      //   ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
-      //   ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
-      //   ->toArray();
-        
-      //  $row['saran_kesan_rad'] = $this->db('saran_kesan_rad')
-      //    ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=saran_kesan_rad.no_rawat')
-      //    ->join('permintaan_radiologi', 'permintaan_radiologi.no_rawat=hasil_radiologi.no_rawat')
-      //    ->join('diagnosa_pasien_klinis', 'diagnosa_pasien_klinis.noorder=permintaan_radiologi.noorder')
-      //    ->where('saran_kesan_rad.no_rawat', $row['no_rawat'])
-      //    ->toArray();
+    //  $row['periksa_radiologi'] = $this->db('periksa_radiologi')
+    //     ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
+    //     ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+    //     ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
+    //     ->toArray();
+      
+    //  $row['saran_kesan_rad'] = $this->db('saran_kesan_rad')
+    //    ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=saran_kesan_rad.no_rawat')
+    //    ->join('permintaan_radiologi', 'permintaan_radiologi.no_rawat=hasil_radiologi.no_rawat')
+    //    ->join('diagnosa_pasien_klinis', 'diagnosa_pasien_klinis.noorder=permintaan_radiologi.noorder')
+    //    ->where('saran_kesan_rad.no_rawat', $row['no_rawat'])
+    //    ->toArray();
+
       $rows_periksa_radiologi = $this->db('periksa_radiologi')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
           ->where('no_rawat', $row['no_rawat'])

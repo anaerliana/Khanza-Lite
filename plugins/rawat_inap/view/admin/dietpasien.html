@@ -19,30 +19,27 @@
                 <td>{$value.nomor}</td>
                 <td>{$value.no_rawat} </td>
                 <td>{$value.nm_pasien}</td>
-                <td>{$value.kd_kamar}</td>
+                <td>{$value.kd_kamar}, {$value.nm_bangsal}</td>
                 <td>{$value.tanggal}</td>
                 <td>{$value.waktu}</td>
                 <td>{$value.nama_diet}</td>
-                <td>{$value.nm_penyakit}</td>
+                <!-- <td>{$value.nm_penyakit}</td> -->
+                <td>{loop: $value.diagnosa as $nama} - {$nama.nm_penyakit}<br> {/loop}</td>
             </tr>
             <tr>
                 <td></td>
                 <td>
                     <div class="">
                         <button type="button" name="button" class="btn btn-success btn-xs edit_dietpasien"
-                            data-no_rawat="{$value.no_rawat}" 
-                            data-nm_pasien="{$value.nm_pasien}"
-                            data-kd_kamar="{$value.kd_kamar}"
-                            data-tanggal="{$value.tanggal}"
-                            data-waktu="{$value.waktu}"
-                            data-kd_diet="{$value.kd_diet}"
-                            data-nama_diet="{$value.nama_diet}"
-                            data-nm_penyakit="{$value.nm_penyakit}" >
+                            data-no_rawat="{$value.no_rawat}" data-nm_pasien="{$value.nm_pasien}"
+                            data-kd_kamar="{$value.kd_kamar}" data-tanggal="{$value.tanggal}"
+                            data-waktu="{$value.waktu}" data-kd_diet="{$value.kd_diet}"
+                            data-nama_diet="{$value.nama_diet}" data-nm_penyakit="{$value.nm_penyakit}">
                             <span class="fa fa-edit"></span>
                             <span class="hidden-xs"> Edit</span></button>
                         <button type="button" name="button" class="btn btn-danger btn-xs hapus_dietpasien"
-                            data-no_rawat="{$value.no_rawat}" data-tanggal="{$value.tanggal}" data-waktu="{$value.waktu}"><span
-                                class="fa fa-trash"></span>
+                            data-no_rawat="{$value.no_rawat}" data-tanggal="{$value.tanggal}"
+                            data-waktu="{$value.waktu}"><span class="fa fa-trash"></span>
                             <span class="hidden-xs"> Hapus</span></button>
                     </div>
                 </td>

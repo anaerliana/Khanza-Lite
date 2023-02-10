@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="60">
+  <meta http-equiv="refresh" content="40">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
@@ -13,7 +13,7 @@
   <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
   <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
   <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
-  <script src="http://localhost/mlitegithub/assets/jscripts/responsivevoice.js"></script>
+  <script src="{?=url()?}/assets/jscripts/responsivevoice.js"></script>
   <style media="screen">
     body {
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -110,7 +110,7 @@
                       <button type="button" name="button" class="btn btn-xs btn-warning diserahkan"
                         data-no_antrian="{$value.no_antrian}"
                         data-jam_penyerahan="{$value.jam_penyerahan}"><span>Diserahkan</span></button>
-                      <!-- onClick="window.location.reload(true)" -->
+                      <!-- onClick="window.location.reload()" -->
                     </p>
                   </span>
                 </li>
@@ -199,13 +199,9 @@
       success: function (xhr) {
         console.log(xhr.status);
         if (xhr.status == true) {
-
+          refresh(xhr.data);
           //alert('Obat Sudah diserahkan')
-          const tes = setInterval(refresh, 1000);
-
-          function refresh() {
-            window.location.reload(true)
-          }
+          // const tes = setInterval(refresh, 500);
         }
       },
       error: function (xhr) {
@@ -215,7 +211,14 @@
         }
       }
     });
-
   });
-
+</script>
+<script>
+  function refresh(data) {
+    $(document).ready(function () {
+      //  setTimeout(function () {
+      window.location.reload();
+      //  }, 500);
+    });
+  }
 </script>

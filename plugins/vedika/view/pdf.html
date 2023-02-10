@@ -873,6 +873,50 @@ Ralan :
       {/if}
       {*Hasil Radiologi*}
       {if: $hasil_radiologi}
+      <!-- <tr class="isi"> -->
+      <td valign="top" width="20%">Hasil Radiologi/Interpretasi</td>
+      <td valign="top" width="1%" align="center">:</td>
+      <td valign="top" width="79%">
+        <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+          <tr align='center'>
+            <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
+            <td valign='top' width='90%' bgcolor='#FFFAF8' colspan="2">Hasil Pemeriksaan</td>
+          </tr>
+          {loop: $hasil_radiologi}
+          <tr>
+            <td valign='top'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' colspan="2">{?=nl2br($value.hasil)?}</td>
+          </tr>
+          {/loop}
+          {loop: $klinis_radiologi}
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_hasil} {$value.jam_hasil}</td>
+            <td valign='top' width='10%'>Klinis</td>
+            <td valign='top' width='80%'>{if: $value.klinis == ''}-{else}{?=nl2br($value.klinis)?}{/if}</td>
+          </tr>
+          {/loop}
+          {loop: $saran_rad}
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' width='10%'>Judul</td>
+            <td valign='top' width='80%'>{$value.judul}</td>
+          </tr>
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' width='10%'>Kesan</td>
+            <td valign='top' width='80%'>{?=nl2br($value.kesan)?}</td>
+          </tr>
+          <tr>
+            <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
+            <td valign='top' width='10%'>Saran</td>
+            <td valign='top' width='80%'>{?=nl2br($value.saran)?}</td>
+          </tr>
+          {/loop}
+        </table>
+      </td>
+      </tr>
+      {/if}
+      <!-- {if: $hasil_radiologi}
       <tr class="isi">
         <td valign="top" width="20%">Hasil Radiologi/Interpretasi</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -891,7 +935,7 @@ Ralan :
           </table>
         </td>
       </tr>
-      {/if}
+      {/if} -->
       {*Pemeriksaan Laboratorium*}
       {if: $pemeriksaan_laboratorium}
       <tr class="isi">

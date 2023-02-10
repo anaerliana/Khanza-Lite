@@ -905,7 +905,7 @@ Ralan :
           <tr>
             <td valign='top' width='10%'>{$value.tgl_hasil} {$value.jam_hasil}</td>
             <td valign='top' width='10%'>Klinis</td>
-            <td valign='top' width='80%'>{$value.klinis}</td>
+            <td valign='top' width='80%'>{if: $value.klinis == ''}-{else}{?=nl2br($value.klinis)?}{/if}</td>
           </tr>
           {/loop}
           {loop: $saran_rad}
@@ -917,12 +917,12 @@ Ralan :
           <tr>
             <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
             <td valign='top' width='10%'>Kesan</td>
-            <td valign='top' width='80%'>{$value.kesan}</td>
+            <td valign='top' width='80%'>{?=nl2br($value.kesan)?}</td>
           </tr>
           <tr>
             <td valign='top' width='10%'>{$value.tgl_periksa} {$value.jam}</td>
             <td valign='top' width='10%'>Saran</td>
-            <td valign='top' width='80%'>{$value.saran}</td>
+            <td valign='top' width='80%'>{?=nl2br($value.saran)?}</td>
           </tr>
           {/loop}
         </table>

@@ -556,6 +556,19 @@
             </div>
           </div>
           {/if}
+
+          <!-- {if: $value.periksa_radiologi}
+          <div class="row">
+            <div class="col-sm-12 col-md-12">
+              {loop: $value.periksa_radiologi as $data}
+              <h4>{$data.nm_perawatan}</h4>
+              <div class="caption">
+                {?=nl2br($data.hasil)?}
+              </div>
+              {/loop}
+            </div>
+          </div>
+          {/if} -->
           {if: $value.periksa_radiologi}
           <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Pemeriksaan Radiologi
           </h4>
@@ -573,11 +586,8 @@
             <div class="col-sm-12 col-md-12">
               {loop: $value.periksa_radiologi as $data}
               <h4> {$data.tgl_periksa} {$data.jam} / {$data.nm_perawatan}</h4>
-
               <div class="post-content">
                 <dl class="dl-horizontal no-margin">
-
-
                   {loop: $data.saran_kesan_rad as $data2}
                   <div class="assessment-title"><b>Judul</b></div>
                   <ul class="fa-ul">{$data2.judul}</ul>
@@ -594,8 +604,8 @@
               </div>
               {/loop}
               {loop: $value.klinis as $data1}
-              <div class="assessment-title"><b>Klinis</b></div>
-              <ul class="fa-ul"> {$data1.tgl_permintaan} {$data1.jam_permintaan} <b>{?=nl2br($data1.klinis)?}</b></ul>
+              <div class="assessment-title"><b>{$data1.tgl_permintaan} {$data1.jam_permintaan} Klinis</b></div>
+              <ul class="fa-ul"> {if: $data1.klinis == ''}<b>-</b>{else}{?=nl2br($data1.klinis)?}{/if}</ul>
               {/loop}
             </div>
           </div>
