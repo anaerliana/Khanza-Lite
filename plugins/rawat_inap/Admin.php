@@ -791,7 +791,7 @@ class Admin extends AdminModule
         ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
-      $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+      //$row['kd_kamar'] = $kamar_inap['kd_kamar'];
       $row['nm_bangsal'] = $kamar_inap['nm_bangsal'];
 
 
@@ -887,7 +887,7 @@ class Admin extends AdminModule
        ->where('no_rawat', $row['no_rawat'])
        ->oneArray();
       $row['kd_kamar'] = $kamar_inap['kd_kamar'];
-      $row['nm_bangsal'] = $kamar_inap['nm_bangsal'];
+     // $row['nm_bangsal'] = $kamar_inap['nm_bangsal'];
 
       $row['diagnosa'] = $this->db('diagnosa_pasien')
         ->select(['nm_penyakit' => 'penyakit.nm_penyakit'])

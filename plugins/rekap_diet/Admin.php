@@ -50,12 +50,11 @@ class Admin extends AdminModule
        // $username = $this->core->getUserInfo('username', null, true);
 
        
-            $totalRecords = $this->db('detail_beri_diet')
+         $totalRecords = $this->db('detail_beri_diet')
                 ->join('diet', 'diet.kd_diet = detail_beri_diet.kd_diet')
                 ->join('reg_periksa', 'reg_periksa.no_rawat=detail_beri_diet.no_rawat')
                 ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-                ->join('kamar_inap', 'kamar_inap.no_rawat=detail_beri_diet.no_rawat')
-                ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+                ->join('kamar', 'kamar.kd_kamar=detail_beri_diet.kd_kamar')
                 ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
                 ->where('tanggal', '>=', $tgl_kunjungan.' 00:00:00')
                 ->where('tanggal', '<=', $tgl_kunjungan_akhir.' 23:59:59')
@@ -87,8 +86,7 @@ class Admin extends AdminModule
                 ->join('diet', 'diet.kd_diet = detail_beri_diet.kd_diet')
                 ->join('reg_periksa', 'reg_periksa.no_rawat=detail_beri_diet.no_rawat')
                 ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-                ->join('kamar_inap', 'kamar_inap.no_rawat=detail_beri_diet.no_rawat')
-                ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+                ->join('kamar', 'kamar.kd_kamar=detail_beri_diet.kd_kamar')
                 ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
                 ->where('tanggal', '>=', $tgl_kunjungan.' 00:00:00')
                 ->where('tanggal', '<=', $tgl_kunjungan_akhir.' 23:59:59')
@@ -122,14 +120,6 @@ class Admin extends AdminModule
                   ->oneArray();
                 $row['nm_pasien'] = $pasien['nm_pasien'];
                 $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
-
-                $kamar_inap = $this->db('kamar_inap')
-                  ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
-                  ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
-                  ->where('no_rawat', $row['no_rawat'])
-                  ->oneArray();
-                $row['kd_kamar'] = $kamar_inap['kd_kamar'];
-                $row['nm_bangsal'] = $kamar_inap['nm_bangsal'];
 
                 $row['diagnosa'] = $this->db('diagnosa_pasien')
                   ->select(['kd_penyakit' => 'diagnosa_pasien.kd_penyakit',
