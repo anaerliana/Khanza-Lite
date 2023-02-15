@@ -18,24 +18,24 @@
                             <div class="col-sm-4">
                                 <label for="no_rawat"> No.Rawat</label>
                                 <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control"
-                                    value="{$bundles_ido_hais.no_rawat}" readonly>
+                                    value="{$no_rawat}" readonly>
                                    
                             </div>
                             <div class="col-sm-4">
                                 <label for="no_rkm_medis">Nomor RM</label>
                                 <input type="text" name="no_rkm_medis" class="form-control"
-                                    placeholder="Nomor Rekam Medik" value="{$bundles_ido_hais.no_rkm_medis}" readonly>
+                                    placeholder="Nomor Rekam Medik" value="{$no_rkm_medis}" readonly>
                             </div>
 
                             <div class="col-sm-6">
                                 <label for="nm_pasien">Nama Pasien</label>
                                 <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien"
-                                    value="{$bundles_ido_hais.nm_pasien}" readonly>
+                                    value="{$nama}" readonly>
                             </div>
                             <div class="col-sm-6">
                                 <label for="kd_kamar">Kode Kamar</label>
                                 <input type="text" name="kd_kamar" class="form-control" placeholder="Kode Kamar"
-                                    value="{$bundles_ido_hais.kd_kamar}" readonly>
+                                    value="{$kd_kamar}" readonly>
                             </div>
                         </div>
                     </div>
@@ -49,26 +49,26 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <label for="mandi_idopre">Mandi dengan anti septic/plan soap sore dan pagi hari :</label><br>
-                                            <input name="mandi_idopre" type="radio" id="mandi_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mandi_idopre == '1'}checked{/if} {/if}>YA<br>
-                                            <input name="mandi_idopre" type="radio" id="mandi_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mandi_idopre == '0'}checked{/if} {/if}>TIDAK<br>
+                                            <input name="mandi_idopre" type="radio" id="mandi_idopre1" value="1" {if: !empty($value.data)} {if: $bundles.mandi_idopre == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="mandi_idopre" type="radio" id="mandi_idopre0" value="0" {if: !empty($value.data)} {if: $bundles.mandi_idopre == '0'}checked{/if} {/if}>TIDAK<br>
                                         </div>
                                     <div class="col-sm-6">
                                         <label for="cukur_idopre">Pencukuran bila
                                             diperlukan dan Dengan Clipper:</label><br>
-                                            <input name="cukur_idopre" type="radio" id="cukur_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.cukur_idopre == '1'}checked{/if} {/if}>YA<br>
-                                            <input name="cukur_idopre" type="radio" id="cukur_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.cukur_idopre == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                            <input name="cukur_idopre" type="radio" id="cukur_idopre1" value="1" {if: !empty($value.data)} {if: $bundles.cukur_idopre == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="cukur_idopre" type="radio" id="cukur_idopre0" value="0" {if: !empty($value.data)} {if: $bundles.cukur_idopre == '0'}checked{/if} {/if}>TIDAK<br><br>
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="guladarah_idopre">GulaDarah < 200 mg/dl/normal :</label>
                                                 <br>
-                                                <input name="guladarah_idopre" type="radio" id="guladarah_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.guladarah_idopre == '1'}checked{/if} {/if}>YA<br>
-                                                <input name="guladarah_idopre" type="radio" id="guladarah_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.guladarah_idopre == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                                <input name="guladarah_idopre" type="radio" id="guladarah_idopre1" value="1" {if: !empty($value.data)} {if: $bundles.guladarah_idopre == '1'}checked{/if} {/if}>YA<br>
+                                                <input name="guladarah_idopre" type="radio" id="guladarah_idopre0" value="0" {if: !empty($value.data)} {if: $bundles.guladarah_idopre == '0'}checked{/if} {/if}>TIDAK<br><br>
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="antibiotik_idopre">Antibiotik 60 mnt sebelum insisi
                                             :</label><br> 
-                                            <input name="antibiotik_idopre" type="radio" id="antibiotik_idopre1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antibiotik_idopre == '1'}checked{/if} {/if}>YA<br>
-                                            <input name="antibiotik_idopre" type="radio" id="antibiotik_idopre0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antibiotik_idopre == '0'}checked{/if} {/if}>TIDAK
+                                            <input name="antibiotik_idopre" type="radio" id="antibiotik_idopre1" value="1" {if: !empty($value.data)} {if: $bundles.antibiotik_idopre == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="antibiotik_idopre" type="radio" id="antibiotik_idopre0" value="0" {if: !empty($value.data)} {if: $bundles.antibiotik_idopre == '0'}checked{/if} {/if}>TIDAK
                                     </div>
                                 </div>
                             </div>
@@ -84,36 +84,36 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <label for="hand_idointra">Hand Hygiene Dengan surgical antiseptik :</label><br>
-                                        <input name="hand_idointra" type="radio" id="hand_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.hand_idointra == '1'}checked{/if} {/if}>YA<br>
-                                        <input name="hand_idointra" type="radio" id="hand_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.hand_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                        <input name="hand_idointra" type="radio" id="hand_idointra1" value="1" {if: !empty($value.data)} {if: $bundles.hand_idointra == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="hand_idointra" type="radio" id="hand_idointra0" value="0" {if: !empty($value.data)} {if: $bundles.hand_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="steril_idointra">Instrument Steril :</label><br>
-                                         <input name="steril_idointra" type="radio" id="steril_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.steril_idointra == '1'}checked{/if} {/if}>YA<br>
-                                        <input name="steril_idointra" type="radio" id="steril_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.steril_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                         <input name="steril_idointra" type="radio" id="steril_idointra1" value="1" {if: !empty($value.data)} {if: $bundles.steril_idointra == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="steril_idointra" type="radio" id="steril_idointra0" value="0" {if: !empty($value.data)} {if: $bundles.steril_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="antiseptic_idointra">Menggunakan antiseptic skin
                                             preparasi :</label><br>
-                                            <input name="antiseptic_idointra" type="radio" id="antiseptic_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antiseptic_idointra == '1'}checked{/if} {/if}>YA<br>
-                                            <input name="antiseptic_idointra" type="radio" id="antiseptic_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.antiseptic_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                            <input name="antiseptic_idointra" type="radio" id="antiseptic_idointra1" value="1" {if: !empty($value.data)} {if: $bundles.antiseptic_idointra == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="antiseptic_idointra" type="radio" id="antiseptic_idointra0" value="0" {if: !empty($value.data)} {if: $bundles.antiseptic_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="tehnik_idointra">Tehnik Operasi Steril :</label><br>
-                                        <input name="tehnik_idointra" type="radio" id="tehnik_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.tehnik_idointra == '1'}checked{/if} {/if}>YA<br>
-                                        <input name="tehnik_idointra" type="radio" id="tehnik_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.tehnik_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                        <input name="tehnik_idointra" type="radio" id="tehnik_idointra1" value="1" {if: !empty($value.data)} {if: $bundles.tehnik_idointra == '1'}checked{/if} {/if}>YA<br>
+                                        <input name="tehnik_idointra" type="radio" id="tehnik_idointra0" value="0" {if: !empty($value.data)} {if: $bundles.tehnik_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="mobile_idointra">System mobile personil dibatasi
                                             :</label><br>
-                                            <input name="mobile_idointra" type="radio" id="mobile_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mobile_idointra == '1'}checked{/if} {/if}>YA<br>
-                                            <input name="mobile_idointra" type="radio" id="mobile_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.mobile_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
+                                            <input name="mobile_idointra" type="radio" id="mobile_idointra1" value="1" {if: !empty($value.data)} {if: $bundles.mobile_idointra == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="mobile_idointra" type="radio" id="mobile_idointra0" value="0" {if: !empty($value.data)} {if: $bundles.mobile_idointra == '0'}checked{/if} {/if}>TIDAK<br><br>
                                     </div>
                                     <div class="col-sm-6">
                                         <label for="suhu_idointra">Suhu/kelembaban udara 19-24ºC 40-60%
                                             :</label><br>
-                                            <input name="suhu_idointra" type="radio" id="suhu_idointra1" value="1" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.suhu_idointra == '1'}checked{/if} {/if}>YA<br>
-                                            <input name="suhu_idointra" type="radio" id="suhu_idointra0" value="0" {if: !empty($value.data)} {if: $bundles_ido_hais.bundles.suhu_idointra == '0'}checked{/if} {/if}>TIDAK
+                                            <input name="suhu_idointra" type="radio" id="suhu_idointra1" value="1" {if: !empty($value.data)} {if: $bundles.suhu_idointra == '1'}checked{/if} {/if}>YA<br>
+                                            <input name="suhu_idointra" type="radio" id="suhu_idointra0" value="0" {if: !empty($value.data)} {if: $bundles.suhu_idointra == '0'}checked{/if} {/if}>TIDAK
                                     </div>
                                 </div>
                             </div>
