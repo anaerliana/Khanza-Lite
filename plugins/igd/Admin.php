@@ -37,7 +37,7 @@ class Admin extends AdminModule
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
     }
 
     public function anyDisplay()
@@ -57,7 +57,7 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
         exit();
     }
 
@@ -103,6 +103,7 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $row['con_no_rawat'] = convertNorawat($row['no_rawat']);
           $this->assign['list'][] = $row;
         }
 
@@ -214,25 +215,19 @@ class Admin extends AdminModule
           ->limit(1)
           ->oneArray();
           if($rawat) {
-            $stts_daftar = "Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
-            $stts_daftar_hidden = $stts_daftar;
-            if($this->settings->get('settings.cekstatusbayar') == 'false'){
-              $stts_daftar_hidden = 'Lama';
-            }
-            $bg_status = 'has-error';
+            $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
+            $bg_status = 'text-danger';
           } else {
             $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
             if($result >= 1) {
               $stts_daftar = 'Lama';
-              $bg_status = 'has-info';
-              $stts_daftar_hidden = $stts_daftar;
+              $bg_status = 'text-info';
             } else {
               $stts_daftar = 'Baru';
-              $bg_status = 'has-success';
-              $stts_daftar_hidden = $stts_daftar;
+              $bg_status = 'text-success';
             }
           }
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar_hidden, 'bg_status' =>$bg_status]);
+        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'bg_status' =>$bg_status]);
       } else {
         $rawat = $this->db('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])
@@ -259,14 +254,14 @@ class Admin extends AdminModule
 
         $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
 
-      	$birthDate = new \DateTime($pasien['tgl_lahir']);
-      	$today = new \DateTime("today");
-      	$umur_daftar = "0";
+        $birthDate = new \DateTime($pasien['tgl_lahir']);
+        $today = new \DateTime("today");
+        $umur_daftar = "0";
         $status_umur = 'Hr';
         if ($birthDate < $today) {
-        	$y = $today->diff($birthDate)->y;
-        	$m = $today->diff($birthDate)->m;
-        	$d = $today->diff($birthDate)->d;
+          $y = $today->diff($birthDate)->y;
+          $m = $today->diff($birthDate)->m;
+          $d = $today->diff($birthDate)->d;
           $umur_daftar = $d;
           $status_umur = "Hr";
           if($y !='0'){
@@ -588,13 +583,9 @@ class Admin extends AdminModule
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $i = 1;
-      $row['nama_petugas'] = '';
-      $row['departemen_petugas'] = '';
       $result = [];
       foreach ($rows as $row) {
         $row['nomor'] = $i++;
-        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
-        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
         $result[] = $row;
       }
 
@@ -604,37 +595,26 @@ class Admin extends AdminModule
       $result_ranap = [];
       foreach ($rows_ranap as $row) {
         $row['nomor'] = $i++;
-        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
-        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
         $result_ranap[] = $row;
       }
 
-      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
       exit();
     }
 
     public function postSaveSOAP()
     {
-      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
-      $check_db->execute();
-      $check_db = $check_db->fetch();
-
-      if($check_db) {
-        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
-      } else {
-        unset($_POST['instruksi']);
-      }
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
-        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
+        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
       }
       exit();
     }
 
     public function postHapusSOAP()
     {
-      $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->delete();
+      $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
     }
 

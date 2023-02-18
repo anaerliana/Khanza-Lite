@@ -1,0 +1,94 @@
+<article class="row">
+  <div class="col-md-12" id='manage'>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Diet</span>
+          </span>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li style="padding-left:5px;padding-right:5px;">
+              <input type="text" id="periode_rawat_jalan" class="form-control periode_rawat_jalan"
+                name="periode_rawat_jalan" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <input type="text" id="periode_rawat_jalan_akhir" class="form-control periode_rawat_jalan"
+                name="periode_rawat_jalan_akhir" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block">Semua</div>
+            </li>
+          </ul>
+        </div>
+        <h3 class="panel-title">Rekap Diet Pasien</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row clearfix">
+          <div class="col col-md-8">
+            <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} </h3>
+          </div>
+          <div class="col col-md-2">
+            <div class="input-group">
+              <!-- <label for="bidang">Ruang</label> -->
+              <select name="bangsal" id="bangsal" data-use-search="true" data-options-height="10px"
+                class="form-control bangsal" style="margin-top:5px;margin-bottom:15px;">
+                <option value="">---Pilih Ruangan---</option>
+                {loop: $rekap.bangsal}
+                <option value="{$value.nm_bangsal}" class="dropdown-item">{$value.nm_bangsal}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-2">
+            <!-- <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;"> -->
+            <div class="input-group">
+              <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+              <!-- <input type="hidden" name="tanggal"> -->
+              <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+              <span class="input-group-btn">
+                <button class="btn btn-default" id="cari" type="submit"><span
+                    class="glyphicon glyphicon-search"></span></button>
+              </span>
+            </div>
+            <!-- </form> -->
+          </div>
+        </div>
+        <div class="table-responsive no-margin" id="display">
+          <table class="table table-striped no-margin">
+            <thead>
+              <tr>
+                <th>No.Rawat</th>
+                <th>Nama Pasien</th>
+                <th>Kamar</th>
+                <th>Tanggal</th>
+                <th>Waktu</th>
+                <th>Diet</th>
+                <th>Diagnosa</th>
+              </tr>
+            </thead>
+            <tbody>
+              {if: !empty($rekap.list)}
+              {loop: $rekap.list}
+              <tr>
+                <td>{$value.no_rawat}</td>
+                <td>{$value.no_rkm_medis}, {$value.nm_pasien}</td>
+                <td>{$value.kd_kamar}, {$value.nm_bangsal}</td>
+                <td>{$value.tanggal}</td>
+                <td>{$value.waktu}</td>
+                <td>{$value.nama_diet}</td>
+                <td>{loop: $value.diagnosa as $nama} [ {$nama.kd_penyakit} ] {$nama.nm_penyakit}<br> {/loop}</td>
+              </tr>
+              {/loop}
+              {else}
+              <tr>
+                <td colspan="7" class="text-center">Kosong</td>
+              </tr>
+              {/if}
+            </tbody>
+          </table>
+        </div>
+        {$rekap.pagination}
+      </div>
+    </div>
+  </div>
+</article>

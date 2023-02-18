@@ -105,7 +105,7 @@ class Admin extends AdminModule
      $username = $this->core->getUserInfo('username', null, true);
   //  if ((!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi'],  true)) 
   //  && (!in_array ($this->core->getPegawaiInfo('bidang', $username), ['Mubarak'], true)) ) {
-    if (!in_array($this->core->getUserInfo('role'), ['admin', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'],  true)){
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'medis','apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok', 'paramedis'],  true)){
       $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
     }
     if ($status_pulang == '') {
@@ -591,10 +591,12 @@ class Admin extends AdminModule
       $row['nama_petugas'] = $this->core->getPegawaiInfo('nama', $row['nip']);
       $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen', $row['nip']));
       $row['bidang'] = $this->core->getPegawaiInfo('bidang', $row['nip']);
+      $row['jbtn_petugas'] = $this->core->getPegawaiInfo('jbtn', $row['nip']);
       $result[] = $row;
     }
 
     $rows_ranap = $this->db('pemeriksaan_ranap')
+    //  ->join('petugas', 'pemeriksaan_ranap.nip=petugas.nip')
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
     $result_ranap = [];
@@ -603,7 +605,7 @@ class Admin extends AdminModule
       $row['nama_petugas'] = $this->core->getPegawaiInfo('nama', $row['nip']);
       $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen', $row['nip']));
       $row['bidang'] = $this->core->getPegawaiInfo('bidang', $row['nip']);
-
+      $row['jbtn_petugas'] = $this->core->getPegawaiInfo('jbtn', $row['nip']);
       $result_ranap[] = $row;
     }
 
@@ -780,17 +782,33 @@ class Admin extends AdminModule
 
       $row['nm_pasien'] = $pasien['nm_pasien'];
 
+      
+      //$this->db('kamar_inap')
+        // ->where('no_rawat', $row['no_rawat'])
+        // ->oneArray();
       $kamar_inap = $this->db('kamar_inap')
+        ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+        ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
         ->where('no_rawat', $row['no_rawat'])
         ->oneArray();
-      $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+      //$row['kd_kamar'] = $kamar_inap['kd_kamar'];
+      $row['nm_bangsal'] = $kamar_inap['nm_bangsal'];
 
-      $penyakit = $this->db('diagnosa_pasien')
+
+      $row['diagnosa'] = $this->db('diagnosa_pasien')
+        ->select(['nm_penyakit' => 'penyakit.nm_penyakit'])
         ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
         ->where('no_rawat', $row['no_rawat'])
-        ->oneArray();
+        ->asc('prioritas')
+        ->toArray();
 
-      $row['nm_penyakit'] = $penyakit['nm_penyakit'];
+    //  $penyakit = $this->db('diagnosa_pasien') 
+    //  ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
+    //  ->where('no_rawat', $row['no_rawat'])
+    //  ->oneArray();
+
+    //  $row['nm_penyakit'] = $penyakit['nm_penyakit'];
+      
 
       $diet = $this->db('diet')
         ->where('kd_diet', $row['kd_diet'])
@@ -864,17 +882,19 @@ class Admin extends AdminModule
       $row['jk'] = $pasien['jk'];
 
       $kamar_inap = $this->db('kamar_inap')
-        // ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-        ->where('no_rawat', $row['no_rawat'])
-        ->oneArray();
+       ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+       ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+       ->where('no_rawat', $row['no_rawat'])
+       ->oneArray();
       $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+     // $row['nm_bangsal'] = $kamar_inap['nm_bangsal'];
 
-      $penyakit = $this->db('diagnosa_pasien')
+      $row['diagnosa'] = $this->db('diagnosa_pasien')
+        ->select(['nm_penyakit' => 'penyakit.nm_penyakit'])
         ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
         ->where('no_rawat', $row['no_rawat'])
-        ->oneArray();
-
-      $row['nm_penyakit'] = $penyakit['nm_penyakit'];
+        ->asc('prioritas')
+        ->toArray();
 
       $dokter = $this->db('dokter')
         ->where('kd_dokter', $row['kd_dokter'])

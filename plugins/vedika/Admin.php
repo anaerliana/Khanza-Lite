@@ -1507,13 +1507,7 @@ class Admin extends AdminModule
       $row['nomor'] = $dpjp_i++;
       $dpjp_ranap[] = $row;
     }
-    /*
-    $rujukan_internal = $this->db('rujukan_internal_poli')
-      ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
-      ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
-      ->where('no_rawat', $this->revertNorawat($id))
-      ->oneArray();
-    */
+
     $diagnosa_pasien = $this->db('diagnosa_pasien')
       ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
       ->where('no_rawat', $this->revertNorawat($id))
@@ -1527,11 +1521,19 @@ class Admin extends AdminModule
       ->asc('tgl_perawatan')
       ->asc('jam_rawat')
       ->toArray();
-    $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+    // $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+    //   ->where('no_rawat', $this->revertNorawat($id))
+    //   ->asc('tgl_perawatan')
+    //   ->asc('jam_rawat')
+    //   ->toArray();
+
+      $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+      ->join('pegawai', 'pemeriksaan_ranap.nip=pegawai.nik')
       ->where('no_rawat', $this->revertNorawat($id))
       ->asc('tgl_perawatan')
       ->asc('jam_rawat')
       ->toArray();
+
     $rawat_jl_dr = $this->db('rawat_jl_dr')
       ->join('jns_perawatan', 'rawat_jl_dr.kd_jenis_prw=jns_perawatan.kd_jenis_prw')
       ->join('dokter', 'rawat_jl_dr.kd_dokter=dokter.kd_dokter')
@@ -1579,9 +1581,20 @@ class Admin extends AdminModule
       ->join('petugas', 'periksa_radiologi.nip=petugas.nip')
       ->where('no_rawat', $this->revertNorawat($id))
       ->toArray();
+      
     $hasil_radiologi = $this->db('hasil_radiologi')
       ->where('no_rawat', $this->revertNorawat($id))
       ->toArray();
+
+    $klinis_radiologi = $this->db('diagnosa_pasien_klinis')
+      ->join('permintaan_radiologi', 'permintaan_radiologi.noorder=diagnosa_pasien_klinis.noorder')
+      ->where('no_rawat', $this->revertNorawat($id))
+      ->toArray();
+
+    $saran_rad = $this->db('saran_kesan_rad')
+      ->where('no_rawat', $this->revertNorawat($id))
+      ->toArray();
+
     $pemeriksaan_laboratorium = [];
     $rows_pemeriksaan_laboratorium = $this->db('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
@@ -1611,9 +1624,21 @@ class Admin extends AdminModule
       ->where('no_rawat', $this->revertNorawat($id))
       ->oneArray();
 
+
+    $rujukan_internal = $this->db('rujukan_internal_poli')
+    ->join('dokter', ' rujukan_internal_poli.kd_dokter=dokter.kd_dokter')
+    ->join('poliklinik', 'poliklinik.kd_poli=rujukan_internal_poli.kd_poli')
+    ->where('no_rawat', $this->revertNorawat($id))
+    ->toArray();
+
+    $rujukan_internal_poli_detail = $this->db('rujukan_internal_poli_detail')
+    ->where('no_rawat', $this->revertNorawat($id))
+    ->oneArray();
+    $this->tpl->set('rujukan_internal_poli_detail', $rujukan_internal_poli_detail);
+
     $this->tpl->set('pasien', $pasien);
     $this->tpl->set('reg_periksa', $reg_periksa);
-    //$this->tpl->set('rujukan_internal', $rujukan_internal);
+    $this->tpl->set('rujukan_internal', $rujukan_internal);
     $this->tpl->set('dpjp_ranap', $dpjp_ranap);
     $this->tpl->set('diagnosa_pasien', $diagnosa_pasien);
     $this->tpl->set('prosedur_pasien', $prosedur_pasien);
@@ -1629,6 +1654,8 @@ class Admin extends AdminModule
     $this->tpl->set('operasi', $operasi);
     $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
     $this->tpl->set('hasil_radiologi', $hasil_radiologi);
+    $this->tpl->set('klinis_radiologi', $klinis_radiologi);
+    $this->tpl->set('saran_rad', $saran_rad);
     $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
     $this->tpl->set('pemberian_obat', $pemberian_obat);
     $this->tpl->set('obat_operasi', $obat_operasi);

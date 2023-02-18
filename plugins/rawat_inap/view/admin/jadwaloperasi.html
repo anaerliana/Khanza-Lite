@@ -31,7 +31,7 @@
                 <td>{$value.jam_selesai}</td>
                 <td>{$value.status}</td>
                 <td>{$value.kd_kamar}</td>
-                <td>{$value.nm_penyakit}</td>
+                <td>{loop: $value.diagnosa as $nama} - {$nama.nm_penyakit}<br> {/loop}</td>
                 <td>{$value.nm_perawatan}</td>
                 <td>{$value.nm_dokter}</td>
             </tr>
@@ -40,19 +40,12 @@
                 <td>
                     <div class="">
                         <button type="button" name="button" class="btn btn-success btn-xs edit_jadwaloperasi"
-                            data-no_rawat="{$value.no_rawat}" 
-                            data-nm_pasien="{$value.nm_pasien}"
-                            data-umur="{$value.umur}" 
-                            data-jk="{$value.jk}" 
-                            data-tanggal="{$value.tanggal}"
-                            data-jam_mulai="{$value.jam_mulai}"
-                            data-jam_selesai="{$value.jam_selesai}" 
-                            data-status="{$value.status}"
-                            data-kd_kamar="{$value.kd_kamar}" 
-                            data-nm_penyakit="{$value.nm_penyakit}"
-                            data-kode_paket="{$value.kode_paket}"
-                            data-nm_perawatan="{$value.nm_perawatan}"
-                            data-kd_dokter="{$value.kd_dokter}"
+                            data-no_rawat="{$value.no_rawat}" data-nm_pasien="{$value.nm_pasien}"
+                            data-umur="{$value.umur}" data-jk="{$value.jk}" data-tanggal="{$value.tanggal}"
+                            data-jam_mulai="{$value.jam_mulai}" data-jam_selesai="{$value.jam_selesai}"
+                            data-status="{$value.status}" data-kd_kamar="{$value.kd_kamar}"
+                            data-nm_penyakit="{$value.nm_penyakit}" data-kode_paket="{$value.kode_paket}"
+                            data-nm_perawatan="{$value.nm_perawatan}" data-kd_dokter="{$value.kd_dokter}"
                             data-nm_dokter="{$value.nm_dokter}">
                             <span class="fa fa-edit"></span>
                             <span class="hidden-xs"> Edit</span></button>
