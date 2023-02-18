@@ -1,0 +1,107 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">RL 3.1</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="col col-md-6">
+                        <div id="notif"></div>
+                    </div>
+                    <div class="col col-md-6">
+                        <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg"
+                            style="margin-top:5px;margin-bottom:15px;" method="GET">
+                            <div class="input-group">
+                                <select name="y" id="tahun" data-use-search="true" data-options-height="10px"
+                                    class="form-control" placeholder="Tahun">
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023" selected>2023</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit"><span
+                                            class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="display">
+                    <table class="table table-responsive table-striped no-padding dataTables" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Kode RS</th>
+                                <th>Kode Prop</th>
+                                <th>Kab / Kota</th>
+                                <th>Tahun</th>
+                                <th>Jenis Pelayanan</th>
+                                <th>Pasien Awal Tahun</th>
+                                <th>Pasien Masuk</th>
+                                <th>Pasien Keluar Hidup</th>
+                                <th>Pasien Keluar Mati < 48 Jam</th>
+                                <th>Pasien Keluar Mati >= 48 Jam</th>
+                                <th>Jumlah Lama Dirawat</th>
+                                <th>Pasien Akhir Tahun</th>
+                                <th>Jumlah Hari Perawatan</th>
+                                <th>Jumlah Hari Perawatan VVIP</th>
+                                <th>Jumlah Hari Perawatan VIP</th>
+                                <th>Jumlah Hari Perawatan Kelas I</th>
+                                <th>Jumlah Hari Perawatan Kelas II</th>
+                                <th>Jumlah Hari Perawatan Kelas III</th>
+                                <th>Jumlah Hari Perawatan Kelas Khusus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $rl31.jns_layan}
+                            <tr>
+                                <td>6307012</td>
+                                <td>63prop</td>
+                                <td>Hulu Sungai Tengah</td>
+                                <td>{$rl31.tahun}</td>
+                                <td>{$value.jns_layanan}</td>
+                                <td>{$value.pat}</td>
+                                <td>{$value.pm}</td>
+                                <td>{$value.pk}</td>
+                                <td>{$value.pmatik}</td>
+                                <td>{$value.pmatil}</td>
+                                <td>{$value.lama}</td>
+                                <td>{$value.pak}</td>
+                                <td>{$value.hp}</td>
+                                <td>0</td>
+                                <td>{$value.pkvip}</td>
+                                <td>{$value.pk1}</td>
+                                <td>{$value.pk2}</td>
+                                <td>{$value.pk3}</td>
+                                <td>{$value.pkh}</td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.dataTables').DataTable({
+        "order": [[3, "desc"]],
+        "pagingType": "full",
+        "language": {
+            "paginate": {
+                "first": "&laquo;",
+                "last": "&raquo;",
+                "previous": "‹",
+                "next": "›"
+            },
+            "search": false
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+</script>

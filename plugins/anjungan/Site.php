@@ -2021,14 +2021,8 @@ class Site extends SiteModule
     $_POST['sep_user']  = 'SEP Mandiri';
     $dpjpKontrol = "";
     $dpjpKontrol = $this->db('bridging_surat_kontrol_bpjs')
-      ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
       ->where('bridging_surat_kontrol_bpjs.no_surat', $_POST['noskdp'])
       ->oneArray();
-
-
-    if ($dpjpKontrol['kd_dokter_bpjs'] == "") {
-      $dpjpKontrol['kddpjp'] = "";
-    }
 
     $data = [
       'request' => [
@@ -2085,7 +2079,7 @@ class Site extends SiteModule
           'assesmentPel' => $_POST['assesmentPel'],
           'skdp' => [
             'noSurat' => $_POST['noskdp'],
-            'kodeDPJP' => $dpjpKontrol['kddpjp'],
+            'kodeDPJP' => $dpjpKontrol['kd_dokter_bpjs'],
           ],
           'dpjpLayan' => $_POST['kddpjp'],
           'noTelp' => $_POST['notelep'],
@@ -2124,6 +2118,7 @@ class Site extends SiteModule
       $data = json_decode($data, true);
 
       $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+      $_POST['sep_no_sep'] = trim(strtoupper($_POST['sep_no_sep']));
       // $_POST['sep_no_sep'] = '1708UjiCoba';
       if($_POST['no_rawat'] == ''){
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -2228,6 +2223,7 @@ class Site extends SiteModule
             'katarak' => $_POST['katarak'],
             'tglkkl' => $_POST['tglkkl'],
             'keterangankkl' => $_POST['keterangankkl'],
+            'nolp' => '',
             'suplesi' => $_POST['suplesi'],
             'no_sep_suplesi' => $_POST['no_sep_suplesi'],
             'kdprop' => $_POST['kdprop'],
@@ -2237,14 +2233,14 @@ class Site extends SiteModule
             'kdkec' => $_POST['kdkec'],
             'nmkec' => $_POST['nmkec'],
             'noskdp' => $_POST['noskdp'],
-            'kddpjp' => $_POST['kddpjp'],
-            'nmdpdjp' => $_POST['nmdpdjp'],
+            'kddpjp' => $dpjpKontrol['kd_dokter_bpjs'],
+            'nmdpdjp' => $dpjpKontrol['nm_dokter_bpjs'],
             // 'tujuankunjungan' => $_POST['tujuanKunj'],
             // 'flagprosedur' => $_POST['flagProcedure'],
             // 'penunjang' => $_POST['kdPenunjang'],
             // 'asesmenpelayanan' => $_POST['assesmentPel'],
-            // 'kddpjplayanan' => $_POST['kddpjp'],
-            // 'nmdpjplayanan' => $_POST['nmdpdjp']
+            'kddpjplayanan' => $_POST['kddpjp'],
+            'nmdpjplayanan' => $_POST['nmdpdjp']
           ]);
         }
       }else{
@@ -2285,6 +2281,7 @@ class Site extends SiteModule
           'katarak' => $_POST['katarak'],
           'tglkkl' => $_POST['tglkkl'],
           'keterangankkl' => $_POST['keterangankkl'],
+          'nolp' => '',
           'suplesi' => $_POST['suplesi'],
           'no_sep_suplesi' => $_POST['no_sep_suplesi'],
           'kdprop' => $_POST['kdprop'],
@@ -2294,14 +2291,14 @@ class Site extends SiteModule
           'kdkec' => $_POST['kdkec'],
           'nmkec' => $_POST['nmkec'],
           'noskdp' => $_POST['noskdp'],
-          'kddpjp' => $_POST['kddpjp'],
-          'nmdpdjp' => $_POST['nmdpdjp'],
+          'kddpjp' => $dpjpKontrol['kd_dokter_bpjs'],
+          'nmdpdjp' => $dpjpKontrol['nm_dokter_bpjs'],
           // 'tujuankunjungan' => $_POST['tujuanKunj'],
           // 'flagprosedur' => $_POST['flagProcedure'],
           // 'penunjang' => $_POST['kdPenunjang'],
           // 'asesmenpelayanan' => $_POST['assesmentPel'],
-          // 'kddpjplayanan' => $_POST['kddpjp'],
-          // 'nmdpjplayanan' => $_POST['nmdpdjp']
+          'kddpjplayanan' => $_POST['kddpjp'],
+          'nmdpjplayanan' => $_POST['nmdpdjp']
         ]);
       }
       if ($simpan_sep) {
@@ -3223,9 +3220,6 @@ class Site extends SiteModule
             'kdpolitujuan' => $_POST['kdpolitujuan'],
             'nmpolitujuan' => $_POST['nmpolitujuan'],
             'klsrawat' => $_POST['klsrawat'],
-            // 'klsnaik' => '',
-            // 'pembiayaan' => '',
-            // 'pjnaikkelas' => '',
             'lakalantas' => $_POST['lakalantas'],
             'user' => $_POST['sep_user'],
             'nomr' => $_POST['nomr'],
@@ -3243,6 +3237,7 @@ class Site extends SiteModule
             'katarak' => $_POST['katarak'],
             'tglkkl' => $_POST['tglkkl'],
             'keterangankkl' => $_POST['keterangankkl'],
+            'nolp' => '',
             'suplesi' => $_POST['suplesi'],
             'no_sep_suplesi' => $_POST['no_sep_suplesi'],
             'kdprop' => $_POST['kdprop'],
@@ -3252,14 +3247,14 @@ class Site extends SiteModule
             'kdkec' => $_POST['kdkec'],
             'nmkec' => $_POST['nmkec'],
             'noskdp' => $_POST['noskdp'],
-            'kddpjp' => $_POST['kddpjp'],
-            'nmdpdjp' => $_POST['nmdpdjp'],
+            'kddpjp' => $dpjpKontrol['kddpjp'],
+            'nmdpdjp' => $dpjpKontrol['nmdpjp'],
             // 'tujuankunjungan' => $_POST['tujuanKunj'],
             // 'flagprosedur' => $_POST['flagProcedure'],
             // 'penunjang' => $_POST['kdPenunjang'],
             // 'asesmenpelayanan' => $_POST['assesmentPel'],
-            // 'kddpjplayanan' => $_POST['kddpjp'],
-            // 'nmdpjplayanan' => $_POST['nmdpdjp']
+            'kddpjplayanan' => $_POST['kddpjp'],
+            'nmdpjplayanan' => $_POST['nmdpdjp']
           ]);
         }
         if ($simpan_sep) {

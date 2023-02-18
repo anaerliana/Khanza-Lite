@@ -1,0 +1,2034 @@
+[
+    {
+        "kd_penyakit": "A00",
+        "nm_penyakit": "Kolera"
+    },
+    {
+        "kd_penyakit": "A01",
+        "nm_penyakit": "Demam tifoid dan paratifoid"
+    },
+    {
+        "kd_penyakit": "A03",
+        "nm_penyakit": "Sigelosis"
+    },
+    {
+        "kd_penyakit": "A06.4",
+        "nm_penyakit": "Abses Hati amuba"
+    },
+    {
+        "kd_penyakit": [ "A06.0" , "A06.1" , "A06.2" , "A06.3" , "A06.5" , "A06.6" , "A06.7" , "A06.8" , "A06.9" ],
+        "nm_penyakit": "Amebiasis lainnya"
+    },
+    {
+        "kd_penyakit": "A09",
+        "nm_penyakit": "Diare & gastroenteritis oleh penyebab Infeksi tertentu (kolitis infeksi)"
+    },
+    {
+        "kd_penyakit": [ "A02" , "A04" , "A05" , "A07" , "A08" ],
+        "nm_penyakit": "Penyakit infeksi usus lainnya"
+    },
+    {
+        "kd_penyakit": "A15.0",
+        "nm_penyakit": "Tuberkulosis (TB) paru BTA (+) dengan/tanpa tindakan kuman TB"
+    },
+    {
+        "kd_penyakit": [ "A15.1" , "A15.2" , "A15.3" , "A15.4" , "A15.5" ,"A15.6" , "A15.7" , "A15.8" , "A15.9" , "A16.0" , "A16.1" , "A16.2" ],
+        "nm_penyakit": "Tuberkulosis paru lainnya"
+    },
+    {
+        "kd_penyakit": [ "A16.3" , "A16.4" , "A16.5" , "A16.6" , "A16.7" ,"A16.8" , "A16.9" ],
+        "nm_penyakit": "Tuberkulosis alat napas lainnya"
+    },
+    {
+        "kd_penyakit": "A17.0",
+        "nm_penyakit": "Meningitis tuberkulosa"
+    },
+    {
+        "kd_penyakit": [ "A17.1" , "A17.2" , "A17.3" , "A17.4" , "A17.5" ,"A17.6" , "A17.7" ],
+        "nm_penyakit": "Tuberkulosis susunan saraf pusat lainnya"
+    },
+    {
+        "kd_penyakit": "A18.0",
+        "nm_penyakit": "Tuberkulosis tulang dan sensi"
+    },
+    {
+        "kd_penyakit": "A18.2",
+        "nm_penyakit": "Limfadenitis tuberkulosa"
+    },
+    {
+        "kd_penyakit": "A19",
+        "nm_penyakit": "Tuberkulosis milier"
+    },
+    {
+        "kd_penyakit": [ "A18.1" , "A18.3" , "A18.4" , "A18.5" ,"A18.6" , "A18.7" , "A18.8" ],
+        "nm_penyakit": "Tuberkulosis lainnya"
+    },
+    {
+        "kd_penyakit": "A20",
+        "nm_penyakit": "Sampar/Pes"
+    },
+    {
+        "kd_penyakit": "A23",
+        "nm_penyakit": "Bruselosis"
+    },
+    {
+        "kd_penyakit": "A30",
+        "nm_penyakit": "Lepra/Kusta"
+    },
+    {
+        "kd_penyakit": "A33",
+        "nm_penyakit": "Tetanus neonatorum"
+    },
+    {
+        "kd_penyakit": [ "A34" , "A35" ],
+        "nm_penyakit": "Tetanus lainnya"
+    },
+    {
+        "kd_penyakit": "A36",
+        "nm_penyakit": "Difteria"
+    },
+    {
+        "kd_penyakit": "A37",
+        "nm_penyakit": "Pertusis/Batuk rejan"
+    },
+    {
+        "kd_penyakit": "A39",
+        "nm_penyakit": "Infeksi meningokok"
+    },
+    {
+        "kd_penyakit": [ "A40" , "A41" ],
+        "nm_penyakit": "Septisemia"
+    },
+    {
+        "kd_penyakit": "A22",
+        "nm_penyakit": "Antrak"
+    },
+    {
+        "kd_penyakit": [ "A21.24" , "A21.25" , "A21.26" , "A21.27" , "A21.28" , "A31" , "A32" , "A38" , "A42" , "A49" ],
+        "nm_penyakit": "Penyakit bakteri lainnya"
+    },
+    {
+        "kd_penyakit": "A50",
+        "nm_penyakit": "Sifilis bawaan"
+    },
+    {
+        "kd_penyakit": "A51",
+        "nm_penyakit": "Sifilis dini"
+    },
+    {
+        "kd_penyakit": [ "A52" , "A53" ],
+        "nm_penyakit": "Sifilis lainnya"
+    },
+    {
+        "kd_penyakit": "A54",
+        "nm_penyakit": "Infeksi gonokok"
+    },
+    {
+        "kd_penyakit": [ "A55" , "A56" ],
+        "nm_penyakit": "Penyakit klamidia yg ditularkan melalui Hubungan seksual"
+    },
+    {
+        "kd_penyakit": [ "A57" , "A58" , "A59" , "A60" , "A61" , "A62" , "A63" , "A64" ],
+        "nm_penyakit": "Infeksi lainnya yang terutama ditularkan Melalui hubungan seksual"
+    },
+    {
+        "kd_penyakit": "A68",
+        "nm_penyakit": "Demam bolak balik"
+    },
+    {
+        "kd_penyakit": "A71",
+        "nm_penyakit": "Trakoma"
+    },
+    {
+        "kd_penyakit": "A75",
+        "nm_penyakit": "Demam tifus"
+    },
+    {
+        "kd_penyakit": "A80",
+        "nm_penyakit": "Poliomielitis akut"
+    },
+    {
+        "kd_penyakit": "A82",
+        "nm_penyakit": "Rabies"
+    },
+    {
+        "kd_penyakit": "A82",
+        "nm_penyakit": "Rabies"
+    },
+    {
+        "kd_penyakit": [ "A83" , "A84" , "A85" , "A86" ],
+        "nm_penyakit": "Ensefalitis virus"
+    },
+    {
+        "kd_penyakit": "A95",
+        "nm_penyakit": "Demam kuning"
+    },
+    {
+        "kd_penyakit": "A90",
+        "nm_penyakit": "Demam dengue"
+    },
+    {
+        "kd_penyakit": "A91",
+        "nm_penyakit": "Demam berdarah dengue"
+    },
+    {
+        "kd_penyakit": "A92.0",
+        "nm_penyakit": "Chikungunya"
+    },
+    {
+        "kd_penyakit": [ "A92.1" , "A92.2" , "A92.3" , "A92.4" ,"A92.5" , "A92.6" , "A92.7" , "A92.8" , "A92.9" , "A92" ],
+        "nm_penyakit": "Demam virus tular nyamuk"
+    },
+    {
+        "kd_penyakit": [ "A93" , "A94" , "A96" , "A97" ,"A98" , "A99" ],
+        "nm_penyakit": "Demam virus dan demam berdarah virus tular Serangga lainnya"
+    },
+    {
+        "kd_penyakit": "B00",
+        "nm_penyakit": "Infeksi herpesvirus (Herpes simpleks)"
+    },
+    {
+        "kd_penyakit": [ "B01" , "B02" ],
+        "nm_penyakit": "Varisela (cacar air) dan zoster (herpes zoster)"
+    },
+    {
+        "kd_penyakit": "B05",
+        "nm_penyakit": "Campak"
+    },
+    {
+        "kd_penyakit": "B06",
+        "nm_penyakit": "Rubela"
+    },
+    {
+        "kd_penyakit": "B16",
+        "nm_penyakit": "Hepatitis B akut"
+    },
+    {
+        "kd_penyakit": "B15",
+        "nm_penyakit": "Hepatitis A akut"
+    },
+    {
+        "kd_penyakit": "B17.1",
+        "nm_penyakit": "Hepatitis C akut"
+    },
+    {
+        "kd_penyakit": "B17.2",
+        "nm_penyakit": "Hepatitis E akut"
+    },
+    {
+        "kd_penyakit": [ "B17.0" , "B17.8" , "B18" , "B19" ],
+        "nm_penyakit": "Hetitis virus lainnya"
+    },
+    {
+        "kd_penyakit": [ "B20" , "B21" , "B22" , "B23" , "B24" ],
+        "nm_penyakit": "Penyakit virus gangguan defisiensi imun Pada manusia (HIV)"
+    },
+    {
+        "kd_penyakit": "B26",
+        "nm_penyakit": "Gondong"
+    },
+    {
+        "kd_penyakit": [ "A81" , "A87" , "A88" , "A89" , "B03" , "B04" , "B07" , "B08" , "B09" , "B25" , "B27" , "B28" , "B29" , "B30" , "B31" , "B32" , "B33" , "B34" ],
+        "nm_penyakit": "Penyakit virus lainnya"
+    },
+    {
+        "kd_penyakit": [ "B35" , "B36" , "B37" , "B38" , "B39" , "B40" , "B41" , "B42" , "B43" , "B44" , "B45" , "B46" , "B47" , "B48" , "B49"  ],
+        "nm_penyakit": "Mikosis"
+    },
+    {
+        "kd_penyakit": "B50.0",
+        "nm_penyakit": "Malaria cerebral NOS"
+    },
+    {
+        "kd_penyakit": [ "B50.8" , "B50.9" ],
+        "nm_penyakit": "Malaria falciparum"
+    },
+    {
+        "kd_penyakit": "B51.0",
+        "nm_penyakit": "Malaria vivax"
+    },
+    {
+        "kd_penyakit": [ "B51.8" , "B51.9" ],
+        "nm_penyakit": "Malaria vivax lainnya"
+    },
+    {
+        "kd_penyakit": "B52.0",
+        "nm_penyakit": "Malaria malariae"
+    },
+    {
+        "kd_penyakit": [ "B52.8" , "B52.9" ],
+        "nm_penyakit": "Malaria malariae lainnya"
+    },
+    {
+        "kd_penyakit": "B53",
+        "nm_penyakit": "Malaria ovale"
+    },
+    {
+        "kd_penyakit": "B54",
+        "nm_penyakit": "Malaria YTT"
+    },
+    {
+        "kd_penyakit": "B55",
+        "nm_penyakit": "Lesmaniasis"
+    },
+    {
+        "kd_penyakit": [ "B56" , "B57" ],
+        "nm_penyakit": "Tripanosomiasis"
+    },
+    {
+        "kd_penyakit": "B65",
+        "nm_penyakit": "Skistosomiasis (Bilharziasis)"
+    },
+    {
+        "kd_penyakit": "B66",
+        "nm_penyakit": "Infeksi trematoda lainnya"
+    },
+    {
+        "kd_penyakit": "B67",
+        "nm_penyakit": "Ekinokokosis"
+    },
+    {
+        "kd_penyakit": "B72",
+        "nm_penyakit": "Drakunkuliasis"
+    },
+    {
+        "kd_penyakit": "B73",
+        "nm_penyakit": "Onkosersiasis"
+    },
+    {
+        "kd_penyakit": "B74",
+        "nm_penyakit": "Filariasis"
+    },
+    {
+        "kd_penyakit": "B76",
+        "nm_penyakit": "Penyakit cacing tambang"
+    },
+    {
+        "kd_penyakit": [ "B68" , "B69" , "B70" , "B71" , "B75" , "B77" , "B78" , "B79" , "B80" , "B81" , "B82" , "B83" ],
+        "nm_penyakit": "Helmitiansis lain"
+    },
+    {
+        "kd_penyakit": "B90.9",
+        "nm_penyakit": "Patu/lobus luluh akibat TB"
+    },
+    {
+        "kd_penyakit": [ "B90.0" , "B90.1" , "B90.2" , "B90.3" , "B90.4" , "B90.5" , "B90.6" , "B90.7" , "B90.8" ],
+        "nm_penyakit": "Sekuele (gejala sisa) TB lainnya"
+    },
+    {
+        "kd_penyakit": "B91",
+        "nm_penyakit": "Sekuele (gejala sisa) poliomielitis"
+    },
+    {
+        "kd_penyakit": "B92",
+        "nm_penyakit": "Sekuele (gejala sisa) lepra"
+    },
+    {
+        "kd_penyakit": "A66",
+        "nm_penyakit": "Patek (Frambusia)"
+    },
+    {
+        "kd_penyakit": "A70",
+        "nm_penyakit": "Infeksi Klamedia"
+    },
+    {
+        "kd_penyakit": "B58",
+        "nm_penyakit": "Toksoplasmosis"
+    },
+    {
+        "kd_penyakit": [ "A65" , "A67" , "A69" , "A70" , "A74" , "A77" , "A78" , "A79" , "B59" , "B60" , "B61" , "B62" , "B63" , "B64" , "B85" , "B86" , "B87" , "B88" , "B89" , "B94" , "B95" , "B96" , "B97" , "B98" , "B99" ],
+        "nm_penyakit": "Penyakit infeksi dan parasit lainnya"
+    },
+    {
+        "kd_penyakit": [ "C00" , "C01" , "C02" , "C03" , "C04" , "C05" , "C06" , "C07" , "C08" , "C09" , "C10" ],
+        "nm_penyakit": "Neoplasma ganas bibir, rongga mulut,Kelenjar liur, faring, tonsil"
+    },
+    {
+        "kd_penyakit": "C11",
+        "nm_penyakit": "Neoplasma ganas nosofaring"
+    },
+    {
+        "kd_penyakit": [ "C12" , "C13" , "C14" ],
+        "nm_penyakit": "Neoplasma ganas bibir, rongga mulut,Faring, lainnya & YTT"
+    },
+    {
+        "kd_penyakit": "C15",
+        "nm_penyakit": "Neoplasma ganas esofagus"
+    },
+    {
+        "kd_penyakit": "C16",
+        "nm_penyakit": "Neoplasma ganas lambung"
+    },
+    {
+        "kd_penyakit": "C18",
+        "nm_penyakit": "Neoplasma ganas kolon"
+    },
+    {
+        "kd_penyakit": [ "C19" , "C20" , "C21" ],
+        "nm_penyakit": "Neoplasma ganas daerah rektosigmoid, Rektum dan anus"
+    },
+    {
+        "kd_penyakit": "C22",
+        "nm_penyakit": "Neoplasma ganas hati dan saluran empedu Intrahepatik"
+    },
+    {
+        "kd_penyakit": "C25",
+        "nm_penyakit": "Neoplasma ganas pankreas"
+    },
+    {
+        "kd_penyakit": [ "C17" , "C23" , "C24" , "C26" ],
+        "nm_penyakit": "Neoplasma ganas usus halus dan alat cerna lainnya"
+    },
+    {
+        "kd_penyakit": "C32",
+        "nm_penyakit": "Neoplasma laring"
+    },
+    {
+        "kd_penyakit": "C33",
+        "nm_penyakit": "Neoplasma ganas trakea"
+    },
+    {
+        "kd_penyakit": "C34",
+        "nm_penyakit": "Neoplasma ganas bronkus dan paru"
+    },
+    {
+        "kd_penyakit": [ "C38.1" , "C38.2" , "C38.3" , "C38.4" , "C38.5" , "C38.6" , "C38.7" , "C38.8" ],
+        "nm_penyakit": "Neoplasma ganas mediastinum"
+    },
+    {
+        "kd_penyakit": [ "C30" , "C37" , "C38.0" , "C39" ],
+        "nm_penyakit": "Neoplasma ganas sistem napas dan alat Rongga dada lainnya"
+    },
+    {
+        "kd_penyakit": [ "C40" , "C41" ],
+        "nm_penyakit": "Neoplasma ganas tulang dan tulang rawan sendi"
+    },
+    {
+        "kd_penyakit": "C43",
+        "nm_penyakit": "Melanoma ganas kulit"
+    },
+    {
+        "kd_penyakit": "C44",
+        "nm_penyakit": "Neoplasma ganas kulit lainnya"
+    },
+    {
+        "kd_penyakit": "C45",
+        "nm_penyakit": "Mesotelioma"
+    },
+    {
+        "kd_penyakit": [ "C46" , "C47" , "C48" , "C49" ],
+        "nm_penyakit": "Neoplasma ganas jaringan ikat & jaringan Lunak"
+    },
+    {
+        "kd_penyakit": "C50",
+        "nm_penyakit": "Neoplasma ganas payudara"
+    },
+    {
+        "kd_penyakit": "C53",
+        "nm_penyakit": "Neoplasma ganas serviks uterus"
+    },
+    {
+        "kd_penyakit": "C54",
+        "nm_penyakit": "Neoplasma ganas korpus uteri"
+    },
+    {
+        "kd_penyakit": "C55",
+        "nm_penyakit": "Neoplasma ganas bagian uterus lainnya Dan YTT"
+    },
+    {
+        "kd_penyakit": "C56",
+        "nm_penyakit": "Neoplasma ganas ovarium (indung telur)"
+    },
+    {
+        "kd_penyakit": "C58",
+        "nm_penyakit": "Neopalsma ganas plasenta (uri)"
+    },
+    {
+        "kd_penyakit": [ "C51" , "C52" , "C57" ],
+        "nm_penyakit": "Neoplasma ganas alat kelamin perempuan Lainnya"
+    },
+    {
+        "kd_penyakit": "C61",
+        "nm_penyakit": "Neopalsma ganas prostat"
+    },
+    {
+        "kd_penyakit": "C60",
+        "nm_penyakit": "Neopalsma ganas penis"
+    },
+    {
+        "kd_penyakit": "C62",
+        "nm_penyakit": "Neoplasma ganas testis"
+    },
+    {
+        "kd_penyakit": "C63",
+        "nm_penyakit": "Neoplasma ganas alat kelamin pria lainnya"
+    },
+    {
+        "kd_penyakit": "C67",
+        "nm_penyakit": "Neoplasma ganas kandung kemih (buli – buli)"
+    },
+    {
+        "kd_penyakit": [ "C64" , "C65" ],
+        "nm_penyakit": "Neoplasma ganas ginjal, pelvis ginjal"
+    },
+    {
+        "kd_penyakit": [ "C66" , "C68" ],
+        "nm_penyakit": "Neoplasma ganas alat kemih lainnya"
+    },
+    {
+        "kd_penyakit": "C69",
+        "nm_penyakit": "Neoplasma ganas mata dan adneksa"
+    },
+    {
+        "kd_penyakit": "C71",
+        "nm_penyakit": "Neoplasma ganas otak"
+    },
+    {
+        "kd_penyakit": [ "C70" , "C72" ],
+        "nm_penyakit": "Neoplasma ganas bagian susunan saraf pusat"
+    },
+    {
+        "kd_penyakit": "C73",
+        "nm_penyakit": "Neopalsma ganas kelenjar tiroid"
+    },
+    {
+        "kd_penyakit": [ "C74" , "C75" ],
+        "nm_penyakit": "Neoplasma ganas kelenjar endokrin lain dan struktur terkait"
+    },
+    {
+        "kd_penyakit": "C76",
+        "nm_penyakit": "Neoplasma ganas tempat lain dan yang tidak Jelas batasannya"
+    },
+    {
+        "kd_penyakit": [ "C77" , "C78" , "C79" , "C80" ],
+        "nm_penyakit": "Neoplasma ganas sekunder dan neoplasma Ganas kelenjar getah bening YTT"
+    },
+    {
+        "kd_penyakit": "C97",
+        "nm_penyakit": "Neoplasma ganas primer tempat multipel"
+    },
+    {
+        "kd_penyakit": "C81",
+        "nm_penyakit": "Penyakit hodgkin"
+    },
+    {
+        "kd_penyakit": [ "C82" , "C83" , "C84" , "C85" ],
+        "nm_penyakit": "Limfoma non hodgkin"
+    },
+    {
+        "kd_penyakit": [ "C91" , "C92" , "C93" , "C94" , "C95" ],
+        "nm_penyakit": "Leukimia"
+    },
+    {
+        "kd_penyakit": [ "C88" , "C89" , "C90" , "C96" ],
+        "nm_penyakit": "Neoplasma ganas lain dari limfoid Hematopoetik dan jaringan terkait lainnya"
+    },
+    {
+        "kd_penyakit": "D06",
+        "nm_penyakit": "Karsinoma in situ serviks uterus"
+    },
+    {
+        "kd_penyakit": [ "D22" , "D23" ],
+        "nm_penyakit": "Neoplasma jinak kulit"
+    },
+    {
+        "kd_penyakit": "D24",
+        "nm_penyakit": "Neoplasma jinak payudara"
+    },
+    {
+        "kd_penyakit": "D25",
+        "nm_penyakit": "Leiomioma uterus"
+    },
+    {
+        "kd_penyakit": "D27",
+        "nm_penyakit": "Neoplasma jinak ovarium (indung telur)"
+    },
+    {
+        "kd_penyakit": "D30",
+        "nm_penyakit": "Neoplasma jinak alat kemih"
+    },
+    {
+        "kd_penyakit": "D33",
+        "nm_penyakit": "Neoplasma jinak otak dan susunan saraf Pusat lainnya"
+    },
+    {
+        "kd_penyakit": "D04",
+        "nm_penyakit": "Karsinoma in situ kulit"
+    },
+    {
+        "kd_penyakit": "D05",
+        "nm_penyakit": "Karsinoma in situ payudara"
+    },
+    {
+        "kd_penyakit": [ "D00" , "D01" , "D02" , "D03" , "D07" , "D08" , "D09" ],
+        "nm_penyakit": "Karsinoma"
+    },
+    {
+        "kd_penyakit": "D12.6",
+        "nm_penyakit": "Polip gastrointestinal"
+    },
+    {
+        "kd_penyakit": [ "D14.1" , "D14.2" , "D14.3" , "D14.4" ],
+        "nm_penyakit": "Neoplasma jinak sistem napas lainnya"
+    },
+    {
+        "kd_penyakit": "D15.2",
+        "nm_penyakit": "Neoplasma jinak mediastinum"
+    },
+    {
+        "kd_penyakit": [ "D10" , "D11" , "D12.0" , "D12.1" , "D12.2" , "D12.3" , "D12.4" , "D12.5" , "D12.7" , "D12.8" , "D12.9" , "D13" , "D14.0" , "D15.0" , "D15.1" , "D79" , "D21" , "D26" , "D28" , "D29" , "D31" , "D32" , "D34" , "D35" , "D36"],
+        "nm_penyakit": "Neoplasma jinak lainnya"
+    },
+    {
+        "kd_penyakit": [ "D37" , "D38" , "D39" , "D40" , "D41" , "D42" , "D43" , "D44" , "D45" , "D46" , "D47" , "D48" ],
+        "nm_penyakit": "Neoplasma yang tak menentu peragainya Dan yang tak diketahui sifatnya"
+    },
+    {
+        "kd_penyakit": "D50",
+        "nm_penyakit": "Anemia defisiensi zat besi"
+    },
+    {
+        "kd_penyakit": "D59",
+        "nm_penyakit": "Anemia Hemolitik"
+    },
+    {
+        "kd_penyakit": "D61",
+        "nm_penyakit": "Anemia aplastik lainnya"
+    },
+    {
+        "kd_penyakit": [ "D51" , "D52" , "D53" , "D54" , "D55" , "D56" , "D57" , "D58" , "D60" , "D62" , "D63" , "D64" ],
+        "nm_penyakit": "Anemia lainnya"
+    },
+    {
+        "kd_penyakit": "D70",
+        "nm_penyakit": "Agranulositosus"
+    },
+    {
+        "kd_penyakit": "D74",
+        "nm_penyakit": "Metahaemoglobinema"
+    },
+    {
+        "kd_penyakit": [ "D65" , "D66" , "D67" , "D68" , "D69" , "D71" , "D72" , "D73" , "D75" , "D76" , "D77" ],
+        "nm_penyakit": "Kondisi hemoragik dan penyakit darah dan organ Pembuat darah lainnya"
+    },
+    {
+        "kd_penyakit": [ "D80" , "D81" , "D82" , "D83" , "D84" , "D85" , "D86" , "D87" , "D88" , "D89" ],
+        "nm_penyakit": "Penyakit tertentu yang menyangkut mekanisme"
+    },
+    {
+        "kd_penyakit": [ "E00" , "E01" , "E02" ],
+        "nm_penyakit": "Gangguan tiroid berhubungan dengan Defisiensi iodium"
+    },
+    {
+        "kd_penyakit": "E05",
+        "nm_penyakit": "Tirotoksikosis (hipertiroidisme)"
+    },
+    {
+        "kd_penyakit": "E03",
+        "nm_penyakit": "Hipotiroidisme lain"
+    },
+    {
+        "kd_penyakit": "E04",
+        "nm_penyakit": "Penyakit gondok nontoksik lain"
+    },
+    {
+        "kd_penyakit": "E06",
+        "nm_penyakit": "Tiroiditis"
+    },
+    {
+        "kd_penyakit": "E07",
+        "nm_penyakit": "Gangguan kelenjar tiroid lainnya"
+    },
+    {
+        "kd_penyakit": "E10",
+        "nm_penyakit": "Diabetes melitus bergantung insulin"
+    },
+    {
+        "kd_penyakit": "E11",
+        "nm_penyakit": "Diabetes melitus tidaj bergantung insulin"
+    },
+    {
+        "kd_penyakit": "E12",
+        "nm_penyakit": "Diabetel militus berhubungan malnutrisi"
+    },
+    {
+        "kd_penyakit": "E13",
+        "nm_penyakit": "Diabetes melitus YDT lainnya"
+    },
+    {
+        "kd_penyakit": "E14",
+        "nm_penyakit": "Diabetes melitus YTT"
+    },
+    {
+        "kd_penyakit": [ "E40" , "E41" , "E42" , "E43" , "E44" , "E45" , "E46" ],
+        "nm_penyakit": "Malnutrisi"
+    },
+    {
+        "kd_penyakit": "E50",
+        "nm_penyakit": "Defisiensi vitamin A"
+    },
+    {
+        "kd_penyakit": [ "E51" , "E52" , "E53" , "E54" , "E55" , "E56" ],
+        "nm_penyakit": "Defisiensi vitamin lainnya"
+    },
+    {
+        "kd_penyakit": "E64",
+        "nm_penyakit": "Gejala sisa malnutrisi dan defisiensi gizi lainnya"
+    },
+    {
+        "kd_penyakit": "E66",
+        "nm_penyakit": "Obesitas"
+    },
+    {
+        "kd_penyakit": "E86",
+        "nm_penyakit": "Deplesi volume (dehidrasi)"
+    },
+    {
+        "kd_penyakit": [ "E15" , "E16" , "E17" , "E18" , "E19" , "E20" ,
+                        "E21" , "E22" , "E23" , "E24" , "E25" , "E26" ,
+                        "E27" , "E28" , "E29" , "E30" , "E31" , "E32" ,
+                        "E33" , "E34" , "E35" , "E58" , "E63" , "E65" ,
+                        "E67" , "E85" , "E87" , "E88" , "E89" , "E90" ],
+        "nm_penyakit": "Gangguan endokrin, nutrisi dan metbolik Lainnya"
+    },
+    {
+        "kd_penyakit": [ "F00" , "F01" , "F02" , "F03" ],
+        "nm_penyakit": "Demensia"
+    },
+    {
+        "kd_penyakit": "F10",
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Penggunaan alkohol"
+    },
+    {
+        "kd_penyakit": "F11",
+        "nm_penyakit": "Gangguan mental dan perlaku akibat Penggunaan opioida"
+    },
+    {
+        "kd_penyakit": "F12",
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Pengguanaan kanabinoida"
+    },
+    {
+        "kd_penyakit": "F13",
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Penggunaan Sedativa atau Hipnotika"
+    },
+    {
+        "kd_penyakit": "F14",
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Penggunaan Kokain"
+    },
+    {
+        "kd_penyakit": "F15",
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Penggunaan stimeunlansia"
+    },
+    {
+        "kd_penyakit": "F16",
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Pengunaan halosinogenika"
+    },
+    {
+        "kd_penyakit": "F17",
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Penggunaan tembakau"
+    },
+    {
+        "kd_penyakit": [ "F18" , "F19" ],
+        "nm_penyakit": "Gangguan mental dan perilaku akibat Zat pelarut yang mudah menguap, atau zat Multipel dan zat psikoaktif lainnya"
+    },
+    {
+        "kd_penyakit": [ "F20" , "F21" , "F23" ],
+        "nm_penyakit": "Skizofrenia, gangguan skizotipal, psikotik Akut dan sementara"
+    },
+    {
+        "kd_penyakit": [ "F22" , "F24" ],
+        "nm_penyakit": "Gangguan waham menetap dan induksi"
+    },
+    {
+        "kd_penyakit": "F25",
+        "nm_penyakit": "Gangguan skizoafektif"
+    },
+    {
+        "kd_penyakit": [ "F28" , "F29" ],
+        "nm_penyakit": "Gangguan psikotik nonorganik lainnya atau YTT"
+    },
+    {
+        "kd_penyakit": [ "F30" , "F31" ],
+        "nm_penyakit": "Episode manik dan gangguan efektif bipolar"
+    },
+    {
+        "kd_penyakit": [ "F32" , "F39" ],
+        "nm_penyakit": "Episode defresif, gangguan depresif Berulang, gangguan suasana perasaan (mood Efektif) menetap, lainnya atau YTT"
+    },
+    {
+        "kd_penyakit": [ "F40" , "F41.1" , "F41.3" , "F41.4" , "F41.5" , "F41.6" , "F41.7" , "F41.8" , "F41.9" ],
+        "nm_penyakit": "Gangguan anxietas fobik, gangguan anxietas Lainnya"
+    },
+    {
+        "kd_penyakit": "F42",
+        "nm_penyakit": "Gangguan obsesif – kompulsif"
+    },
+    {
+        "kd_penyakit": "F43.1",
+        "nm_penyakit": "Gangguian stres pasca trauma"
+    },
+    {
+        "kd_penyakit": [ "F43.0" , "F43.2" , "F45" , "F48" ],
+        "nm_penyakit": "Reaksi terhadap stres berat dan gangguan Penyesuaian, gangguan somatoform, gangguan Neurotik lainnya"
+    },
+    {
+        "kd_penyakit": "F44",
+        "nm_penyakit": "Gangguan dososiatif (konversi)"
+    },
+    {
+        "kd_penyakit": [ "F70" , "F71" , "F72" , "F73" , "F74" , "F75" , "F76" , "F77" , "F78" , "F79" ],
+        "nm_penyakit": "Retardasi mental"
+    },
+    {
+        "kd_penyakit": [ "F04" , "F07" , "F09" ],
+        "nm_penyakit": "Sindrom amnestik dan gangguan mental organik"
+    },
+    {
+        "kd_penyakit": [ "F50" , "F51" , "F52" , "F53.1" , "F53.2" , "F53.3" , "F53.4" , "F53.5" , "F53.6" , "F53.7" , "F53.8" , "F53.9" , "F54" , "F59" ],
+        "nm_penyakit": "Sindrom makan, gangguan tidur, disfungsi seksual,gangguan indentitas, gangguan Perilaku lainnya"
+    },
+    {
+        "kd_penyakit": [ "F60" , "F61" , "F62" , "F63" , "F64" , "F65" , "F66" , "F67" , "F68" , "F69" ],
+        "nm_penyakit": "Gangguan kepribadian, gangguan kebiasaan Dan impuls, gangguan identitas, gangguan Prevensi seksual"
+    },
+    {
+        "kd_penyakit": [ "F80" , "F81" , "F82" , "F83" , "F84" , "F85" , "F86" , "F87" , "F88" , "F89" ],
+        "nm_penyakit": "Gangguan perkembangan psikologis"
+    },
+    {
+        "kd_penyakit": [ "F05" , "F06.0" , "F06.1" , "F06.2" , "F06.3" , "F06.4" , "F06.5" , "F06.6" , "F06.8" , "F06.9" , "F90" , "F91" , "F92" , "F93" , "F94" , "F95" , "F96" , "F97" , "F98" ],
+        "nm_penyakit": "Gangguan hiperkinetik,perilaku,emosional Atau fungsi sosial khas, gangguan “tic” Dan gangguan mental dan emosi lainnya"
+    },
+    {
+        "kd_penyakit": "F53.0",
+        "nm_penyakit": "Depresif post partum"
+    },
+    {
+        "kd_penyakit": "F41.2",
+        "nm_penyakit": "Depresif gangguan cemas "
+    },
+    {
+        "kd_penyakit": "F99",
+        "nm_penyakit": "Gangguan jiwa YTT"
+    },
+    {
+        "kd_penyakit": [ "G00" , "G01" , "G02" , "G03" , "G04" , "G05" , "G06" , "G07" , "G08" , "G09" ],
+        "nm_penyakit": "Penyakit radang susunan saraf pusat"
+    },
+    {
+        "kd_penyakit": "G20",
+        "nm_penyakit": "Penyakit parkinson"
+    },
+    {
+        "kd_penyakit": "G30",
+        "nm_penyakit": "Penyakit Alzheimer"
+    },
+    {
+        "kd_penyakit": "G35",
+        "nm_penyakit": "Sklerosis multipel"
+    },
+    {
+        "kd_penyakit": [ "G40" , "G41" ],
+        "nm_penyakit": "Epilepsi"
+    },
+    {
+        "kd_penyakit": [ "G43" , "G44" ],
+        "nm_penyakit": "Migren dan sindrom nyeri kepala lainnya"
+    },
+    {
+        "kd_penyakit": "G45",
+        "nm_penyakit": "Gangguan serangan peredaran otak sepintas Dan sindroma yang terkait"
+    },
+    {
+        "kd_penyakit": "G56.0",
+        "nm_penyakit": "Sindroma carpal tunnel"
+    },
+    {
+        "kd_penyakit": "G56.2",
+        "nm_penyakit": "Lesi saraf ulnaris"
+    },
+    {
+        "kd_penyakit": "G56.3",
+        "nm_penyakit": "Lesi saraf radialis"
+    },
+    {
+        "kd_penyakit": "G56.8",
+        "nm_penyakit": "Mononeuropati anggota tunuh bagian atas lainnya"
+    },
+    {
+        "kd_penyakit": [ "G50" , "G51" , "G52" , "G53" , "G54" , "G55" , "G57" , "G58" , "G59" ],
+        "nm_penyakit": "Gangguan saraf , radiks dan pleksus saraf"
+    },
+    {
+        "kd_penyakit": "G80",
+        "nm_penyakit": "Infantil cerebral palsy"
+    },
+    {
+        "kd_penyakit": [ "G81" , "G82" , "G83" ],
+        "nm_penyakit": "Sindroma paralitik lainnya"
+    },
+    {
+        "kd_penyakit": "G21",
+        "nm_penyakit": "Parkinson sekunder"
+    },
+    {
+        "kd_penyakit": "G92",
+        "nm_penyakit": "Toksik insefallopati"
+    },
+    {
+        "kd_penyakit": [ "G10" , "G11" , "G12" , "G13" , "G26" , "G31" , "G32" , "G36" , "G37" , "G46" , "G47" , "G60" , "G61" , "G62" , "G63" , "G64" , "G65" , "G66" , "G67" , "G68" , "G69" , "G70" , "G71" , "G72" , "G73" , "G90" , "G91" , "G93" , "G99" ],
+        "nm_penyakit": "Penyakit susunan saraf lainnya"
+    },
+    {
+        "kd_penyakit": [ "H00" , "H01" ],
+        "nm_penyakit": "Radang kelopak mata"
+    },
+    {
+        "kd_penyakit": [ "H10" , "H11" , "H12" , "H13" ],
+        "nm_penyakit": "Konjungtivitis dan gangguan lain konjungtiva"
+    },
+    {
+        "kd_penyakit": [ "H15" , "H16" , "H17" , "H18" , "H19" ],
+        "nm_penyakit": "Keratitis dan dan gangguan lain sklera dan kornea"
+    },
+    {
+        "kd_penyakit": [ "H25" , "H26" , "H27" , "H28" ],
+        "nm_penyakit": "Katarak dan gangguan lain lensa"
+    },
+    {
+        "kd_penyakit": "H33",
+        "nm_penyakit": "Ablasi dan kerusakan retina"
+    },
+    {
+        "kd_penyakit": [ "H40" , "H41" , "H42" ],
+        "nm_penyakit": "Glaukoma"
+    },
+    {
+        "kd_penyakit": [ "H49" , "H50" ],
+        "nm_penyakit": "Strabismus"
+    },
+    {
+        "kd_penyakit": "H52",
+        "nm_penyakit": "Gangguan refraksi dan oakomodasi"
+    },
+    {
+        "kd_penyakit": "H54",
+        "nm_penyakit": "Buta dan rabun"
+    },
+    {
+        "kd_penyakit": [ "H02" , "H03" ],
+        "nm_penyakit": "Gangguan lain kelopak mata"
+    },
+    {
+        "kd_penyakit": [ "H04" , "H05" , "H06" ],
+        "nm_penyakit": "Gangguan sistem lakrimal dan orbita"
+    },
+    {
+        "kd_penyakit": [ "H20" , "H21" , "H22" ],
+        "nm_penyakit": "Iridosiklitis dan gangguan lain iris dan Badan silier"
+    },
+    {
+        "kd_penyakit": [ "H30" , "H31" , "H32" ],
+        "nm_penyakit": "Gangguan koroid dan korieretina"
+    },
+    {
+        "kd_penyakit": "H34",
+        "nm_penyakit": "Sumbatan vaskular retina"
+    },
+    {
+        "kd_penyakit": [ "H35" , "H36" ],
+        "nm_penyakit": "Gangguan lain retina"
+    },
+    {
+        "kd_penyakit": [ "H43" , "H44" , "H45" ],
+        "nm_penyakit": "Gangguan badan kaca dan bola mata"
+    },
+    {
+        "kd_penyakit": [ "H46" , "H47" , "H48" ],
+        "nm_penyakit": "Gangguan saraf mata optik dan saraf penglihatan"
+    },
+    {
+        "kd_penyakit": "H51",
+        "nm_penyakit": "Gangguan lain gerakan mata binokular"
+    },
+    {
+        "kd_penyakit": "H53",
+        "nm_penyakit": "Gangguan daya liat"
+    },
+    {
+        "kd_penyakit": "H55",
+        "nm_penyakit": "Nistagmus & pergerakan mata yang tidak teratur lainnya"
+    },
+    {
+        "kd_penyakit": [ "H55" , "H56" , "H57" , "H58" , "H59" ],
+        "nm_penyakit": "Penyakit lain mata dan edneksia"
+    },
+    {
+        "kd_penyakit": [ "H65" , "H66" , "H67" , "H68" , "H69" , "H70" , "H71" , "H72" , "H73" , "H74" , "H75" ],
+        "nm_penyakit": "Otitis media dan gangguan mastoid dan Telinga tengah"
+    },
+    {
+        "kd_penyakit": [ "H90" , "H91" ],
+        "nm_penyakit": "Gangguan daya dengar"
+    },
+    {
+        "kd_penyakit": "H61.8",
+        "nm_penyakit": "Fistula/Kista preurikel"
+    },
+    {
+        "kd_penyakit": "H83.3",
+        "nm_penyakit": "Efek kebisingan telinga bagian dalam"
+    },
+    {
+        "kd_penyakit": [ "H60" , "H61.3" , "H61.9" , "H62" , "H80" , "H81" , "H82" , "H83.0" , "H83.2" , "H83.8" , "H83.9" , "H92" , "H95" ],
+        "nm_penyakit": "Penyakit telinga dan proseus mastoid"
+    },
+    {
+        "kd_penyakit": [ "I00" , "I01" , "I02" ],
+        "nm_penyakit": "Demam reumatik akut"
+    },
+    {
+        "kd_penyakit": [ "I05" , "I06" , "I07" , "I08" , "I09" ],
+        "nm_penyakit": "Penyakit jantung reumatik kronik"
+    },
+    {
+        "kd_penyakit": "I10",
+        "nm_penyakit": "Hipertensi esensial (primer)"
+    },
+    {
+        "kd_penyakit": [ "I11" , "I12" , "I13" , "I14" , "I15" ],
+        "nm_penyakit": "Penyakit hipertensi lainnya"
+    },
+    {
+        "kd_penyakit": [ "I21" , "I22" ],
+        "nm_penyakit": "Infark miokard akut"
+    },
+    {
+        "kd_penyakit": [ "I20" , "I23" , "I24" , "I25" ],
+        "nm_penyakit": "Penyakit jantung iskemik lainnya"
+    },
+    {
+        "kd_penyakit": "I26",
+        "nm_penyakit": "Emboli paru"
+    },
+    {
+        "kd_penyakit": [ "I44" , "I45" , "I46" , "I47" , "I48" , "I49" ],
+        "nm_penyakit": "Gangguan hantaran dan aritmia jantung"
+    },
+    {
+        "kd_penyakit": "I50",
+        "nm_penyakit": "Gagal jantung"
+    },
+    {
+        "kd_penyakit": [ "I42" , "I43" ],
+        "nm_penyakit": "Kardiomiopati"
+    },
+    {
+        "kd_penyakit": [ "I27" , "I28" , "I29" , "I30" , "I31" , "I32" , "I33" , "I34" , "I35" , "I36" , "I37" , "I38" , "I39" , "I40" , "I41" , "I51" , "I52" ],
+        "nm_penyakit": "Penyakit jantung lainnya"
+    },
+    {
+        "kd_penyakit": [ "I60" , "I61" , "I62" ],
+        "nm_penyakit": "Perdarahan intrakranial"
+    },
+    {
+        "kd_penyakit": "I63",
+        "nm_penyakit": "Infark serebral"
+    },
+    {
+        "kd_penyakit": "I64",
+        "nm_penyakit": "Strok tak menyebut perdarahan atau infark"
+    },
+    {
+        "kd_penyakit": [ "I65" , "I66" , "I67" , "I68" , "I69" ],
+        "nm_penyakit": "Penyakit serebrovaskular lainnya"
+    },
+    {
+        "kd_penyakit": "I70",
+        "nm_penyakit": "Aterosklerosis"
+    },
+    {
+        "kd_penyakit": "I73.0",
+        "nm_penyakit": "Sindroma raynaud's"
+    },
+    {
+        "kd_penyakit": [ "I73" , "I73.8" , "I73.9" ],
+        "nm_penyakit": "Penyakit pembuluh darah perifer lainnya"
+    },
+    {
+        "kd_penyakit": "I74",
+        "nm_penyakit": "Emboli dan trombosis arteri"
+    },
+    {
+        "kd_penyakit": [ "I71" , "I72" , "I77" , "I78" , "I79" ],
+        "nm_penyakit": "Penyakit arteri, arteriol dan kapiler lainnya"
+    },
+    {
+        "kd_penyakit": [ "I80" , "I81" , "I82" ],
+        "nm_penyakit": "Flebitis, tromboflebitis,emboli dan trombosis vena"
+    },
+    {
+        "kd_penyakit": "I83",
+        "nm_penyakit": "Varises vena ekstremitas bawah"
+    },
+    {
+        "kd_penyakit": "I84",
+        "nm_penyakit": "Hemoroid/Wasir"
+    },
+    {
+        "kd_penyakit": "I85",
+        "nm_penyakit": "Varises esofagus"
+    },
+    {
+        "kd_penyakit": [ "I86" , "I87" , "I88" , "I89" , "I90" , "I91" , "I92" , "I93" , "I94" , "I95" , "I96" , "I97" , "I98" , "I99" ],
+        "nm_penyakit": "Penyakit sistem sirkulasi lainnya"
+    },
+    {
+        "kd_penyakit": "J02",
+        "nm_penyakit": "Faringitis akut"
+    },
+    {
+        "kd_penyakit": "J03",
+        "nm_penyakit": "Tonsilitis akut"
+    },
+    {
+        "kd_penyakit": "J04",
+        "nm_penyakit": "Laringitis dan trakeitis akut"
+    },
+    {
+        "kd_penyakit": [ "J00" , "J01" , "J05" , "J06" ],
+        "nm_penyakit": "Infeksi saluran napas bagian atas akut Lainnya"
+    },
+    {
+        "kd_penyakit": "J10",
+        "nm_penyakit": "Influensa virus teridentifikasi"
+    },
+    {
+        "kd_penyakit": "J11",
+        "nm_penyakit": "Influensa virus tidak teridentifikasi"
+    },
+    {
+        "kd_penyakit": [ "J12" , "J13" , "J14" , "J15" , "J16" , "J17" , "J18" ],
+        "nm_penyakit": "Pneumonia"
+    },
+    {
+        "kd_penyakit": [ "J20" , "J21" ],
+        "nm_penyakit": "Bronkitis akut dan bronkiolitis akut"
+    },
+    {
+        "kd_penyakit": "J32",
+        "nm_penyakit": "Sinusitis kronik"
+    },
+    {
+        "kd_penyakit": "J30.3",
+        "nm_penyakit": "Alergi rhinitis akibat kerja"
+    },
+    {
+        "kd_penyakit": "J34.8",
+        "nm_penyakit": "Ulcus mucosa hidung & performasi septum nasi"
+    },
+    {
+        "kd_penyakit": [ "J30.0" , "J30.1" , "J30.2" , "J30.4" , "J30.5" , "J30.6" , "J30.7" , "J30.8" , "J30.9" , "J31" , "J33", "J34.0" , "J34.3" ],
+        "nm_penyakit": "Penyakit hidung dan sinus hidung lainnya"
+    },
+    {
+        "kd_penyakit": "J35",
+        "nm_penyakit": "Penyakit tonsil dan adenoid kronik"
+    },
+    {
+        "kd_penyakit": [ "J36" , "J37" , "J38" , "J39" ],
+        "nm_penyakit": "Penyakit saluran napas bagian atas lainnya"
+    },
+    {
+        "kd_penyakit": [ "J40" , "J41" , "J42" , "J43" , "J44" ],
+        "nm_penyakit": "Bronkitis, emfisema dan penyakit paru Obstruktif kronik lainnya"
+    },
+    {
+        "kd_penyakit": "J45",
+        "nm_penyakit": "Asma"
+    },
+    {
+        "kd_penyakit": "J46",
+        "nm_penyakit": "Atatus asmatika"
+    },
+    {
+        "kd_penyakit": "J47",
+        "nm_penyakit": "Bronkiektasis"
+    },
+    {
+        "kd_penyakit": [ "J60" , "J61" , "J62" , "J63" , "J64" , "J65" ],
+        "nm_penyakit": "Pneumokoniasis"
+    },
+    {
+        "kd_penyakit": [ "J85.1" , "J85.2"],
+        "nm_penyakit": "Abses paru"
+    },
+    {
+        "kd_penyakit": "J93",
+        "nm_penyakit": "Pneumonotoraks"
+    },
+    {
+        "kd_penyakit": "J86",
+        "nm_penyakit": "Piotoraks (empisema)"
+    },
+    {
+        "kd_penyakit": [ "J90" , "J90"],
+        "nm_penyakit": "Efusi pleural (empisema)"
+    },
+    {
+        "kd_penyakit": "J66.0",
+        "nm_penyakit": "Bisinosis"
+    },
+    {
+        "kd_penyakit": "J67",
+        "nm_penyakit": "Pneumonisis hipersensitivity akibat abu organik"
+    },
+    {
+        "kd_penyakit": "J68",
+        "nm_penyakit": "Gangguan penafasan akibat menghirup zat kimia, Gas asap dan uap"
+    },
+    {
+        "kd_penyakit": "J92",
+        "nm_penyakit": "Plak pleural"
+    },
+    {
+        "kd_penyakit": [ "J22" , "J66.1" , "J66.2" , "J66.8" , "J69" , "J70" , "J80" , "J81" , "J82" , "J83" , "J84" , "J85.0" , "J85.3" , "J89" , "J94" , "J95" , "J96" , "J97" , "J98" , "J99" ],
+        "nm_penyakit": "Penyakit sistem napas lainnya"
+    },
+    {
+        "kd_penyakit": "K02",
+        "nm_penyakit": "Karies gigi"
+    },
+    {
+        "kd_penyakit": [ "K00" , "K01"],
+        "nm_penyakit": "Gangguan perkembangan dan erupsi gigi Termasuk impaksi"
+    },
+    {
+        "kd_penyakit": "K03",
+        "nm_penyakit": "Penyakit jaringan keras gigi lainnya"
+    },
+    {
+        "kd_penyakit": "K04",
+        "nm_penyakit": "Penyakit pulpa dan periapikal"
+    },
+    {
+        "kd_penyakit": [ "K05" , "K06"],
+        "nm_penyakit": "Penyakit gusi, jaringan periodontal dan tulang Alveolar"
+    },
+    {
+        "kd_penyakit": [ "K07" , "K08"],
+        "nm_penyakit": "Kelainan dentofasial termasuk maloklusi"
+    },
+    {
+        "kd_penyakit": [ "K09" , "K10"],
+        "nm_penyakit": "Kista rongga mulut dan penyakit pada rahang"
+    },
+    {
+        "kd_penyakit": "K11",
+        "nm_penyakit": "Penyakit kelenjar liur"
+    },
+    {
+        "kd_penyakit": "K12",
+        "nm_penyakit": "Penyakit jaringan lunak mulut (stomatitis) dan Lesi yang berkaitan"
+    },
+    {
+        "kd_penyakit": [ "K13" , "K14"],
+        "nm_penyakit": "Penyakit bibir, mukosa mulut lainnya dan lidah"
+    },
+    {
+        "kd_penyakit": [ "K25" , "K26" , "K27"],
+        "nm_penyakit": "Tukak lambung dan duodenum"
+    },
+    {
+        "kd_penyakit": "K29",
+        "nm_penyakit": "Gastritis dan duodenitis"
+    },
+    {
+        "kd_penyakit": "K30",
+        "nm_penyakit": "Dispepsia"
+    },
+    {
+        "kd_penyakit": [ "K20" , "K21" , "K22" , "K23" , "K28" , "K29" , "K30" , "K31" ],
+        "nm_penyakit": "Penyakit esopagus, lambung dan duodenum Lainnya  "
+    },
+    {
+        "kd_penyakit": [ "K35" , "K36" , "K37" , "K38" ],
+        "nm_penyakit": "Penyakit apendiks"
+    },
+    {
+        "kd_penyakit": "K40",
+        "nm_penyakit": "Hernia inguinal"
+    },
+    {
+        "kd_penyakit": [ "K41" , "K42" , "K43" , "K44" , "K45" , "K46" ],
+        "nm_penyakit": "Hernia lainnya"
+    },
+    {
+        "kd_penyakit": [ "K50" , "K51"],
+        "nm_penyakit": "Penyakit crohn dan duodenum lainnya"
+    },
+    {
+        "kd_penyakit": "K56",
+        "nm_penyakit": "Ileus paralitik dan obstruksi usus tanpa hernia"
+    },
+    {
+        "kd_penyakit": "K57",
+        "nm_penyakit": "Penyakit divertikel usus"
+    },
+    {
+        "kd_penyakit": "K58",
+        "nm_penyakit": "Sindrom usus ringkih (irritable bowel syndrome)"
+    },
+    {
+        "kd_penyakit": [ "K52" , "K53" , "K54" , "K55" , "K59" , "K60" , "K61" , "K62" , "K63" , "K64" , "K65" , "K66" , "K67" ],
+        "nm_penyakit": "Penyakit usus dan peritoneum lainnya"
+    },
+    {
+        "kd_penyakit": "K70",
+        "nm_penyakit": "Penyakit hati alkohol"
+    },
+    {
+        "kd_penyakit": "K72",
+        "nm_penyakit": "Koma hepatikum dan hepatitis fulminan"
+    },
+    {
+        "kd_penyakit": "K73",
+        "nm_penyakit": "Hepatitis kronik"
+    },
+    {
+        "kd_penyakit": "K74.6",
+        "nm_penyakit": "Sirosis hati"
+    },
+    {
+        "kd_penyakit": "K76.0",
+        "nm_penyakit": "Perlemakan hati"
+    },
+    {
+        "kd_penyakit": "K76.6",
+        "nm_penyakit": "Hipertensi portal"
+    },
+    {
+        "kd_penyakit": "K76.7",
+        "nm_penyakit": "Sindrom hepatorenal"
+    },
+    {
+        "kd_penyakit": "K71",
+        "nm_penyakit": "Penyakit hati akibat bahan beracun di tempat kerja"
+    },
+    {
+        "kd_penyakit": [ "K74.0" , "K74.1" , "K74.2" , "K74.3" , "K74.4" , "K74.5" , "K75" , "K76.1" , "K76.2" , "K76.3" , "K76.4" , "K76.5" , "K76.8" , "K76.9" , "K77" ],
+        "nm_penyakit": "Penyakit hati lainnya"
+    },
+    {
+        "kd_penyakit": "K80",
+        "nm_penyakit": "Kolelitiasis"
+    },
+    {
+        "kd_penyakit": "K81",
+        "nm_penyakit": "Kolesistitis"
+    },
+    {
+        "kd_penyakit": [ "K85" , "K86"],
+        "nm_penyakit": "Pankreatitis akut dan penyakit pankreas lainnya"
+    },
+    {
+        "kd_penyakit": [ "K82" , "K83" , "K87" , "K88" , "K89" , "K90" , "K91" , "K92" , "K93" ],
+        "nm_penyakit": "Penyakit sistem cerna lainnya"
+    },
+    {
+        "kd_penyakit": [ "L00" , "L01" , "L02" , "L03" , "L04" , "L05" , "L06" , "L07" , "L08" ],
+        "nm_penyakit": "Infeksi kulit dan jaringan subkutan"
+    },
+    {
+        "kd_penyakit": [ "L23" , "L24" ],
+        "nm_penyakit": "Dermatosis akibat kerja"
+    },
+    {
+        "kd_penyakit": [ "L1" , "L20" , "L21" , "L22" , "L25" , "L26" , "L27" , "L28" , "L29" , "L3" , "L4" , "L5" , "L6"  , "L7" , "L8" , "L9"],
+        "nm_penyakit": "Penyakit kulit dan jaringan subkutan lainnya"
+    },
+    {
+        "kd_penyakit": [ "M05" , "M06" ],
+        "nm_penyakit": "Artritis reumatoid"
+    },
+    {
+        "kd_penyakit": "M07",
+        "nm_penyakit": "Psoriasis dan artropati enteropati"
+    },
+    {
+        "kd_penyakit": [ "M08" , "M09" ],
+        "nm_penyakit": "Artritis belia"
+    },
+    {
+        "kd_penyakit": [ "M10" , "M11" ],
+        "nm_penyakit": "Psoriasis dan artripati lainnya"
+    },
+    {
+        "kd_penyakit": [ "M12" , "M13" , "M14" ],
+        "nm_penyakit": "Artripati dan artritis"
+    },
+    {
+        "kd_penyakit": [ "M15" , "M16" , "M17" , "M18" , "M19" ],
+        "nm_penyakit": "Artrisis"
+    },
+    {
+        "kd_penyakit": [ "M20" , "M21" ],
+        "nm_penyakit": "Deformitas tungkai didapat"
+    },
+    {
+        "kd_penyakit": [ "M00" , "M01" ],
+        "nm_penyakit": "Artritis piogenik dan artritis pada penyakit infeksi Dan parasit YDK di tempat lain"
+    },
+    {
+        "kd_penyakit": [ "M02" , "M03" ],
+        "nm_penyakit": "Artripati reaktif"
+    },
+    {
+        "kd_penyakit": [ "M22" , "M23" , "M24" , "M25" ],
+        "nm_penyakit": "Kelainan sendi lainnya"
+    },
+    {
+        "kd_penyakit": "M32",
+        "nm_penyakit": "Lupus eritemateus sistemik"
+    },
+    {
+        "kd_penyakit": [ "M30" , "M31" , "M33" , "M34" , "M35" , "M36" ],
+        "nm_penyakit": "Gangguan jaringan ikat sistemik lainnya"
+    },
+    {
+        "kd_penyakit": [ "M50" , "M51" ],
+        "nm_penyakit": "Gangguan diskus servikal dan intervertebral lainnya"
+    },
+    {
+        "kd_penyakit": [ "M45" , "M46" , "M47" , "M48" , "M49" ],
+        "nm_penyakit": "Spondiloartropati seronegatif"
+    },
+    {
+        "kd_penyakit": "M54.5",
+        "nm_penyakit": "Nyeri punggung bawah"
+    },
+    {
+        "kd_penyakit": [ "M40" , "M41" , "M42" , "M43" , "M44" , "M53" , "M54.0" , "M54.4" , "M54.6" , "M54.8" , "M54.9" ],
+        "nm_penyakit": "Dorsopati lainnya"
+    },
+    {
+        "kd_penyakit": [ "M60" , "M61" , "M62" , "M63" , "M64" , "M65.0" , "M65.1" , "M65.2" , "M65.3" , "M65.8" ,"M65.9" , "M68" ],
+        "nm_penyakit": "Miopati dan reumatisme"
+    },
+    {
+        "kd_penyakit": "M65.4",
+        "nm_penyakit": "Penyakit de queervain"
+    },
+    {
+        "kd_penyakit": "M70",
+        "nm_penyakit": "Gangguan jaringan lunak akibat yang berhubungan Dengan penggunaan tekanan berlebihan"
+    },
+    {
+        "kd_penyakit": [ "M71" , "M72" , "M73" , "M74" , "M75" , "M76" , "M77" , "M78" , "M79" ],
+        "nm_penyakit": "Gangguan jaringan ikat lainnya"
+    },
+    {
+        "kd_penyakit": [ "M80" , "M81" , "M82" , "M83" , "M84" , "M85" ],
+        "nm_penyakit": "Gangguan struktur dan densitas tulang"
+    },
+    {
+        "kd_penyakit": "M86",
+        "nm_penyakit": "Osteomielitis"
+    },
+    {
+        "kd_penyakit": [ "M87" , "M88" , "M89" , "M9" ],
+        "nm_penyakit": "Penyakit sistem muskuloskeletal dan jaringan ikat Lainnya"
+    },
+    {
+        "kd_penyakit": [ "N00" , "N01" ],
+        "nm_penyakit": "Sindrom nefritik progresif cepat dan akut"
+    },
+    {
+        "kd_penyakit": "N04",
+        "nm_penyakit": "Ssindrom nefrotik"
+    },
+    {
+        "kd_penyakit": "N02.8",
+        "nm_penyakit": "Nefropati imunoglobulin A (lg A)"
+    },
+    {
+        "kd_penyakit": [ "N02.0" , "N02.1" , "N02.2" , "N02.3" , "N02.4" , "N02.5" , "N02.6" , "N02.7" , "N02.9" , "N03" , "N05" , "N06" , "N07" , "N08" ],
+        "nm_penyakit": "Penyakit glomerulus lainnya"
+    },
+    {
+        "kd_penyakit": "N12",
+        "nm_penyakit": "Nefritis tubulo – intersitial, tidak Ditemukan akut atau kronik/pielonefritis"
+    },
+    {
+        "kd_penyakit": "N14.3",
+        "nm_penyakit": "Nefropati disebabkan oleh logam – logam berat"
+    },
+    {
+        "kd_penyakit": [ "N10" , "N11" , "N13" , "N14.0" , "N14.1" , "N14.2" , "N14.4" , "N16" ],
+        "nm_penyakit": "Penyakit tubulo -intersitial ginjal lainnya"
+    },
+    {
+        "kd_penyakit": "N17.8",
+        "nm_penyakit": "Gagal ginjal akut akibat asam jengkol"
+    },
+    {
+        "kd_penyakit": [ "N17.0" , "N17.1" , "N17.2" , "N17.9" , "N18" , "N19" ],
+        "nm_penyakit": "Gagal ginjal lainnya"
+    },
+    {
+        "kd_penyakit": [ "N20" , "N21" , "N22" , "N23" ],
+        "nm_penyakit": "Urolitisiasis"
+    },
+    {
+        "kd_penyakit": "N30",
+        "nm_penyakit": "Sistitis"
+    },
+    {
+        "kd_penyakit": [ "N25" , "N26" , "N27" , "N28" , "N29" , "N31" , "N32" , "N33"  , "N34" , "N35" , "N36" , "N37" , "N38" , "N39"],
+        "nm_penyakit": "Penyakit sistem kemih lainnya"
+    },
+    {
+        "kd_penyakit": "N40",
+        "nm_penyakit": "Hiperplasia prostat"
+    },
+    {
+        "kd_penyakit": [ "N41" , "N42" ],
+        "nm_penyakit": "Gangguan prostat lainnya"
+    },
+    {
+        "kd_penyakit": "N43",
+        "nm_penyakit": "Hidrokel dan spermatokel"
+    },
+    {
+        "kd_penyakit": "N47",
+        "nm_penyakit": "Prepusium berlebih, fimosis dan parafimosis"
+    },
+    {
+        "kd_penyakit": [ "N44" , "N45" , "N46" , "N48" , "N49" , "N50" , "N51" ],
+        "nm_penyakit": "Penyakit alat kelamin laki lainnya"
+    },
+    {
+        "kd_penyakit": [ "N60" , "N61" , "N62" , "N63" , "N64" ],
+        "nm_penyakit": "Gangguan pada payudarah"
+    },
+    {
+        "kd_penyakit": "N70",
+        "nm_penyakit": "Salpingitis dan ooforitis"
+    },
+    {
+        "kd_penyakit": "N72",
+        "nm_penyakit": "Radang serviks"
+    },
+    {
+        "kd_penyakit": "N73",
+        "nm_penyakit": "Radang panggul perempuan lainnya"
+    },
+    {
+        "kd_penyakit": [ "N75.0" , "N75.1" ],
+        "nm_penyakit": "Kista dan abses kelenjar Bartholin"
+    },
+    {
+        "kd_penyakit": [ "N71" , "N74" , "N75.8" , "N75.9" , "N76" , "N77" ],
+        "nm_penyakit": "Radang alat dalam panggul perempuan lainnya (adneksitis)"
+    },
+    {
+        "kd_penyakit": "N80",
+        "nm_penyakit": "Endometriosis"
+    },
+    {
+        "kd_penyakit": "N81",
+        "nm_penyakit": "Prolaps alat kelamin perempuan"
+    },
+    {
+        "kd_penyakit": "N83",
+        "nm_penyakit": "Gangguan bukan radang pada indung telur, Saluran telur dan ligamentum latum"
+    },
+    {
+        "kd_penyakit": [ "N91.0" , "N91.1" , "N91.2" ],
+        "nm_penyakit": "Amenare"
+    },
+    {
+        "kd_penyakit": [ "N92.0" , "N92.1" ],
+        "nm_penyakit": "Menoragi atau metroragi"
+    },
+    {
+        "kd_penyakit": [ "N91.3" , "N91.4" , "N91.5" , "N92.2" , "N92.3" , "N92.4" , "N92.5" , "N92.6" ],
+        "nm_penyakit": "Gangguan haid lainnya"
+    },
+    {
+        "kd_penyakit": "N95",
+        "nm_penyakit": "Gangguan dalam masa menapause dan perime nopause Lainnya"
+    },
+    {
+        "kd_penyakit": "N97",
+        "nm_penyakit": "Infertilitas perempuan"
+    },
+    {
+        "kd_penyakit": [ "N82" , "N84" , "N82" , "N86" , "N87" , "N88" , "N89" , "N90" , "N93" , "N94" , "N96" , "N98" , "N99" ],
+        "nm_penyakit": "Gangguan sistem kemih kelamin lainnya"
+    },
+    {
+        "kd_penyakit": "O03",
+        "nm_penyakit": "Abortus spontan"
+    },
+    {
+        "kd_penyakit": "O04",
+        "nm_penyakit": "Abortus medik"
+    },
+    {
+        "kd_penyakit": "O00",
+        "nm_penyakit": "Kehamilan ektopik"
+    },
+    {
+        "kd_penyakit": "O01",
+        "nm_penyakit": "Mola hidatidosa"
+    },
+    {
+        "kd_penyakit": "O05",
+        "nm_penyakit": "Abortus lainnya"
+    },
+    {
+        "kd_penyakit": [ "O02" , "O06" , "O07" , "O08" ],
+        "nm_penyakit": "Kehamilan lain yang berakhir dengan abortus"
+    },
+    {
+        "kd_penyakit": "O14",
+        "nm_penyakit": "Hipertensi gestasional (akibat kehamilan) Dengan proteinuria yang nyata/preeklamsia"
+    },
+    {
+        "kd_penyakit": "O15",
+        "nm_penyakit": "Eklampsia"
+    },
+    {
+        "kd_penyakit": [ "O10" , "O11" , "O12" , "O13" , "O16" ],
+        "nm_penyakit": "Edema,proteinuria dan gangguan hipertensi Dalam kehamilan,persalinan dan masa nifas"
+    },
+    {
+        "kd_penyakit": "O44",
+        "nm_penyakit": "Plasenta previa"
+    },
+    {
+        "kd_penyakit": "O45",
+        "nm_penyakit": "Solusio plasenta"
+    },
+    {
+        "kd_penyakit": "O46",
+        "nm_penyakit": "Perdarahan antepartum"
+    },
+    {
+        "kd_penyakit": "O30",
+        "nm_penyakit": "Kehamilan multipel"
+    },
+    {
+        "kd_penyakit": "O40",
+        "nm_penyakit": "Hidramnion"
+    },
+    {
+        "kd_penyakit": "O42",
+        "nm_penyakit": "Ketuban pecah dini"
+    },
+    {
+        "kd_penyakit": "O48",
+        "nm_penyakit": "Kehamilan lewat waktu"
+    },
+    {
+        "kd_penyakit": [ "O31" , "O32" , "O33" , "O34" , "O35" , "O36" , "O37" , "O38" , "O39" , "O41" , "O43" , "O47" ],
+        "nm_penyakit": "Perawatan ibu yang berkaitan dengan janin Dan ketuban dan masalah persalinan"
+    },
+    {
+        "kd_penyakit": [ "O64" , "O65" , "O66" ],
+        "nm_penyakit": "Persalinan macet"
+    },
+    {
+        "kd_penyakit": "O72",
+        "nm_penyakit": "Pendarahan pasca persalinan"
+    },
+    {
+        "kd_penyakit": "O24",
+        "nm_penyakit": "Diabetes militus dalam kehamilan"
+    },
+    {
+        "kd_penyakit": "O60",
+        "nm_penyakit": "Persalinan prematur"
+    },
+    {
+        "kd_penyakit": "O68",
+        "nm_penyakit": "Persalinan prematur"
+    },
+    {
+        "kd_penyakit": "O84",
+        "nm_penyakit": "Persalinan multipel"
+    },
+    {
+        "kd_penyakit": [ "O20" , "O21" , "O22" , "O23" , "O25" , "O26" , "O27" , "O28" , "O29" , "O61" , "O62" , "O63" , "O67" , "O69" , "O70" , "O71" , "O73" , "O74" , "O75" , "O81" , "O82" , "O83" ],
+        "nm_penyakit": "Penyulit kehamilan dan persalinan lainnya"
+    },
+    {
+        "kd_penyakit": "O80",
+        "nm_penyakit": "Persalinan tunggal spontan"
+    },
+    {
+        "kd_penyakit": [ "O85" , "O86" , "O87" , "O88" , "O89" , "O9" ],
+        "nm_penyakit": "Penyulit yang lebih banyak berhubungan Dengan masa nifas dan kondisi obsterik Lainnya, YTK ditempat lain"
+    },
+    {
+        "kd_penyakit": [ "P00" , "P01" , "P02" , "P03" , "P04" ],
+        "nm_penyakit": "Janin dan bayi baru lahir yang dipengaruhi Oleh faktor dan penyulit kehamilan persalinan Dan kelahiran"
+    },
+    {
+        "kd_penyakit": [ "P05" , "P06" , "P07" ],
+        "nm_penyakit": "Pertumbuhan janin lamban, malnutrisi janin Dan gangguan yang berhubungan dengan kehamilan pendek dan berat badan lahir rendah"
+    },
+    {
+        "kd_penyakit": [ "P10" , "P11" , "P12" , "P13" , "P14" , "P15" ],
+        "nm_penyakit": "Cedera lahir"
+    },
+    {
+        "kd_penyakit": [ "P20" , "P21" ],
+        "nm_penyakit": "Hipoksia intrauterus dan asfiksia lahir"
+    },
+    {
+        "kd_penyakit": [ "P22" , "P23" , "P24" , "P25" , "P26" , "P27" , "P28" ],
+        "nm_penyakit": "Gangguan saluran napas lainnya yang Berhubungan dengan masa perinatal"
+    },
+    {
+        "kd_penyakit": [ "P35" , "P36" , "P37" ],
+        "nm_penyakit": "Penyakit infeksi dan parasit kongeniotal"
+    },
+    {
+        "kd_penyakit": [ "P38" , "P39" , "O66" ],
+        "nm_penyakit": "Infeksi khusus lainnya pada masa perinatal"
+    },
+    {
+        "kd_penyakit": "P55",
+        "nm_penyakit": "Penyakit hemolitik pd jamin & bayi baru lahir"
+    },
+    {
+        "kd_penyakit": "P95",
+        "nm_penyakit": "Lahir mati"
+    },
+    {
+        "kd_penyakit": [ "P08" , "P29" , "P50" , "P51" , "P52" , "P53" , "P54" , "P56" , "P57" , "P58" , "P59" , "P6" , "P7" , "P8" , "P90" , "P91" , "P92" , "P93" , "P94" , "P96" ],
+        "nm_penyakit": "Kondisi lain yang bermula pada masa Perinatal  "
+    },
+    {
+        "kd_penyakit": "Q05",
+        "nm_penyakit": "Spina bifida"
+    },
+    {
+        "kd_penyakit": "Q03",
+        "nm_penyakit": "Hidrosefalus kongenital"
+    },
+    {
+        "kd_penyakit": [ "Q00" , "Q01" , "Q02" , "Q04" , "Q06" , "Q07" ],
+        "nm_penyakit": "Malformasi kongenital susunan saraf lain"
+    },
+    {
+        "kd_penyakit": [ "Q20" , "Q21" , "Q22" , "Q23" , "Q24" , "Q25" , "Q26" , "Q27" , "Q28" ],
+        "nm_penyakit": "Malformasi kongenital sistem peredaran darah"
+    },
+    {
+        "kd_penyakit": [ "Q35" , "Q36" , "Q37" ],
+        "nm_penyakit": "Bibir selah dan langit langit celah"
+    },
+    {
+        "kd_penyakit": "Q41",
+        "nm_penyakit": "Tidak ada, atresia dan stenosis usus halus"
+    },
+    {
+        "kd_penyakit": [ "Q38" , "Q40" , "Q42" , "Q43" , "Q44" , "Q45" ],
+        "nm_penyakit": "Malformasi kongenital sistem cerna lainnya"
+    },
+    {
+        "kd_penyakit": "Q53",
+        "nm_penyakit": "Testis tidak turun"
+    },
+    {
+        "kd_penyakit": [ "Q50" , "Q51" , "Q52" ],
+        "nm_penyakit": "Malformasi kongenital alat kelamin wanita"
+    },
+    {
+        "kd_penyakit": [ "Q54" , "Q55" , "Q56" ],
+        "nm_penyakit": "Malformasi kongenital alat kelamin laki"
+    },
+    {
+        "kd_penyakit": [ "Q60" , "Q61" , "Q62" , "Q63" , "Q64" ],
+        "nm_penyakit": "Malformasi kongenital sistem kemih lainnya"
+    },
+    {
+        "kd_penyakit": "Q65",
+        "nm_penyakit": "Deformasi kongenital sendi panggul"
+    },
+    {
+        "kd_penyakit": "Q66",
+        "nm_penyakit": "Deformasi kongenital kaki"
+    },
+    {
+        "kd_penyakit": [ "Q67" , "Q68" , "Q69" , "Q7" ],
+        "nm_penyakit": "Malformasi dan deformasi kongenital sistem Muskuloskeletal lain"
+    },
+    {
+        "kd_penyakit": [ "Q10" , "Q11" , "Q12" , "Q13" , "Q14" , "Q15" , "Q16" , "Q17" , "Q18" , "Q30" , "Q31" , "Q32" , "Q33" , "Q34" , "Q8" ],
+        "nm_penyakit": "Malformasi kongenital lainnya"
+    },
+    {
+        "kd_penyakit": "Q90",
+        "nm_penyakit": "Sindrom down"
+    },
+    {
+        "kd_penyakit": [ "Q91" , "Q92" , "Q93" , "Q94" , "Q95" , "Q96" , "Q97" , "Q98" , "Q99" ],
+        "nm_penyakit": "Kelainan kromosom YTK ditempat lain"
+    },
+    {
+        "kd_penyakit": "R10",
+        "nm_penyakit": "Nyeri perut dan panggul"
+    },
+    {
+        "kd_penyakit": "R50",
+        "nm_penyakit": "Demam yang sebabnya tidak diketahui"
+    },
+    {
+        "kd_penyakit": "R54",
+        "nm_penyakit": "Senilitas"
+    },
+    {
+        "kd_penyakit": [ "R00" , "R01" ],
+        "nm_penyakit": "Gejala pada jantung"
+    },
+    {
+        "kd_penyakit": "R09.2",
+        "nm_penyakit": "Gagal napas"
+    },
+    {
+        "kd_penyakit": "R33",
+        "nm_penyakit": "Retensi urin"
+    },
+    {
+        "kd_penyakit": "R56",
+        "nm_penyakit": "Kejang YTT"
+    },
+    {
+        "kd_penyakit": "R75",
+        "nm_penyakit": "Hasil laboratorium positif HIV"
+    },
+    {
+        "kd_penyakit": "R95",
+        "nm_penyakit": "Sindrom mati mendadak pada bayi"
+    },
+    {
+        "kd_penyakit": [ "R02" , "R03" , "R04" , "R05" , "R06" , "R07" , "R08" , "R09.0" , "R09.1" , "R09.3" , "R09.8" , "R11" , "R12" , "R13" , "R14" , "R15" , "R16" , "R17" , "R18" , "R19" , "R2" , "R30" , "R31" , "R32" , "R34" , "R35" , "R36" ,"R37" , "R38" , "R39" , "R4" , "R51" , "R52" , "R53" , "R55" , "R57" , "R58" , "R59" , "R6" , "R70" , "R71" , "R72" , "R73" , "R74" , "R76" , "R77" , "R78" , "R79" , "R8" , "R90" , "R91" , "R92" , "R93" , "R94" , "R96" , "R97" , "R98" , "R99" ],
+        "nm_penyakit": "gejala,tanda dan penemuan klinik dan Laboratorium tidak normal lainnya, YDT di Tempat lain"
+    },
+    {
+        "kd_penyakit": "S02",
+        "nm_penyakit": "Fraktur tengkorak dan tulang muka"
+    },
+    {
+        "kd_penyakit": [ "S12" , "S22" , "S32" , "T08" ],
+        "nm_penyakit": "Fraktur leher,toraks atau panggul"
+    },
+    {
+        "kd_penyakit": "S72",
+        "nm_penyakit": "Fraktur paha"
+    },
+    {
+        "kd_penyakit": [ "S42" , "S52" , "S62" , "S82" , "S92" , "T10" , "T12" ],
+        "nm_penyakit": "Fraktur tulang anggota gerak lainnya"
+    },
+    {
+        "kd_penyakit": "T02",
+        "nm_penyakit": "Fraktur meliputi daerah badan multipel"
+    },
+    {
+        "kd_penyakit": [ "S03" , "S13" , "S23" , "S33" , "S43" , "S53" , "S63" , "S73" , "S83" , "S93" , "T03" ],
+        "nm_penyakit": "Dislokasi,terkilir,teregang YDT dan daerah Badab multipel"
+    },
+    {
+        "kd_penyakit": "S05",
+        "nm_penyakit": "Cedera mata orbita"
+    },
+    {
+        "kd_penyakit": "S06",
+        "nm_penyakit": "Cedera intrakranial"
+    },
+    {
+        "kd_penyakit": [ "S26" , "S27" , "S36" , "S37" ],
+        "nm_penyakit": "Cedera alat dalam lainnya"
+    },
+    {
+        "kd_penyakit": [ "S07" , "S08" , "S17" , "S18" , "S28" , "S38" , "S47" , "S48" , "S57" , "S58" , "S67" , "S68" , "S77" , "S78" , "S87" , "S88" , "S97" , "S98" , "T04" , "T05" ],
+        "nm_penyakit": "Cedera remuk dan trauma amputasi YDT dan Daerah badan mulpel"
+    },
+    {
+        "kd_penyakit": [ "S00" , "S01" , "S04" , "S09" , "S10" , "S11" , "S14" , "S15" , "S16" , "S19" , "S20" , "S21" , "S24" , "S25" , "S29" , "S30" , "S31" , "S34" , "S35" , "S39" , "S40" , "S41" , "S44" , "S45" , "S46" , "S49" ,"S50" , "S51" , "S54" , "S55" , "S56" , "S59" , "S60" , "S61" , "S64" , "S65" , "S66" , "S69" , "S70" , "S71" , "S74" , "S75" , "S76" , "S79" , "S80" , "S81" ," S84" , "S85" , "S86" , "S89" , "S90" , "S91" , "S94" , "S95" , "S96" , "S99" , "T00" , "T01" , "T06" , "T07" , "T09" , "T11" , "T13" , "T14" ],
+        "nm_penyakit": "Cedera YDT lainnya.YTT dan daerah badan mutipel"
+    },
+    {
+        "kd_penyakit": "T16",
+        "nm_penyakit": "Benda asing pada telingah"
+    },
+    {
+        "kd_penyakit": [ "T15" , "T17" , "T18" , "T19" ],
+        "nm_penyakit": "Akibat dari kemasukan benda asing melalui Lubang tubuh"
+    },
+    {
+        "kd_penyakit": [ "T2" , "T30" , "T31" , "T32" ],
+        "nm_penyakit": "Luka bakar dan korosi"
+    },
+    {
+        "kd_penyakit": [ "T36" , "T37" , "T38" , "T39" , "T4" , "T50" ],
+        "nm_penyakit": "Keracunan obat dan preparat biologok"
+    },
+    {
+        "kd_penyakit": "T52",
+        "nm_penyakit": "Keracunan pelarut organik"
+    },
+    {
+        "kd_penyakit": "T56",
+        "nm_penyakit": "Keracunan logam"
+    },
+    {
+        "kd_penyakit": "T59",
+        "nm_penyakit": "Keracunan gas, asap dan uap lain"
+    },
+    {
+        "kd_penyakit": "T60",
+        "nm_penyakit": "Keracunan pestisida"
+    },
+    {
+        "kd_penyakit": [ "T51" , "T53" , "T54" , "T55" , "T57" , "T58" , "T61" , "T62" , "T63" , "T64" , "T65" ],
+        "nm_penyakit": "Efek toksik bahan non medisinal lainnya"
+    },
+    {
+        "kd_penyakit": "T74",
+        "nm_penyakit": "Sindrom salah perlakuan"
+    },
+    {
+        "kd_penyakit": "T66",
+        "nm_penyakit": "Efek radiasi YTT"
+    },
+    {
+        "kd_penyakit": "T67",
+        "nm_penyakit": "Efek panas dan pencahayaan"
+    },
+    {
+        "kd_penyakit": "T70",
+        "nm_penyakit": "Efek tekanan udara dan tekanan air"
+    },
+    {
+        "kd_penyakit": [ "T33" , "T34" , "T35" , "T68" , "T69" , "T71" , "T72" , "T73" , "T75" , "T76" , "T77" , "T78" ],
+        "nm_penyakit": "Efek sebab luar lainnya dan YTT Pembedahan dan perawatan YTK di tempat Lain "
+    },
+    {
+        "kd_penyakit": [ "T79" , "T80" , "T81" , "T82" , "T83" , "T84" , "T85" , "T86" , "T87" , "T88" ],
+        "nm_penyakit": "Penyulit awal trauma tertentu dan penyulit Pembedahan dan perawatan YTK di tempat lain"
+    },
+    {
+        "kd_penyakit": [ "T90" , "T91" , "T92" , "T93" , "T94" , "T95" , "T96" , "T97" , "T98" ],
+        "nm_penyakit": "Gejala sisa cedera, keracunan dan akibat Lanjut sebab luar"
+    },
+    {
+        "kd_penyakit": "U04",
+        "nm_penyakit": "Sindrome akut respiratory berat (SARS)"
+    },
+    {
+        "kd_penyakit": "Z00.0",
+        "nm_penyakit": "Pemeriksaan kesehatan umum"
+    },
+    {
+        "kd_penyakit": "Z00.1",
+        "nm_penyakit": "Pemeriksaan kesehatan bayi dan anak secara Rutin "
+    },
+    {
+        "kd_penyakit": [ "Z00.2" , "Z00.3" , "Z00.4" , "Z00.5" , "Z00.6" , "Z00.7" , "Z00.8" , "Z00.9" , "Z10" , "Z11" , "Z12" , "Z13" ],
+        "nm_penyakit": "Orang yang mendapatkan pelayanan kesehatan Untuk pemeriksaan khusus dan investigasi lainnya "
+    },
+    {
+        "kd_penyakit": "Z21",
+        "nm_penyakit": "Keadaan infeksi HIV asimtomatik"
+    },
+    {
+        "kd_penyakit": "Z23.2",
+        "nm_penyakit": "Imunisasi BCG"
+    },
+    {
+        "kd_penyakit": "Z23.5",
+        "nm_penyakit": "Imunisasi tetanus"
+    },
+    {
+        "kd_penyakit": "Z24.0",
+        "nm_penyakit": "Imunaisasi poliomielitis"
+    },
+    {
+        "kd_penyakit": "Z24.2",
+        "nm_penyakit": "Imunisasi rabies"
+    },
+    {
+        "kd_penyakit": "Z24.4",
+        "nm_penyakit": "Imunisasi campak"
+    },
+    {
+        "kd_penyakit": "Z24.6",
+        "nm_penyakit": "Imunisasi hepatitis virus"
+    },
+    {
+        "kd_penyakit": "Z27.1",
+        "nm_penyakit": "Imunisasi gabungan DPT (Difteri,Pertusis,tetanus)"
+    },
+    {
+        "kd_penyakit": [ "Z23.0" , "Z23.1" , "Z23.3" , "Z23.4" , "Z23.6" , "Z23.7" , "Z23.8" , "Z24.1" , "Z24.3" , "Z24.5" , "Z25" , "Z26" , "Z27.0" , "Z27.2" , "Z28" , "Z29" ],
+        "nm_penyakit": "Imunisasi dan kemoterapi pencegahan lainnya"
+    },
+    {
+        "kd_penyakit": [ "Z20" , "Z22" ],
+        "nm_penyakit": "Orang lain dengan risiko gangguan kesehatan Yang berkaitan dengan penyakit menular"
+    },
+    {
+        "kd_penyakit": "Z30",
+        "nm_penyakit": "Pengelolaan kontrasepsi"
+    },
+    {
+        "kd_penyakit": "Z34",
+        "nm_penyakit": "Pengawasan kehamilan normal"
+    },
+    {
+        "kd_penyakit": "Z35",
+        "nm_penyakit": "Pengawasan kehamilan dengan risiko tinggi"
+    },
+    {
+        "kd_penyakit": "Z36",
+        "nm_penyakit": "Seleksi antenatal"
+    },
+    {
+        "kd_penyakit": "Z38",
+        "nm_penyakit": "Bayi lahir hidup sesuai tempat lahir"
+    },
+    {
+        "kd_penyakit": "Z39",
+        "nm_penyakit": "Perawatan dan pemeriksaan pasca persalinan"
+    },
+    {
+        "kd_penyakit": "Z46.0",
+        "nm_penyakit": "Pemasangan dan penyesuaian kacamata dan Lensa kontak"
+    },
+    {
+        "kd_penyakit": "Z41.2",
+        "nm_penyakit": "Khitanan menurut agama dan adat kebiasaan"
+    },
+    {
+        "kd_penyakit": "Z46.3",
+        "nm_penyakit": "Pemasangan dan penyesuaian gigi palsu"
+    },
+    {
+        "kd_penyakit": "Z50",
+        "nm_penyakit": "Pelayanan yang melibatkan gangguan prosedur Rehabilitasi"
+    },
+    {
+        "kd_penyakit": [ "Z40" , "Z41.0" , "Z41.1" , "Z41.3" , "Z45" , "Z46.1" , "Z46.2" , "Z46.4" , "Z46.9" , "Z47" , "Z48" , "Z49" ,"Z51" , "Z52" , "Z53" , "Z54" ],
+        "nm_penyakit": "Orang yang mengunjungi pelayanan kesehatan Untuk tindakan perawatan khusus lainnya"
+    },
+    {
+        "kd_penyakit": [ "Z31" , "Z32" , "Z33" , "Z37" , "Z55" , "Z56" , "Z57" , "Z58" , "Z59" , "Z6" , "Z7" , "Z8" , "Z9" ],
+        "nm_penyakit": "Penunjang sarana kesehatan untuk alasan Lainnya"
+    }
+]
