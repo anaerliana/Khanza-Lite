@@ -20,10 +20,10 @@
                     <td></td>
                     <td>{$value.tanggal}<br> <button type="button" name="button" class="btn btn-success btn-xs edit_ido_pre"
                         data-tanggal="{$value.tanggal}" 
-                        data-no_rawat="{$bundles_ido_hais.no_rawat}"
-                        data-kd_kamar="{$bundles_ido_hais.kd_kamar}"
-                        data-no_rkm_medis="{$bundles_ido_hais.no_rkm_medis}" 
-                        data-nm_pasien="{$bundles_ido_hais.nm_pasien}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
                         data-mandi_idopre="{$value.mandi_idopre}" 
                         data-cukur_idopre="{$value.cukur_idopre}" 
                         data-guladarah_idopre="{$value.guladarah_idopre}"
@@ -34,10 +34,10 @@
                         <button type="button" name="button" class="btn btn-danger btn-xs hapus_idopre"
                         data-id="{$value.id}"
                         data-tanggal="{$value.tanggal}" 
-                        data-no_rawat="{$bundles_ido_hais.no_rawat}"
-                        data-kd_kamar="{$bundles_ido_hais.kd_kamar}"
-                        data-no_rkm_medis="{$bundles_ido_hais.no_rkm_medis}" 
-                        data-nm_pasien="{$bundles_ido_hais.nm_pasien}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
                         data-mandi_idopre="{$value.mandi_idopre}" 
                         data-cukur_idopre="{$value.cukur_idopre}" 
                         data-guladarah_idopre="{$value.guladarah_idopre}"
@@ -45,7 +45,7 @@
                         class="fa fa-trash"></span>
                         <span class="hidden-xs"> Hapus</span></button>
                     </td>
-                    <td>{$bundles_ido_hais.nm_pasien}</td>
+                    <td>{$nama}</td>
                     <td>{if: $value.mandi_idopre == '1'}YA {elseif: $value.mandi_idopre == '0'}TIDAK {else}{/if}</td>
                     <td>{if: $value.cukur_idopre == '1'}YA {elseif: $value.cukur_idopre == '0'}TIDAK {else}{/if}</td>
                     <td>{if: $value.guladarah_idopre == '1'}YA {elseif: $value.guladarah_idopre == '0'}TIDAK {else}{/if}</td>
@@ -84,10 +84,10 @@
                         {$value.tanggal}<br>
                         <button type="button" name="button" class="btn btn-success btn-xs edit_ido_intra"
                         data-tanggal="{$value.tanggal}" 
-                        data-no_rawat="{$bundles_ido_hais.no_rawat}"
-                        data-kd_kamar="{$bundles_ido_hais.kd_kamar}"
-                        data-no_rkm_medis="{$bundles_ido_hais.no_rkm_medis}" 
-                        data-nm_pasien="{$bundles_ido_hais.nm_pasien}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
                         data-hand_idointra="{$value.hand_idointra}"
                         data-steril_idointra="{$value.steril_idointra}"
                         data-antiseptic_idointra="{$value.antiseptic_idointra}"
@@ -100,10 +100,10 @@
                     <button type="button" name="button" class="btn btn-danger btn-xs hapus_idointra"
                         data-id="{$value.id}"
                         data-tanggal="{$value.tanggal}" 
-                        data-no_rawat="{$bundles_ido_hais.no_rawat}"
-                        data-kd_kamar="{$bundles_ido_hais.kd_kamar}"
-                        data-no_rkm_medis="{$bundles_ido_hais.no_rkm_medis}" 
-                        data-nm_pasien="{$bundles_ido_hais.nm_pasien}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
                         data-hand_idointra="{$value.hand_idointra}"
                         data-steril_idointra="{$value.steril_idointra}"
                         data-antiseptic_idointra="{$value.antiseptic_idointra}"
@@ -113,7 +113,7 @@
                         class="fa fa-trash"></span>
                         <span class="hidden-xs"> Hapus</span></button>
                     </td>
-                    <td>{$bundles_ido_hais.nm_pasien}</td>
+                    <td>{$nama}</td>
                     <td>{if: $value.hand_idointra == '1'} YA {elseif: $value.hand_idointra == '0'} TIDAK {else} {/if}</td>
                     <td>{if: $value.steril_idointra == '1'} YA{elseif: $value.steril_idointra == '0'} TIDAK{else} {/if}</td>
                     <td>{if: $value.antiseptic_idointra== '1'} YA {elseif: $value.antiseptic_idointra== '0'} TIDAK{else} {/if} </td>
@@ -152,24 +152,24 @@
                         {$value.tanggal}<br>
                         <button type="button" name="button" class="btn btn-success btn-xs edit_ido_post"
                         data-tanggal="{$value.tanggal}" 
-                        data-no_rawat="{$bundles_ido_hais.no_rawat}"
-                                data-kd_kamar="{$bundles_ido_hais.kd_kamar}" 
-                                data-no_rkm_medis="{$bundles_ido_hais.no_rkm_medis}"
-                                data-nm_pasien="{$bundles_ido_hais.nm_pasien}" 
-                                data-luka_idopost="{$value.luka_idopost}"
-                                data-rawat_idopost="{$value.rawat_idopost}" 
-                                data-apd_idopost="{$value.apd_idopost}"
-                                data-kaji_idopost="{$value.kaji_idopost}">
-                                <span class="fa fa-edit"></span>
-                                <span class="hidden-xs"> Edit</span></button>
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}" 
+                        data-no_rkm_medis="{$no_rkm_medis}"
+                        data-nm_pasien="{$nama}" 
+                        data-luka_idopost="{$value.luka_idopost}"
+                        data-rawat_idopost="{$value.rawat_idopost}" 
+                        data-apd_idopost="{$value.apd_idopost}"
+                        data-kaji_idopost="{$value.kaji_idopost}">
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
 
                         <button type="button" name="button" class="btn btn-danger btn-xs hapus_idopost"
                         data-id="{$value.id}"
                         data-tanggal="{$value.tanggal}" 
-                        data-no_rawat="{$bundles_ido_hais.no_rawat}"
-                        data-kd_kamar="{$bundles_ido_hais.kd_kamar}"
-                        data-no_rkm_medis="{$bundles_ido_hais.no_rkm_medis}" 
-                        data-nm_pasien="{$bundles_ido_hais.nm_pasien}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
                         data-luka_idopost="{$value.luka_idopost}"
                         data-rawat_idopost="{$value.rawat_idopost}" 
                         data-apd_idopost="{$value.apd_idopost}"
@@ -177,7 +177,7 @@
                         class="fa fa-trash"></span>
                         <span class="hidden-xs"> Hapus</span></button>
                     </td>
-                    <td>{$bundles_ido_hais.nm_pasien}</td>
+                    <td>{$nama}</td>
                     <td>{if: $value.luka_idopost == '1'} YA {elseif: $value.luka_idopost == '0'} TIDAK{else} {/if}</td>
                     <td>{if: $value.rawat_idopost == '1'} YA {elseif: $value.rawat_idopost == '0'} TIDAK{else} {/if}</td>
                     <td>{if: $value.apd_idopost == '1'} YA {elseif: $value.apd_idopost == '0'} TIDAK{else} {/if}</td>

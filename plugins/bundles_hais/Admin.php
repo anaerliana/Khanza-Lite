@@ -41,21 +41,20 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $id = revertNorawat($no_rawat);
 
-    $bundles_insersi = $this->db('kamar_inap')
-      ->select('reg_periksa.no_rawat')
-      ->select('pasien.nm_pasien')
-      ->select('reg_periksa.no_rkm_medis')
-      ->select('kamar_inap.kd_kamar')
-      ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
-      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->where('kamar_inap.no_rawat', $id)
-      ->oneArray();
+   
+      $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis',$id);
+      $nama = $this->core->getPasienInfo('nm_pasien',$no_rkm_medis);
+      $kd_kamar = $this->core->getKamarInapInfo('kd_kamar',$id);
+      if (!$kd_kamar) {
+        # code...
+        $kd_kamar = 'IGDK';
+      }
 
     $bundles = $this->db('bundles_hais')
       ->where('no_rawat', $id)
       ->toArray();
 
-    return $this->draw('bundles.insersi.html', ['bundles_insersi_hais' => $bundles_insersi, 'bundles' => $bundles]);
+    return $this->draw('bundles.insersi.html', ['no_rawat' => $id ,'no_rkm_medis' => $no_rkm_medis, 'nama' => $nama ,'kd_kamar' => $kd_kamar, 'bundles' => $bundles]);
   }
 
 
@@ -146,21 +145,19 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $id = revertNorawat($no_rawat);
 
-    $bundles_maintanance = $this->db('kamar_inap')
-      ->select('reg_periksa.no_rawat')
-      ->select('pasien.nm_pasien')
-      ->select('reg_periksa.no_rkm_medis')
-      ->select('kamar_inap.kd_kamar')
-      ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
-      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->where('kamar_inap.no_rawat', $id)
-      ->oneArray();
+    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis',$id);
+    $nama = $this->core->getPasienInfo('nm_pasien',$no_rkm_medis);
+    $kd_kamar = $this->core->getKamarInapInfo('kd_kamar',$id);
+      if (!$kd_kamar) {
+        # code...
+        $kd_kamar = 'IGDK';
+      }
 
     $bundles = $this->db('bundles_hais')
       ->where('no_rawat', $id)
       ->toArray();
 
-    return $this->draw('bundles.maintanance.html', ['bundles_maintanance_hais' => $bundles_maintanance, 'bundles' => $bundles]);
+    return $this->draw('bundles.maintanance.html', ['no_rawat' => $id ,'no_rkm_medis' => $no_rkm_medis, 'nama' => $nama ,'kd_kamar' => $kd_kamar, 'bundles' => $bundles]);
   }
 
 
@@ -254,20 +251,18 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $id = revertNorawat($no_rawat);
 
-    $bundles_ido = $this->db('kamar_inap')
-      ->select('reg_periksa.no_rawat')
-      ->select('pasien.nm_pasien')
-      ->select('reg_periksa.no_rkm_medis')
-      ->select('kamar_inap.kd_kamar')
-      ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
-      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->where('kamar_inap.no_rawat', $id)
-      ->oneArray();
+    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis',$id);
+    $nama = $this->core->getPasienInfo('nm_pasien',$no_rkm_medis);
+    $kd_kamar = $this->core->getKamarInapInfo('kd_kamar',$id);
+      if (!$kd_kamar) {
+        $kd_kamar = 'IGDK';
+      }
 
     $bundles = $this->db('bundles_hais')
       ->where('no_rawat', $id)
       ->toArray();
-    return $this->draw('bundles.ido.html', ['bundles_ido_hais' => $bundles_ido, 'bundles' => $bundles]);
+
+    return $this->draw('bundles.ido.html', ['no_rawat' => $id ,'no_rkm_medis' => $no_rkm_medis, 'nama' => $nama ,'kd_kamar' => $kd_kamar, 'bundles' => $bundles]);
   }
 
   public function postSaveBundles_Ido()

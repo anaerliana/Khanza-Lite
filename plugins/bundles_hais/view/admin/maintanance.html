@@ -23,10 +23,10 @@
                     {$value.tanggal}<br>
                         <button type="button" name="button" class="btn btn-success btn-xs edit_main_vap"
                           data-tanggal="{$value.tanggal}" 
-                          data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                          data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                          data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                          data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}" 
+                          data-no_rawat="{$no_rawat}"
+                          data-kd_kamar="{$kd_kamar}"
+                          data-no_rkm_medis="{$no_rkm_medis}" 
+                          data-nm_pasien="{$nama}" 
                           data-hand_mainvap="{$value.hand_mainvap}" 
                           data-oral_mainvap="{$value.oral_mainvap}" 
                           data-manage_mainvap="{$value.manage_mainvap}"
@@ -38,10 +38,10 @@
                         <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_vap"
                         data-id="{$value.id}"
                         data-tanggal="{$value.tanggal}" 
-                        data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                        data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                        data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                        data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}"  
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}"  
                         data-hand_mainvap="{$value.hand_mainvap}" 
                         data-oral_mainvap="{$value.oral_mainvap}" 
                         data-manage_mainvap="{$value.manage_mainvap}"
@@ -50,7 +50,7 @@
                         class="fa fa-trash"></span>
                         <span class="hidden-xs"> Hapus</span></button>
                 </td>
-                <td>{$bundles_maintanance_hais.nm_pasien}</td>
+                <td>{$nama}</td>
                 <td>{if: $value.hand_mainvap == '1'} YA {elseif: $value.hand_mainvap == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.oral_mainvap == '1'} YA {elseif: $value.oral_mainvap == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.manage_mainvap == '1'} YA {elseif: $value.manage_mainvap == '0'} TIDAK {else} {/if}</td>
@@ -89,10 +89,10 @@
                     {$value.tanggal}<br>
                     <button type="button" name="button" class="btn btn-success btn-xs edit_main_iadp"
                     data-tanggal="{$value.tanggal}" 
-                    data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                    data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                    data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                    data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}" 
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}" 
                     data-hand_mainiadp="{$value.hand_mainiadp}" 
                     data-desinfeksi_mainiadp="{$value.desinfeksi_mainiadp}" 
                     data-perawatan_mainiadp="{$value.perawatan_mainiadp}" 
@@ -104,10 +104,10 @@
                    <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_iadp"
                     data-id="{$value.id}"
                     data-tanggal="{$value.tanggal}" 
-                    data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                    data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                    data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                    data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}"  
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}"  
                     data-hand_mainiadp="{$value.hand_mainiadp}" 
                     data-desinfeksi_mainiadp="{$value.desinfeksi_mainiadp}" 
                     data-perawatan_mainiadp="{$value.perawatan_mainiadp}" 
@@ -116,7 +116,7 @@
                     <span class="fa fa-trash"></span>
                         <span class="hidden-xs"> Hapus</span></button>
                 </td>
-                <td>{$bundles_maintanance_hais.nm_pasien}</td>
+                <td>{$nama}</td>
                 <td>{if: $value.hand_mainiadp == '1'} YA {elseif: $value.hand_mainiadp == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.desinfeksi_mainiadp == '1'} YA {elseif: $value.desinfeksi_mainiadp == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.perawatan_mainiadp == '1'} YA {elseif: $value.perawatan_mainiadp == '0'} TIDAK {else} {/if}</td>
@@ -154,10 +154,10 @@
                     {$value.tanggal}<br>
                     <button type="button" name="button" class="btn btn-success btn-xs edit_main_vena"
                     data-tanggal="{$value.tanggal}" 
-                    data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                    data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                    data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                    data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}" 
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}" 
                     data-hand_mainvena="{$value.hand_mainvena}" 
                     data-perawatan_mainvena="{$value.perawatan_mainvena}" 
                     data-kaji_mainvena="{$value.kaji_mainvena}" 
@@ -169,10 +169,10 @@
                     <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_vena"
                     data-id="{$value.id}"
                     data-tanggal="{$value.tanggal}" 
-                    data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                    data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                    data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                    data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}"  
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}"  
                     data-hand_mainvena="{$value.hand_mainvena}" 
                     data-perawatan_mainvena="{$value.perawatan_mainvena}" 
                     data-kaji_mainvena="{$value.kaji_mainvena}" 
@@ -181,7 +181,7 @@
                     <span class="fa fa-trash"></span>
                     <span class="hidden-xs"> Hapus</span></button>
                 </td>
-                <td>{$bundles_maintanance_hais.nm_pasien}</td>
+                <td>{$nama}</td>
                 <td>{if: $value.hand_mainvena == '1'} YA {elseif: $value.hand_mainvena == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.perawatan_mainvena == '1'} YA {elseif: $value.perawatan_mainvena == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.kaji_mainvena == '1'} YA {elseif: $value.kaji_mainvena == '0'} TIDAK {else} {/if}</td>
@@ -220,10 +220,10 @@
                     {$value.tanggal}<br>
                     <button type="button" name="button" class="btn btn-success btn-xs edit_main_isk"
                     data-tanggal="{$value.tanggal}" 
-                     data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                    data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                    data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                    data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}" 
+                     data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}" 
                     data-hand_mainisk="{$value.hand_mainisk}" 
                     data-kateter_mainisk="{$value.kateter_mainisk}" 
                     data-baglantai_mainisk="{$value.baglantai_mainisk}" 
@@ -236,10 +236,10 @@
                     <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_isk"
                     data-id="{$value.id}"
                     data-tanggal="{$value.tanggal}" 
-                    data-no_rawat="{$bundles_maintanance_hais.no_rawat}"
-                    data-kd_kamar="{$bundles_maintanance_hais.kd_kamar}"
-                    data-no_rkm_medis="{$bundles_maintanance_hais.no_rkm_medis}" 
-                    data-nm_pasien="{$bundles_maintanance_hais.nm_pasien}"  
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}"  
                     data-hand_mainisk="{$value.hand_mainisk}" 
                     data-kateter_mainisk="{$value.kateter_mainisk}" 
                     data-baglantai_mainisk="{$value.baglantai_mainisk}" 
@@ -249,7 +249,7 @@
                     <span class="fa fa-trash"></span>
                     <span class="hidden-xs"> Hapus</span></button>
                 </td>
-                <td>{$bundles_maintanance_hais.nm_pasien}</td>
+                <td>{$nama}</td>
                 <td>{if: $value.hand_mainisk == '1'} YA {elseif: $value.hand_mainisk == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.kateter_mainisk == '1'} YA {elseif: $value.kateter_mainisk == '0'} TIDAK {else} {/if}</td>
                 <td>{if: $value.baglantai_mainisk == '1'} YA {elseif: $value.baglantai_mainisk == '0'} TIDAK {else} {/if}</td>
