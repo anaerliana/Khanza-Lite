@@ -428,7 +428,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     var tinggi          = $('input:text[name=tinggi]').val();
     var berat           = $('input:text[name=berat]').val();
     var gcs             = $('input:text[name=gcs]').val();
-    var kesadaran       = $('input:text[name=kesadaran]').val();
+   // var kesadaran       = $('input:text[name=kesadaran]').val();
+    var kesadaran       = $('select[name=kesadaran]').val();
     var alergi          = $('input:text[name=alergi]').val();
     var alergi          = $('input:text[name=alergi]').val();
     var imun_ke         = $('input:text[name=imun_ke]').val();
@@ -524,7 +525,8 @@ $("#soap").on("click",".edit_soap", function(event){
   $('input:text[name=tinggi]').val(tinggi);
   $('input:text[name=berat]').val(berat);
   $('input:text[name=gcs]').val(gcs);
-  $('input:text[name=kesadaran]').val(kesadaran);
+ // $('input:text[name=kesadaran]').val(kesadaran);
+  $('select[name=kesadaran]').val(kesadaran).change();
   $('input:text[name=alergi]').val(alergi);
   $('input:text[name=imun_ke]').val(imun_ke);
   $('textarea[name=keluhan]').val(keluhan);
