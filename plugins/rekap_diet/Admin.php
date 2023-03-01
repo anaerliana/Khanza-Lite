@@ -18,6 +18,7 @@ class Admin extends AdminModule
     {
         $sub_modules = [
             ['name' => 'Rekap Diet Pasien', 'url' => url([ADMIN, 'rekap_diet', 'rekap_dietpasien']), 'icon' => 'cubes', 'desc' => 'Rekap Diet Pasien'],
+            ['name' => 'Tambah Item Diet Baru', 'url' => url([ADMIN, 'rekap_diet', 'itemdiet']), 'icon' => 'plus-square', 'desc' => 'Tambah Item Diet baru'],
           ];
         return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -133,18 +134,151 @@ class Admin extends AdminModule
         }
 
         
-        $this->assign['tahun'] = array('', '2020', '2021', '2022');
-        $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['tanggal'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31');
+        // $this->assign['tahun'] = array('', '2020', '2021', '2022');
+        // $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+        // $this->assign['tanggal'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31');
         $this->assign['bangsal'] = $this->db('bangsal')->where('status', '1')->toArray();
-        //$this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_dietpasien.html', ['rekap' => $this->assign]);
+    }
+
+    public function anyForm()
+    {  
+      if (isset($_POST['kd_diet'])){
+        $diet = $this->db('diet')->where('kd_diet', $_POST['kd_diet'])->oneArray();
+        echo $this->draw('form_itemdiet.html', [
+          'diet' => $diet,
+          'kd_diet_baru' => $this->core->setKodeDiet()
+        ]);
+      } else {
+        $diet = [
+          'kd_diet' => '',
+          'nama_diet' => ''
+        ];
+        echo $this->draw('form_itemdiet.html', [
+          'diet' => $diet,
+          'kd_diet_baru' => $this->core->setKodeDiet()
+        ]);
+       }
+      exit();
+    }
+
+    public function postItemDietSave()
+  {
+    // $diet = $this->db('diet')->where('kd_diet', $_POST['kd_diet'])->oneArray();
+
+    // if (!$diet) {
+    //     $_POST['kd_diet'] = $this->core->setKodeDiet();
+    //     $_POST['nama_diet'] = $_POST['nama_diet'];
+    //     $query = $this->db('diet')->save($_POST);
+    //   // } else {
+    //   //   $query = $this->db('diet')->where('kd_diet', $_POST['kd_diet'])->save($_POST);
+    //   }
+
+    //   if($query) {
+    //     $data['status'] = 'success';
+    //     echo json_encode($data);
+    //   } else {
+    //     $data['status'] = 'error';
+    //     echo json_encode($data);
+    //   }
+
+    //   exit();
+     $kd_diet =  $_POST['kd_diet'];
+     if (!$kd_diet) {
+        $location = url([ADMIN,'rekap_diet','itemdiet']);
+      } else {
+        $location = url([ADMIN,'rekap_diet','itemdiet']);
+      }
+      
+        if (!$errors) {
+        unset($_POST['save']);
+        if (!$kd_diet) {
+          $query = $this->db('diet')->save([
+            'kd_diet' => $_POST['kd_diet'],
+            'nama_diet' => $_POST['nama_diet']
+          ]);
+        } else {
+          $query = $this->db('diet')->where('kd_diet',$kd_diet)->save([
+            'nama_diet' => $_POST['nama_diet'],
+          ]);
+        }
+        if ($query) {
+          $this->notify('success','Berhasil Simpan');
+        } else {
+          $this->notify('failure','Gagal Simpan');
+        }
+        redirect($location);
+      }
+      redirect($location, $_POST);
+
+
+    //  $kd_diet =  $_POST['kd_diet'];
+    //     $cek_kode= $this->db('diet')->where('kd_diet',$kd_diet)->oneArray();
+    //     if (!$cek_kode) {
+    //     $max_id = $this->db('diet')->select(['kd_diet' => 'ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0)'])->oneArray();
+    //   if (empty($max_id['kd_diet'])) {
+    //     $max_id['kd_diet'] = '000';
+    //   }
+    //   $_next_kd_diet = sprintf('%03s', ($max_id['kd_diet'] + 1));
+    //   $kd_diet = 'D'. '' . $_next_kd_diet;
+
+    //   $this->db('diet')
+    //   ->save([
+    //       'kd_diet' => $kd_diet,
+    //       'nama_diet' => $_POST['nama_diet']
+    //     ]);
+    //  }
+    // exit();
+   }
+  //  public function postKodeDiet()
+  // {
+  //   $last_kd_diet = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0) FROM diet");
+  //   $last_kd_diet->execute();
+  //   $last_kd_diet = $last_kd_diet->fetch();
+  //   if (empty($last_kd_diet[0])) {
+  //     $last_kd_diet[0] = '000';
+  //   }
+  //   $next_kd_diet = sprintf('%03s', ($last_kd_diet[0] + 1));
+  //   $next_kd_diet = 'D' .'' . $next_kd_diet;
+
+  //   echo $next_kd_diet;
+  //   exit();
+  // }
+
+   // public function setKodeDiet()
+   //  {
+   //      $last_kd_diet = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0) FROM diet");
+   //      $last_kd_diet->execute();
+   //      $last_kd_diet = $last_kd_diet->fetch();
+   //      if(empty($last_kd_diet[0])) {
+   //        $last_kd_diet[0] = '000';
+   //      }
+   //      $next_kd_diet = sprintf('%03s', ($last_kd_diet[0] + 1));
+   //      $next_kd_diet = 'D' .'' . $next_kd_diet;
+
+   //      return $next_kd_diet;
+   //  }
+
+    public function getItemdiet()
+    {
+      $this->_addHeaderFiles();
+      $rows = $this->db('diet')->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+      return $this->draw('item_dietbaru.html',['itemdiet' => $this->assign]);
     }
 
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES . '/rekap_diet/js/admin/app.js');
+        echo $this->draw(MODULES . '/rekap_diet/js/admin/rekap_diet.js');
         exit();
     }
 
@@ -154,8 +288,11 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
 
         // JS
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));

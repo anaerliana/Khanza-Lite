@@ -1,4 +1,4 @@
-<article class="row">
+<article class="row" id="display">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -92,6 +92,17 @@
                             {loop: $value.status_lengkap as $data}
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
+                          	{if: $_SESSION['mlite_user'] == '4'}
+                            <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{$value.no_rawat}">
+                              <i class="fa fa-refresh"></i> Grouping Inacbgs
+                            </a>
+                          	{/if}
+                            <br><br><br>
+                            <div class="">
+                              {loop: $value.pegawai as $data}
+                                <i class="fa fa-user"></i> {$data.nama}
+                              {/loop}
+                            </div>
                           {/if}
                         </td>
       									<td>
@@ -119,10 +130,10 @@
                         <td>
                           <table>
                             <tr>
-                              <td width='120px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Tgl.Registrasi{else}Tgl.Pulang{/if}</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Poliklinik</td><td>: {$value.nm_poli}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
@@ -142,6 +153,9 @@
                             </tr>
                             <tr>
                               <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'>Pros. Utama</td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
                             </tr>
                           </table>
                         </td>
@@ -191,6 +205,13 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="inacbgsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
@@ -200,4 +221,22 @@
     });
   } );
   $('.gallery').lightbox();
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".bridging_inacbgs", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    //var loadURL =  baseURL + '/vedika/bridginginacbgs/' + no_rawat + '?t=' + mlite.token;
+    var loadURL = 'https://simrs.rshdbarabai.com/webapps/inacbg2/pages/detailkirim.php?norawat=' + no_rawat + '&codernik=6307061604860001';
+
+    var modal = $('#inacbgsModal');
+    var modalContent = $('#inacbgsModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
 </script>

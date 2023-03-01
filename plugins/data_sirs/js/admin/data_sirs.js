@@ -650,3 +650,7 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
 $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
 });
+$('.dataTables').DataTable({
+  "dom": 'Bfrtip',
+  "buttons": ['excel', 'pdf']
+});

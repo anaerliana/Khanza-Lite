@@ -25,6 +25,7 @@ $("#form").on("click", "#manage", function (event) {
   event.preventDefault();
   var url = baseURL + '/profil/bridgingbkd?t=' + mlite.token;
   var bulan = $("input:hidden[name=bulan]").val();
+  var tahun = $("input:hidden[name=tahun]").val();
   var nik = $("input:hidden[name=nik]").val();
   var shift = $("input:text[name='shift[]']").map(function () { return $(this).val(); }).get();
   var jam_datang = $("input:text[name='jam_datang[]']").map(function () { return $(this).val(); }).get();
@@ -37,6 +38,7 @@ $("#form").on("click", "#manage", function (event) {
       // mengirimkan perintah penghapusan
       $.post(url, {
         bulan: bulan,
+        tahun: tahun,
         nik: nik,
         shift: shift,
         jam_datang: jam_datang,

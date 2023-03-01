@@ -265,19 +265,19 @@ class Site extends SiteModule
                                     'code' => 200
                                 )
                             );
-                            http_response_code(200);
 
                             if(!empty($decode['nomorreferensi'])) {
-                              $this->db('mlite_antrian_referensi')->save([
-                                  'tanggal_periksa' => $decode['tanggalperiksa'],
-                                  'no_rkm_medis' => $data_pasien['no_rkm_medis'],
-                                  'nomor_kartu' => $decode['nomorkartu'],
-                                  'nomor_referensi' => $decode['nomorreferensi'],
-                                  'kodebooking' => $kodebooking,
-                                  'jenis_kunjungan' => $decode['jeniskunjungan'],
-                                  'status_kirim' => 'Sudah'
-                              ]);
+                                $this->db('mlite_antrian_referensi')->save([
+                                    'tanggal_periksa' => $decode['tanggalperiksa'],
+                                    'no_rkm_medis' => $data_pasien['no_rkm_medis'],
+                                    'nomor_kartu' => $decode['nomorkartu'],
+                                    'nomor_referensi' => $decode['nomorreferensi'],
+                                    'kodebooking' => $kodebooking,
+                                    'jenis_kunjungan' => $decode['jeniskunjungan'],
+                                    'status_kirim' => 'Sudah'
+                                ]);
                             }
+                            http_response_code(200);
                             /*
                             $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $cek_kouta['kd_dokter'])->oneArray();
                             $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $cek_kouta['kd_poli'])->oneArray();
@@ -1921,7 +1921,7 @@ class Site extends SiteModule
           $page = $slug['3'];
           $offset = ($page - 1) * $perpage;
         }
-        $query = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa',$date)->where('status','Belum')->isNull('keterangan')->limit(5)->toArray();
+        $query = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa',$date)->where('nomor_referensi','!=','')->where('status','Belum')->isNull('keterangan')->limit(5)->toArray();
         if (!$query) {
             # code...
             $query = $this->db('mlite_antrian_referensi')

@@ -52,3 +52,56 @@ $(document).ready(function(){
          locale: 'id'
        });
    });
+
+$(document).ready(function () {
+  $("#pardah").DataTable({
+    dom: "Bfrtip",
+    order: [[0, "asc"]],
+  });
+});
+
+$("#form").hide();
+$('select').selectator();
+
+// tombol buka form diklik
+$("#index").on('click', '#bukaform', function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  $("#form").show().load(baseURL + '/rekap_diet/form?t=' + mlite.token);
+  $("#bukaform").val("Tutup Form");
+  $("#bukaform").attr("id", "tutupform");
+});
+
+// tombol tutup form diklik
+$("#index").on('click', '#tutupform', function(){
+  event.preventDefault();
+  $("#form").hide();
+  $("#tutupform").val("Tambah Item Diet");
+  $("#tutupform").attr("id", "bukaform");
+});
+
+// // ketika inputbox kd_diet diklik
+$("#form").on("click","#kd_diet", function(event){
+  var kd_diet_baru = $("#kd_diet_baru").val();
+  $("#kd_diet").val(kd_diet_baru);
+});
+// $("#form").on("click", ".kd_diet", function(event){
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+//   var kd_diet_baru  = $('input:text[name=kd_diet_baru]').val();
+//   var url = baseURL + '/rekap_diet/kodediet?t=' + mlite.token;
+//   $.post(url, {kd_diet_baru : kd_diet_baru} ,function(data) {
+//     // tampilkan data
+//     //console.log(data);
+//     $("#kd_diet").val(data);
+//   });
+// });
+
+$("#form").on("click",".batal",function(event){
+    event.preventDefault();
+    $("#form").hide();
+    $("#tutupform").val("Tambah Item Diet");
+    $("#tutupform").attr("kd_diet", "bukaform");
+    $("input:text[name=kd_diet]").val("");
+    $("input:text[name=nama_diet]").val("");
+});

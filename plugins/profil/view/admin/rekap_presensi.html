@@ -22,13 +22,20 @@
             <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg"
               style="margin-top:5px;margin-bottom:15px;">
               <div class="input-group col col-md-4">
+                <select name="y" id="tahun" class="form-control form-inline" placeholder="Tahun">
+                  {loop: $rekap.tahun}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+              <div class="input-group col col-md-3">
                 <select name="b" id="bulan" class="form-control form-inline" placeholder="Bulan">
                   {loop: $rekap.bulan}
                   <option value="{$value}">{$value}</option>
                   {/loop}
                 </select>
               </div>
-              <div class="input-group col col-md-7">
+              <div class="input-group col col-md-4">
                 <input type="text" name="s" minlength="3" class="form-control form-inline" placeholder="Search">
                 <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                 <span class="input-group-btn">
@@ -53,6 +60,7 @@
             <tbody>
               {if: !empty($rekap.list)}
               <div id="form">
+                <input type="hidden" name="tahun" value="{$rekap.getTahun}">
                 <input type="hidden" name="bulan" value="{$rekap.getBulan}">
                 <input type="hidden" name="nik" value="{$rekap.getUser}">
                 <div class="col-md-6">
