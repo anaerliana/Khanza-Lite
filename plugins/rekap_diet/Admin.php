@@ -141,125 +141,7 @@ class Admin extends AdminModule
         return $this->draw('rekap_dietpasien.html', ['rekap' => $this->assign]);
     }
 
-    public function anyForm()
-    {  
-      if (isset($_POST['kd_diet'])){
-        $diet = $this->db('diet')->where('kd_diet', $_POST['kd_diet'])->oneArray();
-        echo $this->draw('form_itemdiet.html', [
-          'diet' => $diet,
-          'kd_diet_baru' => $this->core->setKodeDiet()
-        ]);
-      } else {
-        $diet = [
-          'kd_diet' => '',
-          'nama_diet' => ''
-        ];
-        echo $this->draw('form_itemdiet.html', [
-          'diet' => $diet,
-          'kd_diet_baru' => $this->core->setKodeDiet()
-        ]);
-       }
-      exit();
-    }
-
-    public function postItemDietSave()
-  {
-    // $diet = $this->db('diet')->where('kd_diet', $_POST['kd_diet'])->oneArray();
-
-    // if (!$diet) {
-    //     $_POST['kd_diet'] = $this->core->setKodeDiet();
-    //     $_POST['nama_diet'] = $_POST['nama_diet'];
-    //     $query = $this->db('diet')->save($_POST);
-    //   // } else {
-    //   //   $query = $this->db('diet')->where('kd_diet', $_POST['kd_diet'])->save($_POST);
-    //   }
-
-    //   if($query) {
-    //     $data['status'] = 'success';
-    //     echo json_encode($data);
-    //   } else {
-    //     $data['status'] = 'error';
-    //     echo json_encode($data);
-    //   }
-
-    //   exit();
-     $kd_diet =  $_POST['kd_diet'];
-     if (!$kd_diet) {
-        $location = url([ADMIN,'rekap_diet','itemdiet']);
-      } else {
-        $location = url([ADMIN,'rekap_diet','itemdiet']);
-      }
-      
-        if (!$errors) {
-        unset($_POST['save']);
-        if (!$kd_diet) {
-          $query = $this->db('diet')->save([
-            'kd_diet' => $_POST['kd_diet'],
-            'nama_diet' => $_POST['nama_diet']
-          ]);
-        } else {
-          $query = $this->db('diet')->where('kd_diet',$kd_diet)->save([
-            'nama_diet' => $_POST['nama_diet'],
-          ]);
-        }
-        if ($query) {
-          $this->notify('success','Berhasil Simpan');
-        } else {
-          $this->notify('failure','Gagal Simpan');
-        }
-        redirect($location);
-      }
-      redirect($location, $_POST);
-
-
-    //  $kd_diet =  $_POST['kd_diet'];
-    //     $cek_kode= $this->db('diet')->where('kd_diet',$kd_diet)->oneArray();
-    //     if (!$cek_kode) {
-    //     $max_id = $this->db('diet')->select(['kd_diet' => 'ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0)'])->oneArray();
-    //   if (empty($max_id['kd_diet'])) {
-    //     $max_id['kd_diet'] = '000';
-    //   }
-    //   $_next_kd_diet = sprintf('%03s', ($max_id['kd_diet'] + 1));
-    //   $kd_diet = 'D'. '' . $_next_kd_diet;
-
-    //   $this->db('diet')
-    //   ->save([
-    //       'kd_diet' => $kd_diet,
-    //       'nama_diet' => $_POST['nama_diet']
-    //     ]);
-    //  }
-    // exit();
-   }
-  //  public function postKodeDiet()
-  // {
-  //   $last_kd_diet = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0) FROM diet");
-  //   $last_kd_diet->execute();
-  //   $last_kd_diet = $last_kd_diet->fetch();
-  //   if (empty($last_kd_diet[0])) {
-  //     $last_kd_diet[0] = '000';
-  //   }
-  //   $next_kd_diet = sprintf('%03s', ($last_kd_diet[0] + 1));
-  //   $next_kd_diet = 'D' .'' . $next_kd_diet;
-
-  //   echo $next_kd_diet;
-  //   exit();
-  // }
-
-   // public function setKodeDiet()
-   //  {
-   //      $last_kd_diet = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0) FROM diet");
-   //      $last_kd_diet->execute();
-   //      $last_kd_diet = $last_kd_diet->fetch();
-   //      if(empty($last_kd_diet[0])) {
-   //        $last_kd_diet[0] = '000';
-   //      }
-   //      $next_kd_diet = sprintf('%03s', ($last_kd_diet[0] + 1));
-   //      $next_kd_diet = 'D' .'' . $next_kd_diet;
-
-   //      return $next_kd_diet;
-   //  }
-
-    public function getItemdiet()
+     public function getItemdiet()
     {
       $this->_addHeaderFiles();
       $rows = $this->db('diet')->toArray();
@@ -268,11 +150,91 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
+                //$row['delURL']  = url([ADMIN, 'rekap_diet', 'delete', $row['kd_diet']]);
+                $row['delURL']  = url([ADMIN, 'rekap_diet', 'hapusitemdiet', $row['kd_diet']]);
                 $this->assign['list'][] = $row;
             }
         }
 
       return $this->draw('item_dietbaru.html',['itemdiet' => $this->assign]);
+    }
+
+    public function anyForm()
+    {
+    
+      $this->_addHeaderFiles();
+      if (isset($_POST['kd_diet'])){
+        $diet = $this->db('diet')->where('kd_diet', $_POST['kd_diet'])->oneArray();
+        echo $this->draw('form_itemdiet.html', [
+          'diet' => $diet,
+        ]);
+      } else {
+        $diet = [
+          'kd_diet' => '',
+          'nama_diet' => ''
+        ];
+        echo $this->draw('form_itemdiet.html', [
+          'diet' => $diet,
+        ]);
+       }
+      exit();
+    }
+
+    public function postItemDietSave()
+  {
+  
+    $kd_diet =  $_POST['kd_diet'];
+
+    $location = url([ADMIN, 'rekap_diet', 'itemdiet']);
+    
+    if (!$this->db('diet')->where('kd_diet', $_POST['kd_diet'])->oneArray()) {
+      $query = $this->db('diet')
+        ->save([
+            'kd_diet' => $kd_diet,
+            'nama_diet' => $_POST['nama_diet']
+          ]);
+    } else {
+      $query = $this->db('diet')
+        ->where('kd_diet', $_POST['kd_diet'])
+        ->save([
+            'nama_diet' => $_POST['nama_diet']
+          ]);
+    }  
+
+    if ($query) {
+        $this->notify('success','Berhasil Simpan');
+    } else {
+      $this->notify('failure','Gagal Simpan');
+    }
+
+    redirect($location);
+   }
+
+    public function getHapusItemDiet($kd_diet)
+  {
+      if ($this->db('diet')->where('kd_diet', $kd_diet)->delete()) {
+            $this->notify('success', 'Data berhasil dihapus.');
+        } else {
+            $this->notify('failure', 'Gagal dihapus.');
+        }
+   
+
+    redirect(url([ADMIN, 'rekap_diet', 'itemdiet']));
+  }
+  
+   public function getKodeDiet()
+    {
+     $last_kd_diet = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0) FROM diet");
+      $last_kd_diet->execute();
+      $last_kd_diet = $last_kd_diet->fetch();
+      if(empty($last_kd_diet[0])) {
+        $last_kd_diet[0] = '000';
+      }
+      $next_kd_diet = sprintf('%03s', ($last_kd_diet[0] + 1));
+      $next_kd_diet = 'D' .''. $next_kd_diet;
+
+      echo $next_kd_diet;
+      exit();
     }
 
     public function getJavascript()

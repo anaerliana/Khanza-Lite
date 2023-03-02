@@ -949,128 +949,128 @@ exit();
     exit();
   }
 
-  public function getLengkapExcel()
-  {
-    $start_date = $_GET['start_date'];
-    $end_date = $_GET['end_date'];
-    $rows = $this->db('mlite_vedika')->where('status', 'Lengkap')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->toArray();
-    if(isset($_GET['jenis']) && $_GET['jenis'] == 1) {
-      $rows = $this->db('mlite_vedika')->where('status', 'Lengkap')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 1)->toArray();
-    }
-    if(isset($_GET['jenis']) && $_GET['jenis'] == 2) {
-      $rows = $this->db('mlite_vedika')->where('status', 'Lengkap')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 2)->toArray();
-    }
-    $i = 1;
-    foreach ($rows as $row) {
-      $row['status_lanjut'] = 'Ralan';
-      if($row['jenis'] == 1) {
-        $row['status_lanjut'] = 'Ranap';
-      }
-      $row['no'] = $i++;
-      $row['tgl_masuk'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
-      $row['tgl_keluar'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
-      if($row['jenis'] == 1) {
-        $row['tgl_masuk'] = $this->core->getKamarInapInfo('tgl_masuk', $row['no_rawat']);
-        $row['tgl_keluar'] = $this->core->getKamarInapInfo('tgl_keluar', $row['no_rawat']);
-      }
-      $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
-      $row['no_peserta'] = $this->core->getPasienInfo('no_peserta', $row['no_rkm_medis']);
-      $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
-      $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
-      $get_feedback_bpjs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username', 'bpjs')->oneArray();
-      $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
-      $get_feedback_rs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username','!=','bpjs')->oneArray();
-      $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
-      $display[] = $row;
-    }
+  // public function getLengkapExcel()
+  // {
+  //   $start_date = $_GET['start_date'];
+  //   $end_date = $_GET['end_date'];
+  //   $rows = $this->db('mlite_vedika')->where('status', 'Lengkap')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->toArray();
+  //   if(isset($_GET['jenis']) && $_GET['jenis'] == 1) {
+  //     $rows = $this->db('mlite_vedika')->where('status', 'Lengkap')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 1)->toArray();
+  //   }
+  //   if(isset($_GET['jenis']) && $_GET['jenis'] == 2) {
+  //     $rows = $this->db('mlite_vedika')->where('status', 'Lengkap')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 2)->toArray();
+  //   }
+  //   $i = 1;
+  //   foreach ($rows as $row) {
+  //     $row['status_lanjut'] = 'Ralan';
+  //     if($row['jenis'] == 1) {
+  //       $row['status_lanjut'] = 'Ranap';
+  //     }
+  //     $row['no'] = $i++;
+  //     $row['tgl_masuk'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
+  //     $row['tgl_keluar'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
+  //     if($row['jenis'] == 1) {
+  //       $row['tgl_masuk'] = $this->core->getKamarInapInfo('tgl_masuk', $row['no_rawat']);
+  //       $row['tgl_keluar'] = $this->core->getKamarInapInfo('tgl_keluar', $row['no_rawat']);
+  //     }
+  //     $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
+  //     $row['no_peserta'] = $this->core->getPasienInfo('no_peserta', $row['no_rkm_medis']);
+  //     $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
+  //     $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
+  //     $get_feedback_bpjs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username', 'bpjs')->oneArray();
+  //     $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
+  //     $get_feedback_rs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username','!=','bpjs')->oneArray();
+  //     $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
+  //     $display[] = $row;
+  //   }
 
-    $this->tpl->set('display', $display);
+  //   $this->tpl->set('display', $display);
 
-    echo $this->tpl->draw(MODULES . '/vedika/view/admin/lengkap_excel.html', true);
-    exit();
-  }
+  //   echo $this->tpl->draw(MODULES . '/vedika/view/admin/lengkap_excel.html', true);
+  //   exit();
+  // }
 
-  public function getPengajuanExcel()
-  {
-    $start_date = $_GET['start_date'];
-    $end_date = $_GET['end_date'];
-    $rows = $this->db('mlite_vedika')->where('status', 'Pengajuan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->toArray();
-    if(isset($_GET['jenis']) && $_GET['jenis'] == 1) {
-      $rows = $this->db('mlite_vedika')->where('status', 'Pengajuan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 1)->toArray();
-    }
-    if(isset($_GET['jenis']) && $_GET['jenis'] == 2) {
-      $rows = $this->db('mlite_vedika')->where('status', 'Pengajuan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 2)->toArray();
-    }
-    $i = 1;
-    foreach ($rows as $row) {
-      $row['status_lanjut'] = 'Ralan';
-      if($row['jenis'] == 1) {
-        $row['status_lanjut'] = 'Ranap';
-      }
-      $row['no'] = $i++;
-      $row['tgl_masuk'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
-      $row['tgl_keluar'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
-      if($row['jenis'] == 1) {
-        $row['tgl_masuk'] = $this->core->getKamarInapInfo('tgl_masuk', $row['no_rawat']);
-        $row['tgl_keluar'] = $this->core->getKamarInapInfo('tgl_keluar', $row['no_rawat']);
-      }
-      $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
-      $row['no_peserta'] = $this->core->getPasienInfo('no_peserta', $row['no_rkm_medis']);
-      $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
-      $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
-      $get_feedback_bpjs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username', 'bpjs')->oneArray();
-      $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
-      $get_feedback_rs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username','!=','bpjs')->oneArray();
-      $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
-      $display[] = $row;
-    }
+  // public function getPengajuanExcel()
+  // {
+  //   $start_date = $_GET['start_date'];
+  //   $end_date = $_GET['end_date'];
+  //   $rows = $this->db('mlite_vedika')->where('status', 'Pengajuan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->toArray();
+  //   if(isset($_GET['jenis']) && $_GET['jenis'] == 1) {
+  //     $rows = $this->db('mlite_vedika')->where('status', 'Pengajuan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 1)->toArray();
+  //   }
+  //   if(isset($_GET['jenis']) && $_GET['jenis'] == 2) {
+  //     $rows = $this->db('mlite_vedika')->where('status', 'Pengajuan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 2)->toArray();
+  //   }
+  //   $i = 1;
+  //   foreach ($rows as $row) {
+  //     $row['status_lanjut'] = 'Ralan';
+  //     if($row['jenis'] == 1) {
+  //       $row['status_lanjut'] = 'Ranap';
+  //     }
+  //     $row['no'] = $i++;
+  //     $row['tgl_masuk'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
+  //     $row['tgl_keluar'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
+  //     if($row['jenis'] == 1) {
+  //       $row['tgl_masuk'] = $this->core->getKamarInapInfo('tgl_masuk', $row['no_rawat']);
+  //       $row['tgl_keluar'] = $this->core->getKamarInapInfo('tgl_keluar', $row['no_rawat']);
+  //     }
+  //     $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
+  //     $row['no_peserta'] = $this->core->getPasienInfo('no_peserta', $row['no_rkm_medis']);
+  //     $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
+  //     $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
+  //     $get_feedback_bpjs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username', 'bpjs')->oneArray();
+  //     $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
+  //     $get_feedback_rs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username','!=','bpjs')->oneArray();
+  //     $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
+  //     $display[] = $row;
+  //   }
 
-    $this->tpl->set('display', $display);
+  //   $this->tpl->set('display', $display);
 
-    echo $this->tpl->draw(MODULES . '/vedika/view/admin/pengajuan_excel.html', true);
-    exit();
-  }
+  //   echo $this->tpl->draw(MODULES . '/vedika/view/admin/pengajuan_excel.html', true);
+  //   exit();
+  // }
 
-  public function getPerbaikanExcel()
-  {
-    $start_date = $_GET['start_date'];
-    $end_date = $_GET['end_date'];
-    $rows = $this->db('mlite_vedika')->where('status', 'Perbaikan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->toArray();
-    if(isset($_GET['jenis']) && $_GET['jenis'] == 1) {
-      $rows = $this->db('mlite_vedika')->where('status', 'Perbaikan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 1)->toArray();
-    }
-    if(isset($_GET['jenis']) && $_GET['jenis'] == 2) {
-      $rows = $this->db('mlite_vedika')->where('status', 'Perbaikan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 2)->toArray();
-    }
-    $i = 1;
-    foreach ($rows as $row) {
-      $row['status_lanjut'] = 'Ralan';
-      if($row['jenis'] == 1) {
-        $row['status_lanjut'] = 'Ranap';
-      }
-      $row['no'] = $i++;
-      $row['tgl_masuk'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
-      $row['tgl_keluar'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
-      if($row['jenis'] == 1) {
-        $row['tgl_masuk'] = $this->core->getKamarInapInfo('tgl_masuk', $row['no_rawat']);
-        $row['tgl_keluar'] = $this->core->getKamarInapInfo('tgl_keluar', $row['no_rawat']);
-      }
-      $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
-      $row['no_peserta'] = $this->core->getPasienInfo('no_peserta', $row['no_rkm_medis']);
-      $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
-      $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
-      $get_feedback_bpjs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username', 'bpjs')->oneArray();
-      $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
-      $get_feedback_rs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username','!=','bpjs')->oneArray();
-      $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
-      $display[] = $row;
-    }
+  // public function getPerbaikanExcel()
+  // {
+  //   $start_date = $_GET['start_date'];
+  //   $end_date = $_GET['end_date'];
+  //   $rows = $this->db('mlite_vedika')->where('status', 'Perbaikan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->toArray();
+  //   if(isset($_GET['jenis']) && $_GET['jenis'] == 1) {
+  //     $rows = $this->db('mlite_vedika')->where('status', 'Perbaikan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 1)->toArray();
+  //   }
+  //   if(isset($_GET['jenis']) && $_GET['jenis'] == 2) {
+  //     $rows = $this->db('mlite_vedika')->where('status', 'Perbaikan')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 2)->toArray();
+  //   }
+  //   $i = 1;
+  //   foreach ($rows as $row) {
+  //     $row['status_lanjut'] = 'Ralan';
+  //     if($row['jenis'] == 1) {
+  //       $row['status_lanjut'] = 'Ranap';
+  //     }
+  //     $row['no'] = $i++;
+  //     $row['tgl_masuk'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
+  //     $row['tgl_keluar'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
+  //     if($row['jenis'] == 1) {
+  //       $row['tgl_masuk'] = $this->core->getKamarInapInfo('tgl_masuk', $row['no_rawat']);
+  //       $row['tgl_keluar'] = $this->core->getKamarInapInfo('tgl_keluar', $row['no_rawat']);
+  //     }
+  //     $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
+  //     $row['no_peserta'] = $this->core->getPasienInfo('no_peserta', $row['no_rkm_medis']);
+  //     $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
+  //     $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
+  //     $get_feedback_bpjs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username', 'bpjs')->oneArray();
+  //     $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
+  //     $get_feedback_rs = $this->db('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username','!=','bpjs')->oneArray();
+  //     $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
+  //     $display[] = $row;
+  //   }
 
-    $this->tpl->set('display', $display);
+  //   $this->tpl->set('display', $display);
 
-    echo $this->tpl->draw(MODULES . '/vedika/view/admin/perbaikan_excel.html', true);
-    exit();
-  }
+  //   echo $this->tpl->draw(MODULES . '/vedika/view/admin/perbaikan_excel.html', true);
+  //   exit();
+  // }
 
   public function anyPerbaikan($type = 'ralan', $page = 1)
   {
