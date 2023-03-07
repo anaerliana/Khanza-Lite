@@ -134,9 +134,9 @@ class Admin extends AdminModule
         }
 
         
-        // $this->assign['tahun'] = array('', '2020', '2021', '2022');
-        // $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        // $this->assign['tanggal'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31');
+        $this->assign['tahun'] = array('', '2020', '2021', '2022');
+        $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+        $this->assign['tanggal'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31');
         $this->assign['bangsal'] = $this->db('bangsal')->where('status', '1')->toArray();
         return $this->draw('rekap_dietpasien.html', ['rekap' => $this->assign]);
     }
@@ -224,7 +224,7 @@ class Admin extends AdminModule
   
    public function getKodeDiet()
     {
-     $last_kd_diet = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0) FROM diet");
+     $last_kd_diet = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(kd_diet,3),signed)),0) FROM diet WHERE kd_diet LIKE '%D%'");
       $last_kd_diet->execute();
       $last_kd_diet = $last_kd_diet->fetch();
       if(empty($last_kd_diet[0])) {
