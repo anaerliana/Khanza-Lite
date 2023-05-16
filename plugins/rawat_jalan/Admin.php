@@ -149,6 +149,8 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $cek_kronis = $this->db('mlite_veronisa')->where('no_rawat', $row['no_rawat'])->oneArray();
+          $row['kronis'] = $cek_kronis['no_rawat'];
           $this->assign['list'][] = $row;
         }
 
@@ -1535,6 +1537,34 @@ class Admin extends AdminModule
         }
       }
       return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign, 'master_berkas_digital' => $master_berkas_digital]);
+    }
+
+      public function postObatKronis()
+    {
+      if (isset($_POST['no_rawat']) && $_POST['no_rawat'] !='') {
+        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        if(!$bridging_sep) {
+          $bridging_sep['no_sep'] = '';
+        }
+        $this->db('mlite_veronisa')->save([
+          'id' => NULL,
+          'tanggal' => date('Y-m-d'),
+          'no_rkm_medis' => $reg_periksa['no_rkm_medis'],
+          'no_rawat' => $_POST['no_rawat'],
+          'tgl_registrasi' => $reg_periksa['tgl_registrasi'],
+          'nosep' => $bridging_sep['no_sep'],
+          'status' => 'Belum',
+          'username' => $this->core->getUserInfo('username', null, true)
+        ]);
+      }
+      exit();
+    }
+
+    public function postHapusObatKronis()
+    {
+      $this->db('mlite_veronisa')->where('no_rawat', $_POST['no_rawat'])->delete();
+      exit();
     }
   
     public function getJavascript()

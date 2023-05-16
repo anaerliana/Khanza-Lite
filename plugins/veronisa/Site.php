@@ -43,7 +43,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page = [
                 'title' => 'Veronisa',
-                'desc' => 'Dashboard Verifikasi Obat Kronis Aura Syifa',
+                'desc' => 'Dashboard Verifikasi Obat Kronis RSUD H. Damanhuri',
                 'content' => $this->_getManage()
             ];
             if(isset($_POST['perbaiki'])) {
@@ -74,7 +74,7 @@ class Site extends SiteModule
             }
             $page = [
                 'title' => 'Veronisa',
-                'desc' => 'Dashboard Verifikasi Obat Kronis Aura Syifa',
+                'desc' => 'Dashboard Verifikasi Obat Kronis RSUD H. Damanhuri',
                 'content' => $this->draw('login.html', ['mlite' => $this->mlite])
             ];
         }
@@ -206,6 +206,20 @@ class Site extends SiteModule
         }
 
         $no_rawat = $this->revertNorawat($id);
+        $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
+        $query->execute();
+        $rows = $query->fetchAll();
+        $total=0;
+        foreach ($rows as $key => $value) {
+          $total = $total+$value['7'];
+        }
+        $total = $total;
+        $this->tpl->set('total', $total);
+
+        $settings = $this->settings('settings');
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+        $this->tpl->set('billing', $rows);
 
         /** Billing versi mlite */
 

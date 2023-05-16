@@ -1024,6 +1024,101 @@ class Admin extends AdminModule
       	return $umur;
     }
 
+    public function getDataOrthanc($no_rkm_medis)
+    {
+      $riwayat['settings'] = $this->settings('settings');
+      $riwayat['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      $reg_periksa = $this->db('reg_periksa')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+        ->where('no_rkm_medis', $no_rkm_medis)
+        ->toArray();
+
+      $riwayat['reg_periksa'] = [];
+      foreach ($reg_periksa as $row) {
+        $no_rawat =  $row['no_rawat'];
+        // $no_rawatconv = convertNorawat($row['no_rawat']);
+        // $orthanc = $this->getLihatOrthanc($no_rawat);
+        // $row['orthanc'] = $orthanc;
+
+        $pacs = [];
+
+        $pacs['data'] = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+
+        $url_orthanc = $this->settings->get('orthanc.server');
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url_orthanc .  '/tools/lookup');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_USERPWD,  $this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
+        curl_setopt ($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt ($curl, CURLOPT_POST, 1);
+        curl_setopt ($curl, CURLOPT_POSTFIELDS, $pacs['data']);
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        $patient = json_decode($response, TRUE);
+
+        $pacs['patientUUID'] = $patient[0]["ID"];
+
+        if ($pacs['patientUUID'] != "") {
+
+          $curl = curl_init();
+          curl_setopt ($curl, CURLOPT_URL, $url_orthanc . '/patients/' . $pacs['patientUUID']);
+          curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+          curl_setopt ($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
+          curl_setopt ($curl, CURLOPT_TIMEOUT, 30);
+          $response = curl_exec($curl);
+          curl_close($curl);
+
+          $study = json_decode($response, TRUE);
+
+          $pacs['Studies'] = $study["Studies"][0];
+
+          if($pacs['Studies'] != "") {
+            $curl = curl_init();
+            curl_setopt ($curl, CURLOPT_URL, $url_orthanc . '/studies/' . $pacs['Studies']);
+            curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt ($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
+            curl_setopt ($curl, CURLOPT_TIMEOUT, 30);
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $series = json_decode($response, TRUE);
+            // echo json_encode($series['Series']);
+
+            $pacs['Series'] = json_encode($series["Series"]);
+
+          if($pacs['Series'] != "") {
+          foreach (json_decode($pacs['Series'], true) as $series) {
+            $curl = curl_init();
+            curl_setopt ($curl, CURLOPT_URL, $url_orthanc . '/series/' . $series);
+            curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt ($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
+            curl_setopt ($curl, CURLOPT_TIMEOUT, 30);
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $Instances = json_decode($response, TRUE);
+            // echo json_encode($Instances);
+
+            $pacs['Instances'][] = $Instances;
+              }
+            }
+          }
+        }
+
+        $riwayat['reg_periksa'][] = $row;
+      }
+      $this->tpl->set('pacs', $pacs);
+      $this->tpl->set('url_orthanc', $url_orthanc);
+      $this->tpl->set('riwayat', $this->tpl->noParse_array(htmlspecialchars_array($riwayat)));
+      echo $this->draw('data.orthanc.html');
+      exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
