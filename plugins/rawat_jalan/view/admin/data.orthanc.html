@@ -1,0 +1,23 @@
+<h4>Data Orthanc</h4>
+<div class="table table-responsive">
+  <div class="container-fluid">
+    <div class="row">
+      {loop: $pacs}
+      <div>
+        <div class="title">Tanggal: {$value['Tanggal']}</div>
+        Deskripsi: {$value['Deskripsi']}<br>
+        {$value['Gambar']}
+      </div>
+      {/loop}
+      {if: empty($pacs)}
+      <div>Tidak ada data Gambar Orthanc</div>
+      {/if} 
+    </div>
+  </div>
+  <br>
+</div>
+<div>
+  <button type="button" class="btn btn-primary" aria-label="Close" id="kembali_orthanc">
+    Kembali</button>
+</div>
+

@@ -693,6 +693,94 @@ class Admin extends AdminModule
 
     }
 
+    public function anyOrthanc()
+{
+    $rows = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->toArray();
+
+    $result = [];
+    foreach ($rows as $row) {
+        $no_rawat = $row['no_rawat'];
+        $norm = $row['no_rkm_medis'];
+        $tgl_registrasi = $row['tgl_registrasi'];
+        $tanggal = str_replace("-", "", $tgl_registrasi);
+        // echo '<strong>Tanggal</strong> : ' . $tanggal . '<br>';
+        // echo '<strong>RM</strong> : ' . $norm . '<br>';
+        // echo '<strong>Norawat</strong> : ' . $no_rawat . '<br>';
+
+        $pacs = [];
+
+        $arr = array(
+            "Level" => "Study",
+            "Expand" => true,
+            "Query" => array(
+                "StudyDate" => $tanggal . "-" . $tanggal,
+                "PatientID" => $norm
+            )
+        );
+
+        $pacs['data'] = json_encode($arr);
+
+        $url_orthanc = $this->settings->get('orthanc.server');
+        $urlfind = $url_orthanc . '/tools/find';
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $urlfind);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        curl_setopt($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username') . ":" . $this->settings->get('orthanc.password'));
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $pacs['data']);
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        $patient = json_decode($response, TRUE);
+
+        if (isset($patient[0]["ID"])) {
+            foreach ($patient[0]["Series"] as $series) {
+                $urlSeries = $url_orthanc . '/series/' . $series;
+
+                $curl = curl_init();
+                curl_setopt($curl, CURLOPT_URL, $urlSeries);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                curl_setopt($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username') . ":" . $this->settings->get('orthanc.password'));
+                $response = curl_exec($curl);
+                curl_close($curl);
+
+                $seriesData = json_decode($response, true);
+
+                $seriesDate = isset($seriesData['MainDicomTags']['SeriesDate']) ? $seriesData['MainDicomTags']['SeriesDate'] : "";
+                $acquisitionDescription = isset($seriesData['MainDicomTags']['AcquisitionDeviceProcessingDescription']) ? $seriesData['MainDicomTags']['AcquisitionDeviceProcessingDescription'] : "";
+
+                $instance = $seriesData['Instances'][0];
+                $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+                  $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+
+                $gambar = '';
+                foreach ($seriesData['Instances'] as $instance) {
+                    $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+                    $gambar .= '<a href="' . $url_orthanc . '/web-viewer/app/viewer.html?series=' . $series . '" target="_blank">';
+                    $gambar .= '<img src="' . $imageURL . '" alt="Image" style="width: 600px;">';
+                    $gambar .= '</a><br><br>';
+                  }
+
+                $result[] = array(
+                    'Tanggal' => date('d-m-Y', strtotime($seriesDate)),
+                    'Deskripsi' => $acquisitionDescription,
+                    'Gambar' => $gambar
+                );
+            }
+        } 
+        // else {
+        //     echo 'Tidak ada data gambar Orthanc';
+        // }
+    }
+
+    echo $this->draw('data.orthanc.html', ['pacs' => $result]);
+    exit();
+}
+
     public function postProviderList()
     {
 

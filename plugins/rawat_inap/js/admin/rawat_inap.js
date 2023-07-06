@@ -9,11 +9,15 @@ $("#hais").hide();
 $("#form_jadwaloperasi").hide();
 $("#form_dietpasien").hide();
 $("#formkerohanian").hide();
+$("#skrining_perawat").hide();
 $("#notif").hide();
 $('#provider').hide();
 $('#aturan_pakai').hide();
 $("#tanggal_keluar").hide();
 $("#diagnosa_keluar").hide();
+$("#skrining").hide();
+$("#orthanc").hide();
+
 
 // tombol buka form diklik
 $("#index").on('click', '#bukaform', function(){
@@ -305,6 +309,7 @@ $('#manage').on('click', '#submit_periode_rawat_inap', function(event){
     $("#form_jadwaloperasi").hide();
     $("#form_dietpasien").hide();
     $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -342,6 +347,7 @@ $('#manage').on('click', '#masuk_periode_rawat_inap', function(event){
     $("#form_jadwaloperasi").hide();
     $("#form_dietpasien").hide();
     $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -379,6 +385,7 @@ $('#manage').on('click', '#pulang_periode_rawat_inap', function(event){
     $("#form_jadwaloperasi").hide();
     $("#form_dietpasien").hide();
     $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -416,6 +423,7 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
     $("#form_jadwaloperasi").hide();
     $("#form_dietpasien").hide();
     $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
@@ -666,6 +674,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#form_jadwaloperasi").hide();
   $("#form_dietpasien").hide();
   $("#form_kerohanian").hide();
+  $("#skrining_perawat").hide();
 });
 
 // tombol batal diklik
@@ -683,6 +692,7 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#form_jadwaloperasi").hide();
   $("#form_dietpasien").hide();
   $("#form_kerohanian").hide();
+  $("#skrining_perawat").hide();
 });
 
 $("#form_hais").on("click", "#simpan_hais", function(event){
@@ -895,6 +905,7 @@ $("#form_hais").hide();
 $("#form_jadwaloperasi").hide();
 $("#form_dietpasien").hide();
 $("#form_kerohanian").hide();
+$("#skrining_perawat").hide();
 });
 
 // tombol batal diklik
@@ -916,6 +927,8 @@ $("#form_dietpasien").hide();
 $("#dietpasien").hide();
 $("#form_kerohanian").hide();
 $("#kerohanian").hide();
+$("#skrining_perawat").hide();
+$("#skrining").hide();
 });
 
 
@@ -1299,6 +1312,7 @@ $("#form_hais").hide();
 $("#form_jadwaloperasi").hide();
 $("#form_dietpasien").hide();
 $("#form_kerohanian").hide();
+$("#skrining_perawat").hide();
 });
 
 // tombol batal diklik
@@ -1320,6 +1334,8 @@ $("#form_dietpasien").hide();
 $("#dietpasien").hide();
 $("#form_kerohanian").hide();
 $("formkerohanian").hide();
+$("#skrining_perawat").hide();
+$("#skrining").hide();
 });
 
 //Jadwaloperasi
@@ -1465,6 +1481,7 @@ $("#form_hais").hide();
 $("#form_jadwaloperasi").hide();
 $("#form_dietpasien").hide();
 $("#form_kerohanian").hide();
+$("#skrining_perawat").hide();
 });
 
 // tombol batal diklik
@@ -1486,6 +1503,8 @@ $("#form_dietpasien").hide();
 $("#dietpasien").hide();
 $("#form_kerohanian").hide();
 $("#formkerohanian").hide();
+$("#skrining_perawat").hide();
+$("#skrining").hide();
 });
 
 //form kerohanian
@@ -1622,6 +1641,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#form_jadwaloperasi").hide();
   $("#form_dietpasien").hide();
   $("#form_kerohanian").hide();
+  $("#skrining_perawat").hide();
   });
 
   // tombol batal diklik
@@ -1643,7 +1663,742 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#dietpasien").hide();
   $("#formkerohanian").hide();
   $("#rohani").hide();
+  $("#skrining_perawat").hide();
+  $("#skrining").hide();
   });
+
+//   $("#skrining_perawat").on("click", "#simpan_skriningcek", function(event){
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+
+//   var no_rawat        = $('input:text[name=no_rawat]').val();
+//   var tanggal         = $('input:text[name=tanggal]').val();
+//   // var skrining_ceklist = $('input:checkbox[name=skrining_ceklist]:checked').length > 0 ? 1 : 0;
+//   var skrining_ceklist = [];
+
+//  $('input[name="data[]"]:checked').each(function() {
+//         skrining_ceklist.push($(this).val());
+//     });
+
+//   if (skrining_ceklist.length === 0) {
+//         alert('Tidak ada data yang dipilih');
+//         return;
+//   }
+
+//   var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+//   $.post(url, {
+//     no_rawat : no_rawat,
+//     tanggal: tanggal,
+//     data: skrining_ceklist
+   
+//   }, function(data) {
+//     console.log(data);
+//     // tampilkan data
+//     var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+//     $.post(url, {
+//       no_rawat : no_rawat,
+//     }, function(data) {
+//       // tampilkan data
+//       console.log(data);
+//       // $("#hais").html(data);
+//       $("#skrining").html(data).show();
+//     });
+//      $('input[name="data[]"]').each(function() {
+//             var value = $(this).val();
+//             var isChecked = skrining_ceklist.includes(value);
+//             $(this).prop('checked', isChecked);
+//         });
+//     // $('input:checkbox[name=skrining_ceklist]:checked').val("");
+//     $('input:text[name=tanggal]').val("{?=date('Y-m-d')?}");
+
+//     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+//     "Data Skrining Ceklist telah disimpan!"+
+//     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+//     "</div>").show();
+//   });
+// });
+// $("#skrining_perawat").on("click", "#simpan_skriningcek", function(event) {
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+
+//   var no_rawat = $('input:text[name=no_rawat]').val();
+//   var tanggal = $('input:text[name=tanggal]').val();
+//   var skrining_ceklist = [];
+
+//   $('input[name="data[]"]:checked').each(function() {
+//     skrining_ceklist.push($(this).val());
+//   });
+
+//   if (skrining_ceklist.length === 0) {
+//     alert('Tidak ada data yang dipilih.');
+//     return;
+//   }
+
+//   if (skrining_ceklist.length < 7) {
+//     var catatan_skrining = prompt('Masukkan catatan skrining:');
+//     if (catatan_skrining === null || catatan_skrining.trim() === '') {
+//       alert('Catatan skrining tidak boleh kosong.');
+//       return;
+//     }
+
+//     // Simpan catatan skrining ke tabel evaluasi
+//      var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+//     $.post(url, {
+//       no_rawat: no_rawat,
+//       tanggal: tanggal,
+//       data: skrining_ceklist,
+//       catatan_skrining: catatan_skrining
+//     }, function(data) {
+//       console.log(data);
+//       // tampilkan data
+//       var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+//       $.post(url, {
+//         no_rawat: no_rawat,
+//       }, function(data) {
+//         // tampilkan data
+//         console.log(data);
+//         $("#skrining").html(data).show();
+//       });
+//       $('input[name="data[]"]').each(function() {
+//         var value = $(this).val();
+//         var isChecked = skrining_ceklist.includes(value);
+//         $(this).prop('checked', isChecked);
+//       });
+//       $('input:text[name=tanggal]').val("{?=date('Y-m-d')?}");
+
+//       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+//         "Data Skrining Ceklist telah disimpan!" +
+//         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+//         "</div>").show();
+//     });
+//   } else {
+//     // Simpan skrining ceklist tanpa catatan skrining
+//      var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+//     $.post(url, {
+//       no_rawat: no_rawat,
+//       tanggal: tanggal,
+//       data: skrining_ceklist
+//     }, function(data) {
+//       console.log(data);
+//       // tampilkan data
+//       var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+//       $.post(url, {
+//         no_rawat: no_rawat,
+//       }, function(data) {
+//         // tampilkan data
+//         console.log(data);
+//         $("#skrining").html(data).show();
+//       });
+//       $('input[name="data[]"]').each(function() {
+//         var value = $(this).val();
+//         var isChecked = skrining_ceklist.includes(value);
+//         $(this).prop('checked', isChecked);
+//       });
+//       $('input:text[name=tanggal]').val("{?=date('Y-m-d')?}");
+
+//       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+//         "Data Skrining Ceklist telah disimpan!" +
+//         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+//         "</div>").show();
+//     });
+//   }
+// });
+$("#skrining_perawat").on("click", "#simpan_skriningcek", function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var tanggal = $('input:text[name=tanggal]').val();
+  var skrining_ceklist = [];
+
+  $('input[name="data[]"]:checked').each(function() {
+    skrining_ceklist.push($(this).val());
+  });
+
+  if (skrining_ceklist.length === 0) {
+    alert('Tidak ada data yang dipilih.');
+    return;
+  }
+
+  if (skrining_ceklist.length < 7) {
+    bootbox.prompt({
+      title: "Masukkan catatan skrining:",
+      callback: function(result) {
+        if (result === null || result.trim() === '') {
+          alert('Catatan skrining tidak boleh kosong.');
+          return;
+        }
+        var catatan_skrining = result.trim();
+
+        var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+        $.post(url, {
+          no_rawat: no_rawat,
+          tanggal: tanggal,
+          data: skrining_ceklist,
+          catatan_skrining: catatan_skrining
+        }, function(data) {
+          console.log(data);
+          // Tampilkan data
+          var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+          $.post(url, {
+            no_rawat: no_rawat,
+          }, function(data) {
+            // Tampilkan data
+            console.log(data);
+            $("#skrining").html(data).show();
+          });
+          $('input[name="data[]"]').each(function() {
+            var value = $(this).val();
+            var isChecked = skrining_ceklist.includes(value);
+            $(this).prop('checked', isChecked);
+          });
+          $('input:text[name=tanggal]').val("{?=date('Y-m-d')?}");
+
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+            "Data Skrining Ceklist telah disimpan!" +
+            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+            "</div>").show();
+        });
+      }
+    });
+  } else {
+    // Simpan skrining ceklist tanpa catatan skrining
+    var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+    $.post(url, {
+      no_rawat: no_rawat,
+      tanggal: tanggal,
+      data: skrining_ceklist
+    }, function(data) {
+      console.log(data);
+      // Tampilkan data
+      var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+      $.post(url, {
+        no_rawat: no_rawat,
+      }, function(data) {
+        // Tampilkan data
+        console.log(data);
+        $("#skrining").html(data).show();
+      });
+      $('input[name="data[]"]').each(function() {
+        var value = $(this).val();
+        var isChecked = skrining_ceklist.includes(value);
+        $(this).prop('checked', isChecked);
+      });
+      $('input:text[name=tanggal]').val("{?=date('Y-m-d')?}");
+
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data Skrining Ceklist telah disimpan!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
+    });
+  }
+});
+
+
+
+// $("#skrining_perawat").on("click", "#simpan_skriningcek", function(event) {
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+
+//   var no_rawat = $('input:text[name=no_rawat]').val();
+//   var tanggal = $('input:text[name=tanggal]').val();
+//   var skrining_ceklist = [];
+
+//   $('input[name="data[]"]:checked').each(function() {
+//     skrining_ceklist.push($(this).val());
+//   });
+
+//   if (skrining_ceklist.length === 0) {
+//     alert('Tidak ada data yang dipilih.');
+//     return;
+//   }
+
+//   if (skrining_ceklist.length < 7) {
+//     var catatan_skrining = prompt('Masukkan catatan skrining:');
+//     if (catatan_skrining === null || catatan_skrining.trim() === '') {
+//       alert('Catatan skrining tidak boleh kosong.');
+//       return;
+//     }
+
+//     // Simpan catatan skrining ke tabel evaluasi
+//     $.post(baseURL + '/rawat_inap/saveskriningcek', {
+//       no_rawat: no_rawat,
+//       tanggal: tanggal,
+//       skrining_ceklist: skrining_ceklist,
+//       catatan_skrining: catatan_skrining
+//     }, function(data) {
+//       console.log(data);
+//       // tampilkan data
+//       var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+//       $.post(url, {
+//         no_rawat: no_rawat,
+//       }, function(data) {
+//         // tampilkan data
+//         console.log(data);
+//         $("#skrining").html(data).show();
+//       });
+//       $('input[name="data[]"]').each(function() {
+//         var value = $(this).val();
+//         var isChecked = skrining_ceklist.includes(value);
+//         $(this).prop('checked', isChecked);
+//       });
+//       $('input:text[name=tanggal]').val("{?=date('Y-m-d')?}");
+
+//       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+//         "Data Skrining Ceklist telah disimpan!" +
+//         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+//         "</div>").show();
+//     });
+//   } else {
+//     // Simpan skrining ceklist tanpa catatan skrining
+//     var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+//     $.post(url, {
+//       no_rawat: no_rawat,
+//       tanggal: tanggal,
+//       data: skrining_ceklist
+//     }, function(data) {
+//       console.log(data);
+//       // tampilkan data
+//       var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+//       $.post(url, {
+//         no_rawat: no_rawat,
+//       }, function(data) {
+//         // tampilkan data
+//         console.log(data);
+//         $("#skrining").html(data).show();
+//       });
+//       $('input[name="data[]"]').each(function() {
+//         var value = $(this).val();
+//         var isChecked = skrining_ceklist.includes(value);
+//         $(this).prop('checked', isChecked);
+//       });
+//       $('input:text[name=tanggal]').val("{?=date('Y-m-d')?}");
+
+//       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+//         "Data Skrining Ceklist telah disimpan!" +
+//         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+//         "</div>").show();
+//     });
+//   }
+// });
+
+
+
+// $("#skrining_perawat").on("click", "#simpan_skriningcek", function(event) {
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+
+//   var no_rawat = $('input[name=no_rawat]').val();
+//   var skrining_ceklist = [];
+
+//   // Mendapatkan nilai checkbox yang dipilih
+//   $('input[name="data[]"]:checked').each(function() {
+//     skrining_ceklist.push($(this).val());
+//   });
+
+//   var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+//   $.post(url, {
+//     no_rawat: no_rawat,
+//     data: skrining_ceklist
+//   }, function(data) {
+//     // console.log(data);
+//     // Tampilkan data
+//     var url = baseURL + '/rawat_inap?t=' + mlite.token;
+//     $.post(url, {
+//       no_rawat: no_rawat,
+//     }, function(data) {
+//       // Tampilkan data
+//       console.log(data);
+//     // });
+//     // Memperbarui status checkbox agar tetap ada
+//       $('input[name="data[]"]').each(function() {
+//         var value = $(this).val();
+//         var isChecked = skrining_ceklist.includes(value);
+//          $(this).prop('checked', isChecked);
+//       });
+//     });
+//     // Reset nilai checkbox
+//     // $('input[name="data[]"]:checked').prop('checked', false);
+
+//     // Reset tanggal
+//     var currentDate = new Date().toISOString().slice(0, 10);
+//     $('input[name=tanggal]').val(currentDate);
+
+//     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+//     "Data Skrining Ceklist telah disimpan!"+
+//     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+//     "</div>").show();
+//   });
+// });
+// $("#skrining_perawat").on("click", "#simpan_skriningcek", function(event) {
+//     var baseURL = mlite.url + '/' + mlite.admin;
+//     event.preventDefault();
+
+//     var no_rawat = $('input[name=no_rawat]').val();
+//     var skrining_ceklist = [];
+
+//     // Mendapatkan nilai checkbox yang dipilih
+//     $('input[name="data[]"]:checked').each(function() {
+//         skrining_ceklist.push($(this).val());
+//     });
+
+//     if (skrining_ceklist.length === 0) {
+//         alert('Tidak ada data yang dipilih');
+//         return;
+//     }
+
+//     var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+//     $.post(url, {
+//         no_rawat: no_rawat,
+//         data: skrining_ceklist
+//     }, function(data) {
+//         // Tampilkan data
+//         // var url = baseURL + '/rawat_inap/skriningceklist?t=' + mlite.token;
+//         $.post(url, {
+//             no_rawat: no_rawat,
+//             data: skrining_ceklist
+//         }, function(data) {
+//             // Tampilkan data
+//             console.log(data);
+//              $("#skriningcek").html(data).show();
+//         });
+      
+
+//         // Reset tanggal
+//         var currentDate = new Date().toISOString().slice(0, 10);
+       
+//     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+//     "Data Skrining Ceklist telah disimpan!"+
+//     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+//     "</div>").show();
+// });
+// });
+  // $('input:checkbox[name=data[]]:checked').val("");
+
+        // Memperbarui status checkbox agar tetap ada
+        // $('input[name="data[]"]').each(function() {
+        //     var value = $(this).val();
+        //     var isChecked = skrining_ceklist.includes(value);
+        //     $(this).prop('checked', isChecked);
+        // });
+
+        // Reset nilai checkbox
+        // $('input[name="data[]"]:checked').prop('checked', false);
+
+// $("#skrining_perawat").on("click",".edit_skrining", function(event){
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+//   var no_rawat          = $(this).attr("data-no_rawat");
+//   var tanggal           = $(this).attr("data-tanggal");
+//   var kd_kamar          = $(this).attr("data-kd_kamar");
+//   var no_rkm_medis      = $(this).attr("data-no_rkm_medis");
+//   var nm_pasien         = $(this).attr("data-nm_pasien");
+//   var skrining_ceklist  = $(this).attr("data-skrining_ceklist");
+  
+//   $('input:text[name=tanggalbundles]').val(tanggal);
+//   $('input:text[name=no_rawat]').val(no_rawat);
+//   $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+//   $('input:text[name=nm_pasien]').val(nm_pasien);
+//   $('input:text[name=kd_kamar]').val(kd_kamar);
+
+//  //hand_vap
+//   if (skrining_ceklist === '1') {
+//     if ($('#skrining_ceklist1').prop('checked')==false){
+//       $('#skrining_ceklist1').prop('checked', true).change();
+//     } else if ($('#skrining_ceklist1').prop('checked')==true){
+//       $('#skrining_ceklist1').prop('checked', false).change(); 
+//     }
+//   }
+// });
+// $("#form_dietpasien").on("click", "#simpan_dietpasien", function(event){
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+
+//   var no_rawat      = $('input:text[name=no_rawat]').val();
+//   var kd_kamar      = $('input:text[name=kd_kamar]').val();
+//   var kd_diet       = $('input:hidden[name=kd_diet]').val();
+//   var tanggal       = $('input:text[name=tanggalhari]').val();
+//   var waktu         = $('select[name=waktu]').val();
+//   console.log({
+//     no_rawat, kd_kamar, kd_diet,
+//     tanggal, waktu
+//   });
+//  // return
+//   var url = baseURL + '/rawat_inap/savedietpasien?t=' + mlite.token;
+//   $.post(url, {
+//     no_rawat : no_rawat,
+//     kd_kamar: kd_kamar,
+//     kd_diet: kd_diet,
+//     tanggal: tanggal,
+//     waktu : waktu
+//   }, function(data) {
+//     console.log(data);
+//     // tampilkan data
+//     var url = baseURL + '/rawat_inap/dietpasien?t=' + mlite.token;
+//     $.post(url, {
+//       no_rawat : no_rawat,
+//     }, function(data) {
+//       // tampilkan data
+//       console.log(data);
+//       // $("#jadwaloperasi").html(data);
+//       $("#dietpasien").html(data).show();
+
+//     });
+
+//     $('input:text[name=waktu]').val("");
+//     $('input:text[name=nama_diet]').val("");
+//     $('input:text[name=tanggalhari]').val("{?=date('Y-m-d')?}");
+
+//     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+//     "Data Diet Harian Pasien telah disimpan!"+
+//     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+//     "</div>").show();
+//   });
+// });
+// $("#skrining_perawat").on("click", "#simpan_skriningcek", function(event) {
+//     var baseURL = mlite.url + '/' + mlite.admin;
+//     event.preventDefault();
+
+//     var no_rawat = $('input[name=no_rawat]').val();
+//     var skrining_ceklist = [];
+
+//     // Mendapatkan nilai checkbox yang dipilih
+//     $('input[name="data[]"]:checked').each(function() {
+//         skrining_ceklist.push($(this).val());
+//     });
+
+//     if (skrining_ceklist.length === 0) {
+//         alert('Tidak ada data yang dipilih');
+//         return;
+//     }
+
+//     var url = baseURL + '/rawat_inap/saveskriningcek?t=' + mlite.token;
+//     $.post(url, {
+//         no_rawat: no_rawat,
+//         data: skrining_ceklist
+//     }, function(data) {
+//         // Tampilkan data
+//         var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+//         $.post(url, {
+//             no_rawat: no_rawat,
+//         }, function(data) {
+//             // Tampilkan data
+//             console.log(data);
+//             $("#skriningceklist").html(data).show();
+//         });
+
+//         // Memperbarui status checkbox agar tetap ada
+//         $('input[name="data[]"]').each(function() {
+//             var value = $(this).val();
+//             var isChecked = skrining_ceklist.includes(value);
+//             $(this).prop('checked', isChecked);
+//         });
+
+//         // Reset nilai checkbox
+//         // $('input[name="data[]"]:checked').prop('checked', false);
+
+//         // Reset tanggal
+//         var currentDate = new Date().toISOString().slice(0, 10);
+       
+//     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+//     "Data Skrining Ceklist telah disimpan!"+
+//     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+//     "</div>").show();
+//     });
+//    });
+
+//   $("#skrining_perawat").on("click", ".edit_skrining", function(event) {
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+  
+//   var no_rawat          = $(this).attr("data-no_rawat");
+//   var tanggal           = $(this).attr("data-tanggal");
+//   var kd_kamar          = $(this).attr("data-kd_kamar");
+//   var no_rkm_medis      = $(this).attr("data-no_rkm_medis");
+//   var nm_pasien         = $(this).attr("data-nm_pasien");
+//   var skrining_ceklist  = $(this).attr("data-skrining_ceklist");
+  
+//   $('input:text[name=tanggal]').val(tanggal);
+//   $('input:text[name=no_rawat]').val(no_rawat);
+//   $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+//   $('input:text[name=nm_pasien]').val(nm_pasien);
+//   $('input:text[name=kd_kamar]').val(kd_kamar);
+  
+//   // Clear all checkboxes
+//   $('input[type=checkbox][name=skrining_ceklist]').prop('checked', false);
+  
+//   // Check the checkboxes based on the data retrieved
+//   var ceklistItems = skrining_ceklist.split(",");
+//   ceklistItems.forEach(function(item) {
+//     $('input[type=checkbox][name=skrining_ceklist][value=' + item + ']').prop('checked', true);
+//   });
+// });
+ // ketika tombol edit
+ $("#skrining").on("click", ".edit_skrining", function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  
+  var no_rawat          = $(this).attr("data-no_rawat");
+  var tanggal           = $(this).attr("data-tanggal");
+  var kd_kamar          = $(this).attr("data-kd_kamar");
+  var no_rkm_medis      = $(this).attr("data-no_rkm_medis");
+  var nm_pasien         = $(this).attr("data-nm_pasien");
+  var skrining_ceklist  = $(this).attr("data-skrining_ceklist");
+  
+  $('input:text[name=tanggal]').val(tanggal);
+  $('input:text[name=no_rawat]').val(no_rawat);
+  $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+  $('input:text[name=nm_pasien]').val(nm_pasien);
+  $('input:text[name=kd_kamar]').val(kd_kamar);
+  
+  // Clear all checkboxes
+  $('input[type=checkbox][name="skrining_ceklist[]"]').prop('checked', false);
+  
+  // Check the checkboxes based on the data retrieved
+  var ceklistItems = skrining_ceklist.split(",");
+  ceklistItems.forEach(function(item) {
+    $('input[type=checkbox][name="skrining_ceklist[]"][value="' + item + '"]').prop('checked', true);
+  });
+});
+
+//  $("#skrining").on("click", ".edit_skrining", function(event) {
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+
+//   var no_rawat          = $(this).attr("data-no_rawat");
+//   var tanggal           = $(this).attr("data-tanggal");
+//   var kd_kamar          = $(this).attr("data-kd_kamar");
+//   var no_rkm_medis      = $(this).attr("data-no_rkm_medis");
+//   var nm_pasien         = $(this).attr("data-nm_pasien");
+//   var skrining_ceklist  = $(this).attr("data-skrining_ceklist");
+
+//   $('input:text[name=tanggal]').val(tanggal);
+//   $('input:text[name=no_rawat]').val(no_rawat);
+//   $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+//   $('input:text[name=nm_pasien]').val(nm_pasien);
+//   $('input:text[name=kd_kamar]').val(kd_kamar);
+
+//   // Clear all checkboxes
+//   $('input[type=checkbox][name=skrining_ceklist]').prop('checked', false);
+
+//   // Check the checkboxes based on the data retrieved
+//   var ceklistItems = skrining_ceklist.split(",");
+//   ceklistItems.forEach(function(item) {
+//     $('input[type=checkbox][value="' + item + '"]').prop('checked', true);
+//   });
+// });
+
+//   $("#skrining").on("click", ".edit_skrining", function(event) {
+//   var baseURL = mlite.url + '/' + mlite.admin;
+//   event.preventDefault();
+  
+//   var no_rawat          = $(this).attr("data-no_rawat");
+//   var tanggal           = $(this).attr("data-tanggal");
+//   var kd_kamar          = $(this).attr("data-kd_kamar");
+//   var no_rkm_medis      = $(this).attr("data-no_rkm_medis");
+//   var nm_pasien         = $(this).attr("data-nm_pasien");
+//   var skrining_ceklist  = $(this).attr("data-skrining_ceklist");
+  
+//   $('input:text[name=tanggal]').val(tanggal);
+//   $('input:text[name=no_rawat]').val(no_rawat);
+//   $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+//   $('input:text[name=nm_pasien]').val(nm_pasien);
+//   $('input:text[name=kd_kamar]').val(kd_kamar);
+  
+//    // alert("coba lagi");
+//   // Clear all checkboxes
+//   $('input[type=checkbox][name=skrining_ceklist]').prop('checked', false);
+  
+//   // Check the checkboxes based on the data retrieved
+//   var ceklistItems = skrining_ceklist.split(",");
+//   ceklistItems.forEach(function(item) {
+//     $('input[type=checkbox][name=skrining_ceklist][value=' + item + ']').prop('checked', true);
+//   });
+// });
+
+
+  // tombol batal diklik
+$("#form_rincian").on("click", "#selesai", function(event){
+bersih();
+$("#form_berkasdigital").hide();
+$("#form_rincian").hide();
+$("#form_soap").hide();
+$("#form").show();
+$("#display").show();
+$("#rincian").hide();
+$("#soap").hide();
+$("#berkasdigital").hide();
+$("#form_hais").hide();
+$("#form_jadwaloperasi").hide();
+$("#form_dietpasien").hide();
+$("#form_kerohanian").hide();
+$("#skrining_perawat").hide();
+});
+
+// tombol batal diklik
+$("#skrining_perawat").on("click", "#selesai_skriningcek", function(event){
+bersih();
+$("#form_berkasdigital").hide();
+$("#form_rincian").hide();
+$("#form_soap").hide();
+$("#form").show();
+$("#display").show();
+$("#rincian").hide();
+$("#soap").hide();
+$("#berkasdigital").hide();
+$("#form_hais").hide();
+$("#hais").hide();
+$("#form_jadwaloperasi").hide();
+$("#jadwaloperasi").hide();
+$("#form_dietpasien").hide();
+$("#dietpasien").hide();
+$("#form_kerohanian").hide();
+$("#kerohanian").hide();
+$("#skrining_perawat").hide();
+$("#skrining").hide();
+});
+
+$("#form_rincian").on("click", "#selesai", function(event){
+bersih();
+$("#form_berkasdigital").hide();
+$("#form_rincian").hide();
+$("#form_soap").hide();
+$("#form").show();
+$("#display").show();
+$("#rincian").hide();
+$("#soap").hide();
+$("#berkasdigital").hide();
+$("#form_hais").hide();
+$("#form_jadwaloperasi").hide();
+$("#form_dietpasien").hide();
+$("#form_kerohanian").hide();
+$("#skrining_perawat").hide();
+$("#orthanc").hide();
+});
+
+// tombol batal diklik
+$("#orthanc").on("click", "#kembali_orthanc", function(event){
+bersih();
+$("#form_berkasdigital").hide();
+$("#form_rincian").hide();
+$("#form_soap").hide();
+$("#form").show();
+$("#display").show();
+$("#rincian").hide();
+$("#soap").hide();
+$("#berkasdigital").hide();
+$("#form_hais").hide();
+$("#hais").hide();
+$("#form_jadwaloperasi").hide();
+$("#jadwaloperasi").hide();
+$("#form_dietpasien").hide();
+$("#dietpasien").hide();
+$("#form_kerohanian").hide();
+$("#kerohanian").hide();
+$("#skrining_perawat").hide();
+$("#skrining").hide();
+$("#orthanc").hide();
+});
 
 function bersih(){
   $('input:text[name=no_rawat]').val("");

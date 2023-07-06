@@ -61,24 +61,26 @@
       </tr>
       <tr>
         <th colspan="2">Kesadaran</th>
-        <td colspan="7">{$value.kesadaran}</td>
+        <!-- <td colspan="7">{$value.kesadaran}</td> -->
+        <td colspan="7" style="vertical-align:top">{?=nl2br($value.kesadaran)?}</td>
       </tr>
       <tr>
         <th colspan="2">Imunisasi</th>
-        <td colspan="7">{$value.imun_ke}</td>
+        <td colspan="7"style="vertical-align:top">{?=nl2br($value.imun_ke)?}</td>
       </tr>
       <tr>
         <th colspan="2">Subyektif</th>
-        <td colspan="7">{$value.keluhan}</td>
+        <td colspan="7"style="vertical-align:top">{?=nl2br($value.keluhan)?}</td>
       </tr>
       <tr>
         <th colspan="2">Obyektif</th>
-        <td colspan="7">{$value.pemeriksaan}</td>
+        <td colspan="7"style="vertical-align:top">{?=nl2br($value.pemeriksaan)?}</td>
       </tr>
 
       <tr>
         <th colspan="2">Assesment</th>
-        <td colspan="7">{$value.penilaian}</td>
+        <td colspan="7"style="vertical-align:top">{?=nl2br($value.penilaian)?}</td>
+        <!-- <td colspan="7">{$value.penilaian}</td> -->
       </tr>
 
       <tr>
@@ -99,7 +101,9 @@
           </div>
         </td>
         <th colspan="2">Plan</th>
-        <td colspan="7">{$value.rtl}</td>
+        <!-- <td colspan="7">{$value.rtl}</td> -->
+        <td colspan="7" style="vertical-align:top">{?=nl2br($value.rtl)?}</td>
+
       </tr>
       {/loop}
       {loop: $pemeriksaan_ranap as $data}
@@ -129,13 +133,14 @@
         <td>{$data.spo2}</td>
         <td>{$data.gcs}</td>
         <td>{$data.alergi}</td>
+          <!-- <td>{?=nl2br($data2.keterangan)?}</td> -->
         <td rowspan="6" style="vertical-align:top;">
           {if: $data.bidang != 'Mubarak' }
-          <h4 style="color: black;">Instruksi<br><br></h4>
-          {$data.instruksi}<br><br>
+          <h4 style="color: black; vertical-align:top">Instruksi<br><br></h4>
+           {?=nl2br($data.instruksi)?}<br><br>
           {else} {/if}
-          <h4 style="color: black;">Evaluasi<br><br></h4>
-          {$data.evaluasi}<br><br>
+          <h4 style="color: black; vertical-align:top">Evaluasi<br><br></h4>
+          {?=nl2br($data.evaluasi)?}<br><br>
           <!-- <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
           {$data.nama_petugas}
           <script>
@@ -168,7 +173,7 @@
         {else}
         <th colspan="2">Subyektif</th>
         {/if}
-        <td colspan="7">{$data.keluhan}</td>
+        <td colspan="7" style="vertical-align:top">{?=nl2br($data.keluhan)?}</td>
       </tr>
 
       <tr {if: $data.verified_at !=null } style="background-color: #e5e8e3 !important;" {/if} <?php
@@ -185,7 +190,7 @@
         {else}
         <th colspan="2">Obyektif</th>
         {/if}
-        <td colspan="7">{$data.pemeriksaan}</td>
+        <td colspan="7" style="vertical-align:top">{?=nl2br($data.pemeriksaan)?}</td>
       </tr>
       <tr {if: $data.verified_at !=null } style="background-color: #e5e8e3 !important;" {/if} <?php
         if($data.bidang=='Ikhtiyar' ) { echo 'style="background-color:#e1fce1;"' ; }else if($data.bidang=='Mubarak' )
@@ -200,7 +205,7 @@
         {else}
         <th colspan="2">Assesment</th>
         {/if}
-        <td colspan="7">{$data.penilaian}</td>
+        <td colspan="7" style="vertical-align:top">{?=nl2br($data.penilaian)?}</td>
       </tr>
 
       <tr {if: $data.verified_at !=null } style="background-color: #e5e8e3 !important;" {/if} <?php
@@ -247,7 +252,7 @@
         {else}
         <th colspan="2">Plan</th>
         {/if}
-        <td colspan="7">{$data.rtl}</td>
+        <td colspan="7" style="vertical-align:top">{?=nl2br($data.rtl)?}</td>
 
       </tr>
       {/loop}

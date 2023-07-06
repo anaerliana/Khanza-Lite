@@ -33,7 +33,6 @@
                   data-target="#riwayatModal">Resume Perawatan</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal"
                   data-target="#riwayatModal">Riwayat Perawatan</a></li>
-              <li><a href="{?=url([ADMIN, 'pasien', 'dataorthanc', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#asuransiModal">Lihat Data Orthanc</a></li>    
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' ||
               $this->core->getUserInfo('role') == 'paramedis'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}"
@@ -51,17 +50,22 @@
                   data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Bundles HAIs</a></li>
               <li><a href="#form_dietpasien" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}"
                   data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Diet Pasien</a></li>
-              {/if}
-              {if: $this->core->getUserInfo('role') == 'apoteker'}
-              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}"
-                  data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
-              {/if}
               <li><a href="#form_jadwaloperasi" data-no_rawat="{$value.no_rawat}"
                   data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}"
                   data-kd_kamar="{$value.kd_kamar}">Input Jadwal Operasi</a></li>
               <li><a href="#form_kerohanian" data-con_no_rawat="{$value.con_no_rawat}" data-no_rawat="{$value.no_rawat}"
                   data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}"
                   data-kd_kamar="{$value.kd_kamar}">Permintaan Kerohanian</a></li>
+              <li><a href="#skrining_perawat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}"
+                  data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Skrining Ceklist Perawat</a>
+                </li>
+              <li><a href="#orthanc" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}"
+                  data-nm_pasien="{$value.nm_pasien}">Lihat Gambar Radiologi</a></li>
+              {/if}
+              {if: $this->core->getUserInfo('role') == 'apoteker'}
+              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}"
+                  data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
+              {/if}
               {if: $this->core->getUserInfo('role') == 'laboratorium'}
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}"
                   data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
@@ -142,6 +146,13 @@
 </div>
 <div class="modal fade" id="riwayatModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-full" role="document">
+    <div class="modal-content">
+      ...
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="rad" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       ...
     </div>
@@ -257,6 +268,7 @@
       $("#form_jadwaloperasi").hide();
       $("#form_dietpasien").hide();
       $("#form_kerohanian").hide();
+      $("#skrining_perawat").hide();
     });
   });
 
@@ -291,6 +303,7 @@
       $("#form_dietpasien").show();
       $("#dietpasien").html(data).show();
       $("#form_kerohanian").hide();
+      $("#skrining_perawat").hide();
     });
   });
 
@@ -320,6 +333,7 @@
       $("#form_jadwaloperasi").hide();
       $("#form_dietpasien").hide();
       $("#form_kerohanian").hide();
+      $("#skrining_perawat").hide();
     });
   });
 
@@ -350,6 +364,7 @@
       $("#form_jadwaloperasi").hide();
       $("#form_dietpasien").hide();
       $("#form_kerohanian").hide();
+      $("#skrining_perawat").hide();
     });
   });
 
@@ -383,6 +398,7 @@
       $("#form_jadwaloperasi").hide();
       $("#form_dietpasien").hide();
       $("#form_kerohanian").hide();
+      $("#skrining_perawat").hide();
     });
   });
 
@@ -417,6 +433,44 @@
       $("#form_dietpasien").hide();
       $("#dietpasien").hide();
       $("#form_kerohanian").hide();
+      $("#skrining_perawat").hide();
+    });
+  });
+
+   $('a[href="#orthanc"]').click(function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    // var kd_kamar = $(this).attr("data-kd_kamar");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    // $('input:text[name=kd_kamar]').val(kd_kamar);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_inap/orthanc?t=' + mlite.token;
+    $.post(url, {
+      no_rawat: no_rawat,
+    }, function (data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#soap").hide();
+      $("#form_hais").hide();
+      // $("#orthanc").show();
+      $("#orthanc").html(data).show();
+      $("#form_dietpasien").hide();
+      $("#dietpasien").hide();
+      $("#form_jadwaloperasi").hide();
+      $("#jadwaloperasi").hide();
+      $("#form_kerohanian").hide();
+      $("#skrining_perawat").hide();
     });
   });
 
@@ -450,6 +504,7 @@
       $("#jadwaloperasi").hide();
       $("#form_dietpasien").hide();
       $("#dietpasien").hide();
+      $("#skrining_perawat").hide();
       // $("#formkerohanian").show();
       $("#formkerohanian").html(data).show();
       $('input:text[name=no_rawat]').val(no_rawat);
@@ -460,6 +515,41 @@
     });
   });
 
+    $('a[href="#skrining_perawat"]').click(function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var kd_kamar = $(this).attr("data-kd_kamar");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=kd_kamar]').val(kd_kamar);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_inap/skriningcek?t=' + mlite.token;
+    $.post(url, {
+      no_rawat: no_rawat,
+    }, function (data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#soap").hide();
+      $("#form_hais").hide();
+      $("#form_dietpasien").hide();
+      $("#form_jadwaloperasi").hide();
+      $("#jadwaloperasi").hide();
+      $("#skrining_perawat").show();
+      $("#skrining").html(data).show();
+      $("#form_kerohanian").hide();
+    });
+  });
+   
 
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $('.dataTables').DataTable({

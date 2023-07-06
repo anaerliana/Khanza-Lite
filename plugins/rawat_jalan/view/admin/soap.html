@@ -158,7 +158,8 @@
       </tr>
       <tr>
         <th colspan="2">Subyektif</th>
-        <td colspan="6">{$data.keluhan}</td>
+        <!-- <td colspan="6">{$data.keluhan}</td> -->
+        <td colspan="6" style="vertical-align:top">{?=nl2br($data.keluhan)?}</td>
       </tr>
       <!--
       <tr>
@@ -188,7 +189,8 @@
           </div>
         </td>
         <th colspan="2">Obyektif</th>
-        <td colspan="6">{$data.pemeriksaan}</td>
+        <!-- <td colspan="6">{$data.pemeriksaan}</td> -->
+        <td colspan="6" style="vertical-align:top">{?=nl2br($data.pemeriksaan)?}</td>
         <!--
         <th colspan="2">Plan</th>
         <td colspan="6">{$data.rtl}</td>

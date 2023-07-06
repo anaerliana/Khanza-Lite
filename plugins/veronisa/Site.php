@@ -42,7 +42,7 @@ class Site extends SiteModule
     {
         if ($this->_loginCheck()) {
             $page = [
-                'title' => 'Veronisa',
+                'title' => 'VERO',
                 'desc' => 'Dashboard Verifikasi Obat Kronis RSUD H. Damanhuri',
                 'content' => $this->_getManage()
             ];
@@ -73,7 +73,7 @@ class Site extends SiteModule
                 redirect(url(['vero', '']));
             }
             $page = [
-                'title' => 'Veronisa',
+                'title' => 'VERO',
                 'desc' => 'Dashboard Verifikasi Obat Kronis RSUD H. Damanhuri',
                 'content' => $this->draw('login.html', ['mlite' => $this->mlite])
             ];
@@ -369,15 +369,13 @@ class Site extends SiteModule
 
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
         $this->tpl->set('print_sep', $print_sep);
-
-        /*
+        
         $resume_pasien = $this->db('resume_pasien')
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $this->tpl->set('resume_pasien', $resume_pasien);
-        */
-
+        
         $pasien = $this->db('pasien')
           ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
           ->join('kabupaten', 'kabupaten.kd_kab = pasien.kd_kab')
@@ -584,6 +582,20 @@ class Site extends SiteModule
         }
 
         $no_rawat = $this->revertNorawat($id);
+        $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
+        $query->execute();
+        $rows = $query->fetchAll();
+        $total=0;
+        foreach ($rows as $key => $value) {
+          $total = $total+$value['7'];
+        }
+        $total = $total;
+        $this->tpl->set('total', $total);
+
+        $settings = $this->settings('settings');
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+        $this->tpl->set('billing', $rows);
 
         /** Billing versi mlite */
 
@@ -734,13 +746,13 @@ class Site extends SiteModule
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
         $this->tpl->set('print_sep', $print_sep);
 
-        /*
+        
         $resume_pasien = $this->db('resume_pasien')
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $this->tpl->set('resume_pasien', $resume_pasien);
-        */
+        
 
         $pasien = $this->db('pasien')
           ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')

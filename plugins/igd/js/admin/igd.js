@@ -831,6 +831,34 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
   });
 });
 
+$("#form_rincian").on("click", "#selesai", function(event){
+bersih();
+  $("#form_berkasdigital").hide();
+  $("#form_rincian").hide();
+  $("#form_soap").hide();
+  $("#form").show();
+  $("#display").show();
+  $("#rincian").hide();
+  $("#soap").hide();
+  $("#berkasdigital").hide();
+  $("#orthanc").hide();
+});
+
+// tombol batal diklik
+$("#orthanc").on("click", "#kembali_orthanc", function(event){
+bersih();
+  $("#form_berkasdigital").hide();
+  $("#form_rincian").hide();
+  $("#form_soap").hide();
+  $("#form").show();
+  $("#display").show();
+  $("#rincian").hide();
+  $("#soap").hide();
+  $("#berkasdigital").hide();
+  $("#orthanc").hide();
+});
+
+
 function bersih(){
   $('input:text[name=no_rawat]').val("");
   $('input:text[name=no_rkm_medis]').val("");
