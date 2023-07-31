@@ -1157,7 +1157,219 @@ class Admin extends AdminModule
     return $result;
   }
 
+  public function anySkriningCek()
+  {
+      $rows = $this->db('evaluasi_awal_mpp')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
 
+      $result = [];
+      foreach ($rows as $row) {
+        $pasien = $this->db('reg_periksa')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+
+        $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+        $row['nm_pasien'] = $pasien['nm_pasien'];
+
+        $kamar_inap = $this->db('kamar_inap')
+          ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+          ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+
+        $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+
+          $ceklist_skrining = explode(',', $row['skrining_ceklist']);
+
+          $ceklist_skrining = array_filter($ceklist_skrining);
+
+          $row['ceklist_skrining'] = $ceklist_skrining;
+
+        $result[] = $row;
+      }
+
+    echo $this->draw('skriningceklist.html', ['skrining' => $result]);
+    exit();
+     
+  }
+
+  public function postSaveSkriningCek()
+  {
+    $data = isset($_POST['data']) ? $_POST['data'] : array();
+    $no_rawat = $_POST['no_rawat'];
+    $tanggal = date('Y-m-d');
+    $skrining = implode(", ", $data);
+    $catatan_skrining = isset($_POST['catatan_skrining']) ? $_POST['catatan_skrining'] : '';
+
+    if (!empty($data)) {
+      $jumlahCek = count($data);
+
+      if (!$this->db('evaluasi_awal_mpp')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->save([
+            'no_rawat' => $no_rawat,
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'catatan_skrining' => ($jumlahCek < 7) ? $catatan_skrining : '',
+            'petugas' => $this->core->getUserInfo('username', null, true)
+          ]);
+      } else {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save([
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'catatan_skrining' => ($jumlahCek < 7) ? $catatan_skrining : '',
+            'petugas' => $this->core->getUserInfo('username', null, true)
+          ]);
+      }
+
+      if ($query) {
+        $this->notify('success', 'Data Berhasil Update');
+      } else {
+        $this->notify('failure', 'Gagal Update');
+      }
+    }
+  }
+
+  public function postCatatanSkrining()
+  {
+        $data = isset($_POST['data']) ? $_POST['data'] : array();
+        $no_rawat = $_POST['no_rawat'];
+        $tanggal = date('Y-m-d');
+        $skrining = implode(", ", $data);
+        $catatan_skrining = $_POST['catatan_skrining'];
+        
+      if (!empty($data)) {
+      $jumlahCek = count($data);
+
+      if (!$this->db('evaluasi_awal_mpp')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->save([
+            'no_rawat' => $no_rawat,
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'petugas' => $this->core->getUserInfo('username', null, true),
+            'catatan_skrining' => $catatan_skrining
+          ]);
+      } else {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save([
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'petugas' => $this->core->getUserInfo('username', null, true),
+            'catatan_skrining' => $catatan_skrining
+          ]);
+      }
+
+      if ($query) {
+        $this->notify('success', 'Data Berhasil Update');
+      } else {
+        $this->notify('failure', 'Gagal Update');
+      }
+    } else {
+      $this->notify('failure', 'Tidak ada data yang dipilih');
+    }
+    redirect(url([ADMIN, 'rawat_inap', 'skriningcek']));
+  }
+
+  public function anyOrthanc()
+  {
+      $rows = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->toArray();
+
+      $result = [];
+      foreach ($rows as $row) {
+          $no_rawat = $row['no_rawat'];
+          $norm = $row['no_rkm_medis'];
+
+          $tgl1 = $this->db('periksa_radiologi')->where('no_rawat', $row['no_rawat'])->limit(1)->asc('tgl_periksa')->oneArray();
+
+          // $tgl_registrasi1 = $tgl1['tgl_periksa'];
+          $tanggal1 = str_replace("-", "", $tgl1['tgl_periksa']);
+          // $tanggal1 = str_replace("-", "", $tgl_registrasi1);
+          echo '<strong>Tanggal</strong> : ' . $tanggal1 . '<br>';
+
+
+          $tgl2 = $this->db('periksa_radiologi')->where('no_rawat', $row['no_rawat'])->limit(1)->desc('tgl_periksa')->oneArray();
+
+          $tgl_registrasi2 = $tgl2['tgl_periksa'];
+          $tanggal2 = str_replace("-", "", $tgl2['tgl_periksa']);
+
+          $pacs = [];
+
+          $arr = array(
+              "Level" => "Study",
+              "Expand" => true,
+              "Query" => array(
+                  "StudyDate" => $tanggal1 . "-" . $tanggal2,
+                  "PatientID" => $norm
+              )
+          );
+
+          $pacs['data'] = json_encode($arr);
+
+          $url_orthanc = $this->settings->get('orthanc.server');
+          $urlfind = $url_orthanc . '/tools/find';
+
+          $curl = curl_init();
+          curl_setopt($curl, CURLOPT_URL, $urlfind);
+          curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+          curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+          curl_setopt($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username') . ":" . $this->settings->get('orthanc.password'));
+          curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+          curl_setopt($curl, CURLOPT_POST, 1);
+          curl_setopt($curl, CURLOPT_POSTFIELDS, $pacs['data']);
+          $response = curl_exec($curl);
+          curl_close($curl);
+
+          $patient = json_decode($response, TRUE);
+
+          if (isset($patient[0]["ID"])) {
+              foreach ($patient[0]["Series"] as $series) {
+                  $urlSeries = $url_orthanc . '/series/' . $series;
+
+                  $curl = curl_init();
+                  curl_setopt($curl, CURLOPT_URL, $urlSeries);
+                  curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                  curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                  curl_setopt($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username') . ":" . $this->settings->get('orthanc.password'));
+                  $response = curl_exec($curl);
+                  curl_close($curl);
+
+                  $seriesData = json_decode($response, true);
+
+                  $seriesDate = isset($seriesData['MainDicomTags']['SeriesDate']) ? $seriesData['MainDicomTags']['SeriesDate'] : "";
+                  $acquisitionDescription = isset($seriesData['MainDicomTags']['AcquisitionDeviceProcessingDescription']) ? $seriesData['MainDicomTags']['AcquisitionDeviceProcessingDescription'] : "";
+
+                  $instance = $seriesData['Instances'][0];
+                  $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+                  $gambar = '';
+                  foreach ($seriesData['Instances'] as $instance) {
+                      $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+                      $gambar .= '<a href="' . $url_orthanc . '/web-viewer/app/viewer.html?series=' . $series . '" target="_blank">';
+                      $gambar .= '<img src="' . $imageURL . '" alt="Image" style="width: 600px;">';
+                      $gambar .= '</a><br><br><br>';
+                    }
+
+                  $result[] = array(
+                      'Tanggal' => date('d-m-Y', strtotime($seriesDate)),
+                      'Deskripsi' => $acquisitionDescription,
+                      'Gambar' => $gambar
+                  );
+              }
+          } 
+      }
+
+      echo $this->draw('data.orthanc.html', ['pacs' => $result]);
+      exit();
+  }
 
   public function postProviderList()
   {

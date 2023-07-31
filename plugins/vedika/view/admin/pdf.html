@@ -932,7 +932,7 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Pemberian Obat*}
+    <!--   {*Pemberian Obat*}
       {if: $pemberian_obat}
       <tr class="isi">
         <td valign="top" width="20%">Pemberian Obat</td>
@@ -942,7 +942,7 @@ Ralan :
             <tr align='center'>
               <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
               <td valign='top' width='10%' bgcolor='#FFFAF8'>Kode</td>
-              <td valign='top' width='45%' bgcolor='#FFFAF8'>Nama Obat</td>
+              <td valign='top' width='40%' bgcolor='#FFFAF8'>Nama Obat</td>
               <td valign='top' width='20%' bgcolor='#FFFAF8'>Jumlah</td>
             </tr>
             {loop: $pemberian_obat}
@@ -955,6 +955,41 @@ Ralan :
             {/loop}
           </table>
         </td>
+      </tr>
+      {/if} -->
+      {*Pemberian Obat*}
+      {if: $pemberian_obat}
+      <tr class="isi">
+      <td valign="top" width="20%">Pemberian Obat</td>
+      <td valign="top" width="1%" align="center">:</td>
+      <td valign="top" width="79%">
+              <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+                  <tr align='center'>
+                      <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
+                      <td valign='top' width='10%' bgcolor='#FFFAF8'>Kode</td>
+                      <td valign='top' width='40%' bgcolor='#FFFAF8'>Nama Obat</td>
+                      <td valign='top' width='20%' bgcolor='#FFFAF8'>Jumlah</td>
+                      <td valign='top' width='20%' bgcolor='#FFFAF8'>Aturan Pakai</td>
+                  </tr>
+                  {loop: $pemberian_obat}
+                  <tr>
+                      <td valign='top'>{$value.tgl_perawatan} {$value.jam}</td>
+                      <td valign='top'>{$value.kode_brng}</td>
+                      <td valign='top'>{$value.nama_brng}</td>
+                      <td valign='top'>{$value.jml} {$value.kode_sat}</td>
+                      {if: empty($value.aturan_pakai)}
+                      <td>-</td>
+                      {else}
+                      <td>
+                          {loop: $value.aturan_pakai as $data}
+                          {if: empty($data.aturan)}-{else}{$data.aturan}{/if}
+                          {/loop}
+                      </td>
+                      {/if}
+                  </tr>
+                  {/loop}
+              </table>
+          </td> 
       </tr>
       {/if}
       {*Obat Operasi*}

@@ -58,6 +58,8 @@ class Site extends SiteModule
     $this->route('anjungan/setdiserahkan', 'getSetDiserahkan');
     $this->route('anjungan/setselesaiobat', 'getSetSelesaiObat');
     $this->route('anjungan/stokdarah', 'getDisplayStokDarah');
+    $this->route('anjungan/runningtext/(:str)', 'getRunningText');
+
   }
 
   public function getIndex()
@@ -266,7 +268,63 @@ class Site extends SiteModule
     return $result;
   }
 
-  public function getDisplayAntrianPoliKode()
+  // public function getDisplayAntrianPoliKode()
+  // {
+  //   $title = 'Display Antrian Poliklinik';
+  //   $logo  = $this->settings->get('settings.logo');
+  //   $slug = parseURL();
+  //   $vidio = $this->settings->get('anjungan.vidio');
+  //   $_GET['vid'] = '';
+  //   if (isset($_GET['vid']) && $_GET['vid'] != '') {
+  //     $vidio = $_GET['vid'];
+  //   }
+
+  //   $date = date('Y-m-d');
+  //   $tentukan_hari = date('D', strtotime(date('Y-m-d')));
+  //   $day = array(
+  //     'Sun' => 'AKHAD',
+  //     'Mon' => 'SENIN',
+  //     'Tue' => 'SELASA',
+  //     'Wed' => 'RABU',
+  //     'Thu' => 'KAMIS',
+  //     'Fri' => 'JUMAT',
+  //     'Sat' => 'SABTU'
+  //   );
+  //   $hari = $day[$tentukan_hari];
+
+  //   $running_text = $this->settings->get('anjungan.text_poli');
+  //   $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
+  //   $_username = $this->core->getUserInfo('fullname', null, true);
+  //   $__username = $this->core->getUserInfo('username');
+  //   if ($this->core->getUserInfo('username') !== '') {
+  //     $__username = 'Tamu';
+  //   }
+  //   $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
+  //   $username      = !empty($_username) ? $_username : $__username;
+
+  //   $content = $this->draw('display.antrian.poli.kode.html', [
+  //     'title' => $title,
+  //     'logo' => $logo,
+  //     'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+  //     'username' => $username,
+  //     'tanggal' => $tanggal,
+  //     'vidio' => $vidio,
+  //     'running_text' => $running_text,
+  //     'jadwal' => $jadwal,
+  //     'slug' => $slug
+  //   ]);
+
+  //   $assign = [
+  //     'title' => $this->settings->get('settings.nama_instansi'),
+  //     'desc' => $this->settings->get('settings.alamat'),
+  //     'content' => $content
+  //   ];
+
+  //   $this->setTemplate("canvas.html");
+
+  //   $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+  // }
+   public function getDisplayAntrianPoliKode()
   {
     $title = 'Display Antrian Poliklinik';
     $logo  = $this->settings->get('settings.logo');
@@ -276,6 +334,8 @@ class Site extends SiteModule
     if (isset($_GET['vid']) && $_GET['vid'] != '') {
       $vidio = $_GET['vid'];
     }
+
+    $poli =  $slug[2];
 
     $date = date('Y-m-d');
     $tentukan_hari = date('D', strtotime(date('Y-m-d')));
@@ -289,7 +349,7 @@ class Site extends SiteModule
       'Sat' => 'SABTU'
     );
     $hari = $day[$tentukan_hari];
-
+  
     $running_text = $this->settings->get('anjungan.text_poli');
     $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
     $_username = $this->core->getUserInfo('fullname', null, true);
@@ -307,6 +367,7 @@ class Site extends SiteModule
       'username' => $username,
       'tanggal' => $tanggal,
       'vidio' => $vidio,
+      'poli' => $poli,
       'running_text' => $running_text,
       'jadwal' => $jadwal,
       'slug' => $slug
@@ -321,6 +382,27 @@ class Site extends SiteModule
     $this->setTemplate("canvas.html");
 
     $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+  }
+
+  public function getRunningText()
+  {
+    $slug = parseURL();
+
+    $poli =  $slug[2];
+    $date = date('Y-m-d');
+    $jam = date('H:i:s');
+    // ->desc('tanggal')
+    
+    $sql =  $this->db('maping_video_poli')->where('kd_poli', $poli)->where('tgl', $date)->desc('jam')->limit(1)->oneArray();
+
+    if($sql['kd_poli'] == "") {
+     echo "PERHATIAN UNTUK PASIEN YANG AKAN KONTROL ULANG DI MOHON UNTUK DATANG SESUAI TANGGAL YANG TERTERA PADA SURAT KONTROL ";
+    }
+    
+    $return = $sql['running_text']." ";
+    echo $return;
+    exit();
+
   }
 
   public function getDisplayAntrianPoliDisplay()
@@ -393,7 +475,7 @@ class Site extends SiteModule
     $result = [];
     if (count($rows)) {
       foreach ($rows as $row) {
-        $row['dalam_pemeriksaan'] = $this->db('reg_periksa')
+          /*$row['dalam_pemeriksaan'] = $this->db('reg_periksa')
           ->select('no_reg')
           ->select('nm_pasien')
           ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
@@ -402,6 +484,14 @@ class Site extends SiteModule
           ->where('kd_poli', $row['kd_poli'])
           ->where('kd_dokter', $row['kd_dokter'])
           ->limit(1)
+          ->oneArray();*/
+
+        $row['dalam_pemeriksaan'] = $this->db('reg_periksa')
+          ->select('no_reg')
+          ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+          ->where('reg_periksa.kd_poli', $row['kd_poli'])
+          ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+          ->where('reg_periksa.stts', 'Diperiksa')
           ->oneArray();
         $row['dalam_antrian'] = $this->db('reg_periksa')
           ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
@@ -874,8 +964,6 @@ class Site extends SiteModule
     );
     $hari = $day[$tentukan_hari];
 
-    //$jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
-
     $_username = $this->core->getUserInfo('fullname', null, true);
     $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
     $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
@@ -919,25 +1007,12 @@ class Site extends SiteModule
     $rows = [];
     foreach ($query as $row) {
       $norawat = $row['no_rawat'];
-      $racikan = $this->db('obat_racikan')
-      ->join('resep_obat', 'resep_obat.no_rawat=obat_racikan.no_rawat')
-      ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
-      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->join('antrian_apotek', 'antrian_apotek.no_resep=resep_obat.no_resep')
-      ->select('obat_racikan.kd_racik')
-      ->where('resep_obat.no_rawat', $norawat)
-      ->where('tgl_registrasi', date('Y-m-d'))
-      ->where('antrian_apotek.jam_penyerahan', '00:00:00')
-      ->oneArray();
+      $row['jns_racikan'] = 'Non Racikan';
 
-      // $row['status_resep'] = 'Sudah';
-      // if ($row['jam'] == $row['jam_peresepan']) {
-      //   $row['status_resep'] = 'Belum';
-      // }
+      $racikan = $this->db('obat_racikan')->where('no_rawat', $norawat)->oneArray();
 
-      $row['jns_racikan'] = 'Racikan';
-      if ($racikan['kd_racik'] == '') {
-        $row['jns_racikan'] = 'Non Racikan';
+      if(!empty($racikan)) {
+        $row['jns_racikan'] = 'Racikan';
       }
       
       $row['status_selesai'] = 'Sudah';
@@ -980,7 +1055,7 @@ class Site extends SiteModule
   public function getDisplayPanggilApotek()
   {
     $logo  = $this->settings->get('settings.logo');
-    $title = 'Display Pemanggil Antrian Apotek';
+    $title = 'Display Pemanggil Antrian Apotek Loket 1';
     $display = $this->_resultDisplayPanggilApotek();
     $antrian = $this->_noDisplayAntrianApotek();
     $responsivevoice =  $this->settings->get('settings.responsivevoice');
@@ -1041,30 +1116,19 @@ class Site extends SiteModule
       $rows = [];
     foreach ($query as $row) {
       $norawat = $row['no_rawat'];
-      // $no_resep = $row['no_resep'];
-      $racikan = $this->db('obat_racikan')
-      ->join('resep_obat', 'resep_obat.no_rawat=obat_racikan.no_rawat')
-      ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
-      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->join('antrian_apotek', 'antrian_apotek.no_resep=resep_obat.no_resep')
-      ->select('obat_racikan.kd_racik')
-      ->where('resep_obat.no_rawat', $norawat)
-      ->where('tgl_registrasi', date('Y-m-d'))
-      ->where('antrian_apotek.jam_penyerahan', '00:00:00')
-      ->oneArray();
+      $row['jns_racikan'] = 'Non Racikan';
 
-      $row['jns_racikan'] = 'Racikan';
-      if ($racikan['kd_racik'] == '') {
-        $row['jns_racikan'] = 'Non Racikan';
+      $racikan = $this->db('obat_racikan')->where('no_rawat', $norawat)->oneArray();
+
+      if(!empty($racikan)) {
+        $row['jns_racikan'] = 'Racikan';
       }
       
       $row['status_selesai'] = 'Sudah';
       if ( $row['jam_selesai'] == '00:00:00') {
         $row['status_selesai'] = 'Belum';
       }
-  
-      $rows[] = $row; 
-     
+      $rows[] = $row;
     }
     return $rows;
   }

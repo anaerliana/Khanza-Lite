@@ -207,8 +207,38 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>No Telepon</label>
-                                                <input type="text" name="no_hp" class="form-control"
+                                                   <input type="text" name="no_hp" class="form-control"
                                                     value="{if: $biodata.petugas.no_telp == ''}{$biodata.identpeg.HANDPHONE}{else}{$biodata.petugas.no_telp}{/if}" />
+                                                <!-- <input type="text" name="no_hp" class="form-control"
+                                                    value="{if: $biodata.petugas.no_telp == ''}{$biodata.identpeg.HANDPHONE}{else}{$biodata.petugas.no_telp}{/if}" /> -->
+                                                {if: $biodata.form.stts_kerja == 'PNS'}
+                                                    {if: $biodata.identpeg.HANDPHONE == ''}
+                                                        <input type="text" name="no_hp" class="form-control"
+                                                            value="{if: $biodata.peg.no_telp != ''}{$biodata.peg.no_telp}{/if}" />
+                                                    {else}
+                                                        <input type="text" name="no_hp" class="form-control"
+                                                            value="{$biodata.identpeg.HANDPHONE}" />
+                                                    {/if}
+                                                {else}
+                                                    <input type="text" name="no_hp" class="form-control"
+                                                        value="{if: $biodata.petugas.no_telp == ''}{$biodata.identpeg.HANDPHONE}{else}{$biodata.petugas.no_telp}{/if}" />
+                                                {/if}
+
+                                              <!--   <input type="text" name="no_hp" class="form-control"
+                                                    value="{$biodata.tes.no_telp}" /> -->
+                                              <!--   {if: $biodata.form.stts_kerja == 'PNS'}
+                                                    {if: $biodata.identpeg.HANDPHONE == ''}
+                                                        <input type="text" name="no_hp" class="form-control"
+                                                            value="{if: $biodata.tes.no_telp != ''}{$biodata.tes.no_telp}{/if}" />
+                                                    {else}
+                                                        <input type="text" name="no_hp" class="form-control"
+                                                            value="{$biodata.identpeg.HANDPHONE}" />
+                                                    {/if}
+                                                {else}
+                                                 <input type="text" name="no_hp" class="form-control"
+                                                        value="{if: $biodata.petugas.no_telp == ''}{$biodata.identpeg.HANDPHONE}{else}{$biodata.petugas.no_telp}{/if}" />
+                                                   
+                                                {/if} -->
                                             </div>
                                             <div class="form-group">
                                                 <label>Status Wajib Pajak</label>

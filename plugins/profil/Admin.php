@@ -56,6 +56,24 @@ class Admin extends AdminModule
         }
         $nipk_baru = '';
 
+        // $this->assign['form'] = $row;
+        //     if ($this->assign['form']['stts_kerja'] == 'FT') {
+        //         $this->assign['rsk'] = $this->db('simpeg_skkontrak')->where('nip', $username)->desc('tgl_sk')->toArray();
+        //         $this->assign['petugas'] = $this->db('petugas')->where('nip', $username)->oneArray();
+                
+        //     }
+        //         $nipk_baru = $username;
+        //         $nipkBaru = $this->db('pegawai_mapping')->select('nipk')->where('nipk_baru', $username)->oneArray();
+        //         if ($nipkBaru) {
+        //             $username = $nipkBaru['nipk'];
+        //         }
+        // if(empty($nipkBaru)){
+        //   $petugas = $this->db('petugas')->where('nip', $username)->oneArray();
+        //   $username = $petugas['nip'];
+        // }else{
+        //       $username = $nipkBaru['nipk'];
+        // }
+            
         $this->assign['form'] = $row;
         if ($this->assign['form']['stts_kerja'] == 'FT') {
             $this->assign['rsk'] = $this->db('simpeg_skkontrak')->where('nip', $username)->desc('tgl_sk')->toArray();
@@ -67,6 +85,19 @@ class Admin extends AdminModule
             }
         }
 
+        //  $this->assign['form'] = $row;
+        // if ($this->assign['form']['stts_kerja'] == 'FT') {
+        //     $this->assign['rsk'] = $this->db('simpeg_skkontrak')->where('nip', $username)->desc('tgl_sk')->toArray();
+        //     $this->assign['petugas'] = $this->db('petugas')->where('nip', $username)->oneArray();
+            
+        // }
+        //     $nipk_baru = $username;
+        //     $nipkBaru = $this->db('pegawai_mapping')->select('nipk')->where('nipk_baru', $username)->oneArray();
+        //     if ($nipkBaru) {
+        //         $username = $nipkBaru['nipk'];
+        //     }
+        // $this->assign['petugas'] = $this->db('petugas')->where('nip', $username)->oneArray();
+
         $this->assign['jk'] = ['Pria', 'Wanita'];
         $this->assign['departemen'] = $this->db('departemen')->toArray();
         $this->assign['bidang'] = $this->db('bidang')->toArray();
@@ -74,6 +105,8 @@ class Admin extends AdminModule
         $this->assign['pendidikan'] = $this->db('pendidikan')->toArray();
         $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
         $this->assign['identpeg'] = $this->db('simpeg_identpeg')->where('NIP', $username)->oneArray();
+        $this->assign['peg'] = $this->db('petugas')->where('nip', $username)->oneArray();
+        $this->assign['petugas'] = $this->db('petugas')->where('nip', $username)->oneArray();
         $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . $row['photo']);
         $this->assign['knapang'] = [
             '0' => '',

@@ -23,7 +23,8 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_poli', 'Running text display antrian poliklinik.....')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_laboratorium', 'Running text display antrian laboratorium.....')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_apotek', 'Running text display antrian apotek.....')");
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'vidio', 'G4im8_n0OoI')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'username_finger', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'password_finger', '')");
 
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
         `kd` int(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,

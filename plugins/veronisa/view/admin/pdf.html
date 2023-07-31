@@ -909,8 +909,9 @@ Ralan :
             <tr align='center'>
               <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
               <td valign='top' width='10%' bgcolor='#FFFAF8'>Kode</td>
-              <td valign='top' width='45%' bgcolor='#FFFAF8'>Nama Obat</td>
+              <td valign='top' width='40%' bgcolor='#FFFAF8'>Nama Obat</td>
               <td valign='top' width='20%' bgcolor='#FFFAF8'>Jumlah</td>
+              <td valign='top' width='20%' bgcolor='#FFFAF8'>Aturan Pakai</td>
             </tr>
             {loop: $pemberian_obat}
             <tr>
@@ -918,6 +919,11 @@ Ralan :
               <td valign='top'>{$value.kode_brng}</td>
               <td valign='top'>{$value.nama_brng}</td>
               <td valign='top'>{$value.jml} {$value.kode_sat}</td>
+              {if: empty($value.aturan_pakai)}
+              <td>-</td>
+              {else}
+              <td>{loop: $value.aturan_pakai as $data}{$data.aturan}{/loop}</td>
+              {/if}
             </tr>
             {/loop}
           </table>

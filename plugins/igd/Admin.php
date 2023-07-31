@@ -694,7 +694,7 @@ class Admin extends AdminModule
     }
 
     public function anyOrthanc()
-{
+    {
     $rows = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->toArray();
 
     $result = [];

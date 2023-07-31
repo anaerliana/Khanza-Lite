@@ -156,7 +156,7 @@
       {/if}
       {if: $value.pemeriksaan_ralan}
       <tr class="isi">
-        <td valign="top" width="20%">Pemeriksaan</td>
+        <td valign="top" width="20%">Pemeriksaan Rawat Jalan</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
@@ -208,6 +208,16 @@
               <td valign="top" colspan="9"> : {$data.rtl}</td>
             </tr>
             {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+      {if: $value.pemeriksaan_ranap}
+      <tr class="isi">
+        <td valign="top" width="20%">Pemeriksaan Rawat Inap</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr align="center">
               <td valign="top" width="14%" bgcolor="#eee">Unit</td>
               <td valign="top" width="14%" bgcolor="#eee">Tanggal</td>
@@ -258,6 +268,7 @@
         </td>
       </tr>
       {/if}
+     
       {if: $value.rawat_jl_dr || $value.rawat_jl_pr || $value.rawat_jl_drpr}
       <tr class="isi">
         <td valign="top" width="20%">
@@ -523,17 +534,15 @@
       </tr>
       {/if}
       {if: $value.resep_obat}
-      <tr class="isi">
+      <!-- <tr class="isi">
         <td valign="top" width="20%">Pemberian Obat </td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr align="center">
-              <!-- <td valign="top" width="20%" bgcolor="#eee">No Resep</td> -->
               <td valign="top" width="10%" bgcolor="#eee">Tanggal/Jam</td>
               <td valign="top" width="40%" bgcolor="#eee">Nama Obat</td>
-              <!-- <td valign="top" width="5%" bgcolor="#eee">Jumlah</td> -->
-              <td valign="top" width="10%" bgcolor="#eee">Aturan Pakai</td>
+              <td valign="top" width="40%" bgcolor="#eee">Aturan Pakai</td>
             </tr>
             {loop: $value.resep_obat as $data1}
             <tr>
@@ -543,29 +552,57 @@
             <tr>
               <td></td>
               <td>
-                {loop: $data1.detail_pemberian_obat as $data2}
-                <li>{$data2.nama_brng} <b>[ {$data2.jml} ]</b> </li>
+                {loop: $data1.detail_obat as $data2}
+                <li>{$data2.nama_brng} <b>[ {$data2.jml} ]</b>
                 {/loop}
               </td>
-              <!-- <td>{$data1.jml}</td> -->
-              <td>
-                {loop: $data1.aturan_pakai as $data3}
-                <li>{if: $data3.aturan_pakai == ''}<b>-</b>{else}{$data3.aturan_pakai}{/if}</li>
+              <td> 
+                {loop: $data1.detail_obat as $data2}
+                <li> {loop: $data2.aturanpakai as $aturan} {if: $aturan == ''}-{else}{$aturan}{/if}{/loop}</li>
                 {/loop}
               </td>
             </tr>
-            <!-- {loop: $data1.detail_pemberian_obat as $data2}
-            <tr>
-              <td>{$data2.tgl_perawatan} {$data2.jam}</td>
-              <td>{$data2.kode_brng} {$data2.nama_brng}</td>
-              <td align="center">{$data2.jml}</td>
-              <td>
-                {if: $data2.aturan_pakai ==''}-{else}{$data2.aturan_pakai}{/if}
-              </td>
-            </tr>
-            {/loop} -->
-            {/loop}
+          {/loop}
           </table>
+        </td>
+      </tr> -->
+      <tr class="isi">
+        <td valign="top" width="20%">Pemberian Obat </td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+        <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+        <tr align="center">
+            <td valign="top" width="10%" bgcolor="#eee">Tanggal/Jam</td>
+            <td valign="top" width="40%" bgcolor="#eee">Nama Obat</td>
+            <td valign="top" width="40%" bgcolor="#eee">Aturan Pakai</td>
+        </tr>
+        {loop: $value.resep_obat as $data1}
+        <tr>
+            <th width="10%">{$data1.tgl_perawatan} {$data1.jam}</th>
+            <th colspan="3" valign="top" width="90%">No Resep : {$data1.no_resep} ({$data1.nm_dokter})</th>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+            {loop: $data1.detail_obat as $data2}
+            <li>{$data2.nama_brng} <b>[ {$data2.jml} ]</b></li>
+            {/loop}
+            </td>
+            <td>
+              {loop: $data1.detail_obat as $data2}
+              
+              <li>
+                {if: empty($data2.aturanpakai)} - {else}
+                {loop: $data2.aturanpakai as $aturan}
+                {$aturan.aturan}
+                {/loop} {/if}
+              </li>
+
+              {/loop}
+            </td>
+            </tr>
+            {/loop}
+         </table>
         </td>
       </tr>
       {/if}

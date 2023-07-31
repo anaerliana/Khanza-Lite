@@ -2339,19 +2339,19 @@ Ralan :
                 });
             }
         </script>
-        <tr>
+         <tr>
           <td>
             <img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{$value.lokasi_file}" class="digital-image_{?=strtok(array_pop(explode('/', $value.lokasi_file)), '.')?}" style="max-width: 800px;"><br>
-
+            {$value.nama}
+          </td>
+          <td>
             <div>
-                <label>Rotate Image:</label>
+                <label>Putar gambar:</label>
                 <input type="button" class="btnRotate" value="90" onClick="rotateImage_{?=strtok(array_pop(explode('/', $value.lokasi_file)), '.')?}(this.value);" />
                 <input type="button" class="btnRotate" value="-90" onClick="rotateImage_{?=strtok(array_pop(explode('/', $value.lokasi_file)), '.')?}(this.value);" />
                 <input type="button" class="btnRotate" value="180" onClick="rotateImage_{?=strtok(array_pop(explode('/', $value.lokasi_file)), '.')?}(this.value);" />
                 <input type="button" class="btnRotate" value="360" onClick="rotateImage_{?=strtok(array_pop(explode('/', $value.lokasi_file)), '.')?}(this.value);" />
-            </div><br>
-
-            {$value.nama}
+            </div>
           </td>
         </tr>
         {/loop}

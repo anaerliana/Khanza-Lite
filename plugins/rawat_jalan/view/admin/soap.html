@@ -7,9 +7,9 @@
 <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
 <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
 <div class="{if: $admin_mode == 'simple'}hidden{/if}">
-  <div id="display_icd">
-    {include: ../plugins/icd/view/admin/display.html}
-  </div>
+<div id="display_icd">
+  {include: ../plugins/icd/view/admin/display.html}
+</div>
 </div>
 <h4>Rincian Riwayat</h4>
 <div class="table-responsive no-margin">
@@ -37,8 +37,8 @@
       {loop: $pemeriksaan}
       <tr>
         {if: $admin_mode == 'complex'}
-        <td rowspan="7" style="vertical-align:top;">{$value.nomor}</td>
-        <td rowspan="6" style="vertical-align:top;white-space: nowrap;">
+        <td rowspan="6" style="vertical-align:top;">{$value.nomor}</td>
+        <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Jalan</b><br>
           {$value.tgl_perawatan} {$value.jam_rawat}<br>
           {$value.departemen_petugas}
@@ -51,21 +51,21 @@
         <td>{$value.berat}</td>
         <td>{$value.gcs}</td>
         <td>{$value.alergi}</td>
-        <td rowspan="7" style="vertical-align:top;">
-          <br>
+        <td rowspan="6" style="vertical-align:top;">
+          {?=nl2br($value.instruksi)?}<br><br>
           <div class="qrcodePetugas{$value.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
           {$value.nama_petugas}
           <script>
-            jQuery('.qrcodePetugas{$value.nomor}').qrcode({
+          	jQuery('.qrcodePetugas{$value.nomor}').qrcode({
               width: 64,
               height: 64,
-              text: "Petugas: {$value.nama_petugas}"
-            });
+          		text	: "Petugas: {$value.nama_petugas}"
+          	});
           </script>
         </td>
         {else}
-        <td rowspan="7" style="vertical-align:top;">{$value.nomor}</td>
-        <td rowspan="6" style="vertical-align:top;white-space: nowrap;">
+        <td rowspan="6" style="vertical-align:top;">{$value.nomor}</td>
+        <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Jalan</b><br>
           {$value.tgl_perawatan} {$value.jam_rawat}<br>
           {$value.departemen_petugas}
@@ -73,12 +73,12 @@
         {/if}
       </tr>
       {if: $admin_mode == 'complex'}
-      
+      <!--
       <tr>
         <th colspan="2">Kesadaran</th>
         <td colspan="6">{$value.kesadaran}</td>
       </tr>
-    
+	  -->
       <tr>
         <th colspan="2">Imunisasi</th>
         <td colspan="6">{$value.imun_ke}</td>
@@ -86,45 +86,54 @@
       {/if}
       <tr>
         <th colspan="2">Subyektif</th>
-        <td colspan="6">{$value.keluhan}</td>
+        <td colspan="6" style="vertical-align:top">{?=nl2br($value.keluhan)?}</td>
       </tr>
       <tr>
         <th colspan="2">Obyektif</th>
-        <td colspan="6">{$value.pemeriksaan}</td>
+        <td colspan="6" style="vertical-align:top">{?=nl2br($value.pemeriksaan)?}</td>
       </tr>
-
+      
       <tr>
         <th colspan="2">Assesment</th>
-        <td colspan="6">{$value.penilaian}</td>
+        <td colspan="6" style="vertical-align:top">{?=nl2br($value.penilaian)?}</td>
       </tr>
-
+	  
       <tr>
         <td>
           <div class="">
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
-              data-no_rawat="{$value.no_rawat}" data-tgl_perawatan="{$value.tgl_perawatan}"
-              data-jam_rawat="{$value.jam_rawat}" data-suhu_tubuh="{$value.suhu_tubuh}" data-tensi="{$value.tensi}"
-              data-nadi="{$value.nadi}" data-respirasi="{$value.respirasi}" data-tinggi="{$value.tinggi}"
-              data-kesadaran="{$value.kesadaran}"
-              data-berat="{$value.berat}" data-gcs="{$value.gcs}" data-alergi="{$value.alergi}"
-              data-imun_ke="{$value.imun_ke}" data-keluhan="{$value.keluhan}" data-pemeriksaan="{$value.pemeriksaan}"
-              data-penilaian="{$value.penilaian}" data-rtl="{$value.rtl}" data-instruksi="{$value.instruksi}"><span
-                class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
+              data-no_rawat="{$value.no_rawat}"
+              data-tgl_perawatan="{$value.tgl_perawatan}"
+              data-jam_rawat="{$value.jam_rawat}"
+              data-suhu_tubuh="{$value.suhu_tubuh}"
+              data-tensi="{$value.tensi}"
+              data-nadi="{$value.nadi}"
+              data-respirasi="{$value.respirasi}"
+              data-tinggi="{$value.tinggi}"
+              data-berat="{$value.berat}"
+              data-gcs="{$value.gcs}"
+              data-alergi="{$value.alergi}"
+              data-imun_ke="{$value.imun_ke}"
+              data-keluhan="{$value.keluhan}"
+              data-pemeriksaan="{$value.pemeriksaan}"
+              data-penilaian="{$value.penilaian}"
+              data-rtl="{$value.rtl}"
+              data-instruksi="{$value.instruksi}"
+              ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
-              data-no_rawat="{$value.no_rawat}" data-tgl_perawatan="{$value.tgl_perawatan}"
-              data-jam_rawat="{$value.jam_rawat}"><span class="fa fa-trash"></span><span class="hidden-xs">
-                Hapus</span></button>
+              data-no_rawat="{$value.no_rawat}"
+              data-tgl_perawatan="{$value.tgl_perawatan}"
+              data-jam_rawat="{$value.jam_rawat}"
+              ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
           </div>
         </td>
         <th colspan="2">Plan</th>
-        <td colspan="6">{$value.rtl}</td>
+        <td colspan="6" style="vertical-align:top">{?=nl2br($value.rtl)?}</td>
       </tr>
       {/loop}
       {if: $admin_mode == 'complex'}
       {loop: $pemeriksaan_ranap as $data}
       <tr>
-        <td rowspan="3" style="vertical-align:top;">{$data.nomor}</td>
-        <td rowspan="2" style="vertical-align:top;white-space: nowrap;">
         <td rowspan="6" style="vertical-align:top;">{$data.nomor}</td>
         <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Inap</b><br>
@@ -140,15 +149,15 @@
         <td>{$data.gcs}</td>
         <td>{$data.alergi}</td>
         <td rowspan="6" style="vertical-align:top;">
-          {$data.instruksi}<br><br>
+          {?=nl2br($data.instruksi)?}<br><br>
           <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
           {$data.nama_petugas}
           <script>
-            jQuery('.qrcodePetugas{$data.nomor}').qrcode({
+          	jQuery('.qrcodePetugas{$data.nomor}').qrcode({
               width: 64,
               height: 64,
-              text: "Petugas: {$data.nama_petugas}"
-            });
+          		text	: "Petugas: {$data.nama_petugas}"
+          	});
           </script>
         </td>
       </tr>
@@ -158,7 +167,6 @@
       </tr>
       <tr>
         <th colspan="2">Subyektif</th>
-        <!-- <td colspan="6">{$data.keluhan}</td> -->
         <td colspan="6" style="vertical-align:top">{?=nl2br($data.keluhan)?}</td>
       </tr>
       <!--
@@ -170,31 +178,43 @@
         <th colspan="2">Assesment</th>
         <td colspan="6">{$data.penilaian}</td>
       </tr>
-    -->
+	  -->
       <tr>
         <td>
           <div class="">
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
-              data-no_rawat="{$data.no_rawat}" data-tgl_perawatan="{$data.tgl_perawatan}"
-              data-jam_rawat="{$data.jam_rawat}" data-suhu_tubuh="{$data.suhu_tubuh}" data-tensi="{$data.tensi}"
-              data-nadi="{$data.nadi}" data-respirasi="{$data.respirasi}" data-tinggi="{$data.tinggi}"
-              data-berat="{$data.berat}" data-gcs="{$data.gcs}" data-alergi="{$data.alergi}"
-              data-keluhan="{$data.keluhan}" data-pemeriksaan="{$data.pemeriksaan}" data-penilaian="{$data.penilaian}"
-              data-rtl="{$data.rtl}" data-instruksi="{$data.instruksi}" disabled><span class="fa fa-edit"></span><span
-                class="hidden-xs"> Edit</span></button>
+              data-no_rawat="{$data.no_rawat}"
+              data-tgl_perawatan="{$data.tgl_perawatan}"
+              data-jam_rawat="{$data.jam_rawat}"
+              data-suhu_tubuh="{$data.suhu_tubuh}"
+              data-tensi="{$data.tensi}"
+              data-nadi="{$data.nadi}"
+              data-respirasi="{$data.respirasi}"
+              data-tinggi="{$data.tinggi}"
+              data-berat="{$data.berat}"
+              data-gcs="{$data.gcs}"
+              data-alergi="{$data.alergi}"
+              data-keluhan="{$data.keluhan}"
+              data-pemeriksaan="{$data.pemeriksaan}"
+              data-penilaian="{$data.penilaian}"
+              data-rtl="{$data.rtl}"
+              data-instruksi="{$data.instruksi}"
+              disabled
+              ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
-              data-no_rawat="{$data.no_rawat}" data-tgl_perawatan="{$data.tgl_perawatan}"
-              data-jam_rawat="{$data.jam_rawat}" disabled><span class="fa fa-trash"></span><span class="hidden-xs">
-                Hapus</span></button>
+              data-no_rawat="{$data.no_rawat}"
+              data-tgl_perawatan="{$data.tgl_perawatan}"
+              data-jam_rawat="{$data.jam_rawat}"
+              disabled
+              ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
           </div>
         </td>
         <th colspan="2">Obyektif</th>
-        <!-- <td colspan="6">{$data.pemeriksaan}</td> -->
         <td colspan="6" style="vertical-align:top">{?=nl2br($data.pemeriksaan)?}</td>
         <!--
         <th colspan="2">Plan</th>
         <td colspan="6">{$data.rtl}</td>
-    -->
+		-->
       </tr>
       {/loop}
       {/if}

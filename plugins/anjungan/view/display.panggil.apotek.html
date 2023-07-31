@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <!-- <meta http-equiv="refresh" content="40"> -->
+  <meta http-equiv="refresh" content="40">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
@@ -83,7 +83,7 @@
       </div>
       {/loop}
     </h1>
-    <table class="table table-bordered text-primary" id="autoref">
+    <table class="table table-bordered text-primary"  >
       <tbody class="bg-primary">
         <tr>
           <td>
@@ -154,7 +154,7 @@
     });
     function play() {
       responsiveVoice.speak(
-        nm_pasien + ", nomor antrian " + no_antrian + ", dari " + nm_poli, "Indonesian Male", { pitch: 1, rate: 0.8, volume: 2 }
+        nm_pasien + ", nomor antrian " + no_antrian + ", dari " + nm_poli + ", ke Loket 1 ",  "Indonesian Male", { pitch: 1, rate: 0.8, volume: 2 }
       );
 
       console.log({
@@ -218,43 +218,3 @@
     });
   });
 </script>
-
-<!-- <script>
-
-  response = $.parseJSON(response);
-
-$(function() {
-    $.each(response, function(i, item) {
-        var $tr = $('<tr>').append(
-            $('<td>').text(item.rank),
-            $('<td>').text(item.content),
-            $('<td>').text(item.UID)
-        ); //.appendTo('#records_table');
-        console.log($tr.wrap('<p>').html());
-    });
-});
-  $("#display").load('{?=url()?}/anjungan/panggilapotek');
-</script> -->
-<!-- <script type="text/javascript">
-   var no_antrian = $(this).attr("data-no_antrian");
-  $.ajax({
-           type: "get",
-                url: '{?=url()?}/anjungan/panggilapotek',
-                dataType: "json",
-                data: { no_antrian: no_antrian},
-                success: function(data) {
-                     var table = $('<table/>');
-                     $(data).each(function() {
-                           var row = $('<tr/>');
-                           row.append('<td>' + this.Value + '</td>');
-                           row.append('<td>' + this.Value + '</td>');
-                     });
-                     table.append(row);                   
-                     $('#display').html(table); // not refreshing table withdata
-                },
-                error: function(request, status, error) {
-
-                    alert(request.responseText);
-                }
-        });
-</script> -->

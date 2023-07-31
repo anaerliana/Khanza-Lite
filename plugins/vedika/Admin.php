@@ -1966,10 +1966,26 @@ exit();
         ->toArray();
       $pemeriksaan_laboratorium[] = $value;
     }
-    $pemberian_obat = $this->db('detail_pemberian_obat')
-      ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
-      ->where('no_rawat', $this->revertNorawat($id))
-      ->toArray();
+
+    // $pemberian_obat = $this->db('detail_pemberian_obat')
+    //   ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+    //   ->where('no_rawat', $this->revertNorawat($id))
+    //   ->toArray();
+      $pemberian_obat = [];
+      $rows_pemberian_obat = $this->db('detail_pemberian_obat')
+        ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+        ->where('no_rawat', $this->revertNorawat($id))
+        ->toArray();
+      foreach ($rows_pemberian_obat as $value) {
+        $value['aturan_pakai'] = $this->db('aturan_pakai')
+          ->where('aturan_pakai.no_rawat', $value['no_rawat'])
+          ->where('aturan_pakai.kode_brng', $value['kode_brng'])
+          ->where('aturan_pakai.tgl_perawatan', $value['tgl_perawatan'])
+          ->where('aturan_pakai.jam', $value['jam'])
+          ->toArray();
+        $pemberian_obat[] = $value;
+      }
+
     $obat_operasi = $this->db('beri_obat_operasi')
       ->join('obatbhp_ok', 'beri_obat_operasi.kd_obat=obatbhp_ok.kd_obat')
       ->where('no_rawat', $this->revertNorawat($id))

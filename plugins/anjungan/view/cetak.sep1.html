@@ -1,0 +1,436 @@
+<style type="text/css">
+  html {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    /*margin: 16px;*/
+  }
+
+  table td {
+    font-size: 15px;
+    padding: 0;
+  }
+
+  .cetak {
+    display: flex;
+    padding: 6px 12px;
+    /*margin: 10px;*/
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1;
+    white-space: nowrap;
+    float: right;
+    top: 10px;
+    right: 10px;
+    background-color: rgb(0, 255, 128);
+    color: black;
+    border-radius: 0.8em;
+  }
+
+  /* .tutup {
+		display:inline-block;
+		padding:6px 12px;
+    margin:10px;
+		font-size:14px;
+		font-weight:400;
+		line-height:1.5;
+		white-space:nowrap;
+    float: right;
+    bottom: 10px;
+    right: 10px;
+	}
+  .btn {
+		display:inline-block;
+		padding:6px 12px;
+    margin:10px;
+		font-size:14px;
+		font-weight:400;
+		line-height:1.5;
+		white-space:nowrap;
+    top: 10px;
+    right: 10px;
+	} */
+</style>
+<script>
+  function printContent(el) {
+    var restorepage = document.body.innerHTML;
+    var printcontent = document.getElementById(el).innerHTML;
+    document.body.innerHTML = printcontent;
+    window.print();
+    document.body.innerHTML = restorepage;
+    //window.close();
+    window.location.replace("{?=url()?}/anjungan/sep/");
+  }
+</script>
+
+<body>
+  <center>
+    <!--<button class="tutup" type="button" onclick="javascript:window.close();opener.window.focus();">Tutup Window</button>-->
+    <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
+  </center>
+  <div id="cetaksep">
+    <table width="1000">
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="420">
+                <img src="{?=url()?}/plugins/vclaim/img/bpjslogo.png" alt="Image" width="400" height="68">
+              </td>
+              <td width="580">
+                <div style="font-size:25px;text-align:center;font-weight:bold;">
+                  SURAT ELEGIBILITAS PESERTA
+                </div>
+                <div style="font-size:20px;text-align:center;">
+                  {$settings.nama_instansi}
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="420">
+                <b><u>{$data_sep.potensi_prb}</u></b>
+              </td>
+              <td width="580">
+                <center>
+                  <img src="{?=url()?}/systems/lib/Barcode.php?codetype=code39&size=60&text={$data_sep.no_sep}" alt=""
+                    width="200px">
+                </center>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                No. SEP
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.no_sep}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Tgl. SEP
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.tglsep}
+              </td>
+              <td width="450">
+              </td>
+              <td width="170">
+                PRB : Prolanis HT
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                No. Kartu
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.no_kartu} ( MR: {$data_sep.nomr} )
+              </td>
+               <td width="120">
+                No. Rawat
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.no_rawat}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Nama Peserta
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.nama_pasien} 
+              </td>
+              <td width="120">
+                No. Reg
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                <strong>{$data_sep.no_reg.no_reg}</strong>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Tgl. Lahir
+              </td>
+              <td>
+                :
+              </td>
+              <td width="220">
+                {$data_sep.tanggal_lahir}  
+              </td>
+              <td width="230">
+                 Jns. Kelamin: {if: $data_sep.jkel == 'L'}Laki-laki{else}Perempuan{/if} 
+              </td>
+              <td width="119">
+                Peserta
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.peserta}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                No. Telepon
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.notelep}
+              </td>
+              <td width="120">
+                Jns. Rawat
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {if: $data_sep.jnspelayanan == 1}Rawat Inap{else}Rawat Jalan{/if}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Sub/Spesialis
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.nmpolitujuan}
+              </td>
+              <td width="120">
+                Jns. Kunjungan
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                - Konsultasi Dokter (pertama)<br>
+                - Prosedur tidak berkelanjutan
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Dokter
+              </td>
+              <td>
+                :
+              </td>
+              <td  width="450">
+                {$data_sep.nmdpdjp}
+              </td>
+              <td width="120">
+                Poli Perujuk
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                -
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Faskes Perujuk
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.nmppkrujukan}
+              </td>
+               <td width="120">
+                Kls. Hak
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                Kelas {$data_sep.klsrawat}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Diagnosa Awal
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.diagawal} - {$data_sep.nmdiagnosaawal}
+              </td>
+               <td width="120">
+                Kls. Rawat
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                 -
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170" valign="top">
+                Catatan
+              </td>
+              <td valign="top">
+                :
+              </td>
+              <td width="450" valign="top">
+                -
+              </td>
+              <td width="120">
+                Penjamin
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.penjamin}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+            <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170" valign="top">
+                Masa berlaku rujukan
+              </td>
+              <td valign="top">
+                :
+              </td>
+              <td width="530" valign="top">
+                {$data_sep.tglrujukan} s/d {$data_sep.batas_rujukan}
+              </td>
+              <td width="250" halign="center" valign="bottom">
+                Pasien/Keluarga Pasien
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="700" height="0">
+                <i style="font-size:10px;">
+                  *Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.<br>
+                  *SEP bukan sebagai bukti penjaminan peserta<br>
+                  *** Dengan diterbitkannya SEP ini, Peserta rawat inap telah mendapatkan informasi dan menempati kelas rawat inap sesuai hak kelasnya (terkecuali kelas penuh atau naik kelas sesuai aturan yang berlaku)<br>
+                 
+                </i>
+                 Cetakan ke 1 {?=date('d/m/Y H:i:s')?} PM<br>
+               <!--  <i style="font-size:20px;font-weight:bold;">
+                  Masa berlaku {$data_sep.tglrujukan} s/d {$data_sep.batas_rujukan}
+                </i> -->
+              </td>
+              <td valign="bottom" halign="center" padding="0" margin="0">
+                <center>
+                  <img src="{$data_sep.qrCode}" width="80px" style="margin: -3px;" />
+                </center>
+                -----------------------------------
+              </td>
+              <td>
+                <img src="{?=url()?}/plugins/vclaim/img/validSEP.png" alt="Image" width="80">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
