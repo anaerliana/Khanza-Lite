@@ -13,6 +13,8 @@ $("#skrining_perawat").hide();
 $("#notif").hide();
 $('#provider').hide();
 $('#aturan_pakai').hide();
+$('#dok_perujuk').hide();
+$('#info_tambahan').hide();
 $("#tanggal_keluar").hide();
 $("#diagnosa_keluar").hide();
 $("#skrining").hide();
@@ -963,6 +965,48 @@ $('input:text[name=obat]').on('input',function(e){
       // tampilkan data yang sudah di perbaharui
         $("#obat").html(data).show();
         $("#layanan").hide();
+        $("#racikan").hide();
+        $("#radiologi").hide();
+      });
+  }
+
+});
+// end pencarian
+
+// ketika inputbox pencarian diisi
+$('input:text[name=laboratorium]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/rawat_inap/laboratorium?t=' + mlite.token;
+  var laboratorium = $('input:text[name=laboratorium]').val();
+
+  if(laboratorium!="") {
+      $.post(url, {laboratorium: laboratorium} ,function(data) {
+      // tampilkan data yang sudah di perbaharui
+        $("#laboratorium").html(data).show();
+        $("#layanan").hide();
+        $("#obat").hide();
+        $("#racikan").hide();
+        $("#radiologi").hide();
+      });
+  }
+
+});
+// end pencarian
+
+// ketika inputbox pencarian diisi
+$('input:text[name=radiologi]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/rawat_inap/radiologi?t=' + mlite.token;
+  var radiologi = $('input:text[name=radiologi]').val();
+
+  if(radiologi!="") {
+      $.post(url, {radiologi: radiologi} ,function(data) {
+      // tampilkan data yang sudah di perbaharui
+        $("#radiologi").html(data).show();
+        $("#layanan").hide();
+        $("#obat").hide();
+        $("#laboratorium").hide();
+        $("#racikan").hide();
       });
   }
 
@@ -987,6 +1031,10 @@ $("#layanan").on("click", ".pilih_layanan", function(event){
   $("#layanan").hide();
   $('#provider').show();
   $('#aturan_pakai').hide();
+  $('#dok_perujuk').hide();
+  $("#form_kontrol").hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
 });
 
 // ketika baris data diklik
@@ -1019,6 +1067,55 @@ $("#obat").on("click", ".pilih_obat", function(event){
   $('#rawat_jl_dr').show();
 });
 
+// ketika baris data diklik
+$("#laboratorium").on("click", ".pilih_laboratorium", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+  var nm_perawatan = $(this).attr("data-nm_perawatan");
+  var biaya = $(this).attr("data-biaya");
+  var kat = $(this).attr("data-kat");
+
+  $('input:hidden[name=kd_jenis_prw]').val(kd_jenis_prw);
+  $('input:text[name=nm_perawatan]').val(nm_perawatan);
+  $('input:text[name=biaya]').val(biaya);
+  $('input:hidden[name=kat]').val(kat);
+
+  $("#layanan").hide();
+  $('#provider').hide();
+  $('#dok_perujuk').show();
+  $('#aturan_pakai').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  $("#info_tambahan").hide();
+});
+
+// ketika baris data diklik
+$("#radiologi").on("click", ".pilih_radiologi", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+  var nm_perawatan = $(this).attr("data-nm_perawatan");
+  var biaya = $(this).attr("data-biaya");
+  var kat = $(this).attr("data-kat");
+
+  $('input:hidden[name=kd_jenis_prw]').val(kd_jenis_prw);
+  $('input:text[name=nm_perawatan]').val(nm_perawatan);
+  $('input:text[name=biaya]').val(biaya);
+  $('input:hidden[name=kat]').val(kat);
+
+  $("#layanan").hide();
+  $('#provider').hide();
+  $('#dok_perujuk').show();
+  $('#aturan_pakai').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  $("#info_tambahan").show();
+});
+
+
 // ketika tombol simpan diklik
 $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -1029,12 +1126,14 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var provider        = $('select[name=provider]').val();
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
+  var kode_perujuk    = $('input:text[name=kode_perujuk]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
   var jam_rawat       = $('input:text[name=jam_rawat]').val();
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
+  var diagnosa_klinis = $('input:text[name=diagnosa_klinis]').val();
 
   var url = baseURL + '/rawat_inap/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -1042,12 +1141,14 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   provider       : provider,
   kode_provider  : kode_provider,
   kode_provider2 : kode_provider2,
+  kode_perujuk   : kode_perujuk,
   tgl_perawatan  : tgl_perawatan,
   jam_rawat      : jam_rawat,
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml,
+  diagnosa_klinis : diagnosa_klinis
   }, function(data) {
 
     // tampilkan data
@@ -1066,6 +1167,9 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nama_provider2]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=nama_perujuk]').val("");
+    $('input:text[name=kode_perujuk]').val("");
+    $('input:text[name=diagnosa_klinis]').val("");
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -1181,7 +1285,82 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
   });
 });
 
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_lab", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/rawat_jalan/hapuslab?t=' + mlite.token;
+  var noorder = $(this).attr("data-noorder");
+  var no_rawat = $(this).attr("data-no_rawat");
+  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+  var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+  var jam_permintaan = $(this).attr("data-jam_permintaan");
 
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        noorder: noorder,
+        no_rawat: no_rawat,
+        kd_jenis_prw: kd_jenis_prw,
+        tgl_permintaan: tgl_permintaan,
+        jam_permintaan: jam_permintaan
+      } ,function(data) {
+        var url = baseURL + '/rawat_inap/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian lab rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+$("#rincian").on("click",".hapus_rad", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/rawat_inap/hapusrad?t=' + mlite.token;
+  var noorder = $(this).attr("data-noorder");
+  var no_rawat = $(this).attr("data-no_rawat");
+  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+  var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+  var jam_permintaan = $(this).attr("data-jam_permintaan");
+  var diagnosa_klinis = $(this).attr("data-diagnosa_klinis");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        noorder: noorder,
+        no_rawat: no_rawat,
+        kd_jenis_prw: kd_jenis_prw,
+        tgl_permintaan: tgl_permintaan,
+        jam_permintaan: jam_permintaan,
+        diagnosa_klinis: diagnosa_klinis
+      } ,function(data) {
+        var url = baseURL + '/rawat_jalan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian radiologi rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
 
 //Dietpasien
 // ketika tombol simpan diklik

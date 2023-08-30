@@ -14,7 +14,7 @@
                   <label>Data Aset</label>
                   <select name="no_inventaris" class="form-control" data-use-search="true">
                       {loop: $permintaanperbaikan.aset}
-                      <option value="{$value.no_inventaris}" {if: $value.no_inventaris == $permintaanperbaikan.form.no_inventaris}selected{/if}>{$value.nama_barang}</option>
+                        <option value="{$value.no_inventaris}"  data-subtitle="{$value.nama_ruang}" data-right="{$value.nama_merk}" {if: $value.no_inventaris == $permintaanperbaikan.form.no_inventaris}selected{/if}>{$value.nama_barang}</option>
                       {/loop}
                   </select>
               </div>
@@ -27,7 +27,7 @@
                   </select>
               </div>
               <div class="form-group">
-                  <label>Tanggal</label>
+                  <label>Tanggal Permintaan</label>
                   <input type="text" name="tanggal" class="form-control tanggaljam" placeholder="Tanggal" value="{$permintaanperbaikan.form.tanggal}" />
               </div>
               <div class="form-group">

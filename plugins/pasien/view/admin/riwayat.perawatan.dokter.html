@@ -489,7 +489,7 @@
                       <dl class="dl-horizontal no-margin">
                         Nama Obat : <br>
                         <ul>
-                          {loop: $data.detail_pemberian_obat as $data1}
+                          {loop: $data.detail_obat as $data1}
                           <li>{$data1.nama_brng} <b>[ {$data1.jml} ]</b> </li>
                           {/loop}
                         </ul>
@@ -497,10 +497,15 @@
                     </div>
                   </td>
                   <td>
-                    {loop: $data.aturan_pakai as $data2}
-                    <li>{if: $data2.aturan_pakai == ''}<b>-</b>{else}{$data2.aturan_pakai}{/if}</li>
+                    {loop: $data.detail_obat as $data2}
+                    <li>
+                      {if: empty($data2.aturanpakai)} - {else}
+                      {loop: $data2.aturanpakai as $aturan}
+                      {$aturan.aturan}
+                      {/loop} {/if}
+                    </li>
                     {/loop}
-                  </td>
+                    </td>
                 </tr>
                 {/loop}
               </tbody>

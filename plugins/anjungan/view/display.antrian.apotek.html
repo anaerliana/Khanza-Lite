@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="25">
+  <meta http-equiv="refresh" content="40">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
@@ -71,16 +71,16 @@
     <h1 class="display-3 text-left text-white m-3" style="font-size: 40px;"><img class="logo" src="{?=url()?}/{$logo}"
         alt="" width="110px" height="115px"> Antrian Apotek {$settings.nama_instansi}</h1>
     <h1 class="display-3 text-center kanan">
-      {loop: $antrian}
+
       <div class="panel border-success">
         <div class="panel-footer bg-transparent border-success">
           <div class="no_antrian">
             <p style="font-size: 20px; font-weight:bold;">NOMOR ANTRIAN</p><b
-              style="font-size: 55px;">{$value.no_antrian}</b>
+              style="font-size: 55px;">{$antrian.no_antrian}</b>
           </div>
         </div>
       </div>
-      {/loop}
+
     </h1>
     <table class="table table-bordered text-primary">
       <tbody class="bg-primary">
@@ -125,5 +125,29 @@
     </div>
   </footer>
 </body>
-
 </html>
+<script type="text/javascript">
+  var retry_current = 8,
+      retry_max = 4096,
+      check_response = function(){
+        $.ajax(
+        {
+          url: window.location.href,
+          type: "HEAD",
+          complete: function (jqXHR) {
+            switch (jqXHR.status) {
+              case 200:
+                window.location.reload(true);
+                break;
+              case 502:
+                if(retry_current < retry_max){
+                    retry_current *= 2;
+                }
+                setTimeout(check_response, retry_current * 1000);
+            }
+          }
+        });
+      };
+    setTimeout(check_response, retry_current * 1000);
+</script>
+

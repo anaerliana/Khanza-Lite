@@ -11,8 +11,8 @@
                   <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{$perbaikan.form.no_permintaan}" {if: $perbaikan.form.no_permintaan !=''}readonly{/if}/>
               </div>
               <div class="form-group">
-                  <label>Tanggal</label>
-                  <input type="text" name="tanggal" class="form-control tanggal" placeholder="Tanggal" value="{$perbaikan.form.tanggal}" />
+                  <label>Tanggal Perbaikan</label>
+                  <input type="text" name="tanggal" class="form-control tanggaljam" placeholder="Tanggal" value="{$perbaikan.form.tanggal}" />
               </div>
               <div class="form-group">
                     <label>Uraian Kegiatan</label>
@@ -57,3 +57,11 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $(function () {
+    $('.tanggaljam').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm:ss',
+      locale: 'id'
+    });
+});
+</script>

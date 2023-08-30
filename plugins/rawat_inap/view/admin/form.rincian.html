@@ -31,6 +31,16 @@
               <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="">
             </div>
           </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Laboratorium</label>
+            <div class="col-sm-4">
+              <input type="text" name="laboratorium" class="form-control" placeholder="Nama Layanan" value="">
+            </div>
+            <label for="" class="col-sm-2 control-label">Radiologi</label>
+            <div class="col-sm-3">
+              <input type="text" name="radiologi" class="form-control" placeholder="Nama Layanan" value="">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -38,6 +48,8 @@
   <div class="col-md-6">
     <div id="layanan"></div>
     <div id="obat"></div>
+    <div id="laboratorium"></div>
+    <div id="radiologi"></div>
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="form-horizontal">
@@ -107,6 +119,25 @@
             <label for="" class="col-sm-1 control-label">Jml</label>
             <div class="col-sm-2">
               <input type="text" name="jml" id="jml" class="form-control" value="10">
+            </div>
+          </div>
+          <div class="form-group" id="dok_perujuk">
+            <label for="" class="col-sm-3 control-label">Dokter Perujuk</label>
+            <div class="col-sm-6">
+              <input type="text" name="nama_perujuk" id="nama_perujuk" class="form-control" value="">
+              <ul class="list-group" id="kode_perujukList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+            <label for="" class="col-sm-1 control-label">Kode</label>
+            <div class="col-sm-2">
+              <input type="text" name="kode_perujuk" id="kode_perujuk" class="form-control" value="">
+            </div>
+          </div>
+          <div id="info_tambahan">
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Diagnosa Klinis</label>
+              <div class="col-sm-9">
+                <input type="text" name="diagnosa_klinis" class="form-control" placeholder="Diagnosa Klinis" value="">
+              </div>
             </div>
           </div>
           <div class="m-t-xl">
@@ -213,5 +244,32 @@
               $('#rawat_jl_pr').show();
           }
       });
+  });
+</script>
+<script>
+  $('input:text[name=nama_perujuk]').on('input',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/rawat_inap/perujuklist?t=' + mlite.token;
+    var query = $('input:text[name=nama_perujuk]').val();
+    if(query!="") {
+        $.ajax({
+             url: url,
+             method:"POST",
+             data:{query:query},
+             success:function(data)
+             {
+                  $('#kode_perujukList').fadeIn();
+                  $('#kode_perujukList').html(data);
+             }
+        });
+    }
+    $('#kode_perujukList').fadeIn();
+  });
+
+  $('#kode_perujukList').on('click', 'li', function(){
+       $('#nama_perujuk').val($(this).text().split(': ')[1]);
+       $('#kode_perujuk').val($(this).text().split(': ')[0]);
+       var kode_perujuk = $('#kode_perujuk').val();
+       $('#kode_perujukList').fadeOut();
   });
 </script>

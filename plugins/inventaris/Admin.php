@@ -43,15 +43,34 @@ class Admin extends AdminModule
       if($perbaikan_inventaris) {
         $row['status_perbaikan'] = 'Sudah';
       }
+
+      $detail_aset = $this->db('inventaris')
+        ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+        ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+        ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+        ->where('no_inventaris', $row['no_inventaris'])
+        ->oneArray();
+      $row['nama_barang'] = $detail_aset['nama_barang'];
+      $row['nama_merk'] = $detail_aset['nama_merk'];
+      $row['nama_ruang'] = $detail_aset['nama_ruang'];
+
       $perbaikan[] = $row;
     }
+
+    
 
     $peminjaman = $this->db('inventaris_peminjaman')
       ->where('tgl_pinjam', '>=', $date_start)
       ->where('tgl_pinjam', '<=', $date_end)
       ->toArray();
 
-    return $this->draw('manage.html', ['tgl_awal' => $date_start, 'tgl_akhir' => $date_end, 'aset' => $aset, 'pemeliharaan' => $pemeliharaan, 'perbaikan' => $perbaikan, 'peminjaman' => $peminjaman]);
+    return $this->draw('manage.html', [
+      'tgl_awal' => $date_start, 
+      'tgl_akhir' => $date_end, 
+      'aset' => $aset, 
+      'pemeliharaan' => $pemeliharaan, 
+      'perbaikan' => $perbaikan, 
+      'peminjaman' => $peminjaman]);
   }
 
   public function getDataAset()
@@ -101,6 +120,8 @@ class Admin extends AdminModule
     $pemeliharaan = $this->db('pemeliharaan_inventaris')
       ->join('inventaris', 'inventaris.no_inventaris=pemeliharaan_inventaris.no_inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+      ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+      ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
       ->join('pegawai', 'pegawai.nik=pemeliharaan_inventaris.nip')
       ->toArray();
     return $this->draw('data.pemeliharaan.html', ['pemeliharaan' => $pemeliharaan]);
@@ -115,12 +136,28 @@ class Admin extends AdminModule
     $perbaikan = [];
     foreach ($rows as $row) {
       $perbaikan_inventaris = $this->db('perbaikan_inventaris')
+        ->join('pegawai', 'pegawai.nik=perbaikan_inventaris.nip')
         ->where('no_permintaan', $row['no_permintaan'])
         ->oneArray();
+
       $row['status_perbaikan'] = 'Belum';
       if($perbaikan_inventaris) {
         $row['status_perbaikan'] = 'Sudah';
       }
+
+      $row['nama_petugas'] = $perbaikan_inventaris['nama'];
+
+      $aset = $this->db('inventaris')
+        ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+        ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+        ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+        ->where('no_inventaris', $row['no_inventaris'])
+        ->oneArray();
+      $row['nama_barang'] = $aset['nama_barang'];
+      $row['nama_merk'] = $aset['nama_merk'];
+      $row['nama_ruang'] = $aset['nama_ruang'];
+
+
       $row['tampil'] = url([ADMIN,'inventaris','permintaanperbaikandetail',$row['no_permintaan']]);
       $row['ubah'] = url([ADMIN,'inventaris','permintaanperbaikanubah',$row['no_permintaan']]);
       $row['hapus'] = url([ADMIN,'inventaris','permintaanperbaikanhapus',$row['no_permintaan']]);
@@ -143,7 +180,15 @@ class Admin extends AdminModule
 
     $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+      ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+      ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+      ->asc('inventaris_barang.nama_barang')
       ->toArray();
+      // $this->db('inventaris')
+      // ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+      // ->asc('inventaris_barang.nama_barang')
+      // ->toArray();
+       
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
@@ -157,6 +202,9 @@ class Admin extends AdminModule
       ->oneArray();
     $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+      ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+      ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+      ->asc('inventaris_barang.nama_barang')
       ->toArray();
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
@@ -168,6 +216,10 @@ class Admin extends AdminModule
   {
     $permintaan_perbaikan_inventaris = $this->db('permintaan_perbaikan_inventaris')
       ->join('pegawai', 'pegawai.nik=permintaan_perbaikan_inventaris.nik')
+      ->join('inventaris', 'inventaris.no_inventaris=permintaan_perbaikan_inventaris.no_inventaris')
+      ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+      ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+      ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
       ->where('no_permintaan', $no_permintaan)
       ->oneArray();
     $perbaikandetail = $this->db('perbaikan_inventaris')
@@ -323,7 +375,13 @@ class Admin extends AdminModule
 
     $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+      ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+      ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+      ->asc('inventaris_barang.nama_barang')
       ->toArray();
+    // $this->assign['aset'] = $this->db('inventaris')
+    //   ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+    //   ->toArray();
     $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
@@ -598,7 +656,7 @@ class Admin extends AdminModule
     redirect(url([ADMIN, 'inventaris', 'inventarisruang']));
   }
 
-  public function getPeminjaman()
+   public function getPeminjaman()
   {
     $this->_addHeaderFiles();
     $inventaris_peminjaman = $this->db('inventaris_peminjaman')
@@ -608,12 +666,15 @@ class Admin extends AdminModule
       ->toArray();
     $inventaris = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+      ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+      ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+      ->asc('inventaris_barang.nama_barang')
       ->toArray();
     $pegawai = $this->db('pegawai')->toArray();
     return $this->draw('data.peminjaman.html', ['inventaris_peminjaman' => $inventaris_peminjaman, 'inventaris' => $inventaris, 'pegawai' => $pegawai]);
   }
 
-  public function postSavePeminjaman()
+public function postSavePeminjaman()
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
@@ -643,6 +704,85 @@ class Admin extends AdminModule
     }
     redirect(url([ADMIN, 'inventaris', 'peminjaman']));
   }
+
+  public function getLembarperbaikan($no_permintaan)
+  {
+      $permintaan_perbaikan = $this->db('permintaan_perbaikan_inventaris')
+            ->select([
+                'no_permintaan'   => 'permintaan_perbaikan_inventaris.no_permintaan',
+                'tgl_permintaan'  => 'permintaan_perbaikan_inventaris.tanggal',
+                'nik'             => 'permintaan_perbaikan_inventaris.nik',
+                'no_inventaris'   => 'permintaan_perbaikan_inventaris.no_inventaris',
+                'deskripsi_kerusakan'  => 'permintaan_perbaikan_inventaris.deskripsi_kerusakan',
+                'tgl_perbaikan'   => 'perbaikan_inventaris.tanggal',
+                'nip'             => 'perbaikan_inventaris.nip',
+                'uraian_kegiatan' => 'perbaikan_inventaris.uraian_kegiatan',
+                'keterangan'      => 'perbaikan_inventaris.keterangan',
+                'nama_barang'     => 'inventaris_barang.nama_barang',
+                'nama_merk'       => 'inventaris_merk.nama_merk',
+                'nama_ruang'      => 'inventaris_ruang.nama_ruang',
+                'nama'            => 'pegawai.nama',
+                'jbtn'            => 'pegawai.jbtn',
+                'nama_petugas'    => 'petugas.nama'
+            ])
+            ->join('perbaikan_inventaris', 'perbaikan_inventaris.no_permintaan = permintaan_perbaikan_inventaris.no_permintaan')
+            ->join('inventaris', 'inventaris.no_inventaris = permintaan_perbaikan_inventaris.no_inventaris')
+            ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+            ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+            ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+            ->join('pegawai as petugas', 'petugas.nik = perbaikan_inventaris.nip')
+            ->join('pegawai', 'pegawai.nik = permintaan_perbaikan_inventaris.nik')
+            ->where('permintaan_perbaikan_inventaris.no_permintaan', $no_permintaan)
+            ->oneArray();
+
+        $tanggal_perbaikan = $permintaan_perbaikan['tgl_perbaikan'];
+        $date = dateIndonesia(date('Y-m-d', strtotime($tanggal_perbaikan)));
+          
+        $tentukan_hari = date('D', strtotime($tanggal_perbaikan));
+        $day = array(
+              'Sun' => 'Minggu',
+              'Mon' => 'Senin',
+              'Tue' => 'Selasa',
+              'Wed' => 'Rabu',
+              'Thu' => 'Kamis',
+              'Fri' => 'Jumat',
+              'Sat' => 'Sabtu'
+        );
+        $hari = $day[$tentukan_hari];
+        $jam = date('H:i:s', strtotime($tanggal_perbaikan));
+
+        $nama2 = $permintaan_perbaikan['nama'];
+
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(MODULES . '/inventaris/template/lembarPerbaikan.docx');
+        $templateProcessor->setValues([
+            'no_permintaan' => $permintaan_perbaikan['no_permintaan'],
+            'hari'          => $hari,
+            'tgl_perbaikan' => $date,
+            'jam'           => $jam,
+            'nama1'         => $permintaan_perbaikan['nama_petugas'], 
+            'nip'           => $permintaan_perbaikan['nip'],
+            'nama2'         => $permintaan_perbaikan['nama'], 
+            'jbtn'          => $permintaan_perbaikan['jbtn'],
+            'nik'           => $permintaan_perbaikan['nik'],
+            'nama_barang'   => $permintaan_perbaikan['nama_barang'],
+            'nama_merk'     => $permintaan_perbaikan['nama_merk'],
+            'nama_ruang'    => $permintaan_perbaikan['nama_ruang'],
+            'deskripsi'     => $permintaan_perbaikan['deskripsi_kerusakan'],
+            'uraian_kegiatan' => $permintaan_perbaikan['uraian_kegiatan'],
+            'keterangan'      => $permintaan_perbaikan['keterangan']
+
+        ]);
+        $file = "Lembar_Perbaikan_" . date("d-m-Y") . ".docx";
+        header("Content-Description: File Transfer");
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Transfer-Encoding: binary');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+        $templateProcessor->saveAs('php://output');
+        exit();
+    }
+
 
   public function getCss()
   {

@@ -105,9 +105,9 @@ class Admin extends AdminModule
         }
         $this->_addHeaderFiles();
         $username = $this->core->getUserInfo('username', null, true);
-        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
-        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->db('penjab')->where('status', '1')->toArray();
+        $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
+        $this->assign['dokter']   = $this->db('dokter')->where('status', '1')->toArray();
+        $this->assign['penjab']   = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -1810,7 +1810,8 @@ class Admin extends AdminModule
 
             $pacs['data'] = json_encode($arr);
 
-            $url_orthanc = $this->settings->get('orthanc.server');
+            // $url_orthanc = $this->settings->get('orthanc.server');
+            $url_orthanc = 'http://103.59.94.14:8042/';
             $urlfind = $url_orthanc . '/tools/find';
 
             $curl = curl_init();

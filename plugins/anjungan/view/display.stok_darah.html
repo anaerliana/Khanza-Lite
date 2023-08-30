@@ -53,12 +53,13 @@
 <body>
     <div class="container-fluid">
         <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px">
-            Info Stok Darah Unit Transfusi Darah<br>{$settings.nama_instansi} Barabai</h1>
+            Unit Transfusi Darah {$settings.nama_instansi} Barabai <img class="logo" src="{?= url('/assets/img/rshd.png') ?}" alt="" width="110px"></h1>
+             <h1 class="text-center" >Info Stok Darah</h1>
         <table class="table table-bordered table-striped lead text-primary">
             <thead class="bg-primary">
                 <tr>
-                    <th width="30%">Golongan Darah</th>
-                    <th width="20%">Stok Darah</th>
+                    <th width="50%">Golongan Darah</th>
+                    <th width="50%">Stok Darah</th>
                 </tr>
             </thead>
         </table>
@@ -68,36 +69,30 @@
                 <tbody>
                    <!-- {loop: $display}{/loop} -->
                     <tr>
-                        <td width="30%">A</td>
-                        <td width="20%">{$value.goldar_a.jumlah_darah}</td>
+                        <td width="50%">A</td>
+                        <td width="50%">{$value.goldar_a.jumlah_darah} Kantong</td>
                        
                     </tr>
                     <tr>
-                        <td width="30%">B</td>
-                        <td width="20%">{$value.goldar_b.jumlah_darah}</td>
+                        <td width="50%">B</td>
+                        <td width="50%">{$value.goldar_b.jumlah_darah} Kantong</td>
                     </tr>
                   
                     <tr>
-                        <td width="30%">O</td>
-                        <td width="20%">{$value.goldar_o.jumlah_darah}</td>
+                        <td width="50%">O</td>
+                        <td width="50%">{$value.goldar_o.jumlah_darah} Kantong</td>
                     </tr>
                     <tr>
-                        <td width="30%">AB</td>
-                        <td width="20%">{$value.goldar_ab.jumlah_darah}</td>
+                        <td width="50%">AB</td>
+                        <td width="50%">{$value.goldar_ab.jumlah_darah} Kantong</td>
                     </tr>
-                   
-                    <!-- {loop: $display}
-                    <tr>
-                        <td width="30%">{$value.golongan_darah}</td>
-                        <td width="20%">{$value.jumlah_darah}</td>
-                    </tr>
-                    {/loop} -->
                 </tbody>
             </table>
             <div class="row"
                 style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
                 <h3>
-                    <marquee> {$running_text} </marquee>
+                    <marquee> <i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span
+                        id="clock">{$jam}</span> {$running_text} </marquee>
                 </h3>
             </div>
         </div>
@@ -109,7 +104,7 @@
                     {$powered}.
                 </p>
                 <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span
-                        id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai
+                        id="clock">{$jam}</span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai
                         <strong>%s</strong>', $username) ?}</span></p>
             </div>
         </footer>

@@ -590,14 +590,12 @@
             </td>
             <td>
               {loop: $data1.detail_obat as $data2}
-              
               <li>
                 {if: empty($data2.aturanpakai)} - {else}
                 {loop: $data2.aturanpakai as $aturan}
                 {$aturan.aturan}
                 {/loop} {/if}
               </li>
-
               {/loop}
             </td>
             </tr>

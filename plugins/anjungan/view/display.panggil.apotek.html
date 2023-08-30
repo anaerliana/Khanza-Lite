@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="40">
+  <meta http-equiv="refresh" content="50"> 
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="">
@@ -72,18 +72,16 @@
     <h1 class="display-3 text-left text-white m-3" style="font-size: 40px;"><img class="logo" src="{?=url()?}/{$logo}"
         alt="" width="110px" height="115px"> Antrian Apotek {$settings.nama_instansi}</h1>
     <h1 class="display-3 text-center kanan">
-      {loop: $antrian}
       <div class="panel border-success">
         <div class="panel-footer bg-transparent border-success">
           <div class="no_antrian">
             <p style="font-size: 20px; font-weight:bold;">NOMOR ANTRIAN</p><b
-              style="font-size: 55px;">{$value.no_antrian}</b>
+              style="font-size: 55px;">{$antrian.no_antrian}</b>
           </div>
         </div>
       </div>
-      {/loop}
     </h1>
-    <table class="table table-bordered text-primary"  >
+    <table class="table table-bordered text-primary" id="autoref">
       <tbody class="bg-primary">
         <tr>
           <td>
@@ -154,7 +152,7 @@
     });
     function play() {
       responsiveVoice.speak(
-        nm_pasien + ", nomor antrian " + no_antrian + ", dari " + nm_poli + ", ke Loket 1 ",  "Indonesian Male", { pitch: 1, rate: 0.8, volume: 2 }
+        nm_pasien + ", nomor antrian " + no_antrian + ", dari " + nm_poli, "Indonesian Male", { pitch: 1, rate: 0.8, volume: 2 }
       );
 
       console.log({
@@ -207,6 +205,7 @@
         if (xhr.status == true) {
           //alert('Obat Sudah diserahkan')
           row.parentNode.removeChild(row);
+
         }
       },
       error: function (xhr) {
@@ -218,3 +217,33 @@
     });
   });
 </script>
+
+
+<!-- <script type="text/javascript">
+  $(document).ready(function () {
+    $("#display").on('click', '.diserahkan', function () {
+      $.ajax({
+        url: '{?=url()?}/anjungan/panggilapotek',
+        method: "GET",
+        dataType: 'json',
+        success: function (response) {
+          $('#autoref').html(response);
+        }
+      });
+    });
+  });
+</script> -->
+<!-- <script>
+  $(document).ready(function () {
+    setInterval(function () {
+      $("#autoref").ajax({
+        url: '{?=url()?}/anjungan/panggilapotek',
+      }).done(function () {
+        $(this).html("done");
+      });
+    }, 2000); // 15000 micro second = 15 sec.
+  });
+  // setTimeout(function () {
+  //   $("#ref").load("display.panggil.apotek.html #ref");
+  // }, 5000);
+</script> -->

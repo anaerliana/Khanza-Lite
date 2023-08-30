@@ -1026,31 +1026,52 @@ class Site extends SiteModule
   }
 
   public function _noDisplayAntrianApotek()
-  {
-    $query =  $this->db('antrian_apotek')
-    ->join('resep_obat', 'resep_obat.no_resep = antrian_apotek.no_resep')
-    ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
-    ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-    ->select('antrian_apotek.no_antrian')
-    ->select('antrian_apotek.jam_penyerahan')
-    ->where('jam_selesai','<>','00:00:00')
-    ->where('resep_obat.tgl_perawatan', date('Y-m-d'))
-    ->desc('antrian_apotek.no_antrian')
-    ->limit(1)
-    ->toArray();
-
-    $rows = [];
-    foreach ($query as $row) {
-
-      $row['status_penyerahan'] = 'Sudah';
-      if ( $row['jam_penyerahan'] == '00:00:00') {
-        $row['status_penyerahan'] = 'Belum';
+    {
+      $query =  $this->db('antrian_apotek')
+      ->join('resep_obat', 'resep_obat.no_resep = antrian_apotek.no_resep')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->select('antrian_apotek.no_antrian')
+      ->select('antrian_apotek.jam_penyerahan')
+      ->where('jam_selesai','<>','00:00:00')
+      ->where('resep_obat.tgl_perawatan', date('Y-m-d'))
+      ->desc('antrian_apotek.no_antrian')
+      ->limit(1)
+      ->oneArray();
+        
+      $query['status_penyerahan'] = 'Sudah';
+      if ( $query['jam_penyerahan'] == '00:00:00') {
+        $query['status_penyerahan'] = 'Belum';
       }
-      $rows[] = $row;
-
+      
+      return $query;
     }
-    return $rows;
-  }
+  // public function _noDisplayAntrianApotek()
+  // {
+  //   $query =  $this->db('antrian_apotek')
+  //   ->join('resep_obat', 'resep_obat.no_resep = antrian_apotek.no_resep')
+  //   ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
+  //   ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+  //   ->select('antrian_apotek.no_antrian')
+  //   ->select('antrian_apotek.jam_penyerahan')
+  //   ->where('jam_selesai','<>','00:00:00')
+  //   ->where('resep_obat.tgl_perawatan', date('Y-m-d'))
+  //   ->desc('antrian_apotek.no_antrian')
+  //   ->limit(1)
+  //   ->toArray();
+
+  //   $rows = [];
+  //   foreach ($query as $row) {
+
+  //     $row['status_penyerahan'] = 'Sudah';
+  //     if ( $row['jam_penyerahan'] == '00:00:00') {
+  //       $row['status_penyerahan'] = 'Belum';
+  //     }
+  //     $rows[] = $row;
+
+  //   }
+  //   return $rows;
+  // }
 
   public function getDisplayPanggilApotek()
   {
@@ -1155,12 +1176,43 @@ class Site extends SiteModule
     exit();
   }
 
+  // public function getSetDiserahkan()
+  // {
+  //   $jam = date('h:i:s');
+  //   $noantrian  = $_GET['no_antrian'];
+  //   $query = 
+  //   $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->update('jam_penyerahan', $jam);
+  //   if ($query) {
+  //     $res = [
+  //       'status' => true,
+  //       'message' => 'Berhasil',
+  //     ];
+  //   } else {
+  //     $res = [
+  //       'status' => false,
+  //       'message' => 'Gagal',
+  //     ];
+  //   }
+
+  //   die(json_encode($res));
+  //   exit();
+  // }
+
   public function getSetDiserahkan()
   {
     $jam = date('h:i:s');
     $noantrian  = $_GET['no_antrian'];
-    $query = 
-    $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->update('jam_penyerahan', $jam);
+    // delete ini jika error
+    $cek = $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+    if($cek['jam_selesai'] != '00:00:00'){
+      $query = $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->update('jam_penyerahan', $jam);
+    }
+    if($cek['jam_selesai'] == '00:00:00'){
+      $query = $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->save(['jam_selesai'=> $jam,'jam_penyerahan' => $jam]);
+    }
+    // sampai sini .
+    //dibawah query asli 
+    // $query = $this->db('antrian_apotek')->where('no_antrian', $noantrian)->where('tgl_perawatan', date('Y-m-d'))->update('jam_penyerahan', $jam);
     if ($query) {
       $res = [
         'status' => true,
@@ -1184,8 +1236,10 @@ class Site extends SiteModule
     $display = $this->_resultDisplayStokDarah();
 
     $_username = $this->core->getUserInfo('fullname', null, true);
-    $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
-    $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+    $tanggal   = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
+    $jam       = dateIndonesia(date('H:i'));
+    $username  = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
 
     $content = $this->draw('display.stok_darah.html', [
       'logo' => $logo,
@@ -1193,6 +1247,7 @@ class Site extends SiteModule
       'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
       'username' => $username,
       'tanggal' => $tanggal,
+      'jam' => $jam,
       'running_text' => '*STOK DARAH SEWAKTU-WAKTU BISA BERUBAH - PELAYANAN DONOR DARAH BUKA 24 JAM - WA: 081347233143',
       'display' => $display,
     ]);
@@ -1219,20 +1274,24 @@ class Site extends SiteModule
         $row['goldar_a'] = $this->db('utd_stok_darah')
           ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
           ->where('utd_stok_darah.golongan_darah', 'A')
+          ->where('utd_stok_darah.status', 'Ada')
           ->oneArray();
         $row['goldar_b'] = $this->db('utd_stok_darah')
         ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
         ->where('utd_stok_darah.golongan_darah', 'B')
+        ->where('utd_stok_darah.status', 'Ada')
         ->oneArray();
 
         $row['goldar_o'] = $this->db('utd_stok_darah')
         ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
         ->where('utd_stok_darah.golongan_darah', 'O')
+        ->where('utd_stok_darah.status', 'Ada')
         ->oneArray();
 
         $row['goldar_ab'] = $this->db('utd_stok_darah')
         ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
         ->where('utd_stok_darah.golongan_darah', 'AB')
+         ->where('utd_stok_darah.status', 'Ada')
         ->oneArray();
         $result[] = $row;
       }

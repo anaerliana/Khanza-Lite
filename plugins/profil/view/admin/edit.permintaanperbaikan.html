@@ -1,0 +1,58 @@
+<div id="editperbaikan" class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Edit Permintaan Perbaikan</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <form action="{?=url(ADMIN.'/profil/editpermintaanperbaikan')?}" method="POST">
+            <input type="hidden" name="no_permintaan" class="form-control" required value="{$permintaanperbaikan.no_permintaan}" />
+            <div class="col-md-12">
+                <div class="form-group">
+                <label>No. Permintaan</label>
+                <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{$permintaanperbaikan.no_permintaan}" {if: $permintaanperbaikan.no_permintaan !=''}readonly{/if}/>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Data Aset</label>
+                    <select name="no_inventaris" class="form-control" data-use-search="true">
+                    {loop: $aset}
+                    <option value="{$value.no_inventaris}" {if: $value.no_inventaris == $permintaanperbaikan.no_inventaris}selected{/if}>{$value.nama_barang} [{$value.nama_merk}] - {$value.nama_ruang}</option>
+                    {/loop}
+                    </select>
+                    <input type="hidden" name="nip" id="nip" class="form-control" value="{$permintaanperbaikan.nik}" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Tanggal Permintaan</label>
+                    <input type="text" name="tanggal" class="form-control tanggaljam" placeholder="Tanggal"
+                            value="{$permintaanperbaikan.tanggal}" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                        <label>Deskripsi Kerusakan</label>
+                        <textarea class="form-control" name="deskripsi_kerusakan" placeholder="Deskripsi (optional)" rows="2">{$permintaanperbaikan.deskripsi_kerusakan}</textarea>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <input type="submit" name="submit" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Kembali</button>
+</div>
+<script>
+$(function () {
+    $('.tanggaljam').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm:ss',
+      locale: 'id'
+    });
+});
+</script>

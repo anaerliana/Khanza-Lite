@@ -29,6 +29,7 @@ class Admin extends AdminModule
             ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'profil', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
             ['name' => 'Jadwal', 'url' => url([ADMIN, 'profil', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
             ['name' => 'Ganti Password', 'url' => url([ADMIN, 'profil', 'ganti_pass']), 'icon' => 'cubes', 'desc' => 'Ganti Pasword'],
+            ['name' => 'Perbaikan Barang', 'url' => url([ADMIN, 'profil', 'permintaanperbaikan']), 'icon' => 'paperclip', 'desc' => 'Permohonan Perbaikan Barang'],
         ];
         $username = $this->core->getUserInfo('username', null, true);
         $profil = $this->db('pegawai')->where('nik', $username)->oneArray();
@@ -3226,6 +3227,182 @@ class Admin extends AdminModule
         $templateProcessor->saveAs('php://output');
         exit();
     }
+
+     public function getPermintaanPerbaikan()
+    {
+        $this->_addHeaderFiles();
+        $this->assign['title'] = 'Permintaan Perbaikan Barang';
+        $this->assign['form'] = [ 'no_permintaan' => $this->setNoPermintaan(),
+                                  'no_inventaris' => '',
+                                  'nik' => '',
+                                  'tanggal' => '',
+                                  'deskripsi_kerusakan' => ''];
+        // $this->assign['aset'] = $this->db('inventaris')->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')->toArray();
+        $this->assign['nik'] = $this->core->getUserInfo('username', null, true);
+        $this->assign['aset'] = $this->db('inventaris')
+                                ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+                                ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+                                ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+                                ->asc('inventaris_barang.nama_barang')
+                                ->toArray();
+        // $this->assign['list'] = $this->db('permintaan_perbaikan_inventaris')->where('nik', $this->assign['nik'])->desc('no_permintaan')->toArray();
+   
+        // $sql = "SELECT * FROM `permintaan_perbaikan_inventaris` WHERE nik='{$this->assign['nik']}'";
+        $sql = "SELECT permintaan_perbaikan_inventaris.*, 
+                    inventaris.*, 
+                    inventaris_barang.*, 
+                    inventaris_merk.*, 
+                    inventaris_ruang.* 
+                FROM permintaan_perbaikan_inventaris, 
+                    inventaris, inventaris_barang, 
+                    inventaris_merk, 
+                    inventaris_ruang 
+                WHERE permintaan_perbaikan_inventaris.no_inventaris = inventaris.no_inventaris 
+                AND inventaris_barang.kode_barang=inventaris.kode_barang 
+                AND inventaris_barang.id_merk=inventaris_merk.id_merk 
+                AND inventaris.id_ruang=inventaris_ruang.id_ruang 
+                AND permintaan_perbaikan_inventaris.nik='{$this->assign['nik']}'";
+
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        $this->assign['list'] = [];
+        foreach ($rows as $row) {
+            $perbaikan_inventaris = $this->db('perbaikan_inventaris')
+            ->where('no_permintaan', $row['no_permintaan'])
+            ->oneArray();
+            $row['status_perbaikan'] = 'Belum';
+          if($perbaikan_inventaris) {
+            $row['status_perbaikan'] = 'Sudah';
+          }
+
+          // $inventaris =$this->db('inventaris')->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')->where('no_inventaris', $row['no_inventaris'])->oneArray();
+          // $row['nama_barang'] = $inventaris['nama_barang'];
+
+          $this->assign['list'][] = $row;
+        }
+        // $row['ubah'] = url([ADMIN,'inventaris','permintaanperbaikanubah',$row['no_permintaan']]);
+
+      return $this->draw('form.permintaan.perbaikan.html',['permintaanperbaikan' => $this->assign]);
+    }
+
+    public function postPermintaanPerbaikanSimpan($no_permintaan = null)
+  {
+
+    $errors = 0;
+  
+    $location = url([ADMIN, 'profil', 'permintaanperbaikan']);
+
+    if (!$this->db('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray()) {    // new
+        $query = $this->db('permintaan_perbaikan_inventaris')->save(
+          [
+            'no_permintaan' => $_POST['no_permintaan'],
+            'no_inventaris' => $_POST['no_inventaris'],
+            'nik' => $_POST['nip'],
+            'tanggal' => $_POST['tanggal'],
+            'deskripsi_kerusakan' => $_POST['deskripsi_kerusakan']
+          ]
+        );
+     } 
+    // else {        // edit
+    //     $query = $this->db('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->save(
+    //       [
+    //         'no_inventaris' => $_POST['no_inventaris'],
+    //         'nik' => $_POST['nip'],
+    //         'tanggal' => $_POST['tanggal'],
+    //         'deskripsi_kerusakan' => $_POST['deskripsi_kerusakan']
+    //       ]
+    //     );
+    // }
+
+    if ($query) {
+        $this->notify('success', 'Permintaan perbaikan inventaris berhasil disimpan.');
+    } else {
+        $this->notify('failure', 'Gagal menyimpan permintaan perbaikan inventaris.');
+    }
+
+    redirect($location, $_POST);
+  }
+
+   public function getEditPermintaanPerbaikan($no_permintaan)
+    {
+        $this->_addHeaderFiles();
+        $permintaanperbaikan = $this->db('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray();
+        $aset =  $this->db('inventaris')
+            
+            ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+                                ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
+                                ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
+                                ->asc('inventaris_barang.nama_barang')
+                                ->toArray();
+        $this->tpl->set('permintaanperbaikan', $permintaanperbaikan);
+        $this->tpl->set('aset', $aset);
+
+        echo $this->tpl->draw(MODULES . '/profil/view/admin/edit.permintaanperbaikan.html', true);
+        exit();
+    }
+
+      public function postEditPermintaanPerbaikan()
+    {
+
+        $this->_addHeaderFiles();
+
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+
+        $location = url([ADMIN, 'profil', 'permintaanperbaikan']);
+        $no_permintaan = $_POST['no_permintaan'];
+        $errors = 0;
+
+        $query = $this->db('permintaan_perbaikan_inventaris')
+            ->where('no_permintaan', $no_permintaan)
+            ->save([
+                'no_inventaris' => $_POST['no_inventaris'],
+                'nik' => $_POST['nip'],
+                'tanggal' => $_POST['tanggal'],
+                'deskripsi_kerusakan' => $_POST['deskripsi_kerusakan']
+            ]);
+        if ($query) {
+            $this->notify('success', 'Data Permintaan Perbaikan Berhasil Update');
+        } else {
+            $this->notify('failure', 'Gagal Update permintaan perbaikan inventaris');
+        }
+        redirect($location);
+    }
+
+  //  public function getEditPermintaanPerbaikan($no_permintaan)
+  // {
+  //   $this->_addHeaderFiles();
+  //   $this->assign['title'] = 'Permintaan Perbaikan Barang';
+  //   $this->assign['form'] = $this->db('permintaan_perbaikan_inventaris')
+  //     ->where('no_permintaan', $no_permintaan)
+  //     ->oneArray();
+  //   $this->assign['aset'] = $this->db('inventaris')
+  //     ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
+  //     ->toArray();
+  //   $this->assign['pegawai'] = $this->db('pegawai')
+  //     ->where('stts_aktif', 'AKTIF')
+  //     ->toArray();
+  //   return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => $this->assign]);
+  // }
+
+
+  public function setNoPermintaan()
+  {
+      $date = date('Y-m-d');
+      $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_permintaan,4),signed)),0) FROM permintaan_perbaikan_inventaris WHERE tanggal LIKE '%$date%'");
+      $last_no_order->execute();
+      $last_no_order = $last_no_order->fetch();
+      if(empty($last_no_order[0])) {
+        $last_no_order[0] = '0000';
+      }
+      $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
+      $next_no_order = 'PI'.date('Ymd').''.$next_no_order;
+
+      return $next_no_order;
+  }
 
     public function getJavascript()
     {
