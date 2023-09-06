@@ -1,0 +1,74 @@
+<article class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Kelola Data Pegawai</h3>
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive no-margin">
+					<table class="table table-striped no-margin " id="pardah" width="100%">
+						<thead>
+							<tr>
+								<th>Kode Pegawai</th>
+								<th>Nama Pegawai</th>
+								<th>Unit Kerja</th>
+								<th>Tanggal</th>
+								<th>Jam</th>
+								<th>Ttd</th>
+							</tr>
+						</thead>
+						<tbody>
+							{if: !empty($rekap.list)}
+							{loop: $rekap.list}
+							<tr>
+								<td>{$value.nik}</td>
+								<td>{$value.nama}</td>
+								<td>{$value.bidang}</td>
+								<td>{$value.tanggal}</td>
+								<td>{$value.jam}</td>
+								<td><img src="{$src}" alt="" width="200px"></td>
+							</tr>
+							{/loop}
+							{else}
+							<tr>
+								<td colspan="6" class="text-center">Kosong</td>
+							</tr>
+							{/if}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</article>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			...
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+	$(document).ready(function() {
+		$('#pardah').DataTable({
+			"dom": 'Bfrtip',
+			"buttons": [{
+				extend: 'pdfHtml5',
+				orientation: 'landscape',
+				customize: function (doc) {
+					if (doc) {
+					for (let i = 1; i < doc.content[1].table.body.length; i++) {
+							doc.content[1].table.body[i][5] = {
+								margin: [ 0, 0, 0, 12 ],
+								alignment: 'center',
+								image: '{$src}',
+							}
+						}
+					}
+				}
+			}]
+		});
+	});
+
+</script>

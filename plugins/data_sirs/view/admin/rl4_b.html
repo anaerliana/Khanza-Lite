@@ -1,0 +1,127 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">RL 4b</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="col col-md-6">
+                        <div id="notif"></div>
+                    </div>
+                    <div class="col col-md-6">
+                        <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg"
+                            style="margin-top:5px;margin-bottom:15px;" method="GET">
+                            <div class="input-group">
+                                <select name="y" id="tahun" data-use-search="true" data-options-height="10px"
+                                    class="form-control" placeholder="Tahun">
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023" selected>2023</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit"><span
+                                            class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="display">
+                    <table class="table table-responsive table-striped no-padding dataTables" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Kode RS</th>
+                                <th>Kode Prop</th>
+                                <th>Kab / Kota</th>
+                                <th>Tahun</th>
+                                <th>No Daftar Terperinci</th>
+                                <th>Golongan Sebab Penyakit</th>
+                                <th>Pasien 0 <= 6 hr L</th>
+                                <th>Pasien 0 <= 6 hr P</th>
+                                <th>Pasien 6 <= 28 hr L</th>
+                                <th>Pasien 6 <= 28 hr P</th>
+                                <th>Pasien 28 hr <= 1 th L</th>
+                                <th>Pasien 28 hr <= 1 th P</th>
+                                <th>Pasien 1 th <= 4 th L</th>
+                                <th>Pasien 1 th <= 4 th P</th>
+                                <th>Pasien 5 th <= 14 th L</th>
+                                <th>Pasien 5 th <= 14 th P</th>
+                                <th>Pasien 15 th <= 24 th L</th>
+                                <th>Pasien 15 th <= 24 th P</th>
+                                <th>Pasien 25 th <= 44 th L</th>
+                                <th>Pasien 25 th <= 44 th P</th>
+                                <th>Pasien 45 th <= 64 th L</th>
+                                <th>Pasien 45 th <= 64 th P</th>
+                                <th>Pasien > 65 th L</th>
+                                <th>Pasien > 65 th P</th>
+                                <th>Pasien Baru L</th>
+                                <th>Pasien Baru P</th>
+                                <th>Pasien Kasus Baru</th>
+                                <th>Jumlah Kunjungan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $rl32.jns_layan}
+                            {if: $value.list.ttl != 0}
+                            <tr>
+                                <td>6307012</td>
+                                <td>63prop</td>
+                                <td>Hulu Sungai Tengah</td>
+                                <td>{$rl32.tahun}</td>
+                                <td>{$value.kode}</td>
+                                <td>{$value.ket}</td>
+                                <td>{$value.list.l6k}</td>
+                                <td>{$value.list.p6k}</td>
+                                <td>{$value.list.l28k}</td>
+                                <td>{$value.list.p28k}</td>
+                                <td>{$value.list.l1th}</td>
+                                <td>{$value.list.p1th}</td>
+                                <td>{$value.list.l4th}</td>
+                                <td>{$value.list.p4th}</td>
+                                <td>{$value.list.l14th}</td>
+                                <td>{$value.list.p14th}</td>
+                                <td>{$value.list.l24th}</td>
+                                <td>{$value.list.p24th}</td>
+                                <td>{$value.list.l44th}</td>
+                                <td>{$value.list.p44th}</td>
+                                <td>{$value.list.l64th}</td>
+                                <td>{$value.list.p64th}</td>
+                                <td>{$value.list.l65th}</td>
+                                <td>{$value.list.p65th}</td>
+                                <td>{$value.list.lttl}</td>
+                                <td>{$value.list.pttl}</td>
+                                <td>{$value.list.ttl}</td>
+                                <td>{$value.list.mati}</td>
+                            </tr>
+                            {/if}
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.dataTables').DataTable({
+        "order": [[3, "desc"]],
+        "pagingType": "full",
+        "language": {
+            "paginate": {
+                "first": "&laquo;",
+                "last": "&raquo;",
+                "previous": "‹",
+                "next": "›"
+            },
+            "search": false
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+</script>

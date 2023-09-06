@@ -36,6 +36,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile_v2/jadwal/(:str)/(:str)', '_getJadwal');
+      	$this->route('jknmobile_v2/coba','getCobaAdd');
     }
 
     public function getIndex()
@@ -146,7 +147,7 @@ class Site extends SiteModule
                 ->where('jam_selesai', substr($decode['jampraktek'], strpos($decode['jampraktek'], "-") + 1).':00')
                 ->oneArray();
 
-            $cek_referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
+            $cek_referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
             $cek_referensi_noka = $this->db('mlite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
             if($cek_referensi > 0) {
@@ -224,8 +225,8 @@ class Site extends SiteModule
                         http_response_code(202);
                     } else {
                         // Get antrian poli
-                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $decode[tanggalperiksa]);
-                        $minutes = $no_urut_reg * 10;
+                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $decode['tanggalperiksa']);
+                        $minutes = $no_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
                         $keterangan = 'Peserta harap datang 30 menit lebih awal.';
                         $query = $this->db('booking_registrasi')->save([
@@ -242,11 +243,12 @@ class Site extends SiteModule
                             'status' => 'Belum'
                         ]);
                         if ($query) {
+                            $kodebooking = date('Ymdhis').''.$decode['kodepoli'].''.$no_reg;
                             $response = array(
                                 'response' => array(
                                     'nomorantrean' => $decode['kodepoli'].'-'.$no_reg,
                                     'angkaantrean' => $no_reg,
-                                    'kodebooking' => $decode['nomorreferensi'],
+                                    'kodebooking' => $kodebooking,
                                     'pasienbaru'=>0,
                                     'norm' => $data_pasien['no_rkm_medis'],
                                     'namapoli' => $cek_kouta['nm_poli'],
@@ -263,17 +265,19 @@ class Site extends SiteModule
                                     'code' => 200
                                 )
                             );
-                            http_response_code(200);
 
                             if(!empty($decode['nomorreferensi'])) {
-                              $this->db('mlite_antrian_referensi')->save([
-                                  'tanggal_periksa' => $decode['tanggalperiksa'],
-                                  'nomor_kartu' => $decode['nomorkartu'],
-                                  'nomor_referensi' => $decode['nomorreferensi'],
-                                  'jenis_kunjungan' => $decode['jeniskunjungan'],
-                                  'status_kirim' => 'Sudah'
-                              ]);
+                                $this->db('mlite_antrian_referensi')->save([
+                                    'tanggal_periksa' => $decode['tanggalperiksa'],
+                                    'no_rkm_medis' => $data_pasien['no_rkm_medis'],
+                                    'nomor_kartu' => $decode['nomorkartu'],
+                                    'nomor_referensi' => $decode['nomorreferensi'],
+                                    'kodebooking' => $kodebooking,
+                                    'jenis_kunjungan' => $decode['jeniskunjungan'],
+                                    'status_kirim' => 'Sudah'
+                                ]);
                             }
+                            http_response_code(200);
                             /*
                             $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $cek_kouta['kd_dokter'])->oneArray();
                             $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $cek_kouta['kd_poli'])->oneArray();
@@ -543,7 +547,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $decode['kodebooking'])->oneArray();
+                $referensi = $this->db('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -690,7 +694,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $decode['kodebooking'])->oneArray();
+                $referensi = $this->db('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -1251,7 +1255,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $decode['kodebooking'])->oneArray();
+                $referensi = $this->db('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -1669,22 +1673,34 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
+        header("Refresh:45");
         $slug = parseURL();
         $date = date('Y-m-d');
         $page = 0;
         $offset = 1;
-      	$perpage = 10;
+        $perpage = 10;
+        $jumlahpasien = 1;
+        $jumlahtersimpan = 1;
+        $jumlahgagal = 1;
         if(!empty($slug['3'])) {
           $page = $slug['3'];
           $offset = ($page - 1) * $perpage;
         }
         //$date = '2022-01-21';
-        $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
-        $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
-        FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
-        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $offset, $perpage");
-        $query->execute();
-        $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
+        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+          $date = $_GET['tgl'];
+        }
+
+        $checkAntrian = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('status_kirim','Belum')->toArray();
+        if (!$checkAntrian) {
+            # code...
+            $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
+            $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
+            FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid') AND reg_periksa.stts NOT IN ('Batal','Dirujuk','Dirawat')
+            ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg)");
+            $query->execute();
+            $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
+        }
 
         //echo "<pre>".print_r($query,true)."</pre>";
 
@@ -1704,157 +1720,154 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
-              $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-              $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
-              $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
-              $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
-              $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
-              $minutes = $no_urut_reg * 10;
-              $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
-              $jenispasien = 'NON JKN';
-              if($q['kd_pj'] == $this->settings->get('jkn_mobile_v2.kd_pj_bpjs')) {
-                $jenispasien = 'JKN';
-              }
-              $pasienbaru = '1';
-              if($q['stts_daftar'] == 'Lama') {
-                $pasienbaru = '0';
-              }
+            $checkPJ = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
 
-              $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
-              if($jenispasien == 'NON JKN') {
-                $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
-              }
-
-              $nomorkartu = $q['no_peserta'];
-              if($jenispasien == 'NON JKN') {
-                $nomorkartu = '';
-              }
-
-              $nik = $q['no_ktp'];
-              if($jenispasien == 'NON JKN') {
-                $nik = '';
-              }
-
-              $nohp = $q['no_tlp'];
-              if(empty($q['no_tlp'])) {
-                $nohp = '0000000000';
-              }
-              if($jenispasien == 'NON JKN') {
-                $nohp = '';
-              }
-
-              $nomorreferensi = '';
-              if($jenispasien == 'JKN') {
-                $nomorreferensi = $referensi['nomor_referensi'];
-                if($referensi['nomor_referensi'] == '') {
-                  $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $q['no_rawat'])->oneArray();
-                  $nomorreferensi = $bridging_sep['no_rujukan'];
-                  if(!empty($bridging_sep['noskdp'])) {
-                    $nomorreferensi = $bridging_sep['noskdp'];
-                  }
-                  if(!$bridging_sep) {
-                    $bridging_sep_internal = $this->db('bridging_sep_internal')->where('no_rawat', $q['no_rawat'])->oneArray();
-                    $nomorreferensi = $bridging_sep_internal['no_rujukan'];
-                    if(!empty($bridging_sep_internal['noskdp'])) {
-                      $nomorreferensi = $bridging_sep_internal['noskdp'];
-                    }
-                  }
+            if(!$checkPJ) {
+                // echo $jumlahgagal.' '.$q['no_rkm_medis'].' '.$q['no_peserta'].'<br>';
+                $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $q['kd_poli'])->oneArray();
+                $jenispasien = 'NON JKN';
+                if($q['kd_pj'] == $this->settings->get('jkn_mobile_v2.kd_pj_bpjs')) {
+                    $jenispasien = 'JKN';
                 }
-              }
 
-              $jeniskunjungan = 3;
-              //if($referensi['jenis_kunjungan'] !='') {
-              //  $jeniskunjungan = $referensi['jenis_kunjungan'];
-              //}
+                $nomorreferensi = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$q['no_reg'];
+                if($jenispasien == 'JKN') {
+                    $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $q['no_rawat'])->oneArray();
+                    $nomorreferensi = $bridging_sep['no_rujukan'];
+                    if(!empty($bridging_sep['noskdp'])) {
+                        $nomorreferensi = $bridging_sep['noskdp'];
+                    }
+                    if(!$bridging_sep) {
+                        $bridging_sep_internal = $this->db('bridging_sep_internal')->where('no_rawat', $q['no_rawat'])->oneArray();
+                        $nomorreferensi = $bridging_sep_internal['no_rujukan'];
+                        if(!empty($bridging_sep_internal['noskdp'])) {
+                        $nomorreferensi = $bridging_sep_internal['noskdp'];
+                        }
+                    }
 
-              $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
-              if($jenispasien == 'JKN') {
-                $kodebooking = $nomorreferensi;
-              }
-              //if(!$referensi) {
-                $data = [
-                    'kodebooking' => $kodebooking,
-                    'jenispasien' => $jenispasien,
-                    'nomorkartu' => $nomorkartu,
-                    'nik' => $nik,
-                    'nohp' => $nohp,
-                    'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
-                    'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
-                    'pasienbaru' => $pasienbaru,
-                    'norm' => $q['no_rkm_medis'],
-                    'tanggalperiksa' => $q['tgl_registrasi'],
-                    'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
-                    'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
-                    'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
-                    'jeniskunjungan' => $jeniskunjungan,
-                    'nomorreferensi' => $nomorreferensi,
-                    'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
-                    'angkaantrean' => $reg_periksa['no_reg'],
-                    'estimasidilayani' => strtotime($q['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
-                    'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-                    'kuotajkn' => intval($jadwaldokter['kuota']),
-                    'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-                    'kuotanonjkn' => intval($jadwaldokter['kuota']),
-                    'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
-                ];
-                echo 'Request:<br>';
-                echo "<pre>".print_r($data,true)."</pre>";
-                $data = json_encode($data);
-                $url = $this->bpjsurl.'antrean/add';
-                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-                $data = json_decode($output, true);
-                echo 'Response:<br>';
-                echo json_encode($data);
-                echo $data['metadata']['code'];
-                if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
-                  if($jenispasien == 'JKN') {
-                    if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
-                      $this->db('mlite_antrian_referensi')->save([
-                          'tanggal_periksa' => $q['tgl_registrasi'],
-                          'nomor_kartu' => $q['no_peserta'],
-                          'nomor_referensi' => $nomorreferensi,
-                          'jenis_kunjungan' => $jeniskunjungan,
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    } else {
-                      $this->db('mlite_antrian_referensi')->where('nomor_referensi', $nomorreferensi)->save([
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    }
-                  }
-                  if($jenispasien == 'NON JKN') {
-                    if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
-                      $this->db('mlite_antrian_referensi')->save([
-                          'tanggal_periksa' => $q['tgl_registrasi'],
-                          'nomor_kartu' => $q['no_rkm_medis'],
-                          'nomor_referensi' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
-                          'jenis_kunjungan' => $jeniskunjungan,
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    } else {
-                      $this->db('mlite_antrian_referensi')->where('nomor_referensi', convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'])->save([
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    }
-                  }
                 }
-                echo '<br>-------------------------------------<br><br>';
-              //}
+
+                $jeniskunjungan = 3;
+
+                $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$q['no_reg'];
+                if ($nomorreferensi) {
+                    # code...
+                    $this->db('mlite_antrian_referensi')->save([
+                        'tanggal_periksa' => $q['tgl_registrasi'],
+                        'no_rkm_medis' => $q['no_rkm_medis'],
+                        'nomor_kartu' => $q['no_peserta'],
+                        'nomor_referensi' => $nomorreferensi,
+                        'kodebooking' => $kodebooking,
+                        'jenis_kunjungan' => $jeniskunjungan,
+                        'status_kirim' => 'Belum'
+                    ]);
+                }
+                $checkRM = $this->db('mlite_antrian_referensi')->where('no_rkm_medis', $q['no_rkm_medis'])->where('kodebooking', $kodebooking)->oneArray();
+                if ($checkRM) {
+                    echo '<br>Berhasil Simpan '.$q['no_rkm_medis'];
+                }
             }
         }
-      	//echo print_r($slug);
-      	//echo $slug[3];
-      	$_page = $page + 1;
-      	$page_ = $page - 1;
-        if(isset($slug[3]) && $slug[3] == 1) {
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
-        } else if(!isset($slug[3])){
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
-        } else {
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+        $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->isNull('keterangan')->limit(10)->toArray();
+        if (!$referensi) {
+            # code...
+            $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('status_kirim','Belum')->limit(10)->toArray();
         }
-      	echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'>Next</a>';
+
+        foreach ($referensi as $value) {
+            echo 'Menjalankan Add Antrean<br>';
+            $reg_periksa = $this->db('reg_periksa')->join('pasien','pasien.no_rkm_medis = reg_periksa.no_rkm_medis')->where('reg_periksa.tgl_registrasi', $date)->where('pasien.no_peserta', $value['nomor_kartu'])->oneArray();
+            $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+            $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+            $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+            $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
+            $minutes = $no_urut_reg * 10;
+            $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
+            $jenispasien = 'NON JKN';
+            if($reg_periksa['kd_pj'] == $this->settings->get('jkn_mobile_v2.kd_pj_bpjs')) {
+                $jenispasien = 'JKN';
+            }
+            $pasienbaru = '1';
+            if($reg_periksa['stts_daftar'] == 'Lama') {
+                $pasienbaru = '0';
+            }
+
+            $nomorkartu = $value['nomor_kartu'];
+            $nik = $reg_periksa['no_ktp'];
+            $nohp = $reg_periksa['no_tlp'];
+            if(empty($reg_periksa['no_tlp'])) {
+                $nohp = '0000000000';
+            }
+
+            if($jenispasien == 'NON JKN') {
+                $nik = '';
+                $nomorkartu = '';
+                $nohp = '';
+            }
+            $kodebooking = $value['kodebooking'];
+            if (!$kodebooking) {
+                $kodebooking = convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+            }
+            $jampraktek = substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5);
+            if ($jampraktek == '-') {
+                $jampraktek = '08:00-10:00';
+            }
+            $data = [
+                'kodebooking' => $kodebooking,
+                'jenispasien' => $jenispasien,
+                'nomorkartu' => $nomorkartu,
+                'nik' => $nik,
+                'nohp' => $nohp,
+                'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+                'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+                'pasienbaru' => $pasienbaru,
+                'norm' => $reg_periksa['no_rkm_medis'],
+                'tanggalperiksa' => $reg_periksa['tgl_registrasi'],
+                'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+                'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+                'jampraktek' => $jampraktek,
+                'jeniskunjungan' => $value['jenis_kunjungan'],
+                'nomorreferensi' => $value['nomor_referensi'],
+                'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+                'angkaantrean' => $reg_periksa['no_reg'],
+                'estimasidilayani' => strtotime($reg_periksa['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
+                'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+                'kuotajkn' => intval($jadwaldokter['kuota']),
+                'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+                'kuotanonjkn' => intval($jadwaldokter['kuota']),
+                'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+            ];
+            echo 'Request:<br>';
+            echo "<pre>".print_r($data,true)."</pre>";
+            $data = json_encode($data);
+            $url = $this->bpjsurl.'antrean/add';
+            $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $data = json_decode($output, true);
+            echo 'Response:<br>';
+            echo json_encode($data);
+            echo $data['metadata']['code'];
+            if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
+                if (!$value['kodebooking']) {
+                    $this->db('mlite_antrian_referensi')->where('nomor_referensi', $value['nomor_referensi'])->save([
+                        'kodebooking' => $kodebooking,
+                        'status_kirim' => 'Sudah',
+                        'keterangan' => $data['metadata']['message']
+                    ]);
+                } else {
+                    $this->db('mlite_antrian_referensi')->where('nomor_referensi', $value['nomor_referensi'])->save([
+                        'status_kirim' => 'Sudah',
+                        'keterangan' => $data['metadata']['message']
+                    ]);
+                }
+            }
+            if($data['metadata']['code'] == 201){
+                $this->db('mlite_antrian_referensi')->where('nomor_referensi', $value['nomor_referensi'])->save([
+                    'status_kirim' => 'Gagal',
+                    'keterangan' => $data['metadata']['message']
+                ]);
+            }
+            echo '<br>-----------------------------------------------------------------------------------------------------------------------------<br><br>';
+        }
         exit();
     }
 
@@ -1869,7 +1882,7 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if($mutasi_berkas){
+            // if($mutasi_berkas){
                 $data = [
                     'kodebooking' => $q['nomor_referensi'],
                     'keterangan' => $q['keterangan']
@@ -1886,7 +1899,7 @@ class Site extends SiteModule
                 echo json_encode($json);
 
                 echo '<br>-------------------------------------<br><br>';
-            }
+            // }
         }
 
         exit();
@@ -1894,88 +1907,11 @@ class Site extends SiteModule
 
     public function _getAntreanUpdateWaktu($page = 1)
     {
+        header("Refresh:55");
         $date = date('Y-m-d');
-        //$date = '2022-01-21';
-        /*
-        $query = $this->db('mlite_antrian_referensi')
-          ->select('nomor_referensi')
-          ->select('no_rkm_medis')
-          ->join('pasien', 'pasien.no_peserta=mlite_antrian_referensi.nomor_kartu')
-          ->where('tanggal_periksa', $date)
-          ->toArray();
-
-        echo 'Menjalankan WS tambah antrian Mobile JKN BPJS<br>';
-        echo '-------------------------------------<br>';
-
-        $tentukan_hari=date('D',strtotime($date));
-        $day = array(
-          'Sun' => 'AKHAD',
-          'Mon' => 'SENIN',
-          'Tue' => 'SELASA',
-          'Wed' => 'RABU',
-          'Thu' => 'KAMIS',
-          'Fri' => 'JUMAT',
-          'Sat' => 'SABTU'
-        );
-        $hari=$day[$tentukan_hari];
-
-        foreach ($query as $q) {
-          $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-          $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
-          $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
-          $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
-          $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
-          $minutes = $no_urut_reg * 10;
-          $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
-          $pasienbaru = '1';
-          if($q['stts_daftar'] == 'Lama') {
-            $pasienbaru = '0';
-          }
-
-          $data = [
-              'kodebooking' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
-              'jenispasien' => 'JKN',
-              'nomorkartu' => $q['nomor_kartu'],
-              'nik' => getPasienInfo('no_ktp', $q['no_rkm_medis']),
-              'nohp' => getPasienInfo('no_tlp', $q['no_rkm_medis']),
-              'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
-              'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
-              'pasienbaru' => $pasienbaru,
-              'norm' => $q['no_rkm_medis'],
-              'tanggalperiksa' => $d['tanggal_periksa'],
-              'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
-              'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
-              'jampraktek' => $jadwal['jam_mulai'].'-'.$jadwal['jam_selesai'],
-              'jeniskunjungan' => $q['jenis_kunjungan'],
-              'nomorreferensi' => $q['nomor_referensi'],
-              'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
-              'angkaantrean' => $reg_periksa['no_reg'],
-              'estimasidilayani' => strtotime($q['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
-              'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-              'kuotajkn' => $jadwaldokter['kuota'],
-              'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-              'kuotanonjkn' => $jadwaldokter['kuota'],
-              'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
-          ];
-
-          $data = json_encode($data);
-          $url = $this->bpjsurl.'antrean/add';
-          $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-          $data = json_decode($output, true);
-          echo 'Response:<br>';
-          echo json_encode($data);
-          echo $data['metadata']['code'];
-          if($data['metadata']['code'] == 200){
-            if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
-              $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
-                  'status_kirim' => 'Sudah'
-              ]);
-            }
-          }
+        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+          $date = $_GET['tgl'];
         }
-        */
-        //$page = max($page, 1);
-        //$perpage = 10;
 
         $slug = parseURL();
         $page = '';
@@ -1985,34 +1921,380 @@ class Site extends SiteModule
           $page = $slug['3'];
           $offset = ($page - 1) * $perpage;
         }
+        $query = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa',$date)->where('nomor_referensi','!=','')->where('status','Belum')->isNull('keterangan')->limit(5)->toArray();
+        if (!$query) {
+            # code...
+            $query = $this->db('mlite_antrian_referensi')
+              ->where('tanggal_periksa', $date)
+              ->where('status_kirim', 'Sudah')
+            //   ->limit($perpage)
+              ->toArray();
 
-        $query = $this->db('mlite_antrian_referensi')
-          //->select('nomor_referensi')
-          //->select('no_rkm_medis')
-          //->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_referensi.nomor_kartu')
-          ->where('tanggal_periksa', $date)
-          ->where('status_kirim', 'Sudah')
-          ->limit($perpage)
-          ->offset(($page-1)*$perpage)
-          ->toArray();
+            echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
+            echo '-------------------------------------<br>';
 
-        echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
-        echo '-------------------------------------<br>';
-
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+            foreach ($query as $q) {
+                if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 1)->oneArray()) {
+                    $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                    $q['no_rkm_medis'] = $q['nomor_kartu'];
+                    if($pasien) {
+                        $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                    }
+                    $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                    $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+                    if($mlite_antrian_loket){
+                        date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 1,
+                            'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 1)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 1 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    }
                 }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+            }
+
+            echo 'Menjalankan WS taskid (2) mulai pelayanan admisi<br>';
+            echo '-------------------------------------<br>';
+
+            foreach ($query as $q) {
+                if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 2)->oneArray()) {
+                    $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                    $q['no_rkm_medis'] = $q['nomor_kartu'];
+                    if($pasien) {
+                    $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                    }
+                    $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                    $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+                    if($mlite_antrian_loket){
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 2,
+                            'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time']) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 2)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 2 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    }
+                }
+            }
+
+            echo 'Menjalankan WS taskid (3) mulai tunggu poli<br>';
+            echo '-------------------------------------<br>';
+
+            foreach ($query as $q) {
+                if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 3)->oneArray()) {
+                    $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                    $q['no_rkm_medis'] = $q['nomor_kartu'];
+                    if($pasien) {
+                    $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                    }
+                    $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                    $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+                    if($mutasi_berkas){
+                            echo 'A';
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 3,
+                            'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 3)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 3 dengan Kode Booking '.$q['kodebooking'].' dan Waktu Kirim '.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    } else if (!$mutasi_berkas){
+                        $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                        echo 'B';
+                        echo $reg_periksa['tgl_registrasi'].' '.$reg_periksa['jam_reg'];
+                        date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 3,
+                            'waktu' => strtotime($this->randMinutes($reg_periksa['tgl_registrasi'].' '.$reg_periksa['jam_reg'],5,10)) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 3)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 3 dengan Kode Booking '.$q['kodebooking'].' dan Waktu Reg'.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    }
+                }
+            }
+
+            echo 'Menjalankan WS taskid (4) mulai pelayanan poli<br>';
+            echo '-------------------------------------<br>';
+
+            foreach ($query as $q) {
+                if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 4)->oneArray()) {
+                    $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                    $q['no_rkm_medis'] = $q['nomor_kartu'];
+                    if($pasien) {
+                    $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                    }
+                    $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                    $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+                    if($mutasi_berkas){
+                        echo 'A';
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 4,
+                            'waktu' => strtotime($mutasi_berkas['diterima']) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 4)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 4 dengan Kode Booking '.$q['kodebooking'].' dan Waktu Terima'.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    } else if (!$mutasi_berkas){
+                        $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+                        if($mutasi_berkas){
+                            echo 'B';
+                                date_default_timezone_set($this->settings->get('settings.timezone'));
+                                $this->db('mlite_antrian_referensi_taskid')
+                            ->save([
+                                'tanggal_periksa' => $date,
+                                'nomor_referensi' => $q['kodebooking'],
+                                'taskid' => 4,
+                                'waktu' => strtotime($this->randMinutes($mutasi_berkas['dikirim'],10,15)) * 1000,
+                                'status' => 'Belum'
+                            ]);
+                            $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 4)->oneArray();
+                            if ($checkSimpan) {
+                                echo 'Berhasil Simpan Task Id 4 dengan Kode Booking '.$q['kodebooking'].' dan Waktu Kirim'.$checkSimpan['waktu'];
+                            }
+                            echo '<br>-------------------------------------<br><br>';
+                        } else if (!$mutasi_berkas){
+                            echo 'C';
+                            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                                $this->db('mlite_antrian_referensi_taskid')
+                            ->save([
+                                'tanggal_periksa' => $date,
+                                'nomor_referensi' => $q['kodebooking'],
+                                'taskid' => 4,
+                                'waktu' => strtotime($this->randMinutes($reg_periksa['tgl_registrasi'].' '.$reg_periksa['jam_reg'],10,15)) * 1000,
+                                'status' => 'Belum'
+                            ]);
+                            $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 4)->oneArray();
+                            if ($checkSimpan) {
+                                echo 'Berhasil Simpan Task Id 4 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                            }
+                            echo '<br>-------------------------------------<br><br>';
+                        }
+                    }
+                }
+            }
+
+            echo 'Menjalankan WS taskid (5) selesai pelayanan poli<br>';
+            echo '-------------------------------------<br>';
+
+            foreach ($query as $q) {
+                if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 5)->oneArray()) {
+                    $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                    $q['no_rkm_medis'] = $q['nomor_kartu'];
+                    if($pasien) {
+                    $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                    }
+                    $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                    $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+                    if($pemeriksaan_ralan){
+                        echo 'A';
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 5,
+                            'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 5)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 5 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    } else {
+                        $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+                        date_default_timezone_set($this->settings->get('settings.timezone'));
+                        if ($resep_obat) {
+                            echo 'B';
+                            # code...
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 5,
+                            'waktu' => strtotime($this->randMinutesMinus($resep_obat['datajam'])) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 5)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 5 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                        } else {
+                            echo 'C';
+                            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                                $this->db('mlite_antrian_referensi_taskid')
+                            ->save([
+                                'tanggal_periksa' => $date,
+                                'nomor_referensi' => $q['kodebooking'],
+                                'taskid' => 5,
+                                'waktu' => strtotime($this->randMinutes($reg_periksa['tgl_registrasi'].' '.$reg_periksa['jam_reg'],15,20)) * 1000,
+                                'status' => 'Belum'
+                            ]);
+                            $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 4)->oneArray();
+                            if ($checkSimpan) {
+                                echo 'Berhasil Simpan Task Id 5 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                            }
+                            echo '<br>-------------------------------------<br><br>';
+                        }
+                    }
+                }
+            }
+
+            echo 'Menjalankan WS taskid (6) permintaan resep poli<br>';
+            echo '-------------------------------------<br>';
+
+            foreach ($query as $q) {
+                if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 6)->oneArray()) {
+                    $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                    $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+
+                    if($resep_obat){
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 6,
+                            'waktu' => strtotime($resep_obat['datajam']) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 6)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 6 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    }
+                }
+            }
+
+            echo 'Menjalankan WS taskid (7) validasi resep poli<br>';
+            echo '-------------------------------------<br>';
+
+            foreach ($query as $q) {
+                if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['kodebooking'])->where('status','Sudah')->where('taskid', 7)->oneArray()) {
+                    $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+                    $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+                    if($resep_obat){
+                            date_default_timezone_set($this->settings->get('settings.timezone'));
+                            $this->db('mlite_antrian_referensi_taskid')
+                        ->save([
+                            'tanggal_periksa' => $date,
+                            'nomor_referensi' => $q['kodebooking'],
+                            'taskid' => 7,
+                            'waktu' => strtotime($resep_obat['datajam']) * 1000,
+                            'status' => 'Belum'
+                        ]);
+                        $checkSimpan = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['kodebooking'])->where('tanggal_periksa' , $date)->where('taskid' , 7)->oneArray();
+                        if ($checkSimpan) {
+                            echo 'Berhasil Simpan Task Id 7 dengan Kode Booking '.$q['kodebooking'].' dan Waktu '.$checkSimpan['waktu'];
+                        }
+                        echo '<br>-------------------------------------<br><br>';
+                    }
+                }
+            }
+
+            // echo 'Menjalankan WS taskid (99) batal pelayanan poli<br>';
+            // echo '-------------------------------------<br>';
+
+            // foreach ($query as $q) {
+            //     if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 99)->oneArray()) {
+            //         $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+            //         $q['no_rkm_medis'] = $q['nomor_kartu'];
+            //         if($pasien) {
+            //         $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+            //         }
+            //         $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
+            //         if($reg_periksa){
+            //             $data = [
+            //                 'kodebooking' => $q['nomor_referensi'],
+            //                 'taskid' => 99,
+            //                 'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000
+            //             ];
+            //             $data = json_encode($data);
+            //             echo 'Request:<br>';
+            //             echo $data;
+
+            //             echo '<br>';
+            //             $url = $this->bpjsurl.'antrean/updatewaktu';
+            //             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
+            //             $json = json_decode($output, true);
+            //             echo 'Response:<br>';
+            //             echo json_encode($json);
+            //             if($json['metadata']['code'] == 200){
+            //             $this->db('mlite_antrian_referensi_taskid')
+            //             ->save([
+            //                 'tanggal_periksa' => $date,
+            //                 'nomor_referensi' => $q['nomor_referensi'],
+            //                 'taskid' => 99,
+            //                 'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000,
+            //                 'status' => 'Sudah'
+            //             ]);
+            //             } else {
+            //                 $this->db('mlite_antrian_referensi_taskid')
+            //             ->save([
+            //                 'tanggal_periksa' => $date,
+            //                 'nomor_referensi' => $q['nomor_referensi'],
+            //                 'taskid' => 99,
+            //                 'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000,
+            //                 'status' => 'Belum'
+            //             ]);
+            //             }
+            //             echo '<br>-------------------------------------<br><br>';
+            //         }
+            //     }
+            // }
+        } else { // Ketika Gagal Kirim , Kirim Lagi *****************************************************************
+            echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
+            echo '-------------------------------------<br>';
+
+            foreach ($query as $q) {
+
+                $mlite_antrian_loket = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('status','Belum')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)->oneArray();
                 if($mlite_antrian_loket){
+
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 1,
-                        'waktu' => strtotime($mlite_antrian_loket['start_time']) * 1000
+                        'waktu' => $q['waktu'],
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2024,37 +2306,35 @@ class Site extends SiteModule
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
                     echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 1,
-                        'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000
-                      ]);
+                    if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Sudah',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
+                    } else {
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Gagal',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
                 }
+
             }
-        }
 
-        echo 'Menjalankan WS taskid (2) mulai pelayanan admisi<br>';
-        echo '-------------------------------------<br>';
+            echo 'Menjalankan WS taskid (2) mulai pelayanan admisi<br>';
+            echo '-------------------------------------<br>';
 
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
-                }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+            foreach ($query as $q) {
+
+                $mlite_antrian_loket = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('status','Belum')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)->oneArray();
                 if($mlite_antrian_loket){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 2,
-                        'waktu' => strtotime($mlite_antrian_loket['end_time']) * 1000
+                        'waktu' => $q['waktu']
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2066,37 +2346,35 @@ class Site extends SiteModule
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
                     echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 2,
-                        'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time']) * 1000
-                      ]);
+                    if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)
+                    ->save([
+                        'status' => 'Sudah',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
+                    } else {
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Gagal',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
                 }
+
             }
-        }
 
-        echo 'Menjalankan WS taskid (3) mulai tunggu poli<br>';
-        echo '-------------------------------------<br>';
+            echo 'Menjalankan WS taskid (3) mulai tunggu poli<br>';
+            echo '-------------------------------------<br>';
 
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
-                }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+            foreach ($query as $q) {
+
+                $mutasi_berkas = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('status','Belum')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)->oneArray();
                 if($mutasi_berkas){
                     $data = [
-                        'kodebooking' => $q['nomor_referensi'],
+                        'kodebooking' => $mutasi_berkas['nomor_referensi'],
                         'taskid' => 3,
-                        'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000
+                        'waktu' => $mutasi_berkas['waktu']
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2108,37 +2386,35 @@ class Site extends SiteModule
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
                     echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 3,
-                        'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000
-                      ]);
+                    if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)
+                    ->save([
+                        'status' => 'Sudah',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
+                    } else {
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Gagal',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
                 }
+
             }
-        }
 
-        echo 'Menjalankan WS taskid (4) mulai pelayanan poli<br>';
-        echo '-------------------------------------<br>';
+            echo 'Menjalankan WS taskid (4) mulai pelayanan poli<br>';
+            echo '-------------------------------------<br>';
 
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
-                }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+            foreach ($query as $q) {
+
+                $mutasi_berkas = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('status','Belum')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)->oneArray();
                 if($mutasi_berkas){
                     $data = [
-                        'kodebooking' => $q['nomor_referensi'],
+                        'kodebooking' => $mutasi_berkas['nomor_referensi'],
                         'taskid' => 4,
-                        'waktu' => strtotime($mutasi_berkas['diterima']) * 1000
+                        'waktu' => $mutasi_berkas['waktu']
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2150,37 +2426,34 @@ class Site extends SiteModule
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
                     echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 4,
-                        'waktu' => strtotime($mutasi_berkas['diterima']) * 1000
-                      ]);
+                    if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)
+                    ->save([
+                        'status' => 'Sudah',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
+                    } else {
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Gagal',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
                 }
             }
-        }
 
-        echo 'Menjalankan WS taskid (5) selesai pelayanan poli<br>';
-        echo '-------------------------------------<br>';
+            echo 'Menjalankan WS taskid (5) selesai pelayanan poli<br>';
+            echo '-------------------------------------<br>';
 
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
-                }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+            foreach ($query as $q) {
+
+                $pemeriksaan_ralan = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('status','Belum')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)->oneArray();
                 if($pemeriksaan_ralan){
                     $data = [
-                        'kodebooking' => $q['nomor_referensi'],
+                        'kodebooking' => $pemeriksaan_ralan['nomor_referensi'],
                         'taskid' => 5,
-                        'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000
+                        'waktu' => $pemeriksaan_ralan['waktu']
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2192,38 +2465,35 @@ class Site extends SiteModule
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
                     echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 5,
-                        'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000
-                      ]);
+                    if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)
+                    ->save([
+                        'status' => 'Sudah',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
+                    } else {
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Gagal',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
                 }
+
             }
-        }
 
-        echo 'Menjalankan WS taskid (6) permintaan resep poli<br>';
-        echo '-------------------------------------<br>';
+            echo 'Menjalankan WS taskid (6) permintaan resep poli<br>';
+            echo '-------------------------------------<br>';
 
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
-                }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+            foreach ($query as $q) {
+                $resep_obat = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('status','Belum')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)->oneArray();
 
                 if($resep_obat){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 6,
-                        'waktu' => strtotime($resep_obat['datajam']) * 1000
+                        'waktu' => $q['waktu'],
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2235,37 +2505,33 @@ class Site extends SiteModule
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
                     echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 6,
-                        'waktu' => strtotime($resep_obat['datajam']) * 1000
-                      ]);
+                    if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)
+                    ->save([
+                        'status' => 'Sudah',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
+                    } else {
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Gagal',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
                 }
             }
-        }
 
-        echo 'Menjalankan WS taskid (7) validasi resep poli<br>';
-        echo '-------------------------------------<br>';
+            echo 'Menjalankan WS taskid (7) validasi resep poli<br>';
+            echo '-------------------------------------<br>';
 
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
-                }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+            foreach ($query as $q) {
+                $resep_obat = $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('status','Belum')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)->oneArray();
                 if($resep_obat){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 7,
-                        'waktu' => strtotime($resep_obat['datajam']) * 1000
+                        'waktu' => $q['waktu']
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2277,66 +2543,69 @@ class Site extends SiteModule
                     $json = json_decode($output, true);
                     echo 'Response:<br>';
                     echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 7,
-                        'waktu' => strtotime($resep_obat['datajam']) * 1000
-                      ]);
+                    if($json['metadata']['code'] == 200 || $json['metadata']['code'] == 208){
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)
+                    ->save([
+                        'status' => 'Sudah',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
+                    } else {
+                        $this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)
+                    ->save([
+                        'status' => 'Gagal',
+                        'keterangan' => $json['metadata']['message']
+                    ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
                 }
             }
         }
-
-        echo 'Menjalankan WS taskid (99) batal pelayanan poli<br>';
-        echo '-------------------------------------<br>';
-
-        foreach ($query as $q) {
-            if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 99)->oneArray()) {
-                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
-                $q['no_rkm_medis'] = $q['nomor_kartu'];
-                if($pasien) {
-                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
-                }
-                $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
-                if($reg_periksa){
-                    $data = [
-                        'kodebooking' => $q['nomor_referensi'],
-                        'taskid' => 99,
-                        'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000
-                    ];
-                    $data = json_encode($data);
-                    echo 'Request:<br>';
-                    echo $data;
-
-                    echo '<br>';
-                    $url = $this->bpjsurl.'antrean/updatewaktu';
-                    $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-                    $json = json_decode($output, true);
-                    echo 'Response:<br>';
-                    echo json_encode($json);
-                    if($json['metadata']['code'] == 200){
-                      $this->db('mlite_antrian_referensi_taskid')
-                      ->save([
-                        'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['nomor_referensi'],
-                        'taskid' => 99,
-                        'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000
-                      ]);
-                    }
-                    echo '<br>-------------------------------------<br><br>';
-                }
-            }
-        }
-        $_page = $page + 1;
-      	$page_ = $page - 1;
-      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
-      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'>Next</a>';
 
         exit();
+    }
+
+    public function randMinutes($date1,$minx,$maxx){
+        date_default_timezone_set($this->settings->get('settings.timezone'));
+        // $format = 'Y-m-d H:i:s';
+        // $date = \DateTime::createFromFormat($format, $date1,new \DateTimeZone($this->settings->get('settings.timezone')));
+        $time = date("H:i:s", strtotime($date1));
+        $date = date("Y-m-d", strtotime($date1));
+        list($h, $m, $s) = explode(":", $time);
+        $seconds = $s + ($m * 60) + ($h * 3600);
+        $min = $minx * 60;
+        $max = $maxx * 60;
+        $seconds += rand($min, $max); //set desired min and max values
+
+        // now back to time format
+        $hours = floor($seconds / 3600);
+        $mins = floor($seconds / 60 % 60);
+        $secs = floor($seconds % 60);
+
+        $timeFormat1 = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+        $timeFormat = $date.' '.$timeFormat1;
+        return $timeFormat;
+    }
+
+    public function randMinutesMinus($date1){
+        date_default_timezone_set($this->settings->get('settings.timezone'));
+        // $format = 'Y-m-d H:i:s';
+        // $date = \DateTime::createFromFormat($format, $date1);
+        $time = date("H:i:s", strtotime($date1));
+        $date = date("Y-m-d", strtotime($date1));
+        list($h, $m, $s) = explode(":", $time);
+        $seconds = $s + ($m * 60) + ($h * 3600);
+        $min = 5 * 60;
+        $max = 10 * 60;
+        $seconds -= rand($min, $max); //set desired min and max values
+
+        // now back to time format
+        $hours = floor($seconds / 3600);
+        $mins = floor($seconds / 60 % 60);
+        $secs = floor($seconds % 60);
+
+        $timeFormat1 = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+        $timeFormat = $date.' '.$timeFormat1;
+        return $timeFormat;
     }
 
     public function _getAntreanGetListTask()

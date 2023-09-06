@@ -1,0 +1,35 @@
+<article class="row">
+  <div id="manage" class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kelola Data Resep Duplikat</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+             <table class="table table-striped no-margin table-bordered" id="dataObat" width="100%">
+            <thead>
+              <tr>
+                 <th>No.Resep</th>
+                <th>Obat</th>
+                <th>Jumlah</th>
+                <th>Aturan</th>
+                <th>Duplikat</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $resepdup.list}
+              <tr>
+                <td>{$value.no_resep}</td>
+                <td>{$value.kode_brng}</td>
+                <td>{$value.jml}</td>
+                <td>{$value.aturan_pakai}</td>
+                <td>{$value.duplikat}</td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

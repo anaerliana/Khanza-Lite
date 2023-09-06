@@ -5,7 +5,7 @@ return [
     'description'   =>  'Data laporan-laporan untuk SIRS Online Kementerian Kesehatan',
     'author'        =>  'Basoro',
     'version'       =>  '2.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2021',
     'icon'          =>  'globe',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_covid` (

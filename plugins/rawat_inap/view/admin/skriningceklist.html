@@ -1,0 +1,130 @@
+<h4>Data Skrining Ceklist</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding" width="100%">
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>Data Ceklist</th>
+                <th>Catatan Skrining</th>
+            </tr>
+        </thead>
+        <tbody>
+            {loop: $skrining}
+            <tr>
+                <td>{$value.tanggal}</td>
+                <td>{loop: $value.ceklist_skrining as $item}
+                    {if: $item == 1}
+                    <p>1. Obat-obatan terdistribusi ke pasien</p>
+                    {elseif: $item == 2}
+                    <p>2. Keluhan pasien teratasi</p>
+                    {elseif: $item == 3}
+                    <p>3. Perawat memberikan asuhan</p>
+                    {elseif: $item == 4}
+                    <p>4. Pasien divisite oleh dokter</p>
+                    {elseif: $item == 5}
+                    <p>5. Pasien mendapatkan terapi yang sesuai dengan kebutuhannya mendapatkan</p>
+                    {elseif: $item == 6}
+                    <p> 1. Jaminan kesehatan berobat pasien aktif</p>
+                    {elseif: $item == 7}
+                    <p>2. Surat Elegibilitas Pasien (SEP) sudah terbit ketika pasien mendaftar</p>
+                    {elseif: $item == 8}
+                    <p>3. Bilingan pasien disesuaikan dengan jaminan kelas pasien</p>
+                    {elseif: $item == 9}
+                    <p>4. Pasien jaminan umum mendapatkan rincian kwitansi perawatan dan pengobatan</p>
+                    {elseif: $item == 10}
+                    <p>5. Kelengkapan status pasien terisi lengkap</p>
+                    {/if}
+                    {/loop}</td>
+                <td>{$value.catatan_skrining}</td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+</div> 
+<!-- <h4>Data Skrining Ceklist</h4> 
+<div class="table-responsive no-margin">
+  <table class="table table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th>Tanggal</th>
+        <th>Data Ceklist</th>
+        <th>Catatan Skrining</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="skrining">
+      {loop: $skrining}
+      <tr>
+        <td>{$value.tanggal}</td>
+        <td>
+          <div>
+            {loop: $value.ceklist_skrining as $item}
+            <label for="ceklist{$item}">
+              <input type="checkbox" id="ceklist{$item}" name="skrining_ceklist[]" value="{$item}">
+              {if: $item == 1}
+              <span>1. Obat-obatan terdistribusi ke pasien</span>
+              {elseif: $item == 2}
+              <span>2. Keluhan pasien teratasi</span>
+              {elseif: $item == 3}
+              <span>3. Perawat memberikan asuhan</span>
+              {elseif: $item == 4}
+              <span>4. Pasien divisite oleh dokter</span>
+              {elseif: $item == 5}
+              <span>5. Pasien mendapatkan terapi yang sesuai dengan kebutuhannya mendapatkan</span>
+              {elseif: $item == 6}
+              <span>1. Jaminan kesehatan berobat pasien aktif</span>
+              {elseif: $item == 7}
+              <span>2. Surat Elegibilitas Pasien (SEP) sudah terbit ketika pasien mendaftar</span>
+              {elseif: $item == 8}
+              <span>3. Bilingan pasien disesuaikan dengan jaminan kelas pasien</span>
+              {elseif: $item == 9}
+              <span>4. Pasien jaminan umum mendapatkan rincian kwitansi perawatan dan pengobatan</span>
+              {elseif: $item == 10}
+              <span>5. Kelengkapan status pasien terisi lengkap</span>
+              {/if}
+            </label>
+            {/loop}
+          </div>
+        </td>
+        <td>{$value.catatan_skrining}</td>
+        <td>
+          <button type="button" name="button" class="btn btn-success btn-xs edit_skrining"
+            data-tanggal="{$value.tanggal}" data-no_rawat="{$value.no_rawat}"
+            data-kd_kamar="{$value.kd_kamar}" data-no_rkm_medis="{$value.no_rkm_medis}"
+            data-nm_pasien="{$value.nm_pasien}" data-skrining_ceklist="{$value.skrining_ceklist}">
+            <span class="fa fa-edit"></span>
+            <span class="hidden-xs"> Edit</span>
+          </button>
+        </td>
+      </tr>
+      {/loop}
+    </tbody>
+  </table>
+</div>-->
+
+<!-- <div class="modal fade" id="catatanModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div> -->
+<!-- <div class="modal" id="catatanModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Masukkan Catatan Skrining</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="catatan_skrining" class="form-control" placeholder="Masukkan catatan skrining">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="simpanCatatanBtn">Simpan</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data APD Covid 19</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div id="notif"></div>
+                </div>
+                <div class="display">
+                    <table class="table table-responsive table-striped no-padding dataTables" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Nama Barang</th>
+                                <th>Jumlah Barang</th>
+                                <th>Jumlah</th>
+                                <th>Jumlah Diterima</th>
+                                <th>Tanggal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $apd}
+                            <tr>
+                                <td>{$value.kebutuhan}</td>
+                                <td>{$value.jumlah_eksisting}</td>
+                                <td>{$value.jumlah}</td>
+                                <td>{$value.jumlah_diterima}</td>
+                                <td>{$value.tglupdate}</td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.dataTables').DataTable({
+        "order": [[3, "desc"]],
+        "pagingType": "full",
+        "language": {
+            "paginate": {
+                "first": "&laquo;",
+                "last": "&raquo;",
+                "previous": "‹",
+                "next": "›"
+            },
+            "search": "",
+            "searchPlaceholder": "Search..."
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+</script>

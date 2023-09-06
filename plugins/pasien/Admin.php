@@ -457,12 +457,26 @@ class Admin extends AdminModule
     {
       $riwayat['settings'] = $this->settings('settings');
       $riwayat['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      $today = date('Y-m-d');
+      $today2 = date('Y-m-d', strtotime('-1 years'));
+     
+
       $reg_periksa = $this->db('reg_periksa')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
         ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
         ->where('no_rkm_medis', $no_rkm_medis)
+        ->where('tgl_registrasi', '>=',  $today2)
+        ->where('tgl_registrasi', '<=', $today)
+        ->desc('reg_periksa.no_rawat')
         ->toArray();
+      // $reg_periksa = $this->db('reg_periksa')
+      //   ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      //   ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+      //   ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+      //   ->where('no_rkm_medis', $no_rkm_medis)
+      //   ->desc('reg_periksa.no_rawat')
+      //   ->toArray();
 
       $riwayat['reg_periksa'] = [];
       foreach ($reg_periksa as $row) {
@@ -543,36 +557,74 @@ class Admin extends AdminModule
             ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
             ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
             ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->where('detail_periksa_lab.tgl_periksa', $value['tgl_periksa'])
+            ->where('detail_periksa_lab.jam', $value['jam'])
             ->toArray();
           $row['periksa_lab'][] = $value;
         }
 
-        $row['periksa_radiologi'] = $this->db('periksa_radiologi')
-          ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
-          ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
-          ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
-          ->toArray();
+        $rows_periksa_radiologi = $this->db('periksa_radiologi')
+            ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
 
-        $row['detail_pemberian_obat__'] = $this->db('aturan_pakai')
-          ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
-          ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
-          //->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
-          ->where('aturan_pakai.no_rawat', $row['no_rawat'])
-          //->where('resep_dokter.kode_brng', 'detail_pemberian_obat.kode_brng')
-          ->group('aturan_pakai.kode_brng')
-          //->select('databarang.nama_brng')
-          //->select('detail_pemberian_obat.jml')
-          //->select('resep_dokter.aturan_pakai')
-          ->toArray();
-        $row['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
-          ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
-          ->where('no_rawat', $row['no_rawat'])
-          ->toArray();
+        $row['periksa_radiologi'] = [];
+        foreach ($rows_periksa_radiologi as $value) {
+          $value['hasil_radiologi'] = $this->db('hasil_radiologi')
+            ->where('hasil_radiologi.no_rawat', $value['no_rawat'])
+            ->where('hasil_radiologi.tgl_periksa', $value['tgl_periksa'])
+            ->where('hasil_radiologi.jam', $value['jam'])
+            ->toArray();
 
-        //$row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
-        //  ->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')
-        //  ->where('no_rawat', $row['no_rawat'])->toArray();
-        //$row['hasil_radiologi'] = $this->db('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
+          $value['saran_kesan_rad'] = $this->db('saran_kesan_rad')
+            ->where('saran_kesan_rad.no_rawat', $value['no_rawat'])
+            ->where('saran_kesan_rad.tgl_periksa', $value['tgl_periksa'])
+            ->where('saran_kesan_rad.jam', $value['jam'])
+            ->toArray();
+
+          $row['periksa_radiologi'][] = $value;
+        }
+
+        $row['klinis'] = $this->db('diagnosa_pasien_klinis')
+            ->join('permintaan_radiologi', 'permintaan_radiologi.noorder=diagnosa_pasien_klinis.noorder')
+            ->where('permintaan_radiologi.no_rawat', $row['no_rawat'])
+            ->toArray();
+          
+        $rows_resep_obat = $this->db('resep_obat')
+        ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
+        ->where('no_rawat', $row['no_rawat'])
+        ->toArray();
+
+        $row['resep_obat'] = [];
+        foreach ($rows_resep_obat as $value) {
+            $detail = $this->db('detail_pemberian_obat')
+                ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
+                ->where('detail_pemberian_obat.no_rawat', $value['no_rawat'])
+                ->where('detail_pemberian_obat.tgl_perawatan', $value['tgl_perawatan'])
+                ->where('detail_pemberian_obat.jam', $value['jam'])
+                ->toArray();
+
+            $detail_obat = [];
+
+            foreach ($detail as $valuedetail) {
+                $valuedetail['aturan_pakai'] = $this->db('aturan_pakai')
+                    ->where('aturan_pakai.no_rawat', $valuedetail['no_rawat'])
+                    ->where('aturan_pakai.tgl_perawatan', $valuedetail['tgl_perawatan'])
+                    ->where('aturan_pakai.jam', $valuedetail['jam'])
+                    ->where('aturan_pakai.kode_brng', $valuedetail['kode_brng'])
+                    ->toArray();
+
+                $detail_obat[] = [
+                    'nama_brng' => $valuedetail['nama_brng'],
+                    'jml' => $valuedetail['jml'],
+                    'aturanpakai' => $valuedetail['aturan_pakai'],
+                ];
+            }
+
+            $value['detail_obat'] = $detail_obat;
+            $row['resep_obat'][] = $value;
+        }
+
         $row['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
         $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
         $row['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $row['no_rawat'])->toArray();
@@ -683,25 +735,82 @@ class Admin extends AdminModule
           $row['periksa_lab'][] = $value;
         }
 
-        $row['periksa_radiologi'] = $this->db('periksa_radiologi')
-          ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
+      $rows_periksa_radiologi = $this->db('periksa_radiologi')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
-          ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
+          ->where('no_rawat', $row['no_rawat'])
           ->toArray();
 
+      $row['periksa_radiologi'] = [];
+        foreach ($rows_periksa_radiologi as $value) {
+          $value['hasil_radiologi'] = $this->db('hasil_radiologi')
+            ->where('hasil_radiologi.no_rawat', $value['no_rawat'])
+            ->where('hasil_radiologi.tgl_periksa', $value['tgl_periksa'])
+            ->where('hasil_radiologi.jam', $value['jam'])
+            ->toArray();
 
-        $row['detail_pemberian_obat'] = $this->db('aturan_pakai')
-          ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
-          ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
-          //->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
-          ->where('aturan_pakai.no_rawat', $row['no_rawat'])
-          //->where('resep_dokter.kode_brng', 'detail_pemberian_obat.kode_brng')
-          ->group('aturan_pakai.kode_brng')
-          //->select('databarang.nama_brng')
-          //->select('detail_pemberian_obat.jml')
-          //->select('resep_dokter.aturan_pakai')
-          ->toArray();
+          $value['saran_kesan_rad'] = $this->db('saran_kesan_rad')
+            ->where('saran_kesan_rad.no_rawat', $value['no_rawat'])
+            ->where('saran_kesan_rad.tgl_periksa', $value['tgl_periksa'])
+            ->where('saran_kesan_rad.jam', $value['jam'])
+            ->toArray();
 
+          $row['periksa_radiologi'][] = $value;
+        }
+
+        $row['klinis'] = $this->db('diagnosa_pasien_klinis')
+            ->join('permintaan_radiologi', 'permintaan_radiologi.noorder=diagnosa_pasien_klinis.noorder')
+            ->where('permintaan_radiologi.no_rawat', $row['no_rawat'])
+            ->toArray();
+         
+         $rows_resep_obat = $this->db('resep_obat')
+        ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
+        ->where('no_rawat', $row['no_rawat'])
+        ->toArray();
+
+        $row['resep_obat'] = [];
+        foreach ($rows_resep_obat as $value) {
+            $detail = $this->db('detail_pemberian_obat')
+                ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
+                ->where('detail_pemberian_obat.no_rawat', $value['no_rawat'])
+                ->where('detail_pemberian_obat.tgl_perawatan', $value['tgl_perawatan'])
+                ->where('detail_pemberian_obat.jam', $value['jam'])
+                ->toArray();
+
+            $detail_obat = [];
+
+            foreach ($detail as $valuedetail) {
+                $valuedetail['aturan_pakai'] = $this->db('aturan_pakai')
+                    ->where('aturan_pakai.no_rawat', $valuedetail['no_rawat'])
+                    ->where('aturan_pakai.tgl_perawatan', $valuedetail['tgl_perawatan'])
+                    ->where('aturan_pakai.jam', $valuedetail['jam'])
+                    ->where('aturan_pakai.kode_brng', $valuedetail['kode_brng'])
+                    ->toArray();
+
+                $detail_obat[] = [
+                    'nama_brng' => $valuedetail['nama_brng'],
+                    'jml' => $valuedetail['jml'],
+                    'aturanpakai' => $valuedetail['aturan_pakai'],
+                ];
+            }
+
+            $value['detail_obat'] = $detail_obat;
+            $row['resep_obat'][] = $value;
+        }
+      
+        // $row['detail_pemberian_obat'] = $this->db('aturan_pakai')
+        //   ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
+        //   ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
+        //   ->join('resep_obat', 'resep_obat.no_rawat = aturan_pakai.no_rawat')
+        //   ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+        //   //->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
+        //   ->where('aturan_pakai.no_rawat', $row['no_rawat'])
+        //   //->where('resep_dokter.kode_brng', 'detail_pemberian_obat.kode_brng')
+        //   ->group('aturan_pakai.kode_brng')
+        //   //->select('databarang.nama_brng')
+        //   //->select('detail_pemberian_obat.jml')
+        //   //->select('resep_dokter.aturan_pakai')
+        //   ->toArray();
+        
         $row['hasil_radiologi'] = $this->db('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
         $row['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
         $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();

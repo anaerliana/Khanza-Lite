@@ -1,0 +1,82 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Daftar Perkiraan Pensiun PNS</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped no-margin table-bordered" id="pensiunpns" width="100%">
+                        <thead>
+                            <tr>
+                                <th rowspan="2"><center>NO</center></th>
+                                <th rowspan="2"><center>NAMA LENGKAP 
+                                    <br> NIP/TGL LAHIR</center></th>
+                                <th rowspan="2"><center>JK</center></th>
+                                <th colspan="2"><center>PANGKAT</center></th>
+                                <th colspan="2"><center>JABATAN TERAKHIR</center></th>
+                                <th rowspan="2"><center>MASA <br> KERJA</center></th>
+                                <th colspan="4"><center>PENDIDIKAN UMUM</center></th>
+                                <th rowspan="2"><center>USIA</center></th>
+                                <th rowspan="2"><center>UNIT KERJA</center></th>
+                                <th colspan="2"><center>PENSIUN</center></th>
+                            </tr>
+                            <tr>
+								<th scope="col"><center>GOL</center></th>
+                                <th scope="col"><center>TMT</center></th>
+                                <th scope="col"><center>NAMA JABATAN<br> ESELON</center></th>
+                                <th scope="col"><center>TMT</center></th>
+                                <th scope="col"><center>NAMA SEKOLAH/ P.T</center></th>
+                                <th scope="col"><center>JURUSAN</center></th>
+                                <th scope="col"><center>TAHUN <br> LULUS</center></th>
+                                <th scope="col"><center>TK <br> IJAZAH</center></th>
+                                <th scope="col"><center>Perkiraan Pensiun</center></th>
+                                <th scope="col"><center>Sisa Waktu Sebelum Pensiun</center></th>
+							</tr>
+                        </thead>
+                        <tbody>
+                            {loop: $pensiunpns.list}
+                            <tr>
+                                <td align="center"></td>
+                                <td>{$value.nama} <br> {$value.nik} 
+                                    <br>{$value.tmp_lahir}, {$value.lahir}</td>
+                                <td align="center">{if: $value.jk == 'Pria'}L{elseif: $value.jk == 'Wanita'}P{else}{/if}
+                                </td>
+                                <td align="center">{loop: $pensiunpns.golruang as $key => $val}
+                                    {if: $key == $value.KGOLRU}{$val}{/if}
+                                    {/loop}</td>
+                                <td align="center">{if: $value.TMTPANG == '30-11--0001'}TMT Belum Input{else}{$value.TMTPANG}{/if}</td>
+                                <td align="center">{if: $value.NJAB== ''}Jabatan Terakhir Belum Input{else}{$value.NJAB}{/if}
+                                    <br> {loop: $pensiunpns.eselon as $key => $val}
+                                        {if: $key == $value.KESELON}{$val}{/if}
+                                        {/loop}</td>
+                                <td align="center">{if: $value.TMTJABAT == '30-11--0001'}TMT Belum Input{else}{$value.TMTJABAT}{/if}</td>
+                                <td align="center">{if: $value.TMTKERJA == '0000-00-00'}TMT Pangkat Pertama<br> Belum Input{elseif: $value.TMTKERJA != '0000-00-00'}{$value.mskerja}{else}{/if}</td>
+                                <td align="center">{$value.NSEK}</td>
+                                <td align="center">{$value.JURUSAN}</td>
+                                <td align="center">{if: $value.TSTTB == '-0001'}Belum Input{else}{$value.TSTTB}{/if}</td>
+                                <td align="center">{loop: $pensiunpns.tpu as $key => $val}
+                                    {if: $key == $value.KTPU}{$val}{/if}
+                                    {/loop}</td>
+                                <!-- <?php $hr_ini = date("Y-m-d"); ?> -->
+                                <td align="center">{$value.usia}</td>
+                                <td align="center">{$value.UNIT}</td>
+                                {if: $value.KGOLRU == ''}
+                                <td align="center" bgcolor="#e8f556">Belum Input Pangkat Golongan</td>
+                                {else}
+                                <td align="center">{$value.waktu_pensiun}</td>
+                                {/if}
+                                {if: $value.KGOLRU == ''}
+                                <td align="center" bgcolor="#e8f556">Belum Input Pangkat Golongan</td>
+                                {else}
+                                <td align="center">{$value.sisa}</td>
+                                {/if}
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</article>

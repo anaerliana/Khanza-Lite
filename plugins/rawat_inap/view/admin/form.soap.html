@@ -33,7 +33,7 @@
           <div class="row">
             <div class="col-sm-2">
               <label for="nama_pasien">Tensi(mmHg)</label>
-              <input type="text" name="tensi" class="form-control" placeholder="" value="-">
+              <input type="text" name="tensi" class="form-control" placeholder="" value="">
             </div>
             <div class="col-sm-2">
               <label for="nama_pasien">Suhu(C)</label>
@@ -59,10 +59,14 @@
         </div>
         <div class="form-group">
           <div class="row">
-            <div class="col-sm-4">
+            <!-- <div class="col-sm-4">
               <label for="nama_pasien">Kesadaran</label>
               <input type="text" name="kesadaran" class="form-control" placeholder="" value="Compos Mentis">
               <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div> -->
+            <div class="col-sm-4">
+              <label for="nama_pasien">SPO2</label>
+              <input type="text" name="spo2" class="form-control" placeholder="" value="">
             </div>
             <div class="col-sm-4">
               <label for="nama_pasien">GCS(E,V,M)</label>
@@ -74,6 +78,8 @@
             </div>
           </div>
         </div>
+        {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'
+        || $this->core->getUserInfo('role') == 'apoteker' || $this->core->getUserInfo('role') == 'laboratorium'}
         <h4>SOAP</h4>
         <div class="form-group">
           <label for="jenis">Subyektif</label>
@@ -83,7 +89,6 @@
           <label for="jenis">Obyektif</label>
           <textarea name="pemeriksaan" id="pemeriksaan" rows="2" class="form-control"></textarea>
         </div>
-        <!--
         <div class="form-group">
           <label for="jenis">Assesment</label>
           <textarea name="penilaian" id="penilaian" rows="2" class="form-control"></textarea>
@@ -92,11 +97,41 @@
           <label for="jenis">Plan</label>
           <textarea name="rtl" id="rtl" rows="2" class="form-control"></textarea>
         </div>
-		-->
         <div class="form-group">
           <label for="jenis">Instruksi</label>
           <textarea name="instruksi" id="instruksi" rows="2" class="form-control"></textarea>
         </div>
+        <div class="form-group">
+          <label for="jenis">Evaluasi</label>
+          <textarea name="evaluasi" id="evaluasi" rows="2" class="form-control"></textarea>
+        </div>
+        {elseif: $this->core->getPegawaiInfo('bidang', $username) == 'Mubarak'}
+        <h4>ADIME</h4>
+        <div class="form-group">
+        <label for="jenis">Assesment</label>
+          <textarea name="keluhan" id="keluhan" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="jenis">Diagnosa</label>
+          <textarea name="pemeriksaan" id="pemeriksaan" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="jenis">Intervensi</label>
+          <textarea name="penilaian" id="penilaian" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="jenis">Monitoring</label>
+          <textarea name="rtl" id="rtl" rows="2" class="form-control"></textarea>
+        </div>
+        <!-- <div class="form-group">
+          <label for="jenis">Evaluasi</label>
+          <textarea name="instruksi" id="instruksi" rows="2" class="form-control"></textarea>
+        </div> -->
+        <div class="form-group">
+          <label for="jenis">Evaluasi</label>
+          <textarea name="evaluasi" id="evaluasi" rows="2" class="form-control"></textarea>
+        </div>
+        {else}  {/if}
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
           <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
@@ -134,7 +169,7 @@
                   </div>
                   <div class="input-group">
                     <input type="text" name="icd10" id="icd10" class="form-control" />
-                    <input type="hidden" name="status" class="form-control" value="Ralan" />
+                    <input type="hidden" name="status" class="form-control" value="Ranap" />
                     <ul class="list-group" id="icd10List" style="z-index:1000;position:absolute;width:100%;"></ul>
                     <span class="input-group-btn">
                       <button id="simpan_icd10" class="btn btn-primary btn-block">

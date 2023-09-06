@@ -1,0 +1,126 @@
+
+<article class="row">
+    <form name="petugas" action="{?=url(ADMIN.'/profil/permintaanperbaikansimpan/'.@$permintaanperbaikan.form.no_permintaan)?}" method="POST">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$permintaanperbaikan.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row clearfix">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                              <label>No. Permintaan</label>
+                              <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{$permintaanperbaikan.form.no_permintaan}" {if: $permintaanperbaikan.form.no_permintaan !=''}readonly{/if}/>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                  <label>Data Aset</label>
+                                  <select name="no_inventaris" class="form-control" data-use-search="true">
+                                      {loop: $permintaanperbaikan.aset}
+                                      <option  value="{$value.no_inventaris}" data-right="{$value.nama_merk}" {if: $value.no_inventaris == $permintaanperbaikan.form.no_inventaris}selected{/if}>{$value.nama_barang} <sub>({$value.nama_ruang})</sub></option>
+                                       <!-- <option disabled style="font-style:italic">&nbsp;&nbsp;{$value.nama_ruang}</option>  -->
+
+                                     <!--  <option value="{$value.no_inventaris}"  data-subtitle="{$value.nama_ruang}" data-right="{$value.nama_merk}" {if: $value.no_inventaris == $permintaanperbaikan.form.no_inventaris}selected{/if}>{$value.nama_barang}</option> -->
+                                      {/loop}
+                                  </select>
+                                    <input type="hidden" name="nip" id="nip" class="form-control" value="{$permintaanperbaikan.nik}" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                        <div class="form-group">
+                        <label>Tanggal Permintaan</label>
+                        <input type="text" name="tanggal" class="form-control tanggaljam" placeholder="Tanggal"
+                            value="{$permintaanperbaikan.form.tanggal}" />
+                            </div>
+                        </div>
+                    </div>
+                     <div class="row clearfix">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Deskripsi Kerusakan</label>
+                                <textarea class="form-control" name="deskripsi_kerusakan" placeholder="Deskripsi (optional)" rows="2">{$permintaanperbaikan.form.deskripsi_kerusakan}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group save">
+                        <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+<article class="row" id="permintaanperbaikan">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped no-margin display" width="100%">
+            <thead>
+              <tr>
+              <th>No. Permintaan</th>
+              <th>No. Inventaris</th>
+              <th>Nama Aset/Barang</th>
+              <th>Tanggal</th>
+              <th>Deskripsi Kerusakan</th>
+              <!-- <th>Berkas</th> -->
+              <th>Status</th>
+              <th class="text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {if: !empty($permintaanperbaikan.list)}
+              {loop: $permintaanperbaikan.list}
+              <tr>
+              <td>{$value.no_permintaan}</td>
+              <td>{$value.no_inventaris}</td>
+              <td>{$value.nama_barang} [{$value.nama_merk}] - {$value.nama_ruang}</td>
+              <td>{$value.tanggal}</td>
+              <td>{$value.deskripsi_kerusakan}</td>
+             <!--  <td> 
+                <a href="{?=url([ADMIN, 'profil', 'berkas_permintaanperbaikan', $value.no_permintaan])?}" class="btn btn-danger btn-xs"><i class="fa fa-print"></i><span class="hidden-xs"> Berkas</span></a>
+              </td> -->
+              <td class="text-{if: $value.status_perbaikan == 'Sudah'}primary{else}danger{/if}">{$value.status_perbaikan}</td>
+              <td class="text-right">
+                 {if: $value.status_perbaikan == 'Sudah'}
+                <a href="{?=url([ADMIN, 'profil', 'editpermintaanperbaikan', $value.no_permintaan])?}" class="btn btn-xs btn-success disabled"><i class="fa fa-edit"></i> Edit</a>
+                 
+                {else} 
+                 <a href="{?=url([ADMIN, 'profil', 'editpermintaanperbaikan', $value.no_permintaan])?}" class="btn btn-xs btn-success" data-toggle="modal" data-target="#editperbaikanModal"><i class="fa fa-edit"></i> Edit</a>
+                {/if}
+              </td>
+              </tr>
+              {/loop}
+              {else}
+              <tr>
+                <td colspan="6" class="text-center">Kosong</td>
+              </tr>
+              {/if}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+<div class="modal fade" id="editperbaikanModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                ...
+            </div>
+        </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+    $('.tanggaljam').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm:ss',
+      locale: 'id'
+    });
+});
+
+</script>

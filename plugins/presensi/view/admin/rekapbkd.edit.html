@@ -1,0 +1,76 @@
+<article class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Ubah Rekap Presensi BKD</h3>
+        <ul class="nav nav-tabs">
+          <li class="{if: empty($jamjaga.getStatus)}{/if}">
+            <a href="{?=url(ADMIN.'/presensi/rekap_bkd')?}" role="tab">Rekap</a>
+          </li>
+        </ul>
+      </div>
+      <div class="panel-body">
+        <form name="" action="{?=url(ADMIN.'/presensi/rekapbkdsimpan/'.@$rekap.form.id)?}" method="POST">
+          <div class="row clearfix">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Nama</label>
+                <input type="text" name="nama" id="" class="form-control" value="{$rekap.id.nama}">
+                <input type="hidden" name="id" id="" class="form-control" value="{$rekap.id.id}">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Tahun</label>
+                <input type="text" name="tahun" class="form-control" value="{$rekap.tahun}"/>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Bulan</label>
+                <input type="text" name="bulan" id="" class="form-control" value="{$rekap.bulan}">
+              </div>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="">Cuti</label>
+                <input type="number" name="cuti" id="" class="form-control" value="{$rekap.form.cuti}">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="">Izin</label>
+                <input type="number" name="izin" id="" class="form-control" value="{$rekap.form.izin}">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="">Sakit</label>
+                <input type="number" name="sakit" id="" class="form-control" value="{$rekap.form.sakit}">
+              </div>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Cuti Melahirkan</label>
+                    <input type="number" name="cuti_melahirkan" id="" class="form-control" value="{$rekap.form.cuti_melahirkan}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="">Tugas Luar</label>
+                    <input type="number" name="tugas_luar" id="" class="form-control" value="{$rekap.form.tugas_luar}">
+                </div>
+            </div>
+        </div>
+          <div class="form-group">
+            <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</article>

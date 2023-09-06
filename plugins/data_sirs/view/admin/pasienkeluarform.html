@@ -1,0 +1,241 @@
+<div id="form_soap">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="tanggal">Tanggal Keluar</label>
+                    <input type="text" id="tgl_keluar" name="tgl_keluar" class="form-control tanggal"
+                        value="{$form.tgl_inap_keluar.tgl_keluar}">
+                </div>
+                <div class="form-group">
+                    <!-- <label for="id_pendaftaran">Id Rawat</label> -->
+                    <input type="hidden" name="no_rawat" placeholder="ID Pendaftaran" id="no_rawat" class="form-control"
+                        value="{$form.no_rawat}" readonly>
+                    <input type="hidden" name="id_covid" placeholder="ID Pendaftaran" id="id_covid" class="form-control"
+                        value="{$form.form.id}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="id_pasien">Nomor RM</label>
+                    <input type="text" name="no_rkm_medis" class="form-control" id="no_rkm_medis"
+                        placeholder="Nomor Rekam Medik" value="{$form.no_rkm_medis}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="nama_pasien">Nama Pasien</label>
+                    <input type="text" name="nm_pasien" class="form-control" id="nm_pasien" placeholder="Nama pasien"
+                        value="{$form.nm_pasien}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="nama_pasien">Tanggal Lahir</label>
+                    <input type="text" name="tgl_lahir" class="form-control" id="tgl_lahir" placeholder="Nama pasien"
+                        value="{$form.tgl_lahir}" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label for="status_keluar">Status Keluar</label>
+                            <input type="text" name="status_keluar" id="status_keluar" class="form-control"
+                                placeholder="" value="{if: $form.tgl_inap_keluar.stts_pulang == 'Membaik' }1. APD / Sembuh{/if}{if: $form.tgl_inap_keluar.stts_pulang == 'Meninggal' }2. Meninggal{/if}{if: $form.tgl_inap_keluar.stts_pulang == 'Atas Permintaan Sendiri' }5. APS{/if}">
+                            <ul class="list-group" id="statusKeluarList"
+                                style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="penyebab_kematian">Penyebab Kematian</label>
+                            <input type="text" name="penyebab_kematian" id="penyebab_kematian"
+                                class="form-control status_gejala" placeholder="" value="">
+                            <ul class="list-group" id="penyebabKematianList"
+                                style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="penyebab_kematian_lgs">Penyebab Kematian Langsung</label>
+                            <input type="text" name="penyebab_kematian_lgs" id="penyebab_kematian_lgs"
+                                class="form-control" placeholder="" value="">
+                            <ul class="list-group" id="penyebabKematianLgsList"
+                                style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label for="status_pasien_meninggal">Status Pasien Saat Meninggal</label>
+                            <input type="text" name="status_pasien_meninggal" id="status_pasien_meninggal"
+                                class="form-control" placeholder="" value="">
+                            <ul class="list-group" id="statusPasienMeninggalList"
+                                style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="komorbid">Komorbid</label>
+                            <input type="text" name="komorbid" id="komorbid" class="form-control" placeholder=""
+                                value="">
+                            <ul class="list-group" id="komorbidList" style="z-index:1000;position:absolute;width:100%;">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-t-xl">
+                    <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i
+                            class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+                    <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i
+                            class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('input:text[name=status_keluar]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\">1. APD / Sembuh</li>';
+        output += '<li class=\"list-group-item link-class\">2. Meninggal</li>';
+        output += '<li class=\"list-group-item link-class\">3. Dirujuk</li>';
+        output += '<li class=\"list-group-item link-class\">4. Isolasi Mandiri di rumah</li>';
+        output += '<li class=\"list-group-item link-class\">5. APS</li>';
+        output += '<li class=\"list-group-item link-class\">6. Discarded</li>';
+        output += '';
+        $('#statusKeluarList').fadeIn();
+        $('#statusKeluarList').html(output).show();
+    });
+    $('#statusKeluarList').on('click', 'li', function () {
+        $('input:text[name=status_keluar]').val($(this).text());
+        $('#statusKeluarList').fadeOut();
+    });
+</script>
+<script type="text/javascript">
+    $('input:text[name=penyebab_kematian]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\"></li>';
+        output += '<li class=\"list-group-item link-class\">1. Covid-19</li>';
+        output += '<li class=\"list-group-item link-class\">2. Komorbid / Co-Insiden</li>';
+        output += '';
+        $('#penyebabKematianList').fadeIn();
+        $('#penyebabKematianList').html(output).show();
+    });
+    $('#penyebabKematianList').on('click', 'li', function () {
+        $('input:text[name=penyebab_kematian]').val($(this).text());
+        $('#penyebabKematianList').fadeOut();
+    });
+</script>
+<script type="text/javascript">
+    $('input:text[name=penyebab_kematian_lgs]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\"></li>';
+        output += '<li class=\"list-group-item link-class\">J80: Adult respiratory distress syndrome</li>';
+        output += '<li class=\"list-group-item link-class\">R57.2: Septic shock</li>';
+        output += '<li class=\"list-group-item link-class\">R65.1: Systemic Inflammatory Response Syndrome of infectious origin with organ failure</li>';
+        output += '<li class=\"list-group-item link-class\">R65.3: Systemic Inflammatory Response Syndrome of non-infectious origin with organ failure</li>';
+        output += '';
+        $('#penyebabKematianLgsList').fadeIn();
+        $('#penyebabKematianLgsList').html(output).show();
+    });
+    $('#penyebabKematianLgsList').on('click', 'li', function () {
+        $('input:text[name=penyebab_kematian_lgs]').val($(this).text());
+        $('#penyebabKematianLgsList').fadeOut();
+    });
+</script>
+<script type="text/javascript">
+    $('input:text[name=status_pasien_meninggal]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\"></li>';
+        output += '<li class=\"list-group-item link-class\">1. Discarded / Negatif</li>';
+        output += '<li class=\"list-group-item link-class\">2. Probable / Hasil Lab. tidak diketahui</li>';
+        output += '<li class=\"list-group-item link-class\">3. Konfirmasi</li>';
+        output += '';
+        $('#statusPasienMeninggalList').fadeIn();
+        $('#statusPasienMeninggalList').html(output).show();
+    });
+    $('#statusPasienMeninggalList').on('click', 'li', function () {
+        $('input:text[name=status_pasien_meninggal]').val($(this).text());
+        $('#statusPasienMeninggalList').fadeOut();
+    });
+</script>
+<script type="text/javascript">
+    $('input:text[name=komorbid]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\"></li>';
+        output += '<li class=\"list-group-item link-class\">1: Kecelakaan</li>';
+        output += '<li class=\"list-group-item link-class\">2: Melahirkan</li>';
+        output += '<li class=\"list-group-item link-class\">3: Asma</li>';
+        output += '<li class=\"list-group-item link-class\">4: Diabetes Mellitus</li>';
+        output += '<li class=\"list-group-item link-class\">5: Hipertensi</li>';
+        output += '<li class=\"list-group-item link-class\">6: Kanker</li>';
+        output += '<li class=\"list-group-item link-class\">7: Obesitas</li>';
+        output += '<li class=\"list-group-item link-class\">8: Penyakit Ginjal Kronik</li>';
+        output += '<li class=\"list-group-item link-class\">9: Penyakit Jantung</li>';
+        output += '<li class=\"list-group-item link-class\">10: Penyakit Paru Obstruktif Kronik</li>';
+        output += '<li class=\"list-group-item link-class\">11: Penyakit Serebrovaskular</li>';
+        output += '<li class=\"list-group-item link-class\">12: Tuberkulosis</li>';
+        output += '<li class=\"list-group-item link-class\">13: Lainnya</li>';
+        output += '';
+        $('#komorbidList').fadeIn();
+        $('#komorbidList').html(output).show();
+    });
+    $('#komorbidList').on('click', 'li', function () {
+        $('input:text[name=komorbid]').val($(this).text());
+        $('#komorbidList').fadeOut();
+    });
+</script>
+
+<script type="text/javascript">
+    // ketika tombol antrian ditekan
+
+    $("#simpan_soap").on("click", function (event) {
+        // var baseURL = mlite.url + '/' + mlite.admin;
+        if ($('#tgl_keluar').val() == '0000-00-00') {
+            alert('Pasien Belum Pulang')
+        } else {
+            event.preventDefault();
+            var no_rawat = $('#no_rawat').val();
+            var tgl_keluar = $('#tgl_keluar').val();
+            var id_covid = $('#id_covid').val();
+            var status_keluar = $('#status_keluar').val();
+            var penyebab_kematian = $('#penyebab_kematian').val();
+            var penyebab_kematian_lgs = $('#penyebab_kematian_lgs').val();
+            var status_pasien_meninggal = $('#status_pasien_meninggal').val();
+            var komorbid = $('#komorbid').val();
+
+            $.ajax({
+                type: "POST",
+                url: "{?=url([ADMIN,'data_sirs','savecovidkeluar'])?}",
+                data: {
+                    no_rawat: no_rawat,
+                    tgl_keluar: tgl_keluar,
+                    id_covid: id_covid,
+                    status_keluar: status_keluar,
+                    penyebab_kematian: penyebab_kematian,
+                    penyebab_kematian_lgs: penyebab_kematian_lgs,
+                    status_pasien_meninggal: status_pasien_meninggal,
+                    komorbid: komorbid
+                },
+                success: function (result) {
+                    // alert(result);
+                    var json = JSON.parse(result);
+                    var data = [json];
+                    console.log(data);
+                    if (data[0].status == false) {
+                        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+                            data[0].message +
+                            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+                            "</div>").show();
+                    } else {
+                        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+                            data[0].message +
+                            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+                            "</div>").show();
+                    }
+
+                }
+            });
+        }
+    });
+</script>

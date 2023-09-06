@@ -1,0 +1,263 @@
+<article class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="btn-group pull-right" style="margin-top:-8px;">
+					<span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+						<i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Tanggal</span>
+					</span>
+					<ul class="dropdown-menu dropdown-menu-right">
+						<form method="POST" action="" class="form-inline mt-3">
+							<!-- <label for="date1">Tanggal mulai </label> -->
+							<li style="padding-left:5px;padding-right:5px;">
+								<input type="text" name="date1" id="date1" class="form-control periode_bundles">
+							</li>
+							<!-- <label for="date2">sampai </label> -->
+							<li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+								<input type="text" name="date2" id="date2" class="form-control periode_bundles">
+							</li>
+							<li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+								<button type="submit" name="submit" class="btn btn-primary btn-block">Cari</button>
+							</li>
+						</form>
+					</ul>
+				</div>
+				<h3 class="panel-title">Laporan Bundles HAIs Per Kamar/Bangsal</h3>
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive no-margin">
+					<table class="table table-striped no-margin table-bordered" id="lap" width="100%">
+						<thead>
+							<tr>
+								<th rowspan="2">No.</th>
+								<th rowspan="2">Kamar</th>
+								<th rowspan="2">Jumlah Pasien</th>
+								<th colspan="4" style="text-align: center;">Insersi VAP</th>
+								<th colspan="5" style="text-align: center;">Insersi IADP/CLABSI</th>
+								<th colspan="5" style="text-align: center;">Insersi VENA PERIPER</th>
+								<th colspan="4" style="text-align: center;">Insersi ISK</th>
+								<th colspan="5" style="text-align: center;">Maintanance VAP</th>
+								<th colspan="5" style="text-align: center;">Maintanance IADP</th>
+								<th colspan="5" style="text-align: center;">Maintanance VENA PERIFER</th>
+								<th colspan="6" style="text-align: center;">Maintanance ISK</th>
+								<th colspan="4" style="text-align: center;">IDO Pre Operasi</th>
+								<th colspan="6" style="text-align: center;">IDO Intra Operasi</th>
+								<th colspan="4" style="text-align: center;">IDO Post Operasi</th>
+							</tr>
+							<tr>
+								<!-- Insersi VAP -->
+								<th>Hand Hygiene</th>
+								<th>Tehniksteril</th>
+								<th>APD</th>
+								<th>Sedasi</th>
+								<!-- Insersi IADP/CLABSI -->
+								<th>Hand Hygiene</th>
+								<th>Seleksi Area</th>
+								<th>Tehniksteril</th>
+								<th>Alcohol-based</th>
+								<th>APD</th>
+								<!-- Insersi VENA PERIPER -->
+								<th>Hand Hygiene</th>
+								<th>Kaji Kebutuhan</th>
+								<th>Tehniksteril</th>
+								<th>Petugas</th>
+								<th>Desinfeksi</th>
+								<!-- Insersi ISK -->
+								<th>Kaji Kebutuhan</th>
+								<th>Petugas</th>
+								<th>Kebersihan Tangan</th>
+								<th>Tehniksteril</th>
+								<!-- Maintanance VAP -->
+								<th>Hand Hygiene</th>
+								<th>Oral Hygiene</th>
+								<th>Oropharingeal</th>
+								<th>Sedasition</th>
+								<th>Posisi Kepala</th>
+								<!-- Maintanance IADP -->
+								<th>Hand Hygiene</th>
+								<th>Desinfeksi Hub</th>
+								<th>Perawatan Area</th>
+								<th>Ganti dreasing</th>
+								<th>Lepas infus</th>
+								<!-- Maintanance VENA -->
+								<th>Hand Hygiene</th>
+								<th>Perawatan area</th>
+								<th>Kaji Kebutuhan</th>
+								<th>Ganti administrasi</th>
+								<th>Edukasi</th>
+								<!-- Maintanance ISK -->
+								<th>Hand Hygiene</th>
+								<th>Perawatan kateter</th>
+								<th>Urinebag t.dilantai</th>
+								<th>Urinebag rendah></th>
+								<th>Posisi selang</th>
+								<th>Segera lepas</th>
+								<!-- IDO Pre Operasi -->
+								<th>Mandi</th>
+								<th>Pencukuran</th>
+								<th>Gula Darah</th>
+								<th>Antibiotik</th>
+								<!-- IDO Intra Operasi -->
+								<th>Hand Hygiene</th>
+								<th>Instrument Steril</th>
+								<th>Antiseptic</th>
+								<th>Teknik operasi</th>
+								<th>System mobile</th>
+								<th>Suhu 19-24ºC</th>
+								<!-- IDO Post Operasi -->
+								<th>Luka ditutup</th>
+								<th>Rawat Luka</th>
+								<th>APD</th>
+								<th>Kaji nutris</th>
+							</tr>
+						</thead>
+						<tbody>
+							{loop: $bundleskamar.list}
+							<tr>
+								<td></td>
+								<td>{$value.nm_bangsal}</td>
+								{loop: $value.jumlah as $total}
+								<td>{$total.jml_no_rawat}</td>
+
+								<td>{$total.jml_hand_vap}</td>
+								<td>{$total.jml_tehniksteril_vap}</td>
+								<td>{$total.jml_apd_vap}</td>
+								<td>{$total.jml_sedasi_vap}</td>
+
+								<td>{$total.jml_hand_iadp}</td>
+								<td>{$total.jml_area_iadp}</td>
+								<td>{$total.jml_tehniksteril_iadp}</td>
+								<td>{$total.jml_alcohol_iadp}</td>
+								<td>{$total.jml_apd_iadp}</td>
+
+								<td>{$total.jml_hand_vena}</td>
+								<td>{$total.jml_kaji_vena}</td>
+								<td>{$total.jml_tehnik_vena}</td>
+								<td>{$total.jml_petugas_vena}</td>
+								<td>{$total.jml_desinfeksi_vena}</td>
+
+								<td>{$total.jml_kaji_isk}</td>
+								<td>{$total.jml_petugas_isk}</td>
+								<td>{$total.jml_tangan_isk}</td>
+								<td>{$total.jml_tehniksteril_isk}</td>
+
+								<td>{$total.jml_hand_mainvap}</td>
+								<td>{$total.jml_oral_mainvap}</td>
+								<td>{$total.jml_manage_mainvap}</td>
+								<td>{$total.jml_sedasi_mainvap}</td>
+								<td>{$total.jml_kepala_mainvap}</td>
+
+								<td>{$total.jml_hand_mainiadp}</td>
+								<td>{$total.jml_desinfeksi_mainiadp}</td>
+								<td>{$total.jml_perawatan_mainiadp}</td>
+								<td>{$total.jml_dreasing_mainiadp}</td>
+								<td>{$total.jml_infus_mainiadp}</td>
+
+								<td>{$total.jml_hand_mainvena}</td>
+								<td>{$total.jml_perawatan_mainvena}</td>
+								<td>{$total.jml_kaji_mainvena}</td>
+								<td>{$total.jml_administrasi_mainvena}</td>
+								<td>{$total.jml_edukasi_mainvena}</td>
+
+								<td>{$total.jml_hand_mainisk}</td>
+								<td>{$total.jml_kateter_mainisk}</td>
+								<td>{$total.jml_baglantai_mainisk}</td>
+								<td>{$total.jml_bagrendah_mainisk}</td>
+								<td>{$total.jml_posisiselang_mainisk}</td>
+								<td>{$total.jml_lepas_mainisk}</td>
+
+								<td>{$total.jml_mandi_idopre}</td>
+								<td>{$total.jml_cukur_idopre}</td>
+								<td>{$total.jml_guladarah_idopre}</td>
+								<td>{$total.jml_antibiotik_idopre}</td>
+
+								<td>{$total.jml_hand_idointra}</td>
+								<td>{$total.jml_steril_idointra}</td>
+								<td>{$total.jml_antiseptic_idointra}</td>
+								<td>{$total.jml_tehnik_idointra}</td>
+								<td>{$total.jml_mobile_idointra}</td>
+								<td>{$total.jml_suhu_idointra}</td>
+
+								<td>{$total.jml_luka_idopost}</td>
+								<td>{$total.jml_rawat_idopost}</td>
+								<td>{$total.jml_apd_idopost}</td>
+								<td>{$total.jml_kaji_idopost}</td>
+								{/loop}
+							</tr>
+							{/loop}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th style="text-align: center;">Total :</th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</article>
+<script type="text/javascript">
+	$(function () {
+		$('.periode_bundles').datetimepicker({
+			defaultDate: '{?=date('Y-m-d')?}',
+			format: 'YYYY-MM-DD',
+			locale: 'id'
+		   });
+	   });
+</script>

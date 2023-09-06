@@ -1,0 +1,191 @@
+    <h4>Bundles IDO PRE OPERASI</h4>
+    <div class="table-responsive no-margin">
+        <table class="table table-bordered no-padding css-serial" width="100%">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama Pasien</th>
+                    <th>Mandi dengan anti septic/plan soap sore dan pagi hari</th>
+                    <th>Pencukuran bila diperlukan dan dengan clipper</th>
+                    <th>Gula Darah < 200 mg/dl/normal </th>
+                    <th>Antibiotik 60 menit sebelum insisi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {if: !empty($bundles)}
+                {loop: $bundles as $value}
+                {if: $value.mandi_idopre != null or $value.cukur_idopre != null or $value.guladarah_idopre != null or  $value.antibiotik_idopre != null }
+                <tr>
+                    <td></td>
+                    <td>{$value.tanggal}<br> <button type="button" name="button" class="btn btn-success btn-xs edit_ido_pre"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
+                        data-mandi_idopre="{$value.mandi_idopre}" 
+                        data-cukur_idopre="{$value.cukur_idopre}" 
+                        data-guladarah_idopre="{$value.guladarah_idopre}"
+                        data-antibiotik_idopre="{$value.antibiotik_idopre}" >
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
+
+                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_idopre"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
+                        data-mandi_idopre="{$value.mandi_idopre}" 
+                        data-cukur_idopre="{$value.cukur_idopre}" 
+                        data-guladarah_idopre="{$value.guladarah_idopre}"
+                        data-antibiotik_idopre="{$value.antibiotik_idopre}"><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                    </td>
+                    <td>{$nama}</td>
+                    <td>{if: $value.mandi_idopre == '1'}YA {elseif: $value.mandi_idopre == '0'}TIDAK {else}{/if}</td>
+                    <td>{if: $value.cukur_idopre == '1'}YA {elseif: $value.cukur_idopre == '0'}TIDAK {else}{/if}</td>
+                    <td>{if: $value.guladarah_idopre == '1'}YA {elseif: $value.guladarah_idopre == '0'}TIDAK {else}{/if}</td>
+                    <td>{if: $value.antibiotik_idopre == '1'}YA {elseif: $value.antibiotik_idopre == '0'}TIDAK {else}{/if}</td>
+                </tr>
+                {/if}
+                {/loop}
+                {/if}
+            </tbody>
+        </table>
+    </div>
+
+    <h4>Bundles IDO INTRA OPERASI </h4>
+    <div class="table-responsive no-margin">
+        <table class="table table-bordered no-padding  css-serial" width="100%" class="css-serial">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama Pasien</th>
+                    <th>Hand Hygiene dengan Surginal Antiseptik</th>
+                    <th>Instrument Steril</th>
+                    <th>Meggunakan antiseptic skin preparasi</th>
+                    <th>Teknik operasi steril</th>
+                    <th>System mobile personil dibatasi</th>
+                    <th>Suhu / Kelembaban Udara 19-24ºC 40-60%</th>
+                </tr>
+            </thead>
+            <tbody>
+                {if: !empty($bundles)}
+                {loop: $bundles as $value}
+                {if: $value.hand_idointra != null or $value.steril_idointra != null or $value.antiseptic_idointra != null or $value.tehnik_idointra != null or $value.mobile_idointra != null or $value.suhu_idointra != null}
+                <tr>
+                    <td></td>
+                    <td>
+                        {$value.tanggal}<br>
+                        <button type="button" name="button" class="btn btn-success btn-xs edit_ido_intra"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
+                        data-hand_idointra="{$value.hand_idointra}"
+                        data-steril_idointra="{$value.steril_idointra}"
+                        data-antiseptic_idointra="{$value.antiseptic_idointra}"
+                        data-tehnik_idointra="{$value.tehnik_idointra}"
+                        data-mobile_idointra="{$value.mobile_idointra}"
+                        data-suhu_idointra="{$value.suhu_idointra}">
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
+
+                    <button type="button" name="button" class="btn btn-danger btn-xs hapus_idointra"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
+                        data-hand_idointra="{$value.hand_idointra}"
+                        data-steril_idointra="{$value.steril_idointra}"
+                        data-antiseptic_idointra="{$value.antiseptic_idointra}"
+                        data-tehnik_idointra="{$value.tehnik_idointra}"
+                        data-mobile_idointra="{$value.mobile_idointra}"
+                        data-suhu_idointra="{$value.suhu_idointra}"><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                    </td>
+                    <td>{$nama}</td>
+                    <td>{if: $value.hand_idointra == '1'} YA {elseif: $value.hand_idointra == '0'} TIDAK {else} {/if}</td>
+                    <td>{if: $value.steril_idointra == '1'} YA{elseif: $value.steril_idointra == '0'} TIDAK{else} {/if}</td>
+                    <td>{if: $value.antiseptic_idointra== '1'} YA {elseif: $value.antiseptic_idointra== '0'} TIDAK{else} {/if} </td>
+                    <td>{if: $value.tehnik_idointra == '1'} YA {elseif: $value.tehnik_idointra == '0'} TIDAK {else} {/if} </td>
+                    <td>{if: $value.mobile_idointra == '1'} YA {elseif: $value.mobile_idointra == '0'} TIDAK{else} {/if} </td>
+                    <td>{if: $value.suhu_idointra == '1'} YA {elseif: $value.suhu_idointra == '0'} TIDAK{else} {/if}</td>
+                </tr>
+                {/if}
+                {/loop}
+                {/if}
+            </tbody>
+        </table>
+    </div>
+
+    <h4>Bundles IDO POST OPERASI</h4>
+    <div class="table-responsive no-margin">
+        <table class="table table-bordered no-padding css-serial" width="100%">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Tanggal</th>
+                    <th>Nama Pasien</th>
+                    <th>Luka ditutup 2x 24 jam/ bila terjadi rembesan segera diganti</th>
+                    <th>Rawat luka dengan tehniksteril dengan cairan Nacl</th>
+                    <th>Menggunakan APD saat merawat luka sesuai kebutuhan</th>
+                    <th>Kaji nutris pasien</th>
+                </tr>
+            </thead>
+            <tbody>
+                {if: !empty($bundles)}
+                {loop: $bundles as $value}
+                {if: $value.luka_idopost != null or $value.rawat_idopost != null or $value.apd_idopost != null or $value.kaji_idopost != null}
+                <tr>
+                    <td></td>
+                    <td>
+                        {$value.tanggal}<br>
+                        <button type="button" name="button" class="btn btn-success btn-xs edit_ido_post"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}" 
+                        data-no_rkm_medis="{$no_rkm_medis}"
+                        data-nm_pasien="{$nama}" 
+                        data-luka_idopost="{$value.luka_idopost}"
+                        data-rawat_idopost="{$value.rawat_idopost}" 
+                        data-apd_idopost="{$value.apd_idopost}"
+                        data-kaji_idopost="{$value.kaji_idopost}">
+                        <span class="fa fa-edit"></span>
+                        <span class="hidden-xs"> Edit</span></button>
+
+                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_idopost"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}" 
+                        data-luka_idopost="{$value.luka_idopost}"
+                        data-rawat_idopost="{$value.rawat_idopost}" 
+                        data-apd_idopost="{$value.apd_idopost}"
+                        data-kaji_idopost="{$value.kaji_idopost}" ><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                    </td>
+                    <td>{$nama}</td>
+                    <td>{if: $value.luka_idopost == '1'} YA {elseif: $value.luka_idopost == '0'} TIDAK{else} {/if}</td>
+                    <td>{if: $value.rawat_idopost == '1'} YA {elseif: $value.rawat_idopost == '0'} TIDAK{else} {/if}</td>
+                    <td>{if: $value.apd_idopost == '1'} YA {elseif: $value.apd_idopost == '0'} TIDAK{else} {/if}</td>
+                    <td>{if: $value.kaji_idopost == '1'} YA {elseif: $value.kaji_idopost == '0'} TIDAK{else} {/if}</td>
+                </tr>
+                {/if}
+                {/loop}
+                {/if}
+            </tbody>
+        </table>
+    </div>

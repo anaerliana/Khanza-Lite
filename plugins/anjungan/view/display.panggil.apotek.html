@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="refresh" content="50"> 
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <title>{$title} - {$settings.nama_instansi}</title>
+  <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+  <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+  <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+  <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+  <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+  <script src="{?=url()?}/assets/jscripts/responsivevoice.js"></script>
+  <style media="screen">
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #fff;
+      background: #0264d6;
+      height: calc(100vh);
+      width: 100%;
+    }
+
+    li:nth-child(even) {
+      background: #0264d6;
+      color: #ffffff;
+    }
+
+    li:nth-child(odd) {
+      background: #ffffff;
+      color: #0264d6;
+    }
+
+    footer {
+      position: fixed;
+      right: 0px;
+      bottom: 0px;
+      height: 40px;
+      width: calc(100% - 0px);
+      font-size: 14px;
+      color: #fff;
+    }
+
+    footer a,
+    footer a:hover {
+      color: #fff;
+    }
+
+    .kanan {
+      position: absolute;
+      right: 20px;
+      top: 0px;
+      width: 20%;
+      padding: 30px;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .panel-footer .no_antrian {
+      /* font-size: 65px; */
+      color: #000;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid" id="display">
+    <h1 class="display-3 text-left text-white m-3" style="font-size: 40px;"><img class="logo" src="{?=url()?}/{$logo}"
+        alt="" width="110px" height="115px"> Antrian Apotek {$settings.nama_instansi}</h1>
+    <h1 class="display-3 text-center kanan">
+      <div class="panel border-success">
+        <div class="panel-footer bg-transparent border-success">
+          <div class="no_antrian">
+            <p style="font-size: 20px; font-weight:bold;">NOMOR ANTRIAN</p><b
+              style="font-size: 55px;">{$antrian.no_antrian}</b>
+          </div>
+        </div>
+      </div>
+    </h1>
+    <table class="table table-bordered text-primary" id="autoref">
+      <tbody class="bg-primary">
+        <tr>
+          <td>
+            <!-- id="serahkan_{$value.no_antrian}" -->
+            <div id="list_lab" style="font-size: 24px; font-weight:bold;">
+              <ul class="list-unstyled">
+                {loop: $display}
+                <li style="padding:10px;">
+                  <button type="button" class="btn btn-lg btn-warning" style="color:black;"><b
+                      style="font-size: 20px;">{$value.no_antrian}</b></button> {$value.nm_pasien} -
+                  [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} - [ {$value.jns_racikan} ]
+                  <span style="font-size: 18px;" class="pull-right">Status:
+                    <!-- <b style="color:red;" id="coba"></b> -->
+                    <!-- {$value.status_selesai} -->
+                    <b id="coba_{$value.no_antrian}" {if: $value.status_selesai=='Sudah' }style="color:red;"
+                      {/if}>{$value.status_selesai}</b>
+                    <p>{if: $responsivevoice == 'true'}
+                      <button type="button" name="button" class="btn btn-xs btn-primary panggil"
+                        data-nm_pasien="{?=strtolower($value.nm_pasien)?}"
+                        data-no_antrian="{?=strtolower($value.no_antrian)?}"
+                        data-nm_poli="{?=strtolower($value.nm_poli)?}" data-jam_selesai="{$value.jam_selesai}"
+                        data-panggil="coba_{$value.no_antrian}"><i class="
+                        fa fa-bullhorn"></i><span class="hidden-xs hidden-sm">
+                          Panggil</span></button>{/if}
+                      <button type="button" name="button" class="btn btn-xs btn-warning diserahkan"
+                        data-no_antrian="{$value.no_antrian}"
+                        data-jam_penyerahan="{$value.jam_penyerahan}"><span>Diserahkan</span></button>
+                      <!-- data-serah="serahkan_{$value.no_antrian}" -->
+                      <!-- onClick="window.location.reload()" -->
+                    </p>
+                  </span>
+                </li>
+                {/loop}
+              </ul>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+    <div class="canvas">
+      <p class="pull-right">
+        Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F.
+            Basoro</b>.</a>
+        {$powered}.
+      </p>
+      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span
+          id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>',
+          $username) ?}</span></p>
+    </div>
+  </footer>
+</body>
+
+</html>
+
+<script type="text/javascript">
+  $("#display").on("click", ".panggil", function (event) {
+    event.preventDefault();
+
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var nm_poli = $(this).attr("data-nm_poli");
+    var no_antrian = $(this).attr("data-no_antrian");
+    var jam_selesai = $(this).attr("data-jam_selesai");
+    var panggil = $(this).attr("data-panggil");
+    console.log({
+      nm_pasien, nm_poli, no_antrian, panggil
+    });
+    function play() {
+      responsiveVoice.speak(
+        nm_pasien + ", nomor antrian " + no_antrian + ", dari " + nm_poli, "Indonesian Male", { pitch: 1, rate: 0.8, volume: 2 }
+      );
+
+      console.log({
+        no_antrian, jam_selesai
+      });
+
+      $.ajax({
+        url: '{?=url()?}/anjungan/setselesaiobat',
+        dataType: 'json',
+        data: { no_antrian: no_antrian, jam_selesai: jam_selesai },
+        success: function (xhr) {
+          console.log(xhr.status);
+          if (xhr.status == true) {
+
+            document.getElementById(panggil).textContent = "Sudah";
+            document.getElementById(panggil).style.color = "#ff0000";
+            console.log("sudah");
+          }
+        },
+        error: function (xhr) {
+          console.log(xhr.status);
+          if (xhr.status == false) {
+            // alert('Obat Belum selesai')
+          }
+        }
+      });
+    }
+    play();
+  });
+</script>
+
+
+<script type="text/javascript">
+  $("#display").on("click", ".diserahkan", function (event) {
+    var no_antrian = $(this).attr("data-no_antrian");
+    var jam_penyerahan = $(this).attr("data-jam_penyerahan");
+    // var serah = $(this).attr("data-serah");
+    var row = this.parentNode.parentNode.parentNode;
+    console.log({
+      no_antrian, jam_penyerahan
+      // serah
+    });
+    $.ajax({
+      url: '{?=url()?}/anjungan/setdiserahkan',
+      dataType: 'json',
+      data: { no_antrian: no_antrian, jam_penyerahan: jam_penyerahan },
+      success: function (xhr) {
+
+        console.log(xhr.status);
+        if (xhr.status == true) {
+          //alert('Obat Sudah diserahkan')
+          row.parentNode.removeChild(row);
+
+        }
+      },
+      error: function (xhr) {
+        console.log(xhr.status);
+        if (xhr.status == false) {
+          //alert('Obat Gagal Diserahkan')
+        }
+      }
+    });
+  });
+</script>
+
+
+<!-- <script type="text/javascript">
+  $(document).ready(function () {
+    $("#display").on('click', '.diserahkan', function () {
+      $.ajax({
+        url: '{?=url()?}/anjungan/panggilapotek',
+        method: "GET",
+        dataType: 'json',
+        success: function (response) {
+          $('#autoref').html(response);
+        }
+      });
+    });
+  });
+</script> -->
+<!-- <script>
+  $(document).ready(function () {
+    setInterval(function () {
+      $("#autoref").ajax({
+        url: '{?=url()?}/anjungan/panggilapotek',
+      }).done(function () {
+        $(this).html("done");
+      });
+    }, 2000); // 15000 micro second = 15 sec.
+  });
+  // setTimeout(function () {
+  //   $("#ref").load("display.panggil.apotek.html #ref");
+  // }, 5000);
+</script> -->

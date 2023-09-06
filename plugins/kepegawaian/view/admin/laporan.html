@@ -1,0 +1,94 @@
+<article class="row">
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<div class="btn-group pull-right" style="margin-top:-8px;">
+					<!-- <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+						<div id="btn_cetak" data-toggle="modal"><i class="fa fa-print"></i><span class="hidden-xs">
+								Cetak</span></div>
+					</span> -->
+				</div>
+				<h3 class="panel-title">Data Input Dan Upload Pegawai</h3>
+			</div>
+			<div class="panel-body">
+				<div class="table-responsive no-margin">
+					<table class="table table-striped no-margin table-bordered" id="laporan" width="100%">
+						<thead>
+							<tr>
+								<th colspan="3"></th>
+								<th colspan="3"><center>Riwayat Pendidikan</center></th>
+								<th colspan="3"><center>Riwayat Pegawai</center></th>
+								<th colspan="2"></th>
+							</tr>
+							<tr>
+								<th>Nip Pegawai</th>
+								<th>Nama Pegawai</th>
+								<th>Ruangan</th>
+								<th scope="col">Input Data</th>
+								<th scope="col">Sudah Upload</th>
+								<th scope="col">Belum Upload</th>
+								<th scope="col">Input Data</th>
+								<th scope="col">Sudah Upload</th>
+								<th scope="col">Belum Upload</th>
+								<th>Berkas Tambahan</th>
+								<!-- <th class="text-right">Aksi</th> -->
+							</tr>
+						</thead>
+						<tbody>
+							{if: !empty($laporan.list)}
+							{loop: $laporan.list}
+							<tr>
+								<td>{$value.NIP}</td>
+								<td>{$value.NAMA}</td>
+								<td>{$value.Bidang}</td>
+								<td>{$value.pd}</td>
+								<td>{$value.pdnot}</td>
+								<td>{$value.pdnul}</td>
+								<td>{$value.pg}</td>
+								<td>{$value.pgnot}</td>
+								<td>{$value.pgnul}</td>
+								<td>{$value.bks}</td>
+								<!-- <td class="text-right">
+									<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
+										<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
+									</a>
+									<a href="{$value.editURL}" class="btn btn-success btn-xs">
+										<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+									</a>
+								</td> -->
+							</tr>
+							{/loop}
+							{else}
+							<tr>
+								<td colspan="6" class="text-center">Kosong</td>
+							</tr>
+							{/if}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</article>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			...
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+	$("#btn_cetak").click(function () {
+		var baseURL = mlite.url + '/' + mlite.admin;
+		//var url    = baseURL + '/kepegawaian/print?t=' + mlite.token;
+		//var cari = $('input:text[name=cari]').val();
+
+		//$.post(url, {cari: cari} ,function(data) {
+		//window.open(baseURL + '/kepegawaian/cetakpdf?t=' + mlite.token);
+		$("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/kepegawaian/print?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+		//});
+
+		return false;
+	});
+</script>

@@ -1,0 +1,68 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Rekap Presensi BKD</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row clearfix">
+                <div class="col col-md-6">
+                </div>
+                <div class="col col-md-6">
+                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                    <div class="input-group">
+                        <select name="b" id="bulan" data-use-search="true" data-options-height="10px" class="form-control" placeholder="Bulan">
+                          {loop: $rekap.bulan}
+                            <option value="{$value}">{$value}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                      <div class="input-group">
+                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                          <span class="input-group-btn">
+                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                          </span>
+                      </div>
+                  </form>
+                </div>
+              </div>
+    				<div class="table-responsive no-margin">
+    				    <table class="table table-striped no-margin">
+    					    <thead>
+    						    <tr>
+                                    <th>Nama</th>
+                                    <th>Cuti</th>
+                                    <th>Izin</th>
+                                    <th>Sakit</th>
+    								<th class="text-right">Aksi</th>
+    							</tr>
+    						</thead>
+    						<tbody>
+        						{if: !empty($rekap.list)}
+								{loop: $rekap.list}
+    								<tr>
+                                        <td>{$value.nama}</td>
+                                        <td>{if: $value.kehadiran.cuti == ''} 0 {else} {$value.kehadiran.cuti} {/if}</td>
+                                        <td>{if: $value.kehadiran.izin == ''} 0 {else} {$value.kehadiran.izin} {/if}</td>
+                                        <td>{if: $value.kehadiran.sakit == ''} 0 {else} {$value.kehadiran.sakit} {/if}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ubah</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr>
+                                        <td colspan="4" class="text-center">Kosong</td>
+                                    </tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+					{$rekap.pagination}
+            </div>
+        </div>
+    </div>
+</article>

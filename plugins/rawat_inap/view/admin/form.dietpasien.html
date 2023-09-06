@@ -1,0 +1,121 @@
+<div id="form_dietpasien" class="mx-2">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="no_rawat" class="col-sm-3 control-label">No Rawat</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor RM</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik" value=""
+                readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="nm_pasien" class="col-sm-3 control-label">Nama Pasien</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="kd_kamar" class="col-sm-3 control-label">Kode Kamar</label>
+            <div class="col-sm-9">
+              <input type="text" name="kd_kamar" class="form-control" placeholder="Kode Kamar" value="" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="tanggal" class="col-sm-3 control-label">Tanggal</label>
+            <div class="col-sm-9">
+              <input type="text" id="tanggal" name="tanggalhari" class="form-control tanggal" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="waktu" class="col-sm-3 control-label">Waktu</label>
+            <div class="col-sm-9">
+              <select id="waktu" name="waktu" class="form-control">
+                <option></option>
+                <option value="Pagi">Pagi</option>
+                <option value="Siang">Siang</option>
+                <option value="Sore">Sore</option>
+                <option value="Malam">Malam</option>
+                <option value="Snack">Snack</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="nama_diet">
+            <label class="col-md-3 control-label">Diet</label>
+            <div class="col-sm-9">
+              <input type="hidden" name="kd_diet">
+              <input type="text" class="form-control" name="nama_diet" id="nama_diet" value="">
+              <ul class="list-group" id="nama_dietList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <!-- <div class="text-right">
+          <button class="btn btn-primary">
+              <span class="glyphicon glyphicon-plus"><a href="{?=url([ADMIN,'rekap_diet','itemdiet'])?}" id="itemdiet"></a></span>
+          </button>
+        </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-12 m-b-xl">
+    <div class="text-center">
+      <button type="button" name="button" class="btn btn-primary " id="simpan_dietpasien"><i
+          class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-success" id="selesai_dietpasien"><i
+          class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('input:text[name=nama_diet]').on('input', function (e) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/rawat_inap/diet?t=' + mlite.token;
+    var query = $('input:text[name=nama_diet]').val();
+    if (query != "") {
+      $.ajax({
+        url: url,
+        method: "POST",
+        data: { query: query },
+        success: function (data) {
+          $('#nama_dietList').fadeIn();
+          $('#nama_dietList').html(data);
+        }
+      });
+    }
+    $('#nama_dietList').fadeIn();
+  });
+
+  $('#nama_dietList').on('click', 'li', function () {
+    $('input:text[name=nama_diet]').val($(this).text());
+    $('input:hidden[name=kd_diet]').val($(this).data('id'))
+    $('#nama_dietList').fadeOut();
+  });
+</script>
+
+<script>
+
+  $(function () {
+    $('.tanggal').datetimepicker({
+      format: 'YYYY-MM-DD',
+      locale: 'id'
+    });
+  }); 
+</script>

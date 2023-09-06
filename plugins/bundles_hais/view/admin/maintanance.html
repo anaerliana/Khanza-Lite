@@ -1,0 +1,270 @@
+<h4>Bundles Maintanance VAP</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Oral Hygiene 4 – 6 x sehariatau  K/ P</th>
+                <th>Managemen oropharingeal dan endotrakheal</th>
+                <th>Sedasition vacation</th>
+                <th>Posisi Kepala 30 – 45 ◦</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.hand_mainvap != null or $value.oral_mainvap != null or $value.manage_mainvap != null or $value.sedasi_mainvap != null or $value.kepala_mainvap != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                        <button type="button" name="button" class="btn btn-success btn-xs edit_main_vap"
+                          data-tanggal="{$value.tanggal}" 
+                          data-no_rawat="{$no_rawat}"
+                          data-kd_kamar="{$kd_kamar}"
+                          data-no_rkm_medis="{$no_rkm_medis}" 
+                          data-nm_pasien="{$nama}" 
+                          data-hand_mainvap="{$value.hand_mainvap}" 
+                          data-oral_mainvap="{$value.oral_mainvap}" 
+                          data-manage_mainvap="{$value.manage_mainvap}"
+                          data-sedasi_mainvap="{$value.sedasi_mainvap}"
+                          data-kepala_mainvap="{$value.kepala_mainvap}" >
+                          <span class="fa fa-edit"></span>
+                          <span class="hidden-xs"> Edit</span></button>
+
+                        <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_vap"
+                        data-id="{$value.id}"
+                        data-tanggal="{$value.tanggal}" 
+                        data-no_rawat="{$no_rawat}"
+                        data-kd_kamar="{$kd_kamar}"
+                        data-no_rkm_medis="{$no_rkm_medis}" 
+                        data-nm_pasien="{$nama}"  
+                        data-hand_mainvap="{$value.hand_mainvap}" 
+                        data-oral_mainvap="{$value.oral_mainvap}" 
+                        data-manage_mainvap="{$value.manage_mainvap}"
+                        data-sedasi_mainvap="{$value.sedasi_mainvap}"
+                        data-kepala_mainvap="{$value.kepala_mainvap}"><span
+                        class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$nama}</td>
+                <td>{if: $value.hand_mainvap == '1'} YA {elseif: $value.hand_mainvap == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.oral_mainvap == '1'} YA {elseif: $value.oral_mainvap == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.manage_mainvap == '1'} YA {elseif: $value.manage_mainvap == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.sedasi_mainvap == '1'} YA {elseif: $value.sedasi_mainvap == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.kepala_mainvap == '1'} YA {elseif: $value.kepala_mainvap == '0'} TIDAK {else} {/if}</td> 
+            </tr>  
+            {/if}
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Maintanance IADP/CLABSI</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Desinfeksi hub CVC dengan alkohol 70 %</th>
+                <th>Perawatan area insersi</th>
+                <th>Ganti dreasing secara aseptik</th>
+                <th>Lepas infus yang tidak perlu</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.hand_mainiadp != null or $value.desinfeksi_mainiadp != null or $value.perawatan_mainiadp != null or $value.dreasing_mainiadp != null or $value.infus_mainiadp != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                    <button type="button" name="button" class="btn btn-success btn-xs edit_main_iadp"
+                    data-tanggal="{$value.tanggal}" 
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}" 
+                    data-hand_mainiadp="{$value.hand_mainiadp}" 
+                    data-desinfeksi_mainiadp="{$value.desinfeksi_mainiadp}" 
+                    data-perawatan_mainiadp="{$value.perawatan_mainiadp}" 
+                    data-dreasing_mainiadp="{$value.dreasing_mainiadp}"
+                    data-infus_mainiadp="{$value.infus_mainiadp}" >
+                    <span class="fa fa-edit"></span>
+                    <span class="hidden-xs"> Edit</span></button>
+
+                   <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_iadp"
+                    data-id="{$value.id}"
+                    data-tanggal="{$value.tanggal}" 
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}"  
+                    data-hand_mainiadp="{$value.hand_mainiadp}" 
+                    data-desinfeksi_mainiadp="{$value.desinfeksi_mainiadp}" 
+                    data-perawatan_mainiadp="{$value.perawatan_mainiadp}" 
+                    data-dreasing_mainiadp="{$value.dreasing_mainiadp}"
+                    data-infus_mainiadp="{$value.infus_mainiadp}" >
+                    <span class="fa fa-trash"></span>
+                        <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$nama}</td>
+                <td>{if: $value.hand_mainiadp == '1'} YA {elseif: $value.hand_mainiadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.desinfeksi_mainiadp == '1'} YA {elseif: $value.desinfeksi_mainiadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.perawatan_mainiadp == '1'} YA {elseif: $value.perawatan_mainiadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.dreasing_mainiadp == '1'} YA {elseif: $value.dreasing_mainiadp == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.infus_mainiadp == '1'} YA {elseif: $value.infus_mainiadp == '0'} TIDAK {else} {/if}</td> </tr>   
+            {/if}
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Maintanance VENA PERIPER</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Perawatan area insersi</th>
+                <th>Kaji Kebutuhan jika tidak perlu segera lepas</th>
+                <th>Penggantian administrasi set</th>
+                <th>Edukasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.hand_mainvena != null or $value.perawatan_mainvena != null or $value.kaji_mainvena != null or $value.administrasi_mainvena != null or $value.edukasi_mainvena != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                    <button type="button" name="button" class="btn btn-success btn-xs edit_main_vena"
+                    data-tanggal="{$value.tanggal}" 
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}" 
+                    data-hand_mainvena="{$value.hand_mainvena}" 
+                    data-perawatan_mainvena="{$value.perawatan_mainvena}" 
+                    data-kaji_mainvena="{$value.kaji_mainvena}" 
+                    data-administrasi_mainvena="{$value.administrasi_mainvena}"
+                    data-edukasi_mainvena="{$value.edukasi_mainvena}" >
+                    <span class="fa fa-edit"></span>
+                    <span class="hidden-xs"> Edit</span></button>
+
+                    <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_vena"
+                    data-id="{$value.id}"
+                    data-tanggal="{$value.tanggal}" 
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}"  
+                    data-hand_mainvena="{$value.hand_mainvena}" 
+                    data-perawatan_mainvena="{$value.perawatan_mainvena}" 
+                    data-kaji_mainvena="{$value.kaji_mainvena}" 
+                    data-administrasi_mainvena="{$value.administrasi_mainvena}"
+                    data-edukasi_mainvena="{$value.edukasi_mainvena}">
+                    <span class="fa fa-trash"></span>
+                    <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$nama}</td>
+                <td>{if: $value.hand_mainvena == '1'} YA {elseif: $value.hand_mainvena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.perawatan_mainvena == '1'} YA {elseif: $value.perawatan_mainvena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.kaji_mainvena == '1'} YA {elseif: $value.kaji_mainvena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.administrasi_mainvena == '1'} YA {elseif: $value.administrasi_mainvena == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.edukasi_mainvena == '1'} YA {elseif: $value.edukasi_mainvena == '0'} TIDAK {else} {/if}</td> </tr>  
+            {/if}
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>
+
+<h4>Bundles Maintanance ISK</h4>
+<div class="table-responsive no-margin">
+    <table class="table table-bordered no-padding css-serial" width="100%">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Pasien</th>
+                <th>Hand Hygiene</th>
+                <th>Perawatan kateter perinieal setiap hari/sesudah BAB</th>
+                <th>Urine bag tidak di lantai</th>
+                <th>Urine bag lebih rendah dari kandung kemih</th>
+                <th>Posisi selang tidak terlipat/kinking dan drainase tertutup</th>
+                <th>Segera lepas jika tidak dibutuhkan lagi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {if: !empty($bundles)}
+            {loop: $bundles as $value}
+            {if: $value.hand_mainisk != null or $value.kateter_mainisk != null or $value.baglantai_mainisk != null or $value.bagrendah_mainisk != null or $value.posisiselang_mainisk != null or $value.lepas_mainisk != null }
+            <tr>
+                <td></td>
+                <td>
+                    {$value.tanggal}<br>
+                    <button type="button" name="button" class="btn btn-success btn-xs edit_main_isk"
+                    data-tanggal="{$value.tanggal}" 
+                     data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}" 
+                    data-hand_mainisk="{$value.hand_mainisk}" 
+                    data-kateter_mainisk="{$value.kateter_mainisk}" 
+                    data-baglantai_mainisk="{$value.baglantai_mainisk}" 
+                    data-bagrendah_mainisk="{$value.bagrendah_mainisk}" 
+                    data-posisiselang_mainisk="{$value.posisiselang_mainisk}"
+                    data-lepas_mainisk="{$value.lepas_mainisk}">
+                    <span class="fa fa-edit"></span>
+                    <span class="hidden-xs"> Edit</span></button>
+
+                    <button type="button" name="button" class="btn btn-danger btn-xs hapus_main_isk"
+                    data-id="{$value.id}"
+                    data-tanggal="{$value.tanggal}" 
+                    data-no_rawat="{$no_rawat}"
+                    data-kd_kamar="{$kd_kamar}"
+                    data-no_rkm_medis="{$no_rkm_medis}" 
+                    data-nm_pasien="{$nama}"  
+                    data-hand_mainisk="{$value.hand_mainisk}" 
+                    data-kateter_mainisk="{$value.kateter_mainisk}" 
+                    data-baglantai_mainisk="{$value.baglantai_mainisk}" 
+                    data-bagrendah_mainisk="{$value.bagrendah_mainisk}" 
+                    data-posisiselang_mainisk="{$value.posisiselang_mainisk}"
+                    data-lepas_mainisk="{$value.lepas_mainisk}">
+                    <span class="fa fa-trash"></span>
+                    <span class="hidden-xs"> Hapus</span></button>
+                </td>
+                <td>{$nama}</td>
+                <td>{if: $value.hand_mainisk == '1'} YA {elseif: $value.hand_mainisk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.kateter_mainisk == '1'} YA {elseif: $value.kateter_mainisk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.baglantai_mainisk == '1'} YA {elseif: $value.baglantai_mainisk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.bagrendah_mainisk == '1'} YA {elseif: $value.bagrendah_mainisk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.posisiselang_mainisk == '1'} YA {elseif: $value.posisiselang_mainisk == '0'} TIDAK {else} {/if}</td>
+                <td>{if: $value.lepas_mainisk == '1'} YA {elseif: $value.lepas_mainisk == '0'} TIDAK {else} {/if}</td> </tr> 
+            {/if} 
+            {/loop}
+            {/if}
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+

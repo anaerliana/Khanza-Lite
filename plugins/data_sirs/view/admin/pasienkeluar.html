@@ -1,0 +1,97 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Pasien Keluar</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div id="notif"></div>
+                </div>
+                <div class="display" id="display">
+                    <table class="table table-responsive table-striped no-padding dataTables" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>No Rawat</th>
+                                <th>Nama</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $list.list}
+                            {if: $value.tgl_keluar == null }
+                            <tr>
+                                <td><a href="#keluar" data-id="{$value.id}"
+                                    data-no_rawat="{$value.no_rawat}"
+                                    data-nm_pasien="{$value.nm_pasien}">{$value.id}</a></td>
+                                <td>{$value.no_rawat}</td>
+                                <td>{$value.nm_pasien}</td>
+                            </tr>
+                            {/if}
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    {include: ../plugins/data_sirs/view/admin/pasienkeluarform.html}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('a[href="#keluar"]').click(function (event) {
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+
+        var id = $(this).attr("data-id");
+        var no_rawat = $(this).attr("data-no_rawat");
+        var nm_pasien = $(this).attr("data-nm_pasien");
+
+        $('input:text[name=id_covid]').val(id);
+        $('input:text[name=no_rawat]').val(no_rawat);
+        $('input:text[name=nm_pasien]').val(nm_pasien);
+
+        $("#display").hide();
+
+        var url = baseURL + '/data_sirs/pasienkeluarform?t=' + mlite.token;
+        $.post(url, {
+            no_rawat: no_rawat,
+        }, function (data) {
+            // tampilkan data
+            // $("#form_rincian").hide();
+            // $("#form").hide();
+            $("#notif").hide();
+            // $("#form_soap").show();
+            $("#form_soap").html(data).show();
+            // $("#soap").html(data).show();
+        });
+    });
+
+    $('.dataTables').DataTable({
+        "order": [[3, "desc"]],
+        "pagingType": "full",
+        "language": {
+            "paginate": {
+                "first": "&laquo;",
+                "last": "&raquo;",
+                "previous": "‹",
+                "next": "›"
+            },
+            "search": "",
+            "searchPlaceholder": "Search..."
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('.tanggal').datetimepicker({
+            defaultDate: '{?=date('Y- m - d')?}',
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+         });
+     });
+</script>

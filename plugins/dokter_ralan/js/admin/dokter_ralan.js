@@ -780,7 +780,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=kandungan]').val("");
     $('.row_racikan').remove();
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-    "Data pasien telah disimpan!"+
+    "Data pasien telah disimpan!"+data+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
     "</div>").show();
   });

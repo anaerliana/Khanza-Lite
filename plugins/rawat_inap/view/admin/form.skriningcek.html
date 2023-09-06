@@ -1,0 +1,82 @@
+<div id="skrining_perawat">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="tanggal">Tanggal</label>
+                    <input type="text" id="tanggal" name="tanggal" class="form-control tanggal"
+                        value="{?=date('Y-m-d')?}">
+                </div>
+                <div class="form-group">
+                    <label for="no_rawat">No.Rawat</label>
+                    <input type="text" name="no_rawat" placeholder="ID Pendaftaran" class="form-control" value=""
+                        readonly>
+                </div>
+                <div class="form-group">
+                    <label for="no_rkm_medis">Nomor RM</label>
+                    <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik" value=""
+                        readonly>
+                </div>
+                <div class="form-group">
+                    <label for="nm_pasien">Nama Pasien</label>
+                    <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value=""
+                        readonly>
+                </div>
+                <div class="form-group">
+                    <label for="kd_kamar">Kode Kamar</label>
+                    <input type="text" name="kd_kamar" class="form-control" placeholder="Kode Kamar" value="" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h4>KEBUTUHAN PASIEN</h4>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>A. PELAYANAN</label><br>
+                                <input type="checkbox" name="data[]" value="1"> 1. Obat-obatan terdistribusi ke
+                                pasien<br>
+                                <input type="checkbox" name="data[]" value="2"> 2. Keluhan pasien teratasi<br>
+                                <input type="checkbox" name="data[]" value="3"> 3. Perawat memberikan asuhan
+                                keperawatan<br>
+                                <input type="checkbox" name="data[]" value="4"> 4. Pasien divisite oleh dokter
+                                penanggung jawab<br>
+                                <input type="checkbox" name="data[]" value="5"> 5. Pasien mendapatkan terapi yang sesuai
+                                dengan kebutuhannya
+                                mendapatkan<br><br>
+
+                                <label>B. ADMINISTRASI</label><br>
+                                <input type="checkbox" name="data[]" value="6"> 1. Jaminan kesehatan berobat pasien
+                                aktif<br>
+                                <input type="checkbox" name="data[]" value="7"> 2. Surat Elegibilitas Pasien (SEP) sudah
+                                terbit ketika pasien
+                                mendaftar<br>
+                                <input type="checkbox" name="data[]" value="8"> 3. Bilingan pasien disesuaikan dengan
+                                jaminan kelas pasien<br>
+                                <input type="checkbox" name="data[]" value="9"> 4. Pasien jaminan umum mendapatkan
+                                rincian kwitansi perawatan
+                                dan pengobatan<br>
+                                <input type="checkbox" name="data[]" value="10"> 5. Kelengkapan status pasien terisi
+                                lengkap<br>
+
+                                <div class="m-t-xl">
+                                    <button type="button" name="button" class="btn btn-primary"
+                                        id="simpan_skriningcek"><i class="fa fa-save"></i><span class="hidden-xs">
+                                            Simpan</span></button>
+                                    <button type="button" name="button" class="btn btn-success"
+                                        id="selesai_skriningcek"><i class="fa fa-check"></i><span class="hidden-xs">
+                                            Selesai</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

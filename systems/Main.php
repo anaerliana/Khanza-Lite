@@ -3,6 +3,7 @@
 namespace Systems;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 use Systems\Lib\Templates;
 use Systems\Lib\Router;
 use Systems\Lib\Settings;
@@ -97,6 +98,11 @@ abstract class Main
     public function db($table = null)
     {
         return new QueryWrapper($table);
+    }
+
+    public function mysql($table = null)
+    {
+        return new MySQL($table);
     }
 
     public function getSettings($module = 'settings', $field = null, $refresh = false)

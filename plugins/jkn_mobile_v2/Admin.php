@@ -42,6 +42,7 @@ class Admin extends AdminModule
         ['name' => 'Add Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingdokter']), 'icon' => 'tasks', 'desc' => 'Add Mapping Dokter JKN Mobile V2'],
         ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile V2'],
         ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile_v2', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile V2'],
+        ['name' => 'Task ID Local', 'url' => url([ADMIN, 'jkn_mobile_v2', 'taskidlocal']), 'icon' => 'tasks', 'desc' => 'Task ID Local JKN Mobile V2'],
         ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_v2', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile V2'],
       ];
@@ -312,6 +313,74 @@ class Admin extends AdminModule
       return $this->draw('taskid.html', ['taskid' => $taskid]);
     }
 
+    public function anyTaskIDLocal()
+    {
+        $this->_addHeaderFiles();
+        $this->getCssCard();
+        $date = date('Y-m-d');
+        if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
+            $date = $_POST['periode_antrol'];
+        //$date = '2022-01-20';
+        //   $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
+        //   $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
+        //   FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
+        //   ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg)");
+        //   $query->execute();
+        //   $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
+        $query = $this->db('mlite_antrian_referensi')->where('tanggal_periksa',$date)->where('status_kirim','Sudah')->toArray();
+        $rows = [];
+        foreach ($query as $q) {
+            $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+            $q['no_rkm_medis'] = $q['nomor_kartu'];
+            if($pasien) {
+            $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+            }
+            // $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', '<>', 'Batal')->oneArray();
+            $q['reg_periksa'] = $this->db('reg_periksa')->join('poliklinik','reg_periksa.kd_poli=poliklinik.kd_poli')->join('dokter','dokter.kd_dokter=reg_periksa.kd_dokter')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $batal = '0000-00-00 00:00:00';
+            // if($reg_periksa2) {
+            //     $batal = $q['tgl_registrasi'].' '.date('H:i:s');
+            // }
+            $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
+            if(!$mlite_antrian_referensi) {
+                $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+            }
+            $mutasi_berkas = $this->db('mlite_antrian_referensi_taskid')->select('waktu')->where('taskid','3')->where('nomor_referensi', $q['kodebooking'])->oneArray();
+            $mutasi_berkas2 = $this->db('mlite_antrian_referensi_taskid')->select('waktu')->where('taskid','4')->where('nomor_referensi', $q['kodebooking'])->oneArray();
+            $pemeriksaan_ralan = $this->db('mlite_antrian_referensi_taskid')->select('waktu')->where('taskid','5')->where('nomor_referensi', $q['kodebooking'])->oneArray();
+            $resep_obat = $this->db('mlite_antrian_referensi_taskid')->select('waktu')->where('taskid','6')->where('nomor_referensi', $q['kodebooking'])->oneArray();
+            $resep_obat2 = $this->db('mlite_antrian_referensi_taskid')->select('waktu')->where('taskid','7')->where('nomor_referensi', $q['kodebooking'])->oneArray();
+
+            $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $task1 = '';
+            $task2 = '';
+            if($mlite_antrian_loket) {
+                $task1 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time'];
+                $task2 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time'];
+            }
+            /*$q['task1'] = strtotime($task1) * 1000;
+            $q['task2'] = strtotime($task2) * 1000;
+            $q['task3'] = strtotime($mutasi_berkas['dikirim']) * 1000;
+            $q['task4'] = strtotime($mutasi_berkas2['diterima']) * 1000;
+            $q['task5'] = strtotime($pemeriksaan_ralan['datajam']) * 1000;
+            $q['task6'] = strtotime($resep_obat['datajam']) * 1000;
+            $q['task7'] = strtotime($resep_obat2['datajam']) * 1000;
+            $q['task99'] = $batal;*/
+            $q['task1'] = $task1;
+            $q['task2'] = $task2;
+            $q['task3'] = $mutasi_berkas['waktu'];
+            $q['task4'] = $mutasi_berkas2['waktu'];
+            $q['task5'] = $pemeriksaan_ralan['waktu'];
+            $q['task6'] = $resep_obat2['waktu'];
+            $q['task7'] = $resep_obat['waktu'];
+            $q['task99'] = $batal;
+            $rows[] = $q;
+        }
+
+        $taskid = $rows;
+        return $this->draw('taskidlocal.html', ['taskid' => $taskid]);
+    }
+
     public function getSettings()
     {
         $this->_addHeaderFiles();
@@ -400,7 +469,7 @@ class Admin extends AdminModule
 
             echo $this->draw('antrol.display.html', ['row' => $this->assign]);
         } else {
-            $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/rs';
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
             $response = [];

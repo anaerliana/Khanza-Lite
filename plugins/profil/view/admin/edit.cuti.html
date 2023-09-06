@@ -1,0 +1,115 @@
+<div id="editcuti" class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Edit Cuti / Izin</h4>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <form action="{?=url(ADMIN.'/profil/editcuti')?}" method="POST">
+            <input type="hidden" name="id" class="form-control" required value="{$editcuti.id}" />
+            <div class="col-md-12">
+                <input type="hidden" name="id" value="{$cuti.id}">
+                <div class="form-group">
+                    <label for="jenis_cuti">Jenis</label>
+                    <input type="text" name="jenis_cuti" id="jenis_cuti" class="form-control" value="{if: $cuti.jenis_cuti == '1'}Cuti Tahunan 
+                    {elseif: $cuti.jenis_cuti == '2'}Cuti Besar
+                    {elseif: $cuti.jenis_cuti == '3'}Cuti Sakit
+                    {elseif: $cuti.jenis_cuti == '4'}Cuti Melahirkan
+                    {elseif: $cuti.jenis_cuti == '5'}Cuti Karena Alasan Penting
+                    {elseif: $cuti.jenis_cuti == '6'}Cuti Di Luar Tanggungan Negara
+                    {elseif: $cuti.jenis_cuti == '7'}Izin
+                    {else}{/if}" disabled />
+                </div>
+            </div>
+            {if: $this->core->getPegawaiInfo('departemen', $username) == 'SP' || $this->core->getPegawaiInfo('departemen', $username) == 'UM' || 
+            $this->core->getPegawaiInfo('nik', $username) == '197907062011012006' ||
+            $this->core->getPegawaiInfo('nik', $username) == '198203092009032003' || 
+            $this->core->getPegawaiInfo('nik', $username) == '07012022022201007' ||
+            $this->core->getPegawaiInfo('nik', $username) == 'DR00025' ||
+            $this->core->getPegawaiInfo('nik', $username) == 'DR00023'}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Dokter Pengganti Visite / Poliklinik</label>
+                    <input type="text" name="pengganti_visite" id="pengganti_visite" class="form-control"
+                        value="{$cuti.pengganti_visite}" />
+                </div>
+            </div>
+            {/if}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Alasan</label>
+                    <input type="text" name="alasan" id="alasan" class="form-control" value="{$cuti.alasan}" required />
+                    <!-- <input type="hidden" name="nip" id="nip" class="form-control" value="{$cuti.nip}" /> -->
+                </div>
+            </div>
+            {if: $cuti.jenis_cuti != '7'}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="">No Telepon</label>
+                    <input type="text" name="telp" class="form-control" value="{$cuti.no_telp}">
+                </div>
+            </div>
+            {/if}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Tanggal Buat</label>
+                    <input type="text" name="tanggal_buat" id="tgl_buat" class="form-control" value="{$cuti.tgl_buat}"
+                        required />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Dari Tanggal</label>
+                    <input type="text" name="tanggal_awal" id="tgl_awal" class="form-control"
+                        value="{$cuti.tgl_awal}" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Sampai Tanggal</label>
+                    <input type="text" name="tanggal_akhir" id="tgl_akhir" class="form-control"
+                        value="{$cuti.tgl_akhir}" required />
+                </div>
+            </div>
+            {if: $cuti.jenis_cuti != '7'}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label for="">Alamat</label>
+                    <input type="text" name="alamat" class="form-control" value="{$cuti.alamat}">
+                </div>
+            </div>
+            {/if}
+            <div class="col-md-12">
+                <div class="form-group">
+                    <input type="submit" name="submit" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Kembali</button>
+</div>
+<script>
+    $(function () {
+        $("#tgl_buat").datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
+        $("#tgl_awal").datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
+        $("#tgl_akhir").datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
+
+    });
+    $('#tgl_awal').on('dp.change', function (e) {
+        $('#tgl_akhir').data("DateTimePicker").minDate(e.date);
+    });
+    $('#tgl_akhir').on('dp.change', function (e) {
+        $('#tgl_awal').data("DateTimePicker").maxDate(e.date);
+    });
+</script>

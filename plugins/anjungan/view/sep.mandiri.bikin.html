@@ -158,7 +158,7 @@
 <body>
   <div class="mx-auto text-center text-white">
     <img src="{?=url()?}/{$logo}" width="150"><br>
-    <h3 class="display-6">Anjungan Cetak Surat Eligibilitas Peserta BPJS</h3>
+    <h3 class="display-6">{$title_header}</h3>
     <h2 class="display-5">{$settings.nama_instansi}</h2>
   </div>
   <br><br><br><br>
@@ -177,7 +177,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">Nama</label>
-            <input type="text" class="form-control" name="nmps" id="nama_peserta" value="{$reg_periksa.nm_pasien}" readonly>
+            <input type="text" class="form-control" name="nmps" id="nama_peserta" value="{if: $reg_periksa.nm_pasien != ''}{$reg_periksa.nm_pasien}{else}{$rujukan.rujukan.peserta.nama}{/if}" readonly>
           </div>
         </div>
       </div>
@@ -185,7 +185,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">JK</label>
-            <input type="text" class="form-control" name="jk" id="sep_jenis_kelamin_kode" value="{$reg_periksa.jk}" readonly>
+            <input type="text" class="form-control" name="jk" id="sep_jenis_kelamin_kode" value="{if: $reg_periksa.jk != ''}{$reg_periksa.jk}{else}{$rujukan.rujukan.peserta.sex}{/if}" readonly>
           </div>
         </div>
       </div>
@@ -193,7 +193,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">Tanggal Lahir</label>
-            <input type="text" class="form-control" name="tgllhr" id="sep_tanggal_lahir" value="{$reg_periksa.tgl_lahir}" readonly>
+            <input type="text" class="form-control" name="tgllhr" id="sep_tanggal_lahir" value="{if: $reg_periksa.tgl_lahir != ''}{$reg_periksa.tgl_lahir}{else}{$rujukan.rujukan.peserta.tglLahir}{/if}" readonly>
           </div>
         </div>
       </div>
@@ -210,7 +210,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">No SKDP</label>
-            <input type="text" class="form-control" name="skdp" id="sep_nomor_skdp" value="{$skdp_bpjs}">
+            <input type="text" class="form-control" name="skdp" id="sep_nomor_skdp" value="{$skdp_bpjs}" onclick="test()">
           </div>
         </div>
       </div>
@@ -220,7 +220,7 @@
         <div class="form-group">
           <div class="form-line">
             <label for="norm" class="text-white">No Peserta</label>
-            <input type="text" class="form-control" name="nops" id="sep_no_kartu" value="{$reg_periksa.no_peserta}"
+            <input type="text" class="form-control" name="nops" id="sep_no_kartu" value="{if: $reg_periksa.no_peserta != ''}{$reg_periksa.no_peserta}{else}{$rujukan.rujukan.peserta.noKartu}{/if}"
               readonly>
           </div>
         </div>
@@ -359,6 +359,7 @@
             <label for="norm">Kode Poli Tujuan</label>
             <input type="text" class="form-control" name="kdpoli" id="sep_spesialis_kode"
               value="{$rujukan.rujukan.poliRujukan.kode}" readonly>
+            <input type="text" name="kd_poli_rs" id="kd_poli_rs" value="{$reg_periksa.kd_poli_rs}">
           </div>
         </div>
       </div>
@@ -395,8 +396,13 @@
           <div class="form-line">
             <label>Faskes</label>
             <select name="fsks" id="sep_asal_faskes_kode" class="form-control" readonly>
+              {if: $reg_periksa.asalRujuk == '2'}
+              <option value="1">1. Faskes 1</option>
+              <option value="2" selected>2. Faskes 2(RS)</option>
+              {else}
               <option value="1" selected>1. Faskes 1</option>
               <option value="2">2. Faskes 2(RS)</option>
+              {/if}
             </select>
           </div>
         </div>
@@ -414,7 +420,11 @@
       <div class="col-md-4"></div>
       <div class="col-md-4">
         <div class="form-group">
+          {if: $reg_periksa.stts_daftar_poli == 'reg'}
+          <button class="btn btn-lg btn-success btn-block text-uppercase" id="simpandaftar">SIMPAN PENDAFTARAN</button>
+          {else}
           <button class="btn btn-lg btn-success btn-block text-uppercase" id="simpan">SIMPAN SEP</button>
+          {/if}
         </div>
       </div>
       <div class="col-md-4"></div>
@@ -427,7 +437,14 @@
         </center>
       </div>
     </div>
-
+    <br>
+    <div class="row">
+      <div class="col-sm-9 col-md-8 col-lg-8 mx-auto">
+        <center>
+          <a href="{?=url('anjungan/sep/')?}" class="btn btn-info">KEMBALI</a>
+        </center>
+      </div>
+    </div>
   </div>
   <br>
   <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
@@ -589,6 +606,31 @@
         $('#simpan').attr('disabled', true);
         document.getElementById("simpan").style.background = "grey";
       }
+      let skdp = $('#sep_nomor_skdp').val();
+      let checkSkdp = skdp.includes('Koneksi ke');
+      if (checkSkdp == true) {
+        $('#simpan').attr('disabled', true);
+        document.getElementById("simpan").style.background = "grey";
+      }
+      function test(){
+        var rujukan = $('#sep_nomor_rujukan').val();
+        var kdpolitujuan = $('#sep_spesialis_kode').val();
+        var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
+        $.ajax({
+            type:"POST",
+            url: "{?=url('anjungan/check')?}",
+            data: {
+                rujukan: rujukan,
+                kd_poli:kdpolitujuan,
+                kd_dokter:kddpjp
+            },
+            success:function(responsedata){
+               // process on data
+               $('#sep_nomor_skdp').val(responsedata);
+
+            }
+        });
+      }
     });
 
   </script>
@@ -675,10 +717,12 @@
       var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
       var nmdpdjp = $('#sep_dpjp_yang_melayani_nama').val();
       var prolanis_prb = $('.prolainis_peserta').text();
+      var kdpolirs = $('#kd_poli_rs').val();
       console.log($("#form_sep :input").serializeArray());
+      console.log(tujuanKunj);
       $.ajax({
         type: "POST",
-        url: "{?=url('anjungan/sep/savesep')?}",
+        url: url,
         data: {
           no_rawat: no_rawat,
           tglsep: tglsep,
@@ -725,7 +769,8 @@
           noskdp: noskdp,
           kddpjp: kddpjp,
           nmdpdjp: nmdpdjp,
-          prolanis_prb: prolanis_prb
+          prolanis_prb: prolanis_prb,
+          kdpolirs: kdpolirs
         },
         success: function (result) {
           var messages = result.split(' ');
@@ -741,6 +786,43 @@
           // console.log(result);
 
 
+        }
+      });
+    });
+
+    $("#form_sep").on("click", "#simpandaftar", function (event) {
+      var baseURL = mlite.url;
+      event.preventDefault();
+
+      var url = baseURL + '/anjungan/daftar/reg?t=' + mlite.token;
+      console.log(url);
+
+      var no_rawat = $('#sep_no_rawat').val();
+      var nama_peserta = $('#nama_peserta').val();
+      var nomr = $('#sep_norm').val();
+      var tanggal_lahir = $('#sep_tanggal_lahir').val();
+      var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
+      var kdpolirs = $('#kd_poli_rs').val();
+      console.log($("#form_sep :input").serializeArray());
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          no_rawat: no_rawat,
+          nama_pasien: nama_peserta,
+          nomr: nomr,
+          tanggal_lahir: tanggal_lahir,
+          kddpjp: kddpjp,
+          kdpolirs: kdpolirs
+        },
+        success: function (result) {
+          if (result == '200') {
+            alert('Anda Telah Selesai Melakukan Pendaftaran . Silahkan Datang Lagi Pada Sore Hari Ke Anjungan Ini Dan Melakukan Pencetakan Jaminan SEP Untuk Diserahkan Ke Perawat Di Poli . Terima Kasih');
+            window.location.replace(baseURL + '/anjungan/sep/');
+          } else {
+            alert('Gagal menyimpan data ke database SIMRS');
+          }
+          console.log(result);
         }
       });
     });
@@ -760,6 +842,12 @@
     }
     var btn = document.getElementById("simpan");
     btn.addEventListener("click", loading);
+    function reload(){
+        $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
+    }
+
+    var btnDaftar = document.getElementById("simpandaftar");
+    btnDaftar.addEventListener("click", loading);
     function reload(){
         $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
     }

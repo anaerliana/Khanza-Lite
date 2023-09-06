@@ -15,6 +15,7 @@
           <th style="white-space: nowrap;">Stts. Periksa</th>
           <th style="white-space: nowrap;">Stts. Lanjut</th>
           <th style="white-space: nowrap;">Stts. Bayar</th>
+          <th style="white-space: nowrap;">Stts. Obat</th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +37,19 @@
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
               <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
+              {if: $value.kronis !=''}
+              <li><a href="#hapusobat_kronis" data-no_rawat="{$value.no_rawat}">Hapus Status Obat Kronis</a></li>
+              {else}
+              <li><a href="#obat_kronis" data-no_rawat="{$value.no_rawat}">Obat Kronis</a></li>
+              {/if}
+              <li><a href="#form_jadwaloperasi" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Input Jadwal Operasi</a></li>
+              <li><a href="#orthanc" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Lihat Gambar Radiologi</a></li>
+              {/if}
+              {if: $this->core->getUserInfo('role') == 'laboratorium'}
+              <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
+              {/if}
+              {if: $this->core->getUserInfo('role') == 'ok'}
+              <li><a href="#form_jadwaloperasi" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-kd_kamar="{$value.kd_kamar}">Input Jadwal Operasi</a></li>
               {/if}
             </ul>
           </td>
@@ -72,6 +86,7 @@
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.stts}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_lanjut}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_bayar}</td>
+          <td style="white-space: nowrap;">{if: $value.kronis !=''}KRONIS{/if}</td>
         </tr>
         {/loop}
       </tbody>
@@ -124,6 +139,7 @@
       $("#notif").hide();
       $("#form_soap").show();
       $("#soap").html(data).show();
+      $("#form_jadwaloperasi").hide();
     });
   });
 
@@ -148,6 +164,7 @@
       $("#form").hide();
       $("#notif").hide();
       $("#rincian").html(data).show();
+      $("#form_jadwaloperasi").hide();
     });
   });
 
@@ -173,6 +190,67 @@
       $("#notif").hide();
       $("#berkasdigital").html(data).show();
       $('.images').lightbox();
+      $("#form_jadwaloperasi").hide();
+    });
+  });
+  
+    $('a[href="#form_jadwaloperasi"]').click(function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_jalan/jadwaloperasi?t=' + mlite.token;
+    $.post(url, {
+      no_rawat: no_rawat,
+    }, function (data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#soap").hide();
+      $("#form_jadwaloperasi").show();
+      $("#jadwaloperasi").html(data).show();
+    });
+  });
+  
+   $('a[href="#orthanc"]').click(function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    // var kd_kamar = $(this).attr("data-kd_kamar");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    // $('input:text[name=kd_kamar]').val(kd_kamar);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_jalan/orthanc?t=' + mlite.token;
+    $.post(url, {
+      no_rawat: no_rawat,
+    }, function (data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#soap").hide();
+      // $("#orthanc").show();
+      $("#orthanc").html(data).show();
+      $("#form_jadwaloperasi").hide();
+      $("#jadwaloperasi").hide();
     });
   });
 
@@ -265,6 +343,52 @@
           $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
           $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
           "Status periksa pasien telah disimpan!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+  $('a[href="#obat_kronis"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/rawat_jalan/obatkronis?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah pasien dimasukkan sebagai pasien dengan obat kronis?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rawat: no_rawat
+        } ,function(data) {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Status periksa pasien telah disimpan!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+  $('a[href="#hapusobat_kronis"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/rawat_jalan/hapusobatkronis?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah yakin ingin hapus status obat kronis?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rawat: no_rawat
+        } ,function(data) {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Status obat kronis pasien telah dihapus!"+
           "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
           "</div>").show();
         });

@@ -119,18 +119,14 @@
                                   <form class="" action="" method="">
                                     <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                                     <div class="form-group">
-                                      <label for="poli">Nomor Kartu</label>
-                                      <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
-                                    </div>
-                                    <div class="form-group">
-                                      <label for="poli">Tanggal Pelayanan/SEP</label>
-                                      <input type="text" id="tgl_pelayanan" name="tgl_pelayanan" class="form-control tanggal" value="">
+                                      <label for="poli">Nomor SEP</label>
+                                      <input type="text" id="sep" name="sephapus" class="form-control" value="">
                                     </div>
                                     <button type="submit" class="btn btn-danger">
                                         Kirim Parameter
                                     </button>
                                   </form>
-                                  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+                                  {if: isset($_GET['sephapus']) && $_GET['sephapus']!=''}
                                   <h4 class="m-t-xl">Respons result</h4>
                                   <pre>
                                   </pre>
@@ -188,4 +184,13 @@
           $("pre").text(data);
         });
     {/if}
+</script>
+<script>
+  {if: isset($_GET['sephapus']) && $_GET['sephapus']!=''}
+      $.post("{?=url([ADMIN, 'vclaim', 'hapussep', $_GET['sep']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        $("pre").text(data);
+      });
+  {/if}
 </script>

@@ -3,6 +3,7 @@
 namespace Plugins\Dashboard;
 
 use Systems\AdminModule;
+use Plugins\Api\Site;
 
 class Admin extends AdminModule
 {
@@ -35,6 +36,7 @@ class Admin extends AdminModule
     $jam_jaga = [];
     $cek_rekap = [];
     $nama_pegawai = '';
+    $iht = [];
     $teks = array("Jangan Lupa Bahagia", "Cara untuk memulai adalah berhenti berbicara dan mulai melakukan", "Waktu yang hilang tidak akan pernah ditemukan lagi", "Kamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu", "Ini bukan tentang ide. Ini tentang mewujudkan ide", "Bekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang");
     $random_keys = array_rand($teks);
     $teks = $teks[$random_keys];
@@ -44,9 +46,13 @@ class Admin extends AdminModule
         $nama_pegawai = 'Administrator';
       }
       $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+      $birthday = $this->db('pegawai')->like('tgl_lahir','%'.date('m-d'))->where('stts_aktif','AKTIF')->toArray();
       $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
       $cek_rekap = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
       $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
+      $iht['check'] = $this->db('presensi_iht')->where('id_user',$idpeg['id'])->oneArray();
+      $iht['quiz'] = $this->db('quiz_iht')->where('id_user',$idpeg['id'])->oneArray();
+      $iht['id'] = $idpeg['id'];
     }
     return $this->draw('main.html', [
       'settings' => $settings,
@@ -56,6 +62,8 @@ class Admin extends AdminModule
       'presensi' => $presensi,
       'nama' => $nama_pegawai,
       'teks' => $teks,
+      'iht' => $iht,
+      'lahir' => $birthday,
       'notif_presensi' => $this->settings('settings', 'notif_presensi')
     ]);
   }
@@ -153,6 +161,18 @@ class Admin extends AdminModule
         $terlambat1     = (int)$terlambat1;
         $terlambat2     = (int)$terlambat2;
 
+        $searchPetugas = $this->db('pegawai')->select([
+          'nik' => 'nik',
+          'nama' => 'nama'
+        ])->where('id',$idpeg['id'])->oneArray();
+        $searchPhone = $this->db('petugas')->select('no_telp')->where('nip',$searchPetugas['nik'])->oneArray();
+
+        $sender = $this->settings->get('api.wagateway_phonenumber');
+        $url = $this->settings->get('api.wagateway_server');
+
+        $msgMasuk = 'Terima kasih '.$searchPetugas['nama'].' sudah melakukan presensi masuk untuk hari ini. Jangan lupa untuk melakukan presensi pulang.';
+        $msgPulang = 'Terima kasih '.$searchPetugas['nama'].' sudah melakukan presensi pulang untuk hari ini.';
+
         if (!$isFullAbsen) {
           if (!$isAbsen) {
             if (!$jadwal_pegawai) {
@@ -194,6 +214,7 @@ class Admin extends AdminModule
 
                   if ($insert) {
                     $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
+                    postWagsApi($searchPhone['no_telp'],$msgMasuk,$sender,$url);
                   }
                 }
               } else {
@@ -237,15 +258,15 @@ class Admin extends AdminModule
 
                 if ($insert) {
                   $this->notify('success', 'Presensi Masuk jam ' . $jam_jaga['jam_masuk'] . ' ' . $status . ' ' . $keterlambatan);
+                  postWagsApi($searchPhone['no_telp'],$msgMasuk,$sender,$url);
                 }
               }
             }
           } else {
             if ($jam_jaga['shift'] != $isAbsen['shift']) {
-              $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai!');
+              $this->notify('failure', 'Jadwal shift tidak sesuai!');
             } else {
-              $jamDatang = substr($isAbsen['jam_datang'], 16);
-              if ((strtotime(date('Y-m-d H:i')) - strtotime($jamDatang)) < 2 * 60) {
+              if ((strtotime(date('Y-m-d H:i:s')) - strtotime($isAbsen['jam_datang'])) < 10 * 60) {
                 $this->notify('failure', 'Sabar ... Jangan pencet terus');
               } else {
                 $status = $isAbsen['status'];
@@ -288,6 +309,7 @@ class Admin extends AdminModule
                   if ($insert) {
                     $this->notify('success', 'Presensi pulang telah disimpan');
                     $this->db('temporary_presensi')->where('id', $isAbsen['id'])->delete();
+                    postWagsApi($searchPhone['no_telp'],$msgPulang,$sender,$url);
                   }
                 }
               }
@@ -320,6 +342,61 @@ class Admin extends AdminModule
     }
 
     exit();
+  }
+
+  public function postIht()
+  {
+    $location = url([ADMIN, 'dashboard', 'main']);
+    $this->db('presensi_iht')->save([
+      'id_user' => $_POST['id_user'],
+      'tanggal' => date('Y-m-d'),
+      'jam' => date('H:i:s'),
+    ]);
+    $check = $this->db('presensi_iht')->where('id_user',$_POST['id_user'])->oneArray();
+    if ($check) {
+      $this->notify('success', 'Anda sudah presensi In House Training tanggal ' . date('Y-m-d'));
+      redirect($location);
+    }
+  }
+
+  public function postQuizStart()
+  {
+    $user = $this->core->getUserInfo('username', null, true);
+    $id = $this->db('pegawai')->where('nik',$user)->oneArray();
+    $this->db('quiz_iht')->save([
+      'id_user' => $id['id'],
+      'tanggal' => date('Y-m-d'),
+      'start_time' => date('H:i:s')
+    ]);
+    $check = $this->db('quiz_iht')->where('id_user',$id['id'])->oneArray();
+    $status = 404;
+    if ($check['id_user']) {
+      $status = 200;
+    } else {
+      $status = 201;
+    }
+    echo $status;
+    exit();
+  }
+
+  public function postQuizEnd()
+  {
+    $location = url([ADMIN, 'dashboard', 'main']);
+    $user = $this->core->getUserInfo('username', null, true);
+    $id = $this->db('pegawai')->where('nik',$user)->oneArray();
+    $jawaban = $_POST['quiz1'].','.$_POST['quiz2'].','.$_POST['quiz3'].','.$_POST['quiz4'].','.$_POST['quiz5'];
+    $this->db('quiz_iht')->where('id_user', $id['id'])->save([
+      'end_time' => date('H:i:s'),
+      'jawaban' => $jawaban,
+    ]);
+    $check = $this->db('quiz_iht')->where('id_user',$id['id'])->isNotNull('end_time')->oneArray();
+    $status = 404;
+    if ($check['id_user']) {
+      $this->notify('success', 'Simpan sukses');
+    } else {
+      $this->notify('failure', 'Simpan gagal');
+    }
+    redirect($location);
   }
 
   public function getHelp($dir)

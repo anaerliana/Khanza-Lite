@@ -16,7 +16,8 @@ class Admin extends AdminModule
             'Rawat Jalan'         => 'manage',
             'Booking Registrasi'  => 'booking',
             'Booking Periksa'     => 'bookingperiksa',
-            'Jadwal Dokter'       => 'jadwal'
+            'Jadwal Dokter'       => 'jadwal',
+            'Rujukan Internal Poli'=> 'rujukaninternal'
         ];
     }
 
@@ -27,6 +28,7 @@ class Admin extends AdminModule
         ['name' => 'Booking Registrasi', 'url' => url([ADMIN, 'rawat_jalan', 'booking']), 'icon' => 'file-o', 'desc' => 'Pendaftaran pasien booking rawat jalan'],
         ['name' => 'Booking Periksa', 'url' => url([ADMIN, 'rawat_jalan', 'bookingperiksa']), 'icon' => 'file-o', 'desc' => 'Booking periksa pasien rawat jalan via Online'],
         ['name' => 'Jadwal Dokter', 'url' => url([ADMIN, 'rawat_jalan', 'jadwal']), 'icon' => 'user-md', 'desc' => 'Jadwal dokter rawat jalan'],
+        ['name' => 'Rujukan Internal Poli', 'url' => url([ADMIN, 'rawat_jalan', 'rujukaninternal']), 'icon' => 'file-text-o', 'desc' => 'Rujukan Internal Poli'],
       ];
       return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
@@ -102,10 +104,10 @@ class Admin extends AdminModule
           $this->core->addJS(url('assets/jscripts/responsivevoice.js'));
         }
         $this->_addHeaderFiles();
-
-        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
-        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->db('penjab')->toArray();
+        $username = $this->core->getUserInfo('username', null, true);
+        $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
+        $this->assign['dokter']   = $this->db('dokter')->where('status', '1')->toArray();
+        $this->assign['penjab']   = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -126,8 +128,10 @@ class Admin extends AdminModule
           AND reg_periksa.kd_poli = poliklinik.kd_poli
           AND reg_periksa.kd_pj = penjab.kd_pj";
 
-        if ($this->core->getUserInfo('role') != 'admin') {
-          $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+        if ($username != '197307171998032008') {
+          if (!in_array($this->core->getUserInfo('role'), ['admin','apoteker','laboratorium','radiologi','manajemen', 'ok'],true)) {
+            $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+          }
         }
         if($status_periksa == 'belum') {
           $sql .= " AND reg_periksa.stts = 'Belum'";
@@ -145,6 +149,8 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $cek_kronis = $this->db('mlite_veronisa')->where('no_rawat', $row['no_rawat'])->oneArray();
+          $row['kronis'] = $cek_kronis['no_rawat'];
           $this->assign['list'][] = $row;
         }
 
@@ -194,7 +200,7 @@ class Admin extends AdminModule
 
       $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
       $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
-      $this->assign['penjab'] = $this->db('penjab')->toArray();
+      $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
       $this->assign['no_rawat'] = '';
       $this->assign['no_reg']     = '';
       $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -256,7 +262,7 @@ class Admin extends AdminModule
           ->limit(1)
           ->oneArray();
           if($rawat) {
-            $stts_daftar = "Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
+            $stts_daftar = "Transaksi tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
             $stts_daftar_hidden = $stts_daftar;
             if($this->settings->get('settings.cekstatusbayar') == 'false'){
               $stts_daftar_hidden = 'Lama';
@@ -864,6 +870,97 @@ class Admin extends AdminModule
           ]);
         }
       }
+      if($_POST['kat'] == 'laboratorium') {
+        $cek_lab = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+        if(!$cek_lab) {
+          $max_id = $this->db('permintaan_lab')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+          if(empty($max_id['noorder'])) {
+            $max_id['noorder'] = '0000';
+          }
+          $_next_noorder = sprintf('%04s', ($max_id['noorder'] + 1));
+          $noorder = 'PL'.date('Ymd').''.$_next_noorder;
+
+          $permintaan_lab = $this->db('permintaan_lab')
+            ->save([
+              'noorder' => $noorder,
+              'no_rawat' => $_POST['no_rawat'],
+              'tgl_permintaan' => $_POST['tgl_perawatan'],
+              'jam_permintaan' => $_POST['jam_rawat'],
+              'tgl_sampel' => '0000-00-00',
+              'jam_sampel' => '00:00:00',
+              'tgl_hasil' => '0000-00-00',
+              'jam_hasil' => '00:00:00',
+              'dokter_perujuk' => $_POST['kode_perujuk'],
+              'status' => 'ralan'
+            ]);
+          $this->db('permintaan_pemeriksaan_lab')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+
+        } else {
+          $noorder = $cek_lab['noorder'];
+          $this->db('permintaan_pemeriksaan_lab')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+        }
+      }
+
+      if($_POST['kat'] == 'radiologi') {
+        $cek_rad = $this->db('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+        if(!$cek_rad) {
+          $max_id = $this->db('permintaan_radiologi')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+          if(empty($max_id['noorder'])) {
+            $max_id['noorder'] = '0000';
+          }
+          $_next_noorder = sprintf('%04s', ($max_id['noorder'] + 1));
+          $noorder = 'PR'.date('Ymd').''.$_next_noorder;
+
+          $permintaan_rad = $this->db('permintaan_radiologi')
+            ->save([
+              'noorder' => $noorder,
+              'no_rawat' => $_POST['no_rawat'],
+              'tgl_permintaan' => $_POST['tgl_perawatan'],
+              'jam_permintaan' => $_POST['jam_rawat'],
+              'tgl_sampel' => '0000-00-00',
+              'jam_sampel' => '00:00:00',
+              'tgl_hasil' => '0000-00-00',
+              'jam_hasil' => '00:00:00',
+              'dokter_perujuk' => $_POST['kode_perujuk'],
+              'status' => 'ralan'
+            ]);
+          $this->db('permintaan_pemeriksaan_radiologi')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+            $this->db('diagnosa_pasien_klinis')
+            ->save([
+              'noorder' => $noorder,
+              'klinis' => $_POST['diagnosa_klinis']
+            ]);
+
+        } else {
+          $noorder = $cek_rad['noorder'];
+          $this->db('permintaan_pemeriksaan_radiologi')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+             $this->db('diagnosa_pasien_klinis')
+            ->save([
+              'noorder' => $noorder,
+              'klinis' => $_POST['diagnosa_klinis']
+            ]);
+        }
+      }
       exit();
     }
 
@@ -893,6 +990,51 @@ class Admin extends AdminModule
         ->where('jam_rawat', $_POST['jam_rawat'])
         ->delete();
       }
+
+      exit();
+    }
+
+      public function postHapusLab()
+    {
+
+        $this->db('permintaan_pemeriksaan_lab')
+        ->where('noorder', $_POST['noorder'])
+        ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+        ->delete();
+
+        $ceklab = $this->db('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->oneArray();
+        if (empty($ceklab) ){
+        $this->db('permintaan_lab')
+        ->where('noorder', $_POST['noorder'])
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('tgl_permintaan', $_POST['tgl_permintaan'])
+        ->where('jam_permintaan', $_POST['jam_permintaan'])
+        ->delete();
+        }
+      exit();
+    }
+
+         public function postHapusRad()
+    {
+        $this->db('permintaan_pemeriksaan_radiologi')
+        ->where('noorder', $_POST['noorder'])
+        ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+        ->delete();
+
+        $cekrad = $this->db('permintaan_pemeriksaan_radiologi')->where('noorder', $_POST['noorder'])->oneArray();
+        if (empty($cekrad) ){
+        $this->db('permintaan_radiologi')
+        ->where('noorder', $_POST['noorder'])
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('tgl_permintaan', $_POST['tgl_permintaan'])
+        ->where('jam_permintaan', $_POST['jam_permintaan'])
+        ->delete();
+
+         $this->db('diagnosa_pasien_klinis')
+        ->where('noorder', $_POST['noorder'])
+        ->where('klinis', $_POST['diagnosa_klinis'])
+        ->delete();
+        }
       exit();
     }
 
@@ -938,7 +1080,49 @@ class Admin extends AdminModule
         }
       }
 
-      echo $this->draw('rincian.html', ['rawat_jl_dr' => $rawat_jl_dr, 'rawat_jl_pr' => $rawat_jl_pr, 'rawat_jl_drpr' => $rawat_jl_drpr, 'jumlah_total' => $jumlah_total, 'no_rawat' => $_POST['no_rawat']]);
+       $rows_laboratorium = $this->db('permintaan_lab')->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $jumlah_total_lab = 0;
+      $laboratorium = [];
+
+      if($rows_laboratorium) {
+        foreach ($rows_laboratorium as $row) {
+          $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+          $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
+          $row['kelas'] = $jns_perawatan['kelas'];
+          $row['total_byr'] = $jns_perawatan['total_byr'];
+          $jumlah_total_lab += $jns_perawatan['total_byr'];
+          $laboratorium[] = $row;
+        }
+      }
+
+      $rows_radiologi = $this->db('permintaan_radiologi')->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $jumlah_total_rad = 0;
+      $radiologi = [];
+
+      if($rows_radiologi) {
+        foreach ($rows_radiologi as $row) {
+          $jns_perawatan = $this->db('jns_perawatan_radiologi')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+          $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
+          $row['kelas'] = $jns_perawatan['kelas'];
+          $row['total_byr'] = $jns_perawatan['total_byr'];
+          $jumlah_total_rad += $jns_perawatan['total_byr'];
+
+          $klinis = $this->db('diagnosa_pasien_klinis')->where('noorder', $row['noorder'])->oneArray();
+          $row['diagnosa_klinis'] = $klinis['klinis'];
+          $radiologi[] = $row;
+        }
+      }
+
+      echo $this->draw('rincian.html', [
+        'rawat_jl_dr' => $rawat_jl_dr, 
+        'rawat_jl_pr' => $rawat_jl_pr, 
+        'rawat_jl_drpr' => $rawat_jl_drpr, 
+        'laboratorium' => $laboratorium,
+        'radiologi' => $radiologi,
+        'jumlah_total' => $jumlah_total, 
+        'jumlah_total_lab' => $jumlah_total_lab,
+        'jumlah_total_rad' => $jumlah_total_rad,
+        'no_rawat' => $_POST['no_rawat']]);
       exit();
     }
 
@@ -1038,6 +1222,28 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function anyLaboratorium()
+    {
+      $laboratorium = $this->db('jns_perawatan_lab')
+        ->where('status', '1')
+        ->like('nm_perawatan', '%'.$_POST['laboratorium'].'%')
+        ->limit(10)
+        ->toArray();
+      echo $this->draw('laboratorium.html', ['laboratorium' => $laboratorium]);
+      exit();
+    }
+
+    public function anyRadiologi()
+    {
+      $radiologi = $this->db('jns_perawatan_radiologi')
+        ->where('status', '1')
+        ->like('nm_perawatan', '%'.$_POST['radiologi'].'%')
+        ->limit(10)
+        ->toArray();
+      echo $this->draw('radiologi.html', ['radiologi' => $radiologi]);
+      exit();
+    }
+
     public function anyBerkasDigital()
     {
       $berkas_digital = $this->db('berkas_digital_perawatan')->where('no_rawat', $_POST['no_rawat'])->toArray();
@@ -1068,7 +1274,116 @@ class Admin extends AdminModule
       exit();
 
     }
+  
+   public function anyJadwalOperasi()
+  {
 
+    $i = 1;
+    $rows = $this->db('booking_operasi')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->toArray();
+
+    $result = [];
+    foreach ($rows as $row) {
+      // $row = $rows;
+      $row['nomor'] = $i++;
+
+      $pasien = $this->db('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->where('no_rawat', $row['no_rawat'])
+        ->oneArray();
+
+      $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+      $row['nm_pasien'] = $pasien['nm_pasien'];
+      $row['umur'] = $pasien['umur'];
+      $row['jk'] = $pasien['jk'];
+      $row['kd_poli'] = $pasien['kd_poli'];
+
+      $row['diagnosa'] = $this->db('diagnosa_pasien')
+        ->select(['nm_penyakit' => 'penyakit.nm_penyakit'])
+        ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
+        ->where('no_rawat', $row['no_rawat'])
+        ->asc('prioritas')
+        ->toArray();
+
+      $poli = $this->db('poliklinik')
+       ->where('kd_poli', $row['kd_poli'])
+       ->oneArray();
+      $row['nm_poli'] = $poli['nm_poli'];
+
+      $dokter = $this->db('dokter')
+        ->where('kd_dokter', $row['kd_dokter'])
+        ->oneArray();
+      $row['nm_dokter'] = $dokter['nm_dokter'];
+
+      $paket_operasi = $this->db('paket_operasi')
+        ->where('kode_paket', $row['kode_paket'])
+        ->oneArray();
+      $row['nm_perawatan'] = $paket_operasi['nm_perawatan'];
+
+      $result[] = $row;
+    }
+
+    echo $this->draw('jadwaloperasi.html', ['jadwaloperasi' => $result]);
+    exit();
+  }
+
+  public function postDokter()
+  {
+
+    if (isset($_POST["query"])) {
+      $output = '';
+      $key = "%" . $_POST["query"] . "%";
+      $rows = $this->db('dokter')->like('nm_dokter', $key)->limit(10)->toArray();
+      $output = '';
+      if (count($rows)) {
+        foreach ($rows as $row) {
+          $output .= '<li data-id="' . $row['kd_dokter'] . '" class="list-group-item link-class">' . $row["nm_dokter"] . '</li>';
+        }
+      }
+      echo $output;
+    }
+
+    exit();
+  }
+
+  public function postPaketOperasi()
+  {
+
+    if (isset($_POST["query"])) {
+      $output = '';
+      $key = "%" . $_POST["query"] . "%";
+      $rows = $this->db('paket_operasi')->like('nm_perawatan', $key)->limit(10)->toArray();
+      $output = '';
+      if (count($rows)) {
+        foreach ($rows as $row) {
+          $output .= '<li data-id="' . $row['kode_paket'] . '" class="list-group-item link-class">' . $row["nm_perawatan"] . '</li>';
+        }
+      }
+      echo $output;
+    }
+
+    exit();
+  }
+
+  public function postSaveJadwalOperasi()
+  {
+    $is_edit = $_POST['edit'];
+    unset($_POST['edit']);
+    if (!$this->db('booking_operasi')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->oneArray()) {
+      $this->db('booking_operasi')->save($_POST);
+    } else if ($is_edit) {
+      $this->db('booking_operasi')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->save($_POST);
+    }
+    exit();
+  }
+
+  public function postHapusJadwalOperasi()
+  {
+    $this->db('booking_operasi')->where('no_rawat', $_POST['no_rawat'])->where('tanggal', $_POST['tanggal'])->delete();
+    exit();
+  }
+  
     public function postProviderList()
     {
 
@@ -1100,6 +1415,26 @@ class Admin extends AdminModule
         if(count($rows)){
           foreach ($rows as $row) {
             $output .= '<li class="list-group-item link-class">'.$row["nip"].': '.$row["nama"].'</li>';
+          }
+        }
+        echo $output;
+      }
+
+      exit();
+
+    }
+
+     public function postPerujukList()
+    {
+
+      if(isset($_POST["query"])){
+        $output = '';
+        $key = "%".$_POST["query"]."%";
+        $rows = $this->db('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
+        $output = '';
+        if(count($rows)){
+          foreach ($rows as $row) {
+            $output .= '<li class="list-group-item link-class">'.$row["kd_dokter"].': '.$row["nm_dokter"].'</li>';
           }
         }
         echo $output;
@@ -1255,6 +1590,282 @@ class Admin extends AdminModule
         $pdf->Row(array($hasil['temp3'],$hasil['temp2'],$hasil['temp1'],$this->core->getPasienInfo('nm_pasien', $hasil['temp6']),$hasil['temp6'],$poliklinik['nm_poli'],$dokter['nm_dokter'],$penjab['png_jawab']));
       }
       $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
+    }
+
+    public function anyAutoRegist(){
+      $date = date('Y-m-d');
+      $no = 1;
+      $checkBooking = $this->db('booking_registrasi')->where('tanggal_periksa',$date)->where('status','Belum')->toArray();
+      foreach ($checkBooking as $value) {
+        # code...
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $value['kd_poli'])->oneArray();
+
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $value['no_rkm_medis'])->oneArray();
+
+        $birthDate = new \DateTime($pasien['tgl_lahir']);
+        $today = new \DateTime("today");
+        $umur_daftar = "0";
+        $status_umur = 'Hr';
+        if ($birthDate < $today) {
+          $y = $today->diff($birthDate)->y;
+          $m = $today->diff($birthDate)->m;
+          $d = $today->diff($birthDate)->d;
+          $umur_daftar = $d;
+          $status_umur = "Hr";
+          if($y !='0'){
+            $umur_daftar = $y;
+            $status_umur = "Th";
+          }
+          if($y =='0' && $m !='0'){
+            $umur_daftar = $m;
+            $status_umur = "Bl";
+          }
+        }
+
+        $_POST['no_reg'] = $value['no_reg'];
+        $_POST['no_rawat'] = $this->setNoRawat();
+        $_POST['tgl_registrasi'] = $date;
+        $_POST['jam_reg'] = '06:00:00';
+        $_POST['kd_dokter'] = $value['kd_dokter'];
+        $_POST['no_rkm_medis'] = $value['no_rkm_medis'];
+        $_POST['kd_poli'] = $value['kd_poli'];
+        $_POST['p_jawab'] = '-';
+        $_POST['almt_pj'] = '-';
+        $_POST['hubunganpj'] = '-';
+        $_POST['biaya_reg'] = $poliklinik['registrasi'];
+        $_POST['stts'] = 'Belum';
+        $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $value['no_rkm_medis'])->count();
+        $_POST['stts_daftar'] = 'Baru';
+        if($cek_stts_daftar > 0) {
+          $_POST['stts_daftar'] = 'Lama';
+        }
+        $_POST['status_lanjut'] = 'Ralan';
+        $_POST['kd_pj'] = $value['kd_pj'];
+        $_POST['umurdaftar'] = $umur_daftar;
+        $_POST['sttsumur'] = $status_umur;
+        $_POST['status_bayar'] = 'Belum Bayar';
+        $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis',$value['no_rkm_medis'])->where('kd_poli', $value['kd_poli'])->count();
+        $_POST['status_poli'] = 'Baru';
+        if($cek_status_poli > 0) {
+          $_POST['status_poli'] = 'Lama';
+        }
+        // echo $_POST;
+        $query = $this->db('reg_periksa')->save($_POST);
+        if ($query) {
+          # code...
+          // echo json_encode($_POST);
+          $this->db('booking_registrasi')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_periksa',$date)->save(['status' => 'Terdaftar']);
+          $updateSkdp = $this->db('skdp_bpjs')->where('no_rkm_medis',$value['no_rkm_medis'])->where('tanggal_datang',$date)->save(['status' => 'Sudah Periksa']);
+          if ($updateSkdp) {
+            echo $no.'.'.$value['no_rkm_medis'].' Berhasil Didaftarkan';
+            echo '<br>';
+          }
+        }
+        $no++;
+      }
+      exit();
+    }
+   
+        public function anyRujukanInternal()
+    {
+
+      $this->_addHeaderFiles();
+
+        $rows = $this->db('rujukan_internal_poli')
+          ->join('reg_periksa', 'reg_periksa.no_rawat=rujukan_internal_poli.no_rawat')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->join('dokter', ' rujukan_internal_poli.kd_dokter=dokter.kd_dokter')
+          ->join('dokter as dok' , ' dok.kd_dokter=reg_periksa.kd_dokter')
+          ->join('poliklinik', 'poliklinik.kd_poli=rujukan_internal_poli.kd_poli')
+          ->join('poliklinik as poli', 'poli.kd_poli=reg_periksa.kd_poli')
+          ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+          ->select(['tgl_registrasi'=> 'reg_periksa.tgl_registrasi',
+                    'jam_reg'       => 'reg_periksa.jam_reg',
+                    'no_rkm_medis'  => 'reg_periksa.no_rkm_medis',
+                    'kd_dokter'       => 'reg_periksa.kd_dokter',
+                    'p_jawab'       => 'reg_periksa.p_jawab',
+                    'almt_pj'       => 'reg_periksa.almt_pj',
+                    'hubunganpj'    => 'reg_periksa.hubunganpj',
+                    'stts'          => 'reg_periksa.stts',
+                    'status_lanjut' => 'reg_periksa.status_lanjut',
+                    'status_bayar'  => 'reg_periksa.status_bayar'])
+          ->select(['png_jawab'     => 'penjab.png_jawab'])   
+          ->select(['poli_awal'     => 'poli.nm_poli',])   
+          ->select(['nm_pasien'     => 'pasien.nm_pasien',
+                    'umur'          => 'pasien.umur',
+                    'jk'            => 'pasien.jk',
+                    'no_tlp'        => 'pasien.no_tlp'])    
+          ->select(['dokter_perujuk'=> 'dok.nm_dokter',
+                    'dokter_rujukan'=> 'dokter.nm_dokter'])
+          ->select(['poli_rujukan'  => 'poliklinik.nm_poli'])
+          ->select(['no_rawat'      => 'rujukan_internal_poli.no_rawat',
+                    'dokter'        => 'rujukan_internal_poli.kd_dokter',
+                    'kdpoli_rujukan'=> 'rujukan_internal_poli.kd_poli'])
+          ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+          ->desc('reg_periksa.jam_reg')
+          ->toArray();
+
+          $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
+
+      $this->assign['list'] = [];
+      foreach ($rows as $row) {
+        $this->assign['list'][] = $row;
+      }
+      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign, 'master_berkas_digital' => $master_berkas_digital]);
+    }
+
+    public function postRujukanInternal()
+    {
+      $this->_addHeaderFiles();
+
+      if (isset($_POST['submit'])) {
+
+        $date1 = $_POST['periode_rawat_jalan'];
+        $date2 = $_POST['periode_rawat_jalan_akhir'];
+
+        if (!empty($date1) && !empty($date2)) {
+          // 'stts'          => 'reg_periksa.stts',
+          // 'status_lanjut' => 'reg_periksa.status_lanjut',
+          // 'status_bayar'  => 'reg_periksa.status_bayar'])
+          $sql = "SELECT a.no_rawat, a.kd_dokter as dokter, a.kd_poli as kdpoli_rujukan,
+          b.tgl_registrasi, b.jam_reg, b.no_rkm_medis, b.p_jawab, b.almt_pj, b.hubunganpj, b.stts, b.status_lanjut,  b.status_bayar,
+          poli.nm_poli as poli_awal, c.nm_pasien, c.umur, c.jk, c.no_tlp, d.nm_dokter as dokter_rujukan, e.nm_poli as poli_rujukan, f.png_jawab, dok.nm_dokter as dokter_perujuk
+          FROM rujukan_internal_poli as a, reg_periksa as b , pasien as c, dokter as d , poliklinik as e, penjab as f , poliklinik as poli, dokter as dok
+          WHERE b.no_rawat = a.no_rawat
+          AND c.no_rkm_medis=b.no_rkm_medis
+          AND a.kd_dokter=d.kd_dokter
+          AND dok.kd_dokter=b.kd_dokter
+          AND e.kd_poli=a.kd_poli
+          AND poli.kd_poli=b.kd_poli
+          AND f.kd_pj=b.kd_pj
+          AND b.tgl_registrasi BETWEEN '$date1' AND '$date2'
+          ORDER BY b.jam_reg DESC";
+
+          $stmt = $this->db()->pdo()->prepare($sql);
+          $stmt->execute();
+          $rows = $stmt->fetchAll();
+
+          $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
+
+          $this->assign['list'] = [];
+          foreach ($rows as $row) {
+
+            $this->assign['list'][] = $row;
+          }
+        } else {
+          $this->anyRujukanInternal();
+        }
+      }
+      return $this->draw('rujukan.internal.html', ['rujukaninternal' => $this->assign, 'master_berkas_digital' => $master_berkas_digital]);
+    }
+  
+    public function postObatKronis()
+    {
+      if (isset($_POST['no_rawat']) && $_POST['no_rawat'] !='') {
+        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        if(!$bridging_sep) {
+          $bridging_sep['no_sep'] = '';
+        }
+        $this->db('mlite_veronisa')->save([
+          'id' => NULL,
+          'tanggal' => date('Y-m-d'),
+          'no_rkm_medis' => $reg_periksa['no_rkm_medis'],
+          'no_rawat' => $_POST['no_rawat'],
+          'tgl_registrasi' => $reg_periksa['tgl_registrasi'],
+          'nosep' => $bridging_sep['no_sep'],
+          'status' => 'Belum',
+          'username' => $this->core->getUserInfo('username', null, true)
+        ]);
+      }
+      exit();
+    }
+    
+    public function postHapusObatKronis()
+    {
+      $this->db('mlite_veronisa')->where('no_rawat', $_POST['no_rawat'])->delete();
+      exit();
+    }
+  
+    public function anyOrthanc()
+    {
+     $rows = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->toArray();
+
+     $result = [];
+     foreach ($rows as $row) {
+            $no_rawat = $row['no_rawat'];
+            $norm = $row['no_rkm_medis'];
+            $tgl_registrasi = $row['tgl_registrasi'];
+            $tanggal = str_replace("-", "", $tgl_registrasi);
+
+            $pacs = [];
+            $arr = array(
+                "Level" => "Study",
+                "Expand" => true,
+                "Query" => array(
+                    "StudyDate" => $tanggal . "-" . $tanggal,
+                    "PatientID" => $norm
+                )
+            );
+
+            $pacs['data'] = json_encode($arr);
+
+            // $url_orthanc = $this->settings->get('orthanc.server');
+            $url_orthanc = 'http://103.59.94.14:8042/';
+            $urlfind = $url_orthanc . '/tools/find';
+
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $urlfind);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            curl_setopt($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username') . ":" . $this->settings->get('orthanc.password'));
+            curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $pacs['data']);
+            $response = curl_exec($curl);
+            curl_close($curl);
+
+            $patient = json_decode($response, TRUE);
+
+            if (isset($patient[0]["ID"])) {
+                foreach ($patient[0]["Series"] as $series) {
+                    $urlSeries = $url_orthanc . '/series/' . $series;
+
+                    $curl = curl_init();
+                    curl_setopt($curl, CURLOPT_URL, $urlSeries);
+                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                    curl_setopt($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username') . ":" . $this->settings->get('orthanc.password'));
+                    $response = curl_exec($curl);
+                    curl_close($curl);
+
+                    $seriesData = json_decode($response, true);
+
+                    $seriesDate = isset($seriesData['MainDicomTags']['SeriesDate']) ? $seriesData['MainDicomTags']['SeriesDate'] : "";
+                    $acquisitionDescription = isset($seriesData['MainDicomTags']['AcquisitionDeviceProcessingDescription']) ? $seriesData['MainDicomTags']['AcquisitionDeviceProcessingDescription'] : "";
+
+                    $instance = $seriesData['Instances'][0];
+                    $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+                    $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+
+                    $gambar = '';
+                    foreach ($seriesData['Instances'] as $instance) {
+                        $imageURL = $url_orthanc . '/instances/' . $instance . '/preview';
+                        $gambar .= '<a href="' . $url_orthanc . '/web-viewer/app/viewer.html?series=' . $series . '" target="_blank">';
+                        $gambar .= '<img src="' . $imageURL . '" alt="Klik Gambar Disini" style="width: 600px;">';
+                        $gambar .= '</a><br><br><br>';
+                      }
+
+                    $result[] = array(
+                        'Tanggal' => date('d-m-Y', strtotime($seriesDate)),
+                        'Deskripsi' => $acquisitionDescription,
+                        'Gambar' => $gambar
+                    );
+                }
+            }
+        }
+        echo $this->draw('data.orthanc.html', ['pacs' => $result]);
+        exit();
     }
 
     public function getJavascript()
