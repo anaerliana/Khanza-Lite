@@ -1,34 +1,28 @@
-<div class="row" id="manage" style="margin-bottom:100px;">
+<div class="row" id="manage_rawatgabung" style="margin-bottom:100px;">
   <div class="col-md-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="btn-group pull-right" style="margin-top:-8px;">
-           <span class="btn btn-sm" style="color: black;"><a style="color: #545351;"
-              href="{?=url([ADMIN,'rawat_inap','manage_rawatgabung'])?}" id="rawat_gabung">Rawat Gabung</a>
-          </span>
           <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Inap</span>
+            <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Gabung</span>
           </span>
           <ul class="dropdown-menu dropdown-menu-right">
             <li style="padding-left:5px;padding-right:5px;">
-              <input type="text" id="periode_rawat_inap" class="form-control periode_rawat_inap"
-                name="periode_rawat_inap" required>
+              <input type="text" id="periode_rawat_gabung" class="form-control periode_rawat_gabung"
+                name="periode_rawat_gabung" required>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <input type="text" id="periode_rawat_inap_akhir" class="form-control periode_rawat_inap"
-                name="periode_rawat_inap_akhir" required>
+              <input type="text" id="periode_rawat_gabung_akhir" class="form-control periode_rawat_gabung"
+                name="periode_rawat_gabung_akhir" required>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="submit_periode_rawat_inap" class="btn btn-primary btn-block">Semua</div>
+              <div id="submit_periode_rawat_gabung" class="btn btn-primary btn-block">Semua</div>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="masuk_periode_rawat_inap" class="btn btn-primary btn-block">Masuk</div>
+              <div id="masuk_periode_rawat_gabung" class="btn btn-primary btn-block">Masuk</div>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="pulang_periode_rawat_inap" class="btn btn-primary btn-block">Pulang</div>
-            </li>
-            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <div id="lunas_periode_rawat_inap" class="btn btn-primary btn-block">Sudah Bayar</div>
+              <div id="pulang_periode_rawat_gabung" class="btn btn-primary btn-block">Pulang</div>
             </li>
           </ul>
         </div>
@@ -38,15 +32,8 @@
         <div class="row">
           <div id="notif"></div>
         </div>
-        {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
-        <div class="row">
-          <div id="form">
-            {include: ../plugins/rawat_inap/view/admin/form.html}
-          </div>
-        </div>
-        {/if}
         <div class="display">
-          {include: ../plugins/rawat_inap/view/admin/display.html}
+          {include: ../plugins/rawat_inap/view/admin/display.rawatgabung.html}
         </div>
         <div class="row">
           {include: ../plugins/rawat_inap/view/admin/form.rincian.html}
@@ -55,8 +42,6 @@
           {include: ../plugins/rawat_inap/view/admin/form.hais.html}
           {include: ../plugins/rawat_inap/view/admin/form.jadwaloperasi.html}
           {include: ../plugins/rawat_inap/view/admin/form.dietpasien.html}
-          {include: ../plugins/rawat_inap/view/admin/form.skriningcek.html}
-          <!-- {include: ../plugins/rawat_inap/view/admin/data.orthanc.html} -->
           {if: $cek_vclaim}
           {include: ../plugins/vclaim/view/admin/form.sep.html}
           {/if}
@@ -80,7 +65,7 @@
 </div>
 <script type="text/javascript">
   $(function () {
-    $('.periode_rawat_inap').datetimepicker({
+    $('.periode_rawat_gabung').datetimepicker({
       defaultDate: '{?=date("Y-m-d")?}',
       format: 'YYYY-MM-DD',
       locale: 'id'

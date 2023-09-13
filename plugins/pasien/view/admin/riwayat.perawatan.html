@@ -534,38 +534,6 @@
       </tr>
       {/if}
       {if: $value.resep_obat}
-      <!-- <tr class="isi">
-        <td valign="top" width="20%">Pemberian Obat </td>
-        <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">
-          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-            <tr align="center">
-              <td valign="top" width="10%" bgcolor="#eee">Tanggal/Jam</td>
-              <td valign="top" width="40%" bgcolor="#eee">Nama Obat</td>
-              <td valign="top" width="40%" bgcolor="#eee">Aturan Pakai</td>
-            </tr>
-            {loop: $value.resep_obat as $data1}
-            <tr>
-              <th width="10%">{$data1.tgl_perawatan} {$data1.jam}</th>
-              <th colspan="3" valign="top" width="90%">No Resep : {$data1.no_resep} ({$data1.nm_dokter})</th>
-            </tr>
-            <tr>
-              <td></td>
-              <td>
-                {loop: $data1.detail_obat as $data2}
-                <li>{$data2.nama_brng} <b>[ {$data2.jml} ]</b>
-                {/loop}
-              </td>
-              <td> 
-                {loop: $data1.detail_obat as $data2}
-                <li> {loop: $data2.aturanpakai as $aturan} {if: $aturan == ''}-{else}{$aturan}{/if}{/loop}</li>
-                {/loop}
-              </td>
-            </tr>
-          {/loop}
-          </table>
-        </td>
-      </tr> -->
       <tr class="isi">
         <td valign="top" width="20%">Pemberian Obat </td>
         <td valign="top" width="1%" align="center">:</td>
@@ -602,6 +570,34 @@
             {/loop}
          </table>
         </td>
+      </tr>
+      {/if}
+      {if: $value.obat_pulang}
+      <tr class="isi">
+          <td valign="top" width="20%">Pemberian Obat Pulang</td>
+          <td valign="top" width="1%" align="center">:</td>
+          <td valign="top" width="79%">
+              <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+                  <tr align="center">
+                      <td valign="top" width="10%" bgcolor="#eee">Tanggal/Jam</td>
+                      <td valign="top" width="40%" bgcolor="#eee">Nama Obat</td>
+                      <td valign="top" width="40%" bgcolor="#eee">Aturan Pakai</td>
+                  </tr>
+                  {loop: $value.obat_pulang as $index => $data1}
+                  {if: $index == 0 || ($data1.no_resep != $value.obat_pulang[$index-1].no_resep) || ($data1.tanggal != $value.obat_pulang[$index-1].tanggal)}
+                  <tr>
+                      <th width="10%">{$data1.tanggal} {$data1.jam}</th>
+                      <th colspan="2" valign="top" width="90%">No Resep : {$data1.no_resep} ({$data1.nm_dokter})</th>
+                  </tr>
+                  {/if}
+                  <tr>
+                      <td></td>
+                      <td>{$data1.nama_brng} <b>[{$data1.jml_barang}]</b></td>
+                      <td>{$data1.dosis}</td>
+                  </tr>
+                  {/loop}
+              </table>
+          </td>
       </tr>
       {/if}
       {if: $value.periksa_lab}

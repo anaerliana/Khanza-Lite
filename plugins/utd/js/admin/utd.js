@@ -82,13 +82,13 @@ $(document).ready(function(){
 //     });
 // });
 
-  $(function () {
-       $('.periode_donor').datetimepicker({
-         defaultDate: new Date(),
-         format: 'YYYY-MM-DD',
-         locale: 'id'
-       });
-   });
+  // $(function () {
+  //      $('.periode_donor').datetimepicker({
+  //        defaultDate: new Date(),
+  //        format: 'YYYY-MM-DD',
+  //        locale: 'id'
+  //      });
+  //  });
 
   
 

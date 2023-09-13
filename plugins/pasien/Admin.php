@@ -458,9 +458,8 @@ class Admin extends AdminModule
       $riwayat['settings'] = $this->settings('settings');
       $riwayat['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
       $today = date('Y-m-d');
-      $today2 = date('Y-m-d', strtotime('-1 years'));
+      $today2 = date('Y-m-d', strtotime('-2 years'));
      
-
       $reg_periksa = $this->db('reg_periksa')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -624,6 +623,13 @@ class Admin extends AdminModule
             $value['detail_obat'] = $detail_obat;
             $row['resep_obat'][] = $value;
         }
+
+      $row['obat_pulang'] = $this->db('resep_pulang')
+      ->join('databarang', 'databarang.kode_brng = resep_pulang.kode_brng')
+      ->join('resep_dokter_pulang', 'resep_dokter_pulang.no_resep = resep_pulang.no_resep')
+      ->join('dokter', 'dokter.kd_dokter = resep_dokter_pulang.kd_dokter')
+      ->where('resep_pulang.no_rawat', $row['no_rawat'])
+      ->toArray();
 
         $row['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
         $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
