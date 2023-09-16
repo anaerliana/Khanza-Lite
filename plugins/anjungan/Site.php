@@ -59,6 +59,7 @@ class Site extends SiteModule
     $this->route('anjungan/setselesaiobat', 'getSetSelesaiObat');
     $this->route('anjungan/stokdarah', 'getDisplayStokDarah');
     $this->route('anjungan/runningtext/(:str)', 'getRunningText');
+    $this->route('anjungan/komponendarah', 'getDisplayKomponenDarah');
 
   }
 
@@ -1266,38 +1267,131 @@ class Site extends SiteModule
 
   public function _resultDisplayStokDarah()
   {
-   $rows = $this->db('utd_stok_darah')->toArray();
+      $rows = $this->db('utd_stok_darah')->toArray();
 
-    $result = [];
-    // if (count($rows)) {
+      $result = [];
+      
+      $stok_darah = [
+          'A' => 0,
+          'B' => 0,
+          'O' => 0,
+          'AB' => 0,
+      ];
+
       foreach ($rows as $row) {
-        $row['goldar_a'] = $this->db('utd_stok_darah')
-          ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-          ->where('utd_stok_darah.golongan_darah', 'A')
-          ->where('utd_stok_darah.status', 'Ada')
-          ->oneArray();
-        $row['goldar_b'] = $this->db('utd_stok_darah')
-        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-        ->where('utd_stok_darah.golongan_darah', 'B')
-        ->where('utd_stok_darah.status', 'Ada')
-        ->oneArray();
-
-        $row['goldar_o'] = $this->db('utd_stok_darah')
-        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-        ->where('utd_stok_darah.golongan_darah', 'O')
-        ->where('utd_stok_darah.status', 'Ada')
-        ->oneArray();
-
-        $row['goldar_ab'] = $this->db('utd_stok_darah')
-        ->select(['jumlah_darah' => 'COUNT(utd_stok_darah.golongan_darah)'])
-        ->where('utd_stok_darah.golongan_darah', 'AB')
-         ->where('utd_stok_darah.status', 'Ada')
-        ->oneArray();
-        $result[] = $row;
+          if ($row['status'] == 'Ada' && isset($stok_darah[$row['golongan_darah']])) {
+              $stok_darah[$row['golongan_darah']]++;
+          }
       }
-    // }
-    return $result;
+
+      foreach ($stok_darah as $golongan_darah => $jumlah_darah) {
+          $result[] = [
+              'golongan_darah' => $golongan_darah,
+              'jumlah_darah' => $jumlah_darah,
+          ];
+      }
+
+      return $result;
   }
+
+ public function getDisplayKomponenDarah()
+  {
+    $logo  = $this->settings->get('settings.logo');
+    $title = 'Display Info Stok Darah';
+    $display = $this->_resultDisplayKomponenDarah();
+    $display_total = $this->_displayTotalStokDarah();
+
+    $_username = $this->core->getUserInfo('fullname', null, true);
+    $tanggal   = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
+    $jam       = dateIndonesia(date('H:i'));
+    $username  = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+
+    $content = $this->draw('display.stok&komponen_darah.html', [
+      'logo' => $logo,
+      'title' => $title,
+      'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+      'username' => $username,
+      'tanggal' => $tanggal,
+      'jam' => $jam,
+      'running_text' => '*STOK DARAH SEWAKTU-WAKTU BISA BERUBAH - PELAYANAN DONOR DARAH BUKA 24 JAM - WA: 081347233143',
+      'display' => $display,
+      'display_total' => $display_total,
+    ]);
+
+    $assign = [
+      'title' => $this->settings->get('settings.nama_instansi'),
+      'desc' => $this->settings->get('settings.alamat'),
+      'content' => $content
+    ];
+
+    $this->setTemplate("canvas.html");
+
+    $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+  }
+
+  public function _resultDisplayKomponenDarah()
+  {
+      $rows = $this->db('utd_stok_darah')->join('utd_komponen_darah', 'utd_komponen_darah.kode=utd_stok_darah.kode_komponen')->where('utd_stok_darah.status','Ada') ->toArray();
+
+      $komponenDarah = $this->db('utd_komponen_darah')->toArray();
+
+      $result = [];
+
+      $stok_darah = [];
+
+      foreach ($komponenDarah as $komponen) {
+          $stok_darah[$komponen['nama']] = [
+              'A' => 0,
+              'B' => 0,
+              'AB' => 0,
+              'O' => 0,
+          ];
+      }
+
+      foreach ($rows as $row) {
+          $komponen = $row['nama']; 
+          $golongan = $row['golongan_darah'];
+
+          if (isset($stok_darah[$komponen]) && isset($stok_darah[$komponen][$golongan])) {
+              $stok_darah[$komponen][$golongan]++;
+          }
+      }
+
+      foreach ($stok_darah as $komponen => $golongans) {
+          $result[] = [
+              'nama' => $komponen,
+              'stok_darah' => $golongans,
+          ];
+      }
+
+      return $result;
+  }
+
+  public function _displayTotalStokDarah()
+  {
+      $rows = $this->db('utd_stok_darah')->toArray();
+
+      $result = [];
+
+      $stok_darah = [
+          'A' => 0,
+          'B' => 0,
+          'O' => 0,
+          'AB' => 0,
+      ];
+
+      foreach ($rows as $row) {
+          if ($row['status'] == 'Ada' && isset($stok_darah[$row['golongan_darah']])) {
+              $stok_darah[$row['golongan_darah']]++;
+          }
+      }
+
+      return $stok_darah;
+  }
+
+
 
 
   public function getPanggilAntrian()

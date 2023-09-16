@@ -1128,6 +1128,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var provider        = $('select[name=provider]').val();
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
+  var kode_provider3   = $('input:text[name=kode_provider3]').val();
   var kode_perujuk    = $('input:text[name=kode_perujuk]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
   var jam_rawat       = $('input:text[name=jam_rawat]').val();
@@ -1143,6 +1144,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   provider       : provider,
   kode_provider  : kode_provider,
   kode_provider2 : kode_provider2,
+  kode_provider3 : kode_provider3,
   kode_perujuk   : kode_perujuk,
   tgl_perawatan  : tgl_perawatan,
   jam_rawat      : jam_rawat,
@@ -1167,8 +1169,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=biaya]').val("");
     $('input:text[name=nama_provider]').val("");
     $('input:text[name=nama_provider2]').val("");
+    $('input:text[name=nama_provider3]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=kode_provider3]').val("");
     $('input:text[name=nama_perujuk]').val("");
     $('input:text[name=kode_perujuk]').val("");
     $('input:text[name=diagnosa_klinis]').val("");

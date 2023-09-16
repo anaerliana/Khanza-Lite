@@ -25,12 +25,21 @@
               <input type="text" name="layanan" class="form-control" placeholder="Input tindakan/layanan" value="">
             </div>
           </div>
+           {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'apoteker'}
+          <div class="form-group">
+            <label for="obat" class="col-sm-3 control-label">Obat (e-Resep)</label>
+            <div class="col-sm-9">
+              <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="">
+            </div>
+          </div>
+            {else}  
           <div class="form-group">
             <label for="obat" class="col-sm-3 control-label">Obat (e-Resep)</label>
             <div class="col-sm-9">
               <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="" disabled="">
             </div>
           </div>
+          {/if}
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Laboratorium</label>
             <div class="col-sm-4">
@@ -82,13 +91,15 @@
             <div class="col-sm-9">
               <select class="form-control" name="provider" id="pilih_provider">
                 <option>Pilih provider</option>
-                <option value="rawat_jl_dr">Dokter</option>
-                <option value="rawat_jl_pr">Perawat</option>
-                <option value="rawat_jl_drpr">Dokter & Perawat</option>
+                <option value="rawat_inap_dr">Dokter</option>
+                <option value="rawat_inap_pr">Perawat</option>
+                <!-- <option value="rawat_inap_pr">{if: $this->core->getUserInfo('role') == 'apoteker'}Apoteker{else}Perawat {/if}</option> -->
+                <option value="rawat_inap_drpr">Dokter & Perawat</option>
+                <option value="rawat_inap_far">Apoteker</option>
               </select>
             </div>
           </div>
-          <div class="form-group" id="rawat_jl_dr">
+          <div class="form-group" id="rawat_inap_dr">
             <label for="" class="col-sm-3 control-label">Nama Dokter</label>
             <div class="col-sm-6">
               <input type="text" name="nama_provider" id="nama_provider" class="form-control" value="">
@@ -99,8 +110,9 @@
               <input type="text" name="kode_provider" id="kode_provider" class="form-control" value="">
             </div>
           </div>
-          <div class="form-group" id="rawat_jl_pr">
+          <div class="form-group" id="rawat_inap_pr">
             <label for="" class="col-sm-3 control-label">Nama Perawat</label>
+            <!-- <label for="" class="col-sm-3 control-label">{if: $this->core->getUserInfo('role') == 'apoteker'}Nama Apoteker{else}Nama Perawat{/if}</label> -->
             <div class="col-sm-6">
               <input type="text" name="nama_provider2" id="nama_provider2" class="form-control" value="">
               <ul class="list-group" id="kode_providerList2" style="z-index:1000;position:absolute;width:100%;"></ul>
@@ -110,6 +122,18 @@
               <input type="text" name="kode_provider2" id="kode_provider2" class="form-control" value="">
             </div>
           </div>
+          <div class="form-group" id="rawat_inap_far">
+            <label for="" class="col-sm-3 control-label">Nama Apoteker</label>
+            <div class="col-sm-6">
+              <input type="text" name="nama_provider3" id="nama_provider3" class="form-control" value="">
+              <ul class="list-group" id="kode_providerList3" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+            <label for="" class="col-sm-1 control-label">Kode</label>
+            <div class="col-sm-2">
+              <input type="text" name="kode_provider3" id="kode_provider3" class="form-control" value="">
+            </div>
+          </div>
+
           <div class="form-group" id="aturan_pakai">
             <label class="col-md-3 control-label">Aturan Pakai</label>
             <div class="col-sm-6">
@@ -229,19 +253,53 @@
   });
 </script>
 <script>
+  $('input:text[name=nama_provider3]').on('input',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/rawat_inap/providerlist3?t=' + mlite.token;
+    var query = $('input:text[name=nama_provider3]').val();
+    if(query!="") {
+        $.ajax({
+             url: url,
+             method:"POST",
+             data:{query:query},
+             success:function(data)
+             {
+                  $('#kode_providerList3').fadeIn();
+                  $('#kode_providerList3').html(data);
+             }
+        });
+    }
+    $('#kode_providerList3').fadeIn();
+  });
+
+  $('#kode_providerList3').on('click', 'li', function(){
+       $('#nama_provider3').val($(this).text().split(': ')[1]);
+       $('#kode_provider3').val($(this).text().split(': ')[0]);
+       var kode_provider3 = $('#kode_provider3').val();
+       $('#kode_providerList3').fadeOut();
+  });
+</script>
+<script>
   $(function() {
-      $('#rawat_jl_dr').hide();
-      $('#rawat_jl_pr').hide();
+      $('#rawat_inap_dr').hide();
+      $('#rawat_inap_pr').hide();
+      $('#rawat_inap_far').hide();
       $('#pilih_provider').change(function(){
-          if($('#pilih_provider').val() == 'rawat_jl_dr') {
-              $('#rawat_jl_dr').show();
-              $('#rawat_jl_pr').hide();
-          } else if($('#pilih_provider').val() == 'rawat_jl_pr') {
-              $('#rawat_jl_dr').hide();
-              $('#rawat_jl_pr').show();
+          if($('#pilih_provider').val() == 'rawat_inap_dr') {
+              $('#rawat_inap_dr').show();
+              $('#rawat_inap_pr').hide();
+              $('#rawat_inap_far').hide();
+          } else if($('#pilih_provider').val() == 'rawat_inap_pr') {
+              $('#rawat_inap_dr').hide();
+              $('#rawat_inap_pr').show();
+              $('#rawat_inap_far').hide();
+          } else if($('#pilih_provider').val() == 'rawat_inap_far') {
+              $('#rawat_inap_dr').hide();
+              $('#rawat_inap_pr').hide();
+              $('#rawat_inap_far').show();
           } else {
-              $('#rawat_jl_dr').show();
-              $('#rawat_jl_pr').show();
+              $('#rawat_inap_dr').show();
+              $('#rawat_inap_pr').show();
           }
       });
   });
