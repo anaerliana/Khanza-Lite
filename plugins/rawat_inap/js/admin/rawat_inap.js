@@ -687,6 +687,7 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#form_soap").hide();
   $("#form").show();
   $("#display").show();
+  $("#display_rawatgabung").show();
   $("#rincian").hide();
   $("#soap").hide();
   $("#berkasdigital").hide();
@@ -918,6 +919,7 @@ $("#form_rincian").hide();
 $("#form_soap").hide();
 $("#form").show();
 $("#display").show();
+$("#display_rawatgabung").show();
 $("#rincian").hide();
 $("#soap").hide();
 $("#berkasdigital").hide();
@@ -1126,6 +1128,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var provider        = $('select[name=provider]').val();
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
+  var kode_provider3   = $('input:text[name=kode_provider3]').val();
   var kode_perujuk    = $('input:text[name=kode_perujuk]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
   var jam_rawat       = $('input:text[name=jam_rawat]').val();
@@ -1141,6 +1144,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   provider       : provider,
   kode_provider  : kode_provider,
   kode_provider2 : kode_provider2,
+  kode_provider3 : kode_provider3,
   kode_perujuk   : kode_perujuk,
   tgl_perawatan  : tgl_perawatan,
   jam_rawat      : jam_rawat,
@@ -1165,8 +1169,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=biaya]').val("");
     $('input:text[name=nama_provider]').val("");
     $('input:text[name=nama_provider2]').val("");
+    $('input:text[name=nama_provider3]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=kode_provider3]').val("");
     $('input:text[name=nama_perujuk]').val("");
     $('input:text[name=kode_perujuk]').val("");
     $('input:text[name=diagnosa_klinis]').val("");
@@ -1289,7 +1295,7 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
 $("#rincian").on("click",".hapus_lab", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url = baseURL + '/rawat_jalan/hapuslab?t=' + mlite.token;
+  var url = baseURL + '/rawat_inap/hapuslab?t=' + mlite.token;
   var noorder = $(this).attr("data-noorder");
   var no_rawat = $(this).attr("data-no_rawat");
   var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
@@ -1347,7 +1353,7 @@ $("#rincian").on("click",".hapus_rad", function(event){
         jam_permintaan: jam_permintaan,
         diagnosa_klinis: diagnosa_klinis
       } ,function(data) {
-        var url = baseURL + '/rawat_jalan/rincian?t=' + mlite.token;
+        var url = baseURL + '/rawat_inap/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
           // tampilkan data
@@ -1502,6 +1508,7 @@ $("#form_rincian").hide();
 $("#form_soap").hide();
 $("#form").show();
 $("#display").show();
+$("#display_rawatgabung").show();
 $("#rincian").hide();
 $("#soap").hide();
 $("#berkasdigital").hide();
@@ -1671,6 +1678,7 @@ $("#form_rincian").hide();
 $("#form_soap").hide();
 $("#form").show();
 $("#display").show();
+$("#display_rawatgabung").show();
 $("#rincian").hide();
 $("#soap").hide();
 $("#berkasdigital").hide();
@@ -1831,6 +1839,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#form_soap").hide();
   $("#form").show();
   $("#display").show();
+  $("#display_rawatgabung").show();
   $("#rincian").hide();
   $("#soap").hide();
   $("#berkasdigital").hide();
@@ -2440,6 +2449,157 @@ $("#skrining_perawat").on("click", "#simpan_skriningcek", function(event) {
   });
 });
 
+$('#manage_rawatgabung').on('click', '#submit_periode_rawat_gabung', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displayrawatgabung?t=' + mlite.token;
+  var periode_rawat_gabung  = $('input:text[name=periode_rawat_gabung]').val();
+  var periode_rawat_gabung_akhir  = $('input:text[name=periode_rawat_gabung_akhir]').val();
+  var status_pulang = 'all';
+
+  if(periode_rawat_gabung == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_rawat_gabung_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_rawat_gabung: periode_rawat_gabung, periode_rawat_gabung_akhir: periode_rawat_gabung_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    // $("#form").show();
+    $("#display_rawatgabung").html(data).show();
+    $("#form_rincian").hide();
+    $("#form_soap").hide();
+    $("#form_sep").hide();
+    $("#notif").hide();
+    $("#rincian").hide();
+    $("#sep").hide();
+    $("#soap").hide();
+    $("#form_hais").hide();
+    $("#form_jadwaloperasi").hide();
+    $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
+    $('.periode_rawat_gabung').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_rawatgabung').on('click', '#masuk_periode_rawat_gabung', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displayrawatgabung?t=' + mlite.token;
+  var periode_rawat_gabung  = $('input:text[name=periode_rawat_gabung]').val();
+  var periode_rawat_gabung_akhir  = $('input:text[name=periode_rawat_gabung_akhir]').val();
+  var status_pulang = 'masuk';
+
+  if(periode_rawat_gabung == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_rawat_gabung_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_rawat_gabung: periode_rawat_gabung, periode_rawat_gabung_akhir: periode_rawat_gabung_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    $("#display_rawatgabung").html(data).show();
+    $("#form_rincian").hide();
+    $("#form_soap").hide();
+    $("#form_sep").hide();
+    $("#notif").hide();
+    $("#rincian").hide();
+    $("#sep").hide();
+    $("#soap").hide();
+    $("#form_hais").hide();
+    $("#form_jadwaloperasi").hide();
+    $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
+    $('.periode_rawat_gabung').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_rawatgabung').on('click', '#pulang_periode_rawat_gabung', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displayrawatgabung?t=' + mlite.token;
+  var periode_rawat_gabung  = $('input:text[name=periode_rawat_gabung]').val();
+  var periode_rawat_gabung_akhir  = $('input:text[name=periode_rawat_gabung_akhir]').val();
+  var status_pulang = 'pulang';
+
+  if(periode_rawat_gabung == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_rawat_gabung_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_rawat_gabung: periode_rawat_gabung, periode_rawat_gabung_akhir: periode_rawat_gabung_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    // $("#form").show();
+    $("#display_rawatgabung").html(data).show();
+    $("#form_rincian").hide();
+    $("#form_soap").hide();
+    $("#form_sep").hide();
+    $("#notif").hide();
+    $("#rincian").hide();
+    $("#sep").hide();
+    $("#soap").hide();
+    $("#form_hais").hide();
+    $("#form_jadwaloperasi").hide();
+    $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
+    $('.periode_rawat_gabung').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_rawatgabung').on('click', '#lunas_periode_rawat_gabung', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displayrawatgabung?t=' + mlite.token;
+  var periode_rawat_gabung  = $('input:text[name=periode_rawat_gabung]').val();
+  var periode_rawat_gabung_akhir  = $('input:text[name=periode_rawat_gabung_akhir]').val();
+  // var status_periksa = 'lunas';
+  var status_bayar = 'lunas';
+
+  if(periode_rawat_gabung == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_rawat_gabung_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_rawat_gabung: periode_rawat_gabung, periode_rawat_gabung_akhir: periode_rawat_gabung_akhir, status_periksa: status_periksa} ,function(data) {
+  // tampilkan data
+    $("#display_rawatgabung").html(data).show();
+    $("#form_rincian").hide();
+    $("#form_soap").hide();
+    $("#form_sep").hide();
+    $("#notif").hide();
+    $("#rincian").hide();
+    $("#sep").hide();
+    $("#soap").hide();
+    $("#form_hais").hide();
+    $("#form_jadwaloperasi").hide();
+    $("#form_dietpasien").hide();
+    $("#form_kerohanian").hide();
+    $("#skrining_perawat").hide();
+    $('.periode_rawat_gabung').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
 //  $("#skrining").on("click", ".edit_skrining", function(event) {
 //   var baseURL = mlite.url + '/' + mlite.admin;
 //   event.preventDefault();
@@ -2504,6 +2664,7 @@ $("#form_rincian").hide();
 $("#form_soap").hide();
 $("#form").show();
 $("#display").show();
+$("#display_rawatgabung").show();
 $("#rincian").hide();
 $("#soap").hide();
 $("#berkasdigital").hide();
@@ -2577,6 +2738,7 @@ $("#kerohanian").hide();
 $("#skrining_perawat").hide();
 $("#skrining").hide();
 $("#orthanc").hide();
+$("#display_rawatgabung").show();
 });
 
 function bersih(){

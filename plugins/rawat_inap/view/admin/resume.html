@@ -1,0 +1,244 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    body {
+      margin: 20px;
+    }
+
+    .col-md-2 {
+      font-size: 18px;
+    }
+
+    .col-md-3 {
+      font-size: 18px;
+    }
+
+    .col-md-4 {
+      font-size: 18px;
+    }
+
+    .col-md-8 {
+      font-size: 18px;
+    }
+
+    @media print {
+      .no-print {
+        display: none;
+      }
+    }
+
+    .title-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .secret {
+      float: right;
+      top: 80px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .rm-number {
+      position: absolute;
+      top: 75px;
+      right: 48px;
+      font-size: 20px;
+    }
+
+    .cetak {
+      background-color: rgb(123, 178, 221);
+      border-radius: 0.2em;
+    }
+  </style>
+  <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+  <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+  <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+  <script>
+    function printContent() {
+      window.print();
+    }
+  </script>
+</head>
+
+<body>
+  <fieldset style="page-break-before:always;">
+    <div class="no-print">
+      <button class="cetak" onclick="javascript:window.close();opener.window.focus();" type="button">Tutup</button>
+      <button class="cetak" onclick="printContent()" type="button">Cetak Resume</button>
+    </div>
+    <br>
+    <table class="sep" width="1000" style="font-size:11px;padding:0;border:0px solid #fff;" border="0" padding="0">
+      <tr>
+        <td>
+          <table border="0" padding="0">
+            <tr>
+              <td width="95">
+                <img src="{?= url('/assets/img/rshd.png') ?}" alt="Image" width="90" height="55">
+              </td>
+              <td width="1000">
+                <div style="font-size:20px;text-align:left;font-weight:bold;">
+                  RSUD H. DAMANHURI
+                </div>
+                <div style="font-size:17px;text-align:left;">
+                  Jl. Murakata No.04 barabai Kab. Hulu Sungai Tengah </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <div class="title-container">
+      <div class="secret"><u>RAHASIA</u></div>
+      <div class="title">RINGKASAN KELUAR (RESUME)</div>
+    </div>
+    <div class="rm-number">RM 66</div>
+    <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+      {loop: $resume_pasien}
+      <tr class="isi">
+        <td valign="top" width="20%">NO RM/NO RAWAT</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="24%">{$value.no_rkm_medis} ({$value.no_rawat})</td>
+        <td valign="top" width="20%">TANGGAL MASUK</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="10%">{$value.tgl_masuk}</td>
+        <td valign="top" width="5%">JAM</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="10%">{$value.jam_masuk}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">NAMA PASIEN</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="24%">{$value.nm_pasien}</td>
+        <td valign="top" width="20%">TANGGAL KELUAR/MENINGGAL</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="10%">{$value.tgl_keluar}</td>
+        <td valign="top" width="5%">JAM</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="10%">{$value.jam_keluar}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">TANGGAL LAHIR</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top">{$value.tgl_lahir}</td>
+        <td valign="top">RUANG RAWAT TERAKHIR</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" colspan="4">{$value.nm_bangsal}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">CARA BAYAR</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top">{$value.png_jawab}</td>
+        <td valign="top">KELAS</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" colspan="4">{$value.kelas}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">DIAGNOSA MASUK</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" colspan="7">{$value.diagnosa_awal}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Ringkasan Riwayat Penyakit</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" colspan="7">{?=nl2br($value.jalannya_penyakit)?}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Pemeriksaan Fisik</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" colspan="7">{?=nl2br($value.pemeriksaan_fisik)?}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Pemeriksaan penunjang yang penting</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" colspan="7">{?=nl2br($value.pemeriksaan_penunjang)?}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" width="20%">Pemeriksaan Laboratorium</td>
+        <td valign=" top" align="center">:</td>
+        <td valign="top" colspan="7">{?=nl2br($value.hasil_laborat)?}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">Diagnosa Utama</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top" colspan="4">{?=nl2br($value.diagnosa_utama)?}</td>
+        <td valign="top">ICD X</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top">{?=nl2br($value.kd_diagnosa_utama)?}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">Diagnosa Sekunder</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top" colspan="4">{$value.diagnosa_sekunder}<br>
+          {$value.diagnosa_sekunder2}<br>
+          {$value.diagnosa_sekunder3}<br>
+          {$value.diagnosa_sekunder4}</td>
+        <td valign="top" width="7%">ICD X</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top">{$value.kd_diagnosa_sekunder}<br>{$value.kd_diagnosa_sekunder2}<br>
+          {$value.kd_diagnosa_sekunder3}<br>{$value.kd_diagnosa_sekunder4}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">Tindakan</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top" colspan="4">{$value.prosedur_utama}<br>
+          {$value.prosedur_sekunder}<br>
+          {$value.prosedur_sekunder2}<br>
+          {$value.prosedur_sekunder3}</td>
+        <td valign="top" width="7%">ICD IX</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top">{$value.kd_prosedur_utama}<br>{$value.kd_prosedur_sekunder}<br>
+          {$value.kd_prosedur_sekunder2}<br>{$value.kd_prosedur_sekunder3}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">Terapi</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top" colspan="7">{?=nl2br($value.obat_di_rs)?}</td>
+        </td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">Kondisi Waktu Pulang</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top" colspan="7">{$value.keadaan}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">Pengobatan dilanjutkan</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top" colspan="7">{if: empty($value.poli)} {else}Ke {$value.poli} Tanggal {$value.skdp} RSUD H.
+          Damanhuri Barabai{/if}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top">Terapi Pulang</td>
+        <td valign="top" align="center">:</td>
+        <td valign="top" colspan="7">{?=nl2br($value.obat_pulang)?}</td>
+      </tr>
+      <tr class="isi">
+        <td valign="top" colspan="9" align="right">
+          <div style="text-align: right; margin-top: 10px;">
+            <div style="display: inline-block; text-align: center;">
+              <p style="margin: 0;">Dokter Penanggung Jawab Pelayanan</p><br>
+              <div class="qrcodeDPJPResumeRanap"></div><br>
+              <p style="margin: 0;">{$value.nm_dokter}</p>
+            </div>
+            <script>
+              jQuery('.qrcodeDPJPResumeRanap').qrcode({
+                text: "DPJP: {$value.nm_dokter}"
+              });
+            </script>
+          </div>
+        </td>
+      </tr>
+      {/loop}
+    </table>
+  </fieldset>
+</body>
+
+</html>

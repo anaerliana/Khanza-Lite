@@ -53,7 +53,15 @@ class Admin extends AdminModule
   public function postSavePendonor()
   {
     if($_POST['simpan']) {
+      $cek_nik = $this->db('utd_pendonor')->where('no_ktp', $_POST['no_ktp'])->oneArray();
+      if ($cek_nik) {
+        $this->notify('failure', 'Maaf, data pendonor sudah tersedia..!!');
+        redirect(url([ADMIN, 'utd', 'pendonor']));
+        return;
+      }
+      
       unset($_POST['simpan']);
+
       if(!$this->db('propinsi')->where('kd_prop', $_POST['kd_prop'])->oneArray()){
         $this->db('propinsi')->save(['kd_prop' => $_POST['kd_prop'], 'nm_prop' => $_POST['nm_prop']]);
       }
@@ -301,8 +309,15 @@ class Admin extends AdminModule
  public function postDonor()
 {
     $this->_addHeaderFiles();
+    // $this->core->addCSS(url('https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css'));
+    // $this->core->addJS(url('https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js'), 'footer');
+    // $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'), 'footer');
+    // $this->core->addJS(url('https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js'), 'footer');
+    // $this->core->addJS(url('https://cdn.datatables.net/plug-ins/1.12.1/api/sum().js'), 'footer');
+    // $this->core->addJS(url('https://cdn.datatables.net/datetime/1.1.2/js/dataTables.dateTime.min.js'), 'footer');
 
     if (isset($_POST['submit'])) {
+
         $date1 = $_POST['date1'];
         $date2 = $_POST['date2'];
 
@@ -326,7 +341,7 @@ class Admin extends AdminModule
             //  // ->where('utd_donor.tanggal', $date1)
             //  // ->where('utd_donor.tanggal', $date2)
             //  ->toArray();
-         $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
@@ -414,23 +429,137 @@ class Admin extends AdminModule
   //   ]);
   // }
 
-  public function postSaveDonor()
-  {
-    if($_POST['simpan']) {
-      unset($_POST['simpan']);
-      $this->db('utd_donor')->save($_POST);
-      $this->notify('success', 'Data donor telah disimpan');
+
+
+public function postSaveDonor()
+{
+    if ($_POST['simpan']) {
+        // $cek_date = new \DateTime($_POST['tanggal']);
+        //  if ($cek_date->format('Y-m-d') != date('Y-m-d')) {
+        //         $this->notify('failure', 'Mohon maaf, tanggal tidak sesuai dengan hari ini');
+        //         redirect(url([ADMIN, 'utd', 'donor']));
+        //         return;
+        // }
+        $cek_jk = $this->db('utd_pendonor')->select('jk')->where('no_pendonor', $_POST['no_pendonor'])->oneArray();
+        $tgl_donor_akhir = $this->db('utd_donor')->select('tanggal')->where('no_pendonor', $_POST['no_pendonor'])->desc('tanggal')->limit(1)->oneArray();
+        
+        // Mengecek apakah ada data donor sebelum memeriksa jenis kelamin dan selisih tanggal
+        if (!$tgl_donor_akhir) {
+            // Jika tidak ada data donor, langsung simpan
+            unset($_POST['simpan']);
+            $this->db('utd_donor')->save($_POST);
+            $this->notify('success', 'Data donor telah disimpan');
+        } else {
+            // Menghitung selisih hari antara tanggal donor terakhir dan hari ini
+            $tanggal_sekarang = new \DateTime(date('Y-m-d'));
+            $tanggal_donor_terakhir = new \DateTime($tgl_donor_akhir['tanggal']);
+            $interval = $tanggal_sekarang->diff($tanggal_donor_terakhir);
+            $jumlah_hari = $interval->days;
+
+            if ($cek_jk['jk'] == 'P') {
+                if ($jumlah_hari <= 90) {
+                    $confirmation = $this->notify('failure','Maaf, tidak bisa simpan karena terakhir donor kurang dari 90 hari');
+                    if (!$confirmation) {
+                        redirect(url([ADMIN, 'utd', 'donor']));
+                        return;
+                    }
+                }
+            } elseif ($cek_jk['jk'] == 'L') {
+                if ($jumlah_hari <= 65) {
+                    $confirmation = $this->notify('failure','Maaf, tidak bisa simpan karena terakhir donor kurang dari 65 hari');
+                    if (!$confirmation) {
+                        redirect(url([ADMIN, 'utd', 'donor']));
+                        return;
+                    }
+                }
+            }
+
+            unset($_POST['simpan']);
+            $this->db('utd_donor')->save($_POST);
+            $this->notify('success', 'Data donor telah disimpan');
+        }
     } else if ($_POST['update']) {
-      $no_donor = $_POST['no_donor'];
-      unset($_POST['update']);
-      unset($_POST['no_donor']);
-      $this->db('utd_donor')
-        ->where('no_donor', $no_donor)
-        ->save($_POST);
-      $this->notify('failure', 'Data donor telah diubah');
+        $no_donor = $_POST['no_donor'];
+        unset($_POST['update']);
+        unset($_POST['no_donor']);
+        $this->db('utd_donor')
+            ->where('no_donor', $no_donor)
+            ->save($_POST);
+        $this->notify('failure', 'Data donor telah diubah');
     }
     redirect(url([ADMIN, 'utd', 'donor']));
-  }
+}
+
+// public function postSaveDonor()
+// {
+//     if ($_POST['simpan']) {
+//         $cek_jk = $this->db('utd_pendonor')->select('jk')->where('no_pendonor', $_POST['no_pendonor'])->oneArray();
+//         $tgl_donor_akhir = $this->db('utd_donor')->select('tanggal')->where('no_pendonor', $_POST['no_pendonor'])->desc('tanggal')->limit(1)->oneArray();
+
+//         // Mengecek apakah ada data donor sebelum memeriksa jenis kelamin dan selisih tanggal
+//         if (!$tgl_donor_akhir) {
+//             // Jika tidak ada data donor, langsung simpan
+//             unset($_POST['simpan']);
+//             $this->db('utd_donor')->save($_POST);
+//             $this->notify('success', 'Data donor telah disimpan');
+//         } else {
+//             // Menghitung selisih hari antara tanggal donor terakhir dan hari ini
+//             $tanggal_sekarang = new \DateTime(date('Y-m-d'));
+//             $tanggal_donor_terakhir = new \DateTime($tgl_donor_akhir['tanggal']);
+//             $interval = $tanggal_sekarang->diff($tanggal_donor_terakhir);
+//             $jumlah_hari = $interval->days;
+
+//             if ($cek_jk['jk'] == 'P') {
+//                 if ($jumlah_hari <= 90) {
+//                     $confirmation = $this->notify('failure','Maaf, tidak bisa simpan karena terakhir donor kurang dari 90 hari');
+//                     if (!$confirmation) {
+//                         redirect(url([ADMIN, 'utd', 'donor']));
+//                         return;
+//                     }
+//                 }
+//             } elseif ($cek_jk['jk'] == 'L') {
+//                 if ($jumlah_hari <= 65) {
+//                     $confirmation = $this->notify('failure','Maaf, tidak bisa simpan karena terakhir donor kurang dari 65 hari');
+//                     if (!$confirmation) {
+//                         redirect(url([ADMIN, 'utd', 'donor']));
+//                         return;
+//                     }
+//                 }
+//             }
+
+//             unset($_POST['simpan']);
+//             $this->db('utd_donor')->save($_POST);
+//             $this->notify('success', 'Data donor telah disimpan');
+//         }
+//     } else if ($_POST['update']) {
+//         $no_donor = $_POST['no_donor'];
+//         unset($_POST['update']);
+//         unset($_POST['no_donor']);
+//         $this->db('utd_donor')
+//             ->where('no_donor', $no_donor)
+//             ->save($_POST);
+//         $this->notify('failure', 'Data donor telah diubah');
+//     }
+//     redirect(url([ADMIN, 'utd', 'donor']));
+// }
+
+  // public function postSaveDonor()
+  // {
+  //   if($_POST['simpan']) {
+  //     unset($_POST['simpan']);
+  //     $this->db('utd_donor')->save($_POST);
+  //     $this->notify('success', 'Data donor telah disimpan');
+  //   } else if ($_POST['update']) {
+  //     $no_donor = $_POST['no_donor'];
+  //     unset($_POST['update']);
+  //     unset($_POST['no_donor']);
+  //     $this->db('utd_donor')
+  //       ->where('no_donor', $no_donor)
+  //       ->save($_POST);
+  //     $this->notify('failure', 'Data donor telah diubah');
+  //   }
+  //   redirect(url([ADMIN, 'utd', 'donor']));
+  // }
 
   public function getHapusDonor($no_donor)
   {
@@ -443,13 +572,16 @@ class Admin extends AdminModule
   public function getStokDarah()
   {
     $this->_addHeaderFiles();
+
     $stokdarah = $this->db('utd_stok_darah')
       ->join('utd_komponen_darah', 'utd_komponen_darah.kode=utd_stok_darah.kode_komponen')
       ->toArray();
     $komponendarah = $this->db('utd_komponen_darah')->toArray();
+    $donor = $this->db('utd_donor')->join('utd_pendonor', 'utd_pendonor.no_pendonor=utd_donor.no_pendonor')->where('utd_donor.tanggal', date('Y-m-d'))->toArray();
     return $this->draw('stok.darah.html', [
       'stokdarah' => $stokdarah, 
-      'komponendarah' => $komponendarah]);
+      'komponendarah' => $komponendarah,
+      'donor' => $donor,]);
   }
 
   public function postSaveStokDarah()
@@ -477,6 +609,34 @@ class Admin extends AdminModule
       ->delete();
     redirect(url([ADMIN, 'utd', 'stokdarah']));
   }
+
+//   public function postlama()
+// {
+//     $kodeKomponen = $_POST['kode_komponen'];
+
+//     $lama = $this->db('utd_komponen_darah')->select('lama')->where('kode', $kodeKomponen)->oneArray();
+
+//     if ($lama) {
+//         echo $lama['lama'];
+//     } else {
+//         echo 'Kode komponen tidak valid';
+//     }
+// }
+public function postlama()
+{
+    $kodeKomponen = $_POST['kode_komponen'];
+
+    $lama = $this->db('utd_komponen_darah')->select('lama')->where('kode', $kodeKomponen)->oneArray();
+
+    if ($lama) {
+        echo json_encode(array('lama' => $lama['lama']));
+    } else {
+        echo json_encode(array('lama' => 'Kode komponen tidak valid'));
+    }
+    exit();
+}
+
+
 
   // public function getKomponenDarah()
   // {
@@ -606,17 +766,44 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getKartuDonor($no_pendonor)
+    public function getKartuDonor($no_pendonor)
   {
-      $pdf=new PDF_Code128('L', 'mm', array(59,98));
+      $data_pendonor = $this->db('utd_pendonor')->where('no_pendonor', $no_pendonor)->toArray();
+
+      $nama_pendonor = $data_pendonor[0]['nama'];
+      $golongan_darah = $data_pendonor[0]['golongan_darah'];
+      $resus = $data_pendonor[0]['resus'];
+
+      $pdf = new PDF_Code128('L', 'mm', array(59, 98));
       $pdf->AddPage();
-      $pdf->SetFont('Arial','',10);
-      $pdf->Code128(9,35,$no_pendonor,80,20);
-      $pdf->SetFont('Arial','B',16);
-      $pdf->SetXY(8,0);
-      $pdf->Cell(0,35,$no_pendonor);
-      $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
+      $pdf->SetFont('Arial', '', 10);
+
+      $pdf->Code128(45, 40, $no_pendonor, 40, 15, 'R');
+      $pdf->SetFont('Arial', 'B', 16);
+      $pdf->SetXY(8, 0);
+
+      $pdf->Cell(0, 10, $nama_pendonor, 0, 2, 'R');
+      $pdf->Cell(0, 10, $golongan_darah .' '.  $resus , 0, 2, 'R');
+      $pdf->Cell(0, 10, $no_pendonor, 0, 2, 'R');
+
+      $pdf->Output('kartudonor_' . $no_pendonor . '.pdf', 'I');
   }
+
+
+
+
+
+  // public function getKartuDonor($no_pendonor)
+  // {
+  //     $pdf=new PDF_Code128('L', 'mm', array(59,98));
+  //     $pdf->AddPage();
+  //     $pdf->SetFont('Arial','',10);
+  //     $pdf->Code128(9,35,$no_pendonor,80,20);
+  //     $pdf->SetFont('Arial','B',16);
+  //     $pdf->SetXY(8,0);
+  //     $pdf->Cell(0,35,$no_pendonor);
+  //     $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
+  // }
 
   public function setNoPendonor()
   {
@@ -679,12 +866,18 @@ class Admin extends AdminModule
 
   private function _addHeaderFiles()
   {
+      // CSS
       $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addCSS(url('assets/css/jquery-ui.css'));
       $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+      $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
       $this->core->addCSS(url([ADMIN, 'utd', 'css']));
+
+      // JS
       $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
       $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
       $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+      $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
       $this->core->addJS(url('assets/jscripts/jquery.confirm.js'));
       $this->core->addJS(url([ADMIN, 'utd', 'javascript']), 'footer');

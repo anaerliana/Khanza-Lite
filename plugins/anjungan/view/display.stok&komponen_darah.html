@@ -36,6 +36,7 @@
 
         .title-text {
             font-size: 30px;
+            text-align: center;
         }
 
         .logo {
@@ -62,7 +63,6 @@
             color: #fff;
             background-color: #007bff;
             padding: 10px;
-            /*text-align: right;*/
         }
 
         footer a,
@@ -72,7 +72,8 @@
 
         td {
             font-weight: bold;
-            font-size: 45px;
+            font-size: 20px;
+            text-align: center;
         }
 
         tr:nth-child(even) {
@@ -87,6 +88,10 @@
             .logo {
                 max-width: 70px;
             }
+
+           /* .table-responsive td[width="40%"] {
+            font-size: 8px; 
+        }*/
 
             td {
                 font-size: 15px;
@@ -103,8 +108,12 @@
             }
 
             td {
-                font-size: 15px;
+                font-size: 9px;
             }
+            .nama {
+               font-size: 45%;   
+            }
+
         }
     </style>
 </head>
@@ -124,33 +133,51 @@
             <table class="table table-bordered table-striped lead text-primary">
                 <thead class="bg-primary">
                     <tr>
-                        <th width="50%">Golongan Darah</th>
-                        <th width="50%">Stok Darah</th>
+                        <td width="40%" rowspan="2" style="vertical-align: middle; text-align: center;" class="nama"> Komponen Darah
+                        </td>
+                        <td width="60%" colspan="4">Stok Darah</td>
+                    </tr>
+                    <tr>
+                        <td width="15%" style="color: white;">A</td>
+                        <td width="15%" style="color: white;">B</td>
+                        <td width="15%" style="color: white;">AB</td>
+                        <td width="15%" style="color: white;">O</td>
                     </tr>
                 </thead>
             </table>
         </div>
+
         <div class="marquee" data-direction='up' data-duration='20000' startVisible='true' data-gap='10'
             data-duplicated='true'>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped lead ">
                     <tbody>
-                         {loop: $display}
+                        {loop: $display}
                         <tr>
-                            <td width="50%" style="vertical-align: middle; text-align: left;">{$value.golongan_darah}</td>
-                            <td width="50%">{$value.jumlah_darah} Kantong</td>
+                            <td width="40%" style="vertical-align: middle; text-align: left;" class="nama">{$value.nama}</td>
+                            <td width="15%">{$value.stok_darah.A} </td>
+                            <td width="15%">{$value.stok_darah.B} </td>
+                            <td width="15%">{$value.stok_darah.AB} </td>
+                            <td width="15%">{$value.stok_darah.O} </td>
                         </tr>
                         {/loop}
+                        <tr>
+                            <td width="40%" style="vertical-align: middle;">Total</td>
+                            <td width="15%" class="nama">{$display_total.A} Kantong</td>
+                            <td width="15%" class="nama">{$display_total.B} Kantong</td>
+                            <td width="15%" class="nama">{$display_total.AB} Kantong</td>
+                            <td width="15%" class="nama">{$display_total.O} Kantong</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            <div
-                style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-                <h3>
-                    <marquee> <i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i
-                            class="fa fa-fw fa-clock-o"></i><span id="clock">{$jam}</span> {$running_text} </marquee>
-                </h3>
-            </div>
+        </div>
+        <div
+            style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
+            <h3>
+                <marquee> <i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i
+                        class="fa fa-fw fa-clock-o"></i><span id="clock">{$jam}</span> {$running_text} </marquee>
+            </h3>
         </div>
     </div>
     <footer class="visible-lg visible-md bg-primary">
