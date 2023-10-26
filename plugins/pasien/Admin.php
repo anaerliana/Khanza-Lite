@@ -548,6 +548,7 @@ class Admin extends AdminModule
         $rows_periksa_lab = $this->db('periksa_lab')
           ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
           ->where('no_rawat', $row['no_rawat'])
+          ->asc('periksa_lab.tgl_periksa')
           ->toArray();
 
         $row['periksa_lab'] = [];
@@ -631,9 +632,142 @@ class Admin extends AdminModule
       ->where('resep_pulang.no_rawat', $row['no_rawat'])
       ->toArray();
 
-        $row['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
-        $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
-        $row['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $row['no_rawat'])->toArray();
+      $row['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
+      $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
+      $row['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $row['no_rawat'])->toArray();
+
+     $rows_hasil_echo = $this->db('saran_kesan_rad')
+        ->where('judul', 'Echocardiography')
+        ->where('no_rawat', $row['no_rawat'])
+        ->toArray();
+
+     $row['hasil_echo'] = [];
+         foreach ($rows_hasil_echo as $value) {
+          $value['detail_hasil_echo'] = $this->db('hasil_radiologi')
+            ->where('hasil_radiologi.no_rawat', $value['no_rawat'])
+            ->where('hasil_radiologi.tgl_periksa', $value['tgl_periksa'])
+            ->where('hasil_radiologi.jam', $value['jam'])
+            ->toArray();
+          $row['hasil_echo'][] = $value;
+      }
+
+
+    $rows_hasil_triase = $this->db('data_triase_igd')
+      ->join('dokter', 'dokter.kd_dokter = data_triase_igd.kd_dokter')
+      ->join('petugas', 'petugas.nip = data_triase_igd.kd_petugas')
+      ->where('no_rawat', $row['no_rawat'])
+      ->toArray();
+
+      $row['triase_igd'] = [];
+         foreach ($rows_hasil_triase as $value) {
+          $value['detail_hasil_triase'] = $this->db('detail_pemeriksaan_triase')
+            ->join('master_triase_igd', 'master_triase_igd.kd_tindakan=detail_pemeriksaan_triase.kd_tindakan')
+            ->where('detail_pemeriksaan_triase.no_rawat', $value['no_rawat'])
+            ->toArray();
+          $row['triase_igd'][] = $value;
+        } 
+
+    $mlite_lap_op = $this->db('mlite_lap_op')
+      ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
+      ->where('mlite_lap_op.no_rawat', $row['no_rawat'])
+      ->toArray();
+    $row['lap_op'] = [];
+      foreach ($mlite_lap_op as $value) {
+      $value['operasi'] = $this->db('operasi')
+        ->select([ 
+          'asisten_operator1' => 'operasi.asisten_operator1',
+          'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
+          'dokter_anestesi'   => 'operasi.dokter_anestesi',
+          'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
+          'kode_paket'        => 'operasi.kode_paket',
+          'kategori'          => 'operasi.kategori',
+          'nm_asisten'        => 'petugas.nama',
+          'nm_perawat'        => 'perawat.nama',
+          'dok_anestesi'      => 'dokter.nm_dokter',
+          'nm_paket'          => 'paket_operasi.nm_perawatan'
+         ])
+        ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
+        ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
+        ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
+        ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
+        ->where('operasi.no_rawat', $value['no_rawat'])
+        ->toArray();
+
+      $bookingOperasi = $this->db('booking_operasi')
+      ->where('no_rawat', $value['no_rawat'])
+      ->toArray();
+
+      $value['booking_operasi'] = [];
+
+      if (!empty($bookingOperasi)) {
+          foreach ($bookingOperasi as $booking) {
+              $jamMulai = strtotime($booking['jam_mulai']);
+              $jamAkhir = strtotime($booking['jam_selesai']);
+
+              if ($jamMulai !== false && $jamAkhir !== false) {
+                  $lamaOperasiDetik = $jamAkhir - $jamMulai;
+                  $lamaOperasiJam = floor($lamaOperasiDetik / 3600);
+                  $lamaOperasiDetik %= 3600;
+                  $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
+                  $lamaOperasiDetik %= 60;
+
+              if ($lamaOperasiJam > 0) {
+                  $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+              } else {
+                  $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+              }
+
+                  $booking['lama_operasi'] = $lamaOperasi;
+                  $value['booking_operasi'][] = $booking;
+              }
+          }
+      }
+        $row['lap_op'][] = $value;
+    }  
+
+    $balance_cairan = $this->db('mlite_balance_cairan')
+     ->where('no_rawat', $row['no_rawat'])
+     ->isNull('deleted_at')
+     ->group('tanggal')
+     ->toArray();
+
+      $row['balance_cairan'] = [];
+         foreach ($balance_cairan as $value) {
+          $value['bc'] = $this->db('mlite_balance_cairan')
+            ->where('no_rawat', $value['no_rawat'])
+            ->where('tanggal', $value['tanggal'])
+            ->toArray();
+
+          $value['total']  = $this->db('mlite_balance_cairan')
+            ->select([
+              'no_rawat'    => 'no_rawat',
+              'tanggal'     => 'tanggal',
+              'total_intake'=> 'COALESCE(SUM(total_in), 0)',
+              'total_output'=> 'COALESCE(SUM(total_out), 0)',
+              'hasil_bc'    => 'COALESCE(SUM(total_in), 0) - COALESCE(SUM(total_out), 0)'])
+            ->where('no_rawat', $value['no_rawat']) 
+            ->where('tanggal', $value['tanggal'])
+            ->toArray();
+          $row['balance_cairan'][] = $value;
+      }
+
+    $ventilator = $this->db('mlite_ventilator')
+      ->where('no_rawat', $row['no_rawat'])
+      ->isNull('deleted_at')
+      ->toArray(); 
+       $row['ventilator'] = [];
+        foreach ($ventilator as $value) {
+          $date1 = new \DateTime($value['intubasi']);
+          $date2 = new \DateTime($value['ekstubasi']);
+
+          $diff = $date2->diff($date1);
+
+          $hours = $diff->h;
+          $hours = $hours + ($diff->days*24);
+          $value['range'] = $hours;
+          $value['nm_dokter'] = $this->core->getDokterInfo('nm_dokter',$value['kd_dokter']);
+          $row['ventilator'][] = $value;
+        }
 
 
         $riwayat['reg_periksa'][] = $row;
@@ -726,9 +860,25 @@ class Admin extends AdminModule
           }
         }
 
+        // $rows_periksa_lab = $this->db('periksa_lab')
+        //   ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+        //   ->where('no_rawat', $row['no_rawat'])
+        //   ->toArray();
+
+        // $row['periksa_lab'] = [];
+        // foreach ($rows_periksa_lab as $value) {
+        //   $value['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+        //     ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+        //     ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
+        //     ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+        //     ->toArray();
+        //   $row['periksa_lab'][] = $value;
+        // }
+
         $rows_periksa_lab = $this->db('periksa_lab')
           ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
           ->where('no_rawat', $row['no_rawat'])
+          ->asc('periksa_lab.tgl_periksa')
           ->toArray();
 
         $row['periksa_lab'] = [];
@@ -737,6 +887,8 @@ class Admin extends AdminModule
             ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
             ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
             ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->where('detail_periksa_lab.tgl_periksa', $value['tgl_periksa'])
+            ->where('detail_periksa_lab.jam', $value['jam'])
             ->toArray();
           $row['periksa_lab'][] = $value;
         }
