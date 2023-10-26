@@ -664,7 +664,7 @@ class Admin extends AdminModule
 
     public function anyBerkasDigital()
     {
-      $berkas_digital = $this->db('berkas_digital_perawatan')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $berkas_digital = $this->db('berkas_digital_perawatan') ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')->where('no_rawat', $_POST['no_rawat'])->toArray();
       echo $this->draw('berkasdigital.html', ['berkas_digital' => $berkas_digital]);
       exit();
     }
@@ -693,6 +693,29 @@ class Admin extends AdminModule
 
     }
 
+    public function getHapusBerkas($no_rawat, $nama_file)
+    {
+      $berkasPerawatan = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->like('lokasi_file', '%'.$nama_file.'%')->oneArray();
+      if ($berkasPerawatan) {
+        $lokasi_file = $berkasPerawatan['lokasi_file'];
+        $fileLoc = WEBAPPS_PATH . '/berkasrawat/' . $lokasi_file;
+        if (file_exists($fileLoc)) {
+          //unlink($fileLoc);
+          $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
+          if ($query) {
+            echo 'Hapus berkas sukses';
+          } else {
+            echo 'Hapus berkas gagal';
+          }
+        } else {
+          echo 'Hapus berkas gagal, berkas tidak ditemukan.';
+        }
+      } else {
+        echo 'Hapus berkas gagal, tidak ada data perawatan.';
+      }
+      exit();
+    }
+                                   
     public function anyOrthanc()
     {
     $rows = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->toArray();
@@ -717,8 +740,7 @@ class Admin extends AdminModule
 
         $pacs['data'] = json_encode($arr);
 
-        // $url_orthanc = $this->settings->get('orthanc.server');
-        $url_orthanc = 'http://103.59.94.14:8042/';
+        $url_orthanc = $this->settings->get('orthanc.server');
         $urlfind = $url_orthanc . '/tools/find';
 
         $curl = curl_init();
