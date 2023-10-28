@@ -1,3 +1,11 @@
+<style  type="text/css">
+ td {
+        text-align: center;
+    }
+    th {
+        text-align: center;
+    }
+</style>
 <article class="row">
 	<div class="col-md-12">
 		<div class="panel panel-default">
@@ -8,11 +16,9 @@
 					</span>
 					<ul class="dropdown-menu dropdown-menu-right">
 						<form method="POST" action="" class="form-inline mt-3">
-							<!-- <label for="date1">Tanggal mulai </label> -->
 							<li style="padding-left:5px;padding-right:5px;">
 								<input type="text" name="date1" id="date1" class="form-control periode_bundles">
 							</li>
-							<!-- <label for="date2">sampai </label> -->
 							<li style="padding-left:5px;padding-right:5px;margin-top:5px;">
 								<input type="text" name="date2" id="date2" class="form-control periode_bundles">
 							</li>
@@ -22,28 +28,27 @@
 						</form>
 					</ul>
 				</div>
-				<h3 class="panel-title">Laporan Bundles HAIs Per Kamar/Bangsal</h3>
+				<h3 class="panel-title">Laporan Bulanan Bundles HAIs IGD</h3>
 			</div>
 			<div class="panel-body">
 				<div class="table-responsive no-margin">
-					<table class="table table-striped no-margin table-bordered" id="lap" width="100%">
+					<table class="table table-striped no-margin table-bordered" id="lapbundleshais" width="100%">
 						<thead>
 							<tr>
 								<th rowspan="3">No.</th>
-								<th rowspan="3">Kamar</th>
+								<th rowspan="3">Tanggal</th>
 								<th rowspan="3">Jumlah Pasien</th>
-								<th colspan="8" style="text-align: center;">Insersi VAP</th>
-								<th colspan="10" style="text-align: center;">Insersi IADP/CLABSI</th>
-								<th colspan="10" style="text-align: center;">Insersi VENA PERIPER</th>
-								<th colspan="8" style="text-align: center;">Insersi ISK</th>
-								<th colspan="10" style="text-align: center;">Maintanance VAP</th>
-								<th colspan="10" style="text-align: center;">Maintanance IADP</th>
-								<th colspan="10" style="text-align: center;">Maintanance VENA PERIFER</th>
-								<th colspan="12" style="text-align: center;">Maintanance ISK</th>
-								<th colspan="8" style="text-align: center;">IDO Pre Operasi</th>
-								<th colspan="12" style="text-align: center;">IDO Intra Operasi</th>
-								<th colspan="8" style="text-align: center;">IDO Post Operasi</th>
-							</tr>
+								<th colspan="8">Insersi VAP</th>
+								<th colspan="10">Insersi IADP/CLABSI</th>
+								<th colspan="10">Insersi VENA PERIPER</th>
+								<th colspan="8">Insersi ISK</th>
+								<th colspan="10">Maintanance VAP</th>
+								<th colspan="10">Maintanance IADP</th>
+								<th colspan="10">Maintanance VENA PERIFER</th>
+								<th colspan="12">Maintanance ISK</th>
+								<th colspan="8">IDO Pre Operasi</th>
+								<th colspan="12">IDO Intra Operasi</th>
+								<th colspan="8">IDO Post Operasi</th>
 							<tr>
 								<!-- Insersi VAP -->
 								<th colspan="2">Hand Hygiene</th>
@@ -109,7 +114,7 @@
 								<th colspan="2">Rawat Luka</th>
 								<th colspan="2">APD</th>
 								<th colspan="2">Kaji nutris</th>
-							</tr>
+
 							<tr>
 								<!-- Insersi VAP -->
 								<td>Ya</td>
@@ -229,13 +234,15 @@
 								<td>Ya</td>
 								<td>Tidak</td>
 							</tr>
+							</tr>
+							</tr>
 						</thead>
 						<tbody>
-							{loop: $bundleskamar.list}
+							{loop: $lapbundles_igd.list}
 							<tr>
 								<td></td>
-								<td>{$value.nm_bangsal}</td>
 								{loop: $value.jumlah as $total}
+								<td>{$total.tanggal}</td>
 								<td>{$total.jml_no_rawat}</td>
 
 								<td>{$total.jml_hand_vap}</td>
@@ -478,11 +485,14 @@
 	</div>
 </article>
 <script type="text/javascript">
-	$(function () {
-		$('.periode_bundles').datetimepicker({
-			defaultDate: '{?=date('Y-m-d')?}',
-			format: 'YYYY-MM-DD',
-			locale: 'id'
-		   });
-	   });
+    $(function () {
+        $('.periode_bundles').datetimepicker({
+            defaultDate: '{?=date('Y-m-d')?}',
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
+    });
 </script>
+
+
+
