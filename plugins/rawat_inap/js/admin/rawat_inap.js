@@ -2762,6 +2762,158 @@ function bersih(){
   $('input:text[name=no_reg]').val("");
 }
 
+$('#manage_resume').on('click', '#submit_periode_resume', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displaylistresume?t=' + mlite.token;
+  var periode_resume  = $('input:text[name=periode_resume]').val();
+  var periode_resume_akhir  = $('input:text[name=periode_resume_akhir]').val();
+  var status_pulang = 'all';
+
+  if(periode_resume == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_resume_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_resume: periode_resume, periode_resume_akhir: periode_resume_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    $("#form").show();
+    $("#display_listresume").html(data).show();
+    $('.periode_resume').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_resume').on('click', '#masuk_periode_resume', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displaylistresume?t=' + mlite.token;
+  var periode_resume  = $('input:text[name=periode_resume]').val();
+  var periode_resume_akhir  = $('input:text[name=periode_resume_akhir]').val();
+  var status_pulang = 'masuk';
+
+  if(periode_resume == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_resume_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_resume: periode_resume, periode_resume_akhir: periode_resume_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    $("#display_listresume").html(data).show();
+    $('.periode_resume').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_resume').on('click', '#pulang_periode_resume', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displaylistresume?t=' + mlite.token;
+  var periode_resume  = $('input:text[name=periode_resume]').val();
+  var periode_resume_akhir  = $('input:text[name=periode_resume_akhir]').val();
+  var status_pulang = 'pulang';
+
+  if(periode_resume == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_resume_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_resume: periode_resume, periode_resume_akhir: periode_resume_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    $("#display_listresume").html(data).show();
+    $('.periode_resume').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_pulang').on('click', '#submit_periode_pasien', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displaylistpulang?t=' + mlite.token;
+  var periode_pasien  = $('input:text[name=periode_pasien]').val();
+  var periode_pasien_akhir  = $('input:text[name=periode_pasien_akhir]').val();
+  var status_pulang = 'all';
+
+  if(periode_pasien == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_pasien_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_pasien: periode_pasien, periode_pasien_akhir: periode_pasien_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    // $("#form").show();
+    $("#display_listpulang").html(data).show();
+    $('.periode_pasien').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_pulang').on('click', '#masuk_periode_pasien', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displaylistpulang?t=' + mlite.token;
+  var periode_pasien  = $('input:text[name=periode_pasien]').val();
+  var periode_pasien_akhir  = $('input:text[name=periode_pasien_akhir]').val();
+  var status_pulang = 'masuk';
+
+  if(periode_pasien == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_pasien_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_pasien: periode_pasien, periode_pasien_akhir: periode_pasien_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    $("#display_listpulang").html(data).show();
+    $('.periode_pasien').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
+$('#manage_pulang').on('click', '#pulang_periode_pasien', function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/rawat_inap/displaylistpulang?t=' + mlite.token;
+  var periode_pasien  = $('input:text[name=periode_pasien]').val();
+  var periode_pasien_akhir  = $('input:text[name=periode_pasien_akhir]').val();
+  var status_pulang = 'pulang';
+
+  if(periode_pasien == '') {
+    alert('Tanggal awal masih kosong!')
+  }
+  if(periode_pasien_akhir == '') {
+    alert('Tanggal akhir masih kosong!')
+  }
+
+  $.post(url, {periode_pasien: periode_pasien, periode_pasien_akhir: periode_pasien_akhir, status_pulang: status_pulang} ,function(data) {
+  // tampilkan data
+    $("#display_listpulang").html(data).show();
+    $('.periode_pasien').datetimepicker('remove');
+  });
+
+  event.stopPropagation();
+
+});
+
 $(document).click(function (event) {
     $('.dropdown-menu[data-parent]').hide();
 });
