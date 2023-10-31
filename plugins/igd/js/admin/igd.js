@@ -523,6 +523,9 @@ $("#soap").on("click",".hapus_soap", function(event){
         tgl_perawatan: tgl_perawatan,
         jam_rawat: jam_rawat
       } ,function(data) {
+         if (data === "Data ada ditriase") {
+          bootbox.alert("Maaf, Data pemeriksaan masih ada di Triage. Silakan periksa data Triage..!!");
+        } else {
         var url = baseURL + '/igd/soap?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {
@@ -551,6 +554,7 @@ $("#soap").on("click",".hapus_soap", function(event){
         "Data rincian riwayat telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
+        }
       });
     }
   });
