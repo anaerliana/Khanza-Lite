@@ -593,6 +593,8 @@ class Admin extends AdminModule
         $rows_resep_obat = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
         ->where('no_rawat', $row['no_rawat'])
+        ->desc('tgl_perawatan')
+        ->desc('jam')
         ->toArray();
 
         $row['resep_obat'] = [];
@@ -668,41 +670,53 @@ class Admin extends AdminModule
         } 
 
     $mlite_lap_op = $this->db('mlite_lap_op')
-      ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
-      ->where('mlite_lap_op.no_rawat', $row['no_rawat'])
-      ->toArray();
-    $row['lap_op'] = [];
-      foreach ($mlite_lap_op as $value) {
-      $value['operasi'] = $this->db('operasi')
-        ->select([ 
-          'asisten_operator1' => 'operasi.asisten_operator1',
-          'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
-          'dokter_anestesi'   => 'operasi.dokter_anestesi',
-          'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
-          'kode_paket'        => 'operasi.kode_paket',
-          'kategori'          => 'operasi.kategori',
-          'nm_asisten'        => 'petugas.nama',
-          'nm_perawat'        => 'perawat.nama',
-          'dok_anestesi'      => 'dokter.nm_dokter',
-          'nm_paket'          => 'paket_operasi.nm_perawatan'
-         ])
-        ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
-        ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
-        ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
-        ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
-        ->where('operasi.no_rawat', $value['no_rawat'])
+        ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
+        ->where('mlite_lap_op.no_rawat', $row['no_rawat'])
+        ->desc('tanggal_op')
         ->toArray();
 
-      $bookingOperasi = $this->db('booking_operasi')
-      ->where('no_rawat', $value['no_rawat'])
-      ->toArray();
+    $row['lap_op'] = [];
+    foreach ($mlite_lap_op as $value) {
+        $operasi = $this->db('operasi')
+            ->select([ 
+                'no_rawat'          => 'operasi.no_rawat',
+                'tgl_operasi'       => 'operasi.tgl_operasi',
+                'asisten_operator1' => 'operasi.asisten_operator1',
+                'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
+                'dokter_anestesi'   => 'operasi.dokter_anestesi',
+                'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
+                'kode_paket'        => 'operasi.kode_paket',
+                'kategori'          => 'operasi.kategori',
+                'nm_asisten'        => 'petugas.nama',
+                'nm_perawat'        => 'perawat.nama',
+                'dok_anestesi'      => 'dokter.nm_dokter',
+                'nm_paket'          => 'paket_operasi.nm_perawatan'
+            ])
+            ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
+            ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
+            ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
+            ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
+            ->where('operasi.no_rawat', $value['no_rawat'])
+            ->where('operasi.tgl_operasi', $value['tanggal_op'])
+            ->toArray();
 
-      $value['booking_operasi'] = [];
+        $jadwal_operasi = [];
+        foreach ($operasi as $detail_operasi) {
+            $tgl_operasi = substr($detail_operasi['tgl_operasi'], 0, 10);
+            $bookingOperasi = $this->db('booking_operasi')
+                ->where('no_rawat', $detail_operasi['no_rawat'])
+                ->where('kode_paket', $detail_operasi['kode_paket'])
+                ->where('tanggal', $tgl_operasi)
+                ->oneArray();
 
-      if (!empty($bookingOperasi)) {
-          foreach ($bookingOperasi as $booking) {
-              $jamMulai = strtotime($booking['jam_mulai']);
-              $jamAkhir = strtotime($booking['jam_selesai']);
+            $value['booking_operasi'] = [];
+            if (!empty($bookingOperasi)) {
+              $detail_operasi['tanggal'] = $bookingOperasi['tanggal'];
+              $detail_operasi['jam_mulai'] = $bookingOperasi['jam_mulai'];
+              $detail_operasi['jam_selesai'] = $bookingOperasi['jam_selesai'];
+              //hitung lama operasi
+              $jamMulai = strtotime($bookingOperasi['jam_mulai']);
+              $jamAkhir = strtotime($bookingOperasi['jam_selesai']);
 
               if ($jamMulai !== false && $jamAkhir !== false) {
                   $lamaOperasiDetik = $jamAkhir - $jamMulai;
@@ -711,24 +725,27 @@ class Admin extends AdminModule
                   $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
                   $lamaOperasiDetik %= 60;
 
-              if ($lamaOperasiJam > 0) {
-                  $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
-              } else {
-                  $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
-              }
+                if ($lamaOperasiJam > 0) {
+                    $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                } else {
+                    $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                }
+              $detail_operasi['lama_operasi'] = $lamaOperasi;
+            }
+          } 
+          $jadwal_operasi[] = $detail_operasi;
+        }
 
-                  $booking['lama_operasi'] = $lamaOperasi;
-                  $value['booking_operasi'][] = $booking;
-              }
-          }
-      }
+        $value['jadwal_operasi'] = $jadwal_operasi;
         $row['lap_op'][] = $value;
-    }  
+    } 
 
     $balance_cairan = $this->db('mlite_balance_cairan')
      ->where('no_rawat', $row['no_rawat'])
      ->isNull('deleted_at')
      ->group('tanggal')
+     ->desc('tanggal')
+     ->desc('jam')
      ->toArray();
 
       $row['balance_cairan'] = [];
@@ -736,6 +753,7 @@ class Admin extends AdminModule
           $value['bc'] = $this->db('mlite_balance_cairan')
             ->where('no_rawat', $value['no_rawat'])
             ->where('tanggal', $value['tanggal'])
+            ->isNull('deleted_at')
             ->toArray();
 
           $value['total']  = $this->db('mlite_balance_cairan')
@@ -769,6 +787,85 @@ class Admin extends AdminModule
           $row['ventilator'][] = $value;
         }
 
+    $row['ekstrapiramidal'] = $this->db('mlite_ekstrapiramidal')
+        ->where('no_rawat', $row['no_rawat'])
+        ->isNull('deleted_at')          
+        ->toArray();
+
+      foreach ($row['ekstrapiramidal'] as &$data) {
+          $hasil = json_decode($data['hasil'], true);
+
+          $formatHasil = [];
+
+          foreach ($hasil as $key => $value) {
+              $question = '';
+              $answer = '';
+
+              switch ($key) {
+                  case 'piramidal1':
+                      $question = 'Perlambatan atau kelemahan yang nyata, ada kesan kesulitan dalam menjalankan tugas rutin';
+                      break;
+                  case 'piramidal2':
+                      $question = 'Kesulitan dalam berjalan dan menjaga keseimbangan';
+                      break;
+                  case 'piramidal3':
+                      $question = 'Kesulitan dalam menelan atau berbicara';
+                      break;
+                  case 'piramidal4':
+                      $question = 'Kekakuan, postur tubuh kaku';
+                      break;
+                  case 'piramidal5':
+                      $question = 'Kram atau nyeri pada anggota gerak, tulang belakang, dan atau leher';
+                      break;
+                  case 'piramidal6':
+                      $question = 'Gelisah, nervous, tidak bisa diam';
+                      break;
+                  case 'piramidal7':
+                      $question = 'Tremor, gemetar';
+                      break;
+                  case 'piramidal8':
+                      $question = 'Krisis okulogirik atau postur tubuh yang abnormal yang dipertahankan';
+                      break;
+                  case 'piramidal9':
+                      $question = 'Banyak ludah';
+                      break;
+                  case 'piramidal10':
+                      $question = 'Gerakan-gerakan yang involunter yang abnormal (diskinesia) dari anggota gerak atau badan';
+                      break;
+                  case 'piramidal11':
+                      $question = 'Gerakan-gerakan yang involunter yang abnormal (diskinesia) dari lidah, rahang, bibir atau muka';
+                      break;
+                  case 'piramidal12':
+                      $question = 'Pusing pada saat berdiri (khususnya pada pagi hari)';
+                      break;
+              }
+
+              switch ($value) {
+                  case '1':
+                      $answer = 'Tidak Ada';
+                      break;
+                  case '2':
+                      $answer = 'Ringan';
+                      break;
+                  case '3':
+                      $answer = 'Sedang';
+                      break;
+                  case '4':
+                      $answer = 'Berat';
+                      break;
+                  default:
+                      $answer = '';
+                      break;
+              }
+
+              $formatHasil[] = [
+                  'Pertanyaan' => $question,
+                  'Jawaban' => $answer,
+              ];
+          }
+
+          $data['formatHasil'] = $formatHasil;
+      }
 
         $riwayat['reg_periksa'][] = $row;
       }
@@ -920,10 +1017,10 @@ class Admin extends AdminModule
             ->where('permintaan_radiologi.no_rawat', $row['no_rawat'])
             ->toArray();
          
-         $rows_resep_obat = $this->db('resep_obat')
-        ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
-        ->where('no_rawat', $row['no_rawat'])
-        ->toArray();
+        $rows_resep_obat = $this->db('resep_obat')
+            ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
 
         $row['resep_obat'] = [];
         foreach ($rows_resep_obat as $value) {

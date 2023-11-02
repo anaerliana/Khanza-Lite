@@ -145,7 +145,7 @@
              <tr>
                <td valign="top" width="100px">{$data.kode}</td>
                <td valign="top">{$data.deskripsi_panjang}</td>
-               <td valign="top" width="10100pxpx">{$data.prioritas}</td>
+               <td valign="top" width="100px">{$data.prioritas}</td>
              </tr>
              {/loop}
           </table>
@@ -865,10 +865,14 @@
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
              {loop: $value.lap_op as $data}
              <tr>
+              <td valign="top"  width="20%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" colspan="3" bgcolor="#eee"> : {$data.tanggal_op}</td>
+            </tr>
+             <tr>
               <td valign="top"  width="20%">Nama Ahli Bedah</td>
               <td valign="top" colspan="3"> : {$data.nm_dokter}</td>
             </tr>
-            {loop: $data.operasi as $data2} 
+            {loop: $data.jadwal_operasi as $data2} 
             <tr>
               <td valign="top">Nama Asisten</td>
               <td valign="top" colspan="3"> : {$data2.nm_asisten}</td>
@@ -886,54 +890,56 @@
               <td valign="top" colspan="3"> : {$data2.jenis_anasthesi}</td>
             </tr>
             <tr>
+              <td valign="top">Macam Pembedahan</td>
+              <td valign="top"> : {$data2.kategori}</td>
+            </tr>
+            <tr>
+              <td valign="top">Nama / Macam Operasi</td>
+              <td valign="top"> : {$data2.nm_paket}</td>
+            </tr>
+            <tr>
+              <td valign="top">Tanggal Operasi</td>
+              <td valign="top" colspan="3"> : {$data2.tanggal}</td>
+            </tr>
+            <tr>
+              <td valign="top">Jam operasi dimulai</td>
+              <td valign="top" colspan="3"> : {$data2.jam_mulai}</td>
+            </tr>
+            <tr>
+              <td valign="top">Jam operasi selesai</td>
+              <td valign="top" colspan="3"> : {$data2.jam_selesai}</td>
+            </tr>
+            <tr>
+              <td valign="top">Lama operasi berlangsung</td>
+              <td valign="top" colspan="3"> : {$data2.lama_operasi}</td>
+            </tr>
+            {/loop}
+            <tr>
               <td valign="top">Diagnosis pre - operatif</td>
               <td valign="top" colspan="3"> : {$data.pre_op}</td>
             </tr>
             <tr>
               <td valign="top">Diagnosis post - operatif</td>
               <td valign="top"> : {?=nl2br($data.post_op)?}</td>
-              <td valign="top">Macam Pembedahan</td>
-              <td valign="top"> : {$data2.kategori}</td>
             </tr>
-            <tr>
-              <td valign="top">Nama Macam Operasi</td>
-              <td valign="top"> : {$data2.nm_paket}</td>
-              <td valign="center" rowspan="2">Dikirim untuk pemeriksaan PA</td>
-              <td valign="center" rowspan="2"> : {$data.kirim_pa}</td>
-            </tr>
-            {/loop}
             <tr>
               <td valign="top">Pemakaian Implan</td>
               <td valign="top" colspan="3"> : {$data.implan}</td>
             </tr>
-            {loop: $data.booking_operasi as $data3} 
             <tr>
-              <td valign="top">Tanggal Operasi</td>
-              <td valign="top" colspan="3"> : {$data3.tanggal}</td>
+              <td valign="center">Pemeriksaan PA</td>
+              <td valign="center"> : {$data.kirim_pa}</td>
             </tr>
-            <tr>
-              <td valign="top">Jam operasi dimulai</td>
-              <td valign="top" colspan="3"> : {$data3.jam_mulai}</td>
-            </tr>
-            <tr>
-              <td valign="top">Jam operasi selesai</td>
-              <td valign="top" colspan="3"> : {$data3.jam_selesai}</td>
-            </tr>
-            <tr>
-              <td valign="top">Lama operasi berlangsung</td>
-              <td valign="top" colspan="3"> : {$data3.lama_operasi}</td>
-            </tr>
-            <tr>
+             <tr>
               <td valign="top">Hasil operasi</td>
               <td valign="top" colspan="3"> : {?=nl2br($data.hasil_op)?}</td>
             </tr>
-            {/loop}
            {/loop}
           </table>
         </td>
       </tr>
       {/if}
-           {if: $value.balance_cairan}
+      {if: $value.balance_cairan}
       <tr class="isi">
         <td valign="top" width="20%">Balance Cairan</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -1008,6 +1014,34 @@
               <td valign="top" width="10%">{$data.range}</td>
               <td valign="top" width="30%">{$data.nm_dokter}</td>
             </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+      {if: $value.ekstrapiramidal}
+      <tr class="isi">
+        <td valign="top" width="20%">Ekstrapiramidal</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            {loop: $value.ekstrapiramidal as $data}
+            <tr align="center">
+             <td valign="top" width="10%" bgcolor="#eee">Tanggal</td>
+             <td valign="top" width="25%" bgcolor="#eee">Dokter</td>
+              <td valign="top" width="50%" bgcolor="#eee">Pertanyaan</td>
+              <td valign="top" width="15%" bgcolor="#eee">Jawaban</td>
+            </tr>
+            <tr>
+              <td valign="top" rowspan="13">{$data.created_at}</td>
+              <td valign="top" rowspan="13">{$data.dokter}</td>
+            </tr>
+             {loop: $data.formatHasil as $jawaban}
+            <tr>
+              <td valign="top">{$jawaban.Pertanyaan}</td>
+              <td valign="top"> : {$jawaban.Jawaban}</td>
+            </tr>
+             {/loop}
             {/loop}
           </table>
         </td>

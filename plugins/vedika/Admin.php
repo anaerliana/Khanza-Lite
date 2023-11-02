@@ -1173,37 +1173,35 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getHapusBerkas($no_rawat, $nama_file)
+   public function getHapusBerkas($no_rawat, $nama_file)
   {
     $berkasPerawatan = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->like('lokasi_file', '%'.$nama_file.'%')->oneArray();
     if ($berkasPerawatan) {
       $lokasi_file = $berkasPerawatan['lokasi_file'];
       $fileLoc = WEBAPPS_PATH . '/berkasrawat/' . $lokasi_file;
-      $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
- 
-    //  $query = $this->db()->pdo()->prepare("SELECT * FROM resume_pasien_ranap WHERE no_rawat = '{$no_rawat}'");
-    // $query->execute();
- 
-     // $berkasPerawatan = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->like('lokasi_file', '%'.$nama_file.'%')->oneArray();
+      //if (file_exists($fileLoc)) {
+        //unlink($fileLoc);
+        $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
 
-      // $coba = json_encode($berkasPerawatan);
-      $coba = $berkasPerawatan->fetchAll(\PDO::FETCH_ASSOC);;
-      // echo $coba;
-      echo json_encode($coba);
-      $this->db('mlite_log')->save([
-        'username' => $this->core->getUserInfo('fullname', null, true),
-        'group_table' => 'berkasdigital',
-        'value_field' => $coba,
-        'created_at' => date('Y-m-d H:i:s')
+        $cetakBerkas = json_encode($berkasPerawatan, JSON_UNESCAPED_SLASHES);
+        // echo $cetakBerkas;
 
-      ]);
+          // Simpan log
+          $this->db('mlite_log')->save([
+              'username' => $this->core->getUserInfo('fullname', null, true),
+              'group_table' => 'berkasdigital',
+              'value_field' => $cetakBerkas,
+              'created_at' => date('Y-m-d H:i:s')
+          ]);
 
         if ($query) {
           echo 'Hapus berkas sukses';
         } else {
           echo 'Hapus berkas gagal';
         }
-
+      /*} else {
+        echo 'Hapus berkas gagal, berkas tidak ditemukan.';
+      }*/
     } else {
       echo 'Hapus berkas gagal, tidak ada data perawatan.';
     }
@@ -2009,58 +2007,131 @@ class Admin extends AdminModule
     $shk_bayi = $this->db('shk_bayi')
       ->where('no_rawat', $this->revertNorawat($id))
       ->oneArray();
+
+    $lap_op = []; 
     $mlite_lap_op = $this->db('mlite_lap_op')
-    ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
-      ->where('no_rawat', $this->revertNorawat($id))
-      ->oneArray();
-    $vedika_operasi = $this->db('operasi')
-      ->select([ 
-          'asisten_operator1' => 'operasi.asisten_operator1',
-          'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
-          'dokter_anestesi'   => 'operasi.dokter_anestesi',
-          'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
-          'kode_paket'        => 'operasi.kode_paket',
-          'kategori'          => 'operasi.kategori',
-          'nm_asisten'        => 'petugas.nama',
-          'nm_perawat'        => 'perawat.nama',
-          'dok_anestesi'      => 'dokter.nm_dokter',
-          'nm_paket'          => 'paket_operasi.nm_perawatan'
-         ])
-        ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
-        ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
-        ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
-        ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
-      ->where('no_rawat', $this->revertNorawat($id))
-      ->oneArray();
-    $ruangan = $this->db('kamar_inap')
-      ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
-      ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
-      ->where('no_rawat', $this->revertNorawat($id))
-      ->where('kamar_inap.stts_pulang', '<>', 'Pindah Kamar')
-      ->oneArray();
-        $ruangan['kamar'] = $ruangan['nm_bangsal'];  
-         $this->tpl->set('ruangan', $ruangan);
+        ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
+        ->where('mlite_lap_op.no_rawat', $this->revertNorawat($id))
+        ->isNull('deleted_at')
+        ->desc('tanggal_op')
+        ->toArray();
 
-    $jadwal_operasi = $this->db('booking_operasi')
-    ->where('no_rawat', $this->revertNorawat($id))
-    ->oneArray();
-      $jamMulai = strtotime($jadwal_operasi['jam_mulai']);
-      $jamAkhir = strtotime($jadwal_operasi['jam_selesai']);
-       if ($jamMulai !== false && $jamAkhir !== false) {
-            $lamaOperasiDetik = $jamAkhir - $jamMulai;
-            $lamaOperasiJam = floor($lamaOperasiDetik / 3600);
-            $lamaOperasiDetik %= 3600;
-            $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
-            $lamaOperasiDetik %= 60;
+    foreach ($mlite_lap_op as $value) {
+        $operasi = $this->db('operasi')
+            ->select([ 
+                'no_rawat'          => 'operasi.no_rawat',
+                'tgl_operasi'       => 'operasi.tgl_operasi',
+                'asisten_operator1' => 'operasi.asisten_operator1',
+                'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
+                'dokter_anestesi'   => 'operasi.dokter_anestesi',
+                'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
+                'kode_paket'        => 'operasi.kode_paket',
+                'kategori'          => 'operasi.kategori',
+                'nm_asisten'        => 'petugas.nama',
+                'nm_perawat'        => 'perawat.nama',
+                'dok_anestesi'      => 'dokter.nm_dokter',
+                'nm_paket'          => 'paket_operasi.nm_perawatan'
+            ])
+            ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
+            ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
+            ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
+            ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
+            ->where('operasi.no_rawat', $value['no_rawat'])
+            ->where('operasi.tgl_operasi', $value['tanggal_op'])
+            ->toArray();
 
-            if ($lamaOperasiJam > 0) {
-                $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
-            } else {
-                $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+        $jadwal_operasi = [];
+        foreach ($operasi as $detail_operasi) {
+            $tgl_operasi = substr($detail_operasi['tgl_operasi'], 0, 10);
+            $bookingOperasi = $this->db('booking_operasi')
+                ->where('no_rawat', $detail_operasi['no_rawat'])
+                ->where('kode_paket', $detail_operasi['kode_paket'])
+                ->where('tanggal', $tgl_operasi)
+                ->oneArray();
+
+            $value['booking_operasi'] = [];
+            if (!empty($bookingOperasi)) {
+              $detail_operasi['tanggal'] = $bookingOperasi['tanggal'];
+              $detail_operasi['jam_mulai'] = $bookingOperasi['jam_mulai'];
+              $detail_operasi['jam_selesai'] = $bookingOperasi['jam_selesai'];
+              //hitung lama operasi
+              $jamMulai = strtotime($bookingOperasi['jam_mulai']);
+              $jamAkhir = strtotime($bookingOperasi['jam_selesai']);
+
+              if ($jamMulai !== false && $jamAkhir !== false) {
+                  $lamaOperasiDetik = $jamAkhir - $jamMulai;
+                  $lamaOperasiJam = floor($lamaOperasiDetik / 3600);
+                  $lamaOperasiDetik %= 3600;
+                  $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
+                  $lamaOperasiDetik %= 60;
+
+                if ($lamaOperasiJam > 0) {
+                    $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                } else {
+                    $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                }
+              $detail_operasi['lama_operasi'] = $lamaOperasi;
             }
-
-            $jadwal_operasi['lama_operasi'] = $lamaOperasi;
+          } 
+          $jadwal_operasi[] = $detail_operasi;
         }
+
+        $value['jadwal_operasi'] = $jadwal_operasi;
+        $lap_op[] = $value;
+    } 
+
+    // $mlite_lap_op = $this->db('mlite_lap_op')
+    // ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
+    //   ->where('no_rawat', $this->revertNorawat($id))
+    //   ->oneArray();
+    // $vedika_operasi = $this->db('operasi')
+    //   ->select([ 
+    //       'asisten_operator1' => 'operasi.asisten_operator1',
+    //       'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
+    //       'dokter_anestesi'   => 'operasi.dokter_anestesi',
+    //       'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
+    //       'kode_paket'        => 'operasi.kode_paket',
+    //       'kategori'          => 'operasi.kategori',
+    //       'nm_asisten'        => 'petugas.nama',
+    //       'nm_perawat'        => 'perawat.nama',
+    //       'dok_anestesi'      => 'dokter.nm_dokter',
+    //       'nm_paket'          => 'paket_operasi.nm_perawatan'
+    //      ])
+    //     ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
+    //     ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
+    //     ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
+    //     ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
+    //   ->where('no_rawat', $this->revertNorawat($id))
+    //   ->oneArray();
+    // $ruangan = $this->db('kamar_inap')
+    //   ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+    //   ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+    //   ->where('no_rawat', $this->revertNorawat($id))
+    //   ->where('kamar_inap.stts_pulang', '<>', 'Pindah Kamar')
+    //   ->oneArray();
+    //     $ruangan['kamar'] = $ruangan['nm_bangsal'];  
+    //      $this->tpl->set('ruangan', $ruangan);
+
+    // $jadwal_operasi = $this->db('booking_operasi')
+    // ->where('no_rawat', $this->revertNorawat($id))
+    // ->oneArray();
+    //   $jamMulai = strtotime($jadwal_operasi['jam_mulai']);
+    //   $jamAkhir = strtotime($jadwal_operasi['jam_selesai']);
+    //    if ($jamMulai !== false && $jamAkhir !== false) {
+    //         $lamaOperasiDetik = $jamAkhir - $jamMulai;
+    //         $lamaOperasiJam = floor($lamaOperasiDetik / 3600);
+    //         $lamaOperasiDetik %= 3600;
+    //         $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
+    //         $lamaOperasiDetik %= 60;
+
+    //         if ($lamaOperasiJam > 0) {
+    //             $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+    //         } else {
+    //             $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+    //         }
+
+    //         $jadwal_operasi['lama_operasi'] = $lamaOperasi;
+    //     }
 
     $balance_cairan = [];
     $mlite_balance_cairan = $this->db('mlite_balance_cairan')
@@ -2110,6 +2181,90 @@ class Admin extends AdminModule
          $ventilator[] = $value;
       } 
 
+    $ekstrapiramidal = $this->db('mlite_ekstrapiramidal')
+        ->where('no_rawat', $this->revertNorawat($id))
+        ->isNull('deleted_at')
+        ->toArray();
+
+    $formatHasil = [];
+    foreach ($ekstrapiramidal as &$value) {
+        $hasil = json_decode($value['hasil'], true);
+
+        $hasilPiramidal = [];
+
+        foreach ($hasil as $key => $result) {
+            $question = '';
+            $answer = '';
+
+            switch ($key) {
+                               case 'piramidal1':
+                        $question = 'Perlambatan atau kelemahan yang nyata, ada kesan kesulitan dalam menjalankan tugas rutin';
+                        break;
+                    case 'piramidal2':
+                        $question = 'Kesulitan dalam berjalan dan menjaga keseimbangan';
+                        break;
+                    case 'piramidal3':
+                        $question = 'Kesulitan dalam menelan atau berbicara';
+                        break;
+                    case 'piramidal4':
+                        $question = 'Kekakuan, postur tubuh kaku';
+                        break;
+                    case 'piramidal5':
+                        $question = 'Kram atau nyeri pada anggota gerak, tulang belakang, dan atau leher';
+                        break;
+                    case 'piramidal6':
+                        $question = 'Gelisah, nervous, tidak bisa diam';
+                        break;
+                    case 'piramidal7':
+                        $question = 'Tremor, gemetar';
+                        break;
+                    case 'piramidal8':
+                        $question = 'Krisis okulogirik atau postur tubuh yang abnormal yang dipertahankan';
+                        break;
+                    case 'piramidal9':
+                        $question = 'Banyak ludah';
+                        break;
+                    case 'piramidal10':
+                        $question = 'Gerakan-gerakan yang involunter yang abnormal (diskinesia) dari anggota gerak atau badan';
+                        break;
+                    case 'piramidal11':
+                        $question = 'Gerakan-gerakan yang involunter yang abnormal (diskinesia) dari lidah, rahang, bibir atau muka';
+                        break;
+                    case 'piramidal12':
+                        $question = 'Pusing pada saat berdiri (khususnya pada pagi hari)';
+                        break;
+            }
+
+            switch ($result) {
+                case '1':
+                    $answer = 'Tidak Ada';
+                    break;
+                case '2':
+                    $answer = 'Ringan';
+                    break;
+                case '3':
+                    $answer = 'Sedang';
+                    break;
+                case '4':
+                    $answer = 'Berat';
+                    break;
+                default:
+                    $answer = '';
+                    break;
+            }
+
+            $hasilPiramidal[] = [
+                'Pertanyaan' => $question,
+                'Jawaban' => $answer,
+            ];
+        }
+
+        $value['formatHasil'] = $hasilPiramidal;
+        $formatHasil[] = $value;
+    }
+
+     $this->tpl->set('ekstrapiramidal', $ekstrapiramidal);
+
 
     $this->tpl->set('pasien', $pasien);
     $this->tpl->set('reg_periksa', $reg_periksa);
@@ -2138,11 +2293,12 @@ class Admin extends AdminModule
     $this->tpl->set('laporan_operasi', $laporan_operasi);
     $this->tpl->set('rujukan_internal_poli_detail', $rujukan_internal_poli_detail);
     $this->tpl->set('shk_bayi', $shk_bayi);
-    $this->tpl->set('mlite_lap_op', $mlite_lap_op);
-    $this->tpl->set('vedika_operasi', $vedika_operasi);
-    $this->tpl->set('jadwal_operasi', $jadwal_operasi);
+    $this->tpl->set('lap_op', $lap_op);
+    // $this->tpl->set('vedika_operasi', $vedika_operasi);
+    // $this->tpl->set('jadwal_operasi', $jadwal_operasi);
     $this->tpl->set('balance_cairan', $balance_cairan);
     $this->tpl->set('ventilator', $ventilator);
+
     $this->tpl->set('berkas_digital', $berkas_digital);
     $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
     $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());

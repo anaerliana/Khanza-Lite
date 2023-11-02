@@ -16,6 +16,8 @@ class Admin extends AdminModule
       'Rawat Inap'  => 'manage',
       'Sudah Resume'  => 'manage_listresume',
       'Belum Resume'  => 'manage_listpulang',
+      'Resume Siap Klaim'  => 'resume_siapklaim',
+      'Resume Batal Klaim' => 'resume_batalset'
     ];
   }
   
@@ -25,6 +27,8 @@ class Admin extends AdminModule
         ['name' => 'List Pasien Rawat Inap', 'url' => url([ADMIN, 'rawat_inap', 'manage']), 'icon' => 'bed', 'desc' => 'Pendaftaran Pasien Rawat Inap'],
         ['name' => 'Sudah Resume', 'url' => url([ADMIN, 'rawat_inap', 'manage_listresume']), 'icon' => 'file-text-o', 'desc' => 'Sudah Resume'],
         ['name' => 'Belum Resume', 'url' => url([ADMIN, 'rawat_inap', 'manage_listpulang']), 'icon' => 'file-o', 'desc' => 'Belum Resume'],
+        ['name' => 'Siap Klaim', 'url' => url([ADMIN, 'rawat_inap', 'resume_siapklaim']), 'icon' => 'file-text-o', 'desc' => 'Resume Siap Klaim'],
+        ['name' => 'Batal Klaim', 'url' => url([ADMIN, 'rawat_inap', 'resume_batalset']), 'icon' => 'file-o', 'desc' => 'Resume Batal Klaim'],
       ];
       return $this->draw('index.html', ['sub_modules' => $sub_modules]);
   }
@@ -2309,6 +2313,336 @@ class Admin extends AdminModule
       'ket_keluar' => NULL
     ]);
     exit();
+  }
+
+   public function anyResume_SiapKlaim()
+  {
+    
+    $this->_addHeaderFiles();
+    $bangsal = str_replace(",", "','", $this->core->getUserInfo('cap', null, true));
+    $date = date('Y-m-d');
+    $sql = "SELECT 
+      resume_pasien_ranap.no_rawat, 
+      resume_pasien_ranap.kd_dokter as dok, 
+      resume_pasien_ranap.ket_keadaan, 
+      resume_pasien_ranap.ket_keluar, 
+      resume_pasien_ranap.ket_dilanjutkan, 
+      pasien.nm_pasien, 
+      reg_periksa.no_rkm_medis,
+      kamar_inap.jam_masuk, 
+      kamar_inap.tgl_masuk, 
+      kamar_inap.jam_keluar, 
+      kamar_inap.tgl_keluar, 
+      kamar.kd_kamar, 
+      bangsal.nm_bangsal 
+    FROM resume_pasien_ranap 
+    JOIN kamar_inap ON resume_pasien_ranap.no_rawat = kamar_inap.no_rawat 
+    JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat 
+    JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+    JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar 
+    JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal 
+    WHERE kamar_inap.stts_pulang NOT IN ('-', 'Pindah Kamar') 
+    AND kamar_inap.tgl_keluar ='$date'
+    AND (resume_pasien_ranap.ket_keluar NOT IN ('Siap Klaim') OR resume_pasien_ranap.ket_keluar IS NULL)";
+
+
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'medis', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'], true)) {
+        $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+
+    $this->assign['list'] = [];
+    foreach ($rows as $row) {
+        $dpjp_ranap = $this->db('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+        $row['dokter'] = $dpjp_ranap;
+
+        $namadok = $this->db('dokter')->where('kd_dokter', $row['dok'])->oneArray();
+        $row['namadok'] = $namadok['nm_dokter'];
+
+        $ket_keadaan = $row['ket_keadaan'];
+        $kode_ket_keadaan = explode(',', $ket_keadaan);
+        $dpjp_resume_arr = [];
+
+        foreach ($kode_ket_keadaan as $kode) {
+            $cek_dpjpranap = $this->db('dpjp_ranap')
+                ->where('no_rawat', $row['no_rawat'])
+                ->where('kd_dokter', $kode)
+                ->oneArray();
+
+            $cek_dok = $this->db('dokter')
+                ->where('kd_dokter', $cek_dpjpranap['kd_dokter'])
+                ->oneArray();
+
+            if ($cek_dpjpranap) {
+                $dpjp_resume_arr[] = ' <span class="fa fa-minus-square-o"></span> '. $cek_dok['nm_dokter'];
+            }
+
+        }
+        $dpjp_resume_str = implode('<br>', $dpjp_resume_arr);
+        $row['dpjp_resume'] = $dpjp_resume_str;
+
+        $this->assign['list'][] = $row;
+    }
+    
+    $username = $this->core->getUserInfo('username', null, true);
+
+    return $this->draw('resume.siapklaim.html', ['setklaim' => $this->assign, 'username' => $username]);
+  }
+
+
+    public function postResume_SiapKlaim()
+  {
+
+    $this->_addHeaderFiles();
+
+    if (isset($_POST['submit'])) {
+        $date1 = $_POST['periode_pulang'];
+        $date2 = $_POST['periode_pulang_akhir'];
+        $bangsal = str_replace(",", "','", $this->core->getUserInfo('cap', null, true));
+
+        if (!empty($date1) && !empty($date2)) {
+  
+
+    $sql = "SELECT 
+        resume_pasien_ranap.no_rawat, 
+        resume_pasien_ranap.kd_dokter as dok, 
+        resume_pasien_ranap.ket_keadaan, 
+        resume_pasien_ranap.ket_dilanjutkan, 
+        resume_pasien_ranap.ket_keluar,
+        pasien.nm_pasien,
+        reg_periksa.no_rkm_medis,
+        kamar_inap.jam_masuk, kamar_inap.tgl_masuk, 
+        kamar_inap.jam_keluar, kamar_inap.tgl_keluar,
+        kamar.kd_kamar, bangsal.nm_bangsal
+        FROM resume_pasien_ranap 
+        JOIN kamar_inap ON resume_pasien_ranap.no_rawat = kamar_inap.no_rawat 
+        JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat 
+        JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+        JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar 
+        JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal 
+        WHERE kamar_inap.stts_pulang NOT IN ('-', 'Pindah Kamar')
+        AND kamar_inap.tgl_keluar BETWEEN '$date1' AND '$date2'
+        AND (resume_pasien_ranap.ket_keluar NOT IN ('Siap Klaim') OR resume_pasien_ranap.ket_keluar IS NULL)";
+
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'medis', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'], true)) {
+        $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+
+    $this->assign['list'] = [];
+    foreach ($rows as $row) {
+        $dpjp_ranap = $this->db('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+        $row['dokter'] = $dpjp_ranap;
+
+        $namadok = $this->db('dokter')->where('kd_dokter', $row['dok'])->oneArray();
+        $row['namadok'] = $namadok['nm_dokter'];
+
+        $ket_keadaan = $row['ket_keadaan'];
+        $kode_ket_keadaan = explode(',', $ket_keadaan);
+        $dpjp_resume_arr = [];
+
+        foreach ($kode_ket_keadaan as $kode) {
+            $cek_dpjpranap = $this->db('dpjp_ranap')
+                ->where('no_rawat', $row['no_rawat'])
+                ->where('kd_dokter', $kode)
+                ->oneArray();
+
+            $cek_dok = $this->db('dokter')
+                ->where('kd_dokter', $cek_dpjpranap['kd_dokter'])
+                ->oneArray();
+
+            if ($cek_dpjpranap) {
+                $dpjp_resume_arr[] = ' <span class="fa fa-minus-square-o"></span> '. $cek_dok['nm_dokter'];
+            }
+
+        }
+        $dpjp_resume_str = implode('<br>', $dpjp_resume_arr);
+        $row['dpjp_resume'] = $dpjp_resume_str;
+
+        $this->assign['list'][] = $row;
+        }
+      }else {
+        $this->anyResume_BatalSet();
+      }
+    }
+    
+    $username = $this->core->getUserInfo('username', null, true);
+    return $this->draw('resume.siapklaim.html', ['setklaim' => $this->assign, 'username' => $username]);
+  }
+
+  public function anyResume_BatalSet()
+  {
+    
+    $this->_addHeaderFiles();
+    $bangsal = str_replace(",", "','", $this->core->getUserInfo('cap', null, true));
+    $date = date('Y-m-d');
+    $sql = "SELECT 
+        resume_pasien_ranap.no_rawat, 
+        resume_pasien_ranap.kd_dokter as dok, 
+        resume_pasien_ranap.ket_keadaan, 
+        resume_pasien_ranap.ket_dilanjutkan, 
+        resume_pasien_ranap.ket_keluar,
+        pasien.nm_pasien,
+        reg_periksa.no_rkm_medis,
+        kamar_inap.jam_masuk, kamar_inap.tgl_masuk, 
+        kamar_inap.jam_keluar, kamar_inap.tgl_keluar,
+        kamar.kd_kamar, bangsal.nm_bangsal
+        FROM resume_pasien_ranap 
+        JOIN kamar_inap ON resume_pasien_ranap.no_rawat = kamar_inap.no_rawat 
+        JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat 
+        JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+        JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar 
+        JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal 
+        WHERE kamar_inap.stts_pulang NOT IN ('-', 'Pindah Kamar')
+        AND kamar_inap.tgl_keluar ='$date'
+        AND resume_pasien_ranap.ket_keluar ='Siap Klaim'";
+
+
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'medis', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'], true)) {
+        $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+
+    $this->assign['list'] = [];
+    foreach ($rows as $row) {
+        $dpjp_ranap = $this->db('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+        $row['dokter'] = $dpjp_ranap;
+
+        $namadok = $this->db('dokter')->where('kd_dokter', $row['dok'])->oneArray();
+        $row['namadok'] = $namadok['nm_dokter'];
+
+        $ket_keadaan = $row['ket_keadaan'];
+        $kode_ket_keadaan = explode(',', $ket_keadaan);
+        $dpjp_resume_arr = [];
+
+        foreach ($kode_ket_keadaan as $kode) {
+            $cek_dpjpranap = $this->db('dpjp_ranap')
+                ->where('no_rawat', $row['no_rawat'])
+                ->where('kd_dokter', $kode)
+                ->oneArray();
+
+            $cek_dok = $this->db('dokter')
+                ->where('kd_dokter', $cek_dpjpranap['kd_dokter'])
+                ->oneArray();
+
+            if ($cek_dpjpranap) {
+                $dpjp_resume_arr[] = ' <span class="fa fa-minus-square-o"></span> '. $cek_dok['nm_dokter'];
+            }
+
+        }
+        $dpjp_resume_str = implode('<br>', $dpjp_resume_arr);
+        $row['dpjp_resume'] = $dpjp_resume_str;
+
+        $this->assign['list'][] = $row;
+    }
+    $username = $this->core->getUserInfo('username', null, true);
+
+      return $this->draw('resume.batalklaim.html', ['setbatal' => $this->assign, 'username' => $username]);
+    }
+
+
+      public function postResume_BatalSet()
+    {
+
+    $this->_addHeaderFiles();
+
+    if (isset($_POST['submit'])) {
+        $status_pulang = '';
+        $date1 = $_POST['periode_pulang'];
+        $date2 = $_POST['periode_pulang_akhir'];
+        $bangsal = str_replace(",", "','", $this->core->getUserInfo('cap', null, true));
+
+    if (!empty($date1) && !empty($date2)) {
+
+    $sql = "SELECT 
+        resume_pasien_ranap.no_rawat, 
+        resume_pasien_ranap.kd_dokter as dok, 
+        resume_pasien_ranap.ket_keadaan, 
+        resume_pasien_ranap.ket_dilanjutkan, 
+        resume_pasien_ranap.ket_keluar,
+        pasien.nm_pasien,
+        reg_periksa.no_rkm_medis,
+        kamar_inap.jam_masuk, kamar_inap.tgl_masuk, 
+        kamar_inap.jam_keluar, kamar_inap.tgl_keluar,
+        kamar.kd_kamar, bangsal.nm_bangsal
+        FROM resume_pasien_ranap 
+        JOIN kamar_inap ON resume_pasien_ranap.no_rawat = kamar_inap.no_rawat 
+        JOIN reg_periksa ON kamar_inap.no_rawat = reg_periksa.no_rawat 
+        JOIN pasien ON reg_periksa.no_rkm_medis = pasien.no_rkm_medis 
+        JOIN kamar ON kamar_inap.kd_kamar = kamar.kd_kamar 
+        JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal 
+        WHERE kamar_inap.stts_pulang NOT IN ('-', 'Pindah Kamar')
+        AND kamar_inap.tgl_keluar BETWEEN '$date1' AND '$date2'
+        AND resume_pasien_ranap.ket_keluar ='Siap Klaim'";
+
+    if (!in_array($this->core->getUserInfo('role'), ['admin', 'medis', 'apoteker', 'laboratorium', 'radiologi', 'manajemen', 'gizi', 'ppi/mpp', 'ok'], true)) {
+        $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
+    }
+
+    $stmt = $this->db()->pdo()->prepare($sql);
+    $stmt->execute();
+    $rows = $stmt->fetchAll();
+
+    $this->assign['list'] = [];
+    foreach ($rows as $row) {
+        $dpjp_ranap = $this->db('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+        $row['dokter'] = $dpjp_ranap;
+
+        $namadok = $this->db('dokter')->where('kd_dokter', $row['dok'])->oneArray();
+        $row['namadok'] = $namadok['nm_dokter'];
+
+        $ket_keadaan = $row['ket_keadaan'];
+        $kode_ket_keadaan = explode(',', $ket_keadaan);
+        $dpjp_resume_arr = [];
+
+        foreach ($kode_ket_keadaan as $kode) {
+            $cek_dpjpranap = $this->db('dpjp_ranap')
+                ->where('no_rawat', $row['no_rawat'])
+                ->where('kd_dokter', $kode)
+                ->oneArray();
+
+            $cek_dok = $this->db('dokter')
+                ->where('kd_dokter', $cek_dpjpranap['kd_dokter'])
+                ->oneArray();
+
+            if ($cek_dpjpranap) {
+                $dpjp_resume_arr[] = ' <span class="fa fa-minus-square-o"></span> '. $cek_dok['nm_dokter'];
+            }
+
+        }
+        $dpjp_resume_str = implode('<br>', $dpjp_resume_arr);
+        $row['dpjp_resume'] = $dpjp_resume_str;
+
+        $this->assign['list'][] = $row;
+        }
+      }else {
+        $this->anyResume_BatalSet();
+      }
+    }
+    
+    $username = $this->core->getUserInfo('username', null, true);
+    return $this->draw('resume.batalklaim.html', ['setbatal' => $this->assign, 'username' => $username]);
   }
   
   public function convertNorawat($text)
