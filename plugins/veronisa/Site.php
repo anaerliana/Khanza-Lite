@@ -168,7 +168,19 @@ class Site extends SiteModule
     {
       $set_status = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
       $veronisa = $this->db('mlite_veronisa')->where('nosep', $id)->asc('id')->toArray();
-      $veronisa_feedback = $this->db('mlite_veronisa_feedback')->where('nosep', $id)->asc('id')->toArray();
+      $rows_veronisa_feedback = $this->db('mlite_veronisa_feedback')->where('nosep', $id)->asc('id')->toArray();
+      foreach($rows_veronisa_feedback as $row) {
+        $users_login = $this->db('mlite_users')->where('username', $row['username'])->oneArray();
+        if($users_login) {
+              $row['fullname'] = $users_login['fullname'];
+              $row['logo'] = url().'/'.$this->settings->get('settings.logo');
+            } 
+            else {
+              $row['fullname'] = 'Verifikator BPJS';
+              $row['logo'] = url().'/assets/img/avatar-bpjs.png';
+            }
+        $veronisa_feedback[] = $row;
+      }
       $this->tpl->set('logo', $this->settings->get('settings.logo'));
       $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
       $this->tpl->set('set_status', $set_status);

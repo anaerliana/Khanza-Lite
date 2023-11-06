@@ -933,7 +933,20 @@ class Admin extends AdminModule
   public function getSetStatus($id)
   {
     $set_status = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
-    $veronisa = $this->db('mlite_veronisa')->join('mlite_veronisa_feedback','mlite_veronisa_feedback.nosep=mlite_veronisa.nosep')->where('status','<>','')->where('mlite_veronisa.nosep', $id)->asc('mlite_veronisa.id')->toArray();
+    // $veronisa = $this->db('mlite_veronisa')->join('mlite_veronisa_feedback','mlite_veronisa_feedback.nosep=mlite_veronisa.nosep')->where('status','<>','')->where('mlite_veronisa.nosep', $id)->asc('mlite_veronisa.id')->toArray();
+    $rows_veronisa = $this->db('mlite_veronisa')->join('mlite_veronisa_feedback','mlite_veronisa_feedback.nosep=mlite_veronisa.nosep')->where('status','<>','')->where('mlite_veronisa.nosep', $id)->asc('mlite_veronisa.id')->toArray();
+      foreach($rows_veronisa as $row) {
+        $users_login = $this->db('mlite_users')->where('username', $row['username'])->oneArray();
+        if($users_login) {
+          $row['fullname'] = $users_login['fullname'];
+          $row['logo'] = url().'/'.$this->settings->get('settings.logo');
+        } 
+        else {
+          $row['fullname'] = 'Verifikator BPJS';
+          $row['logo'] = url().'/assets/img/avatar-bpjs.png';
+        }
+        $veronisa[] = $row;
+      }
     $this->tpl->set('logo', $this->settings->get('settings.logo'));
     $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
     $this->tpl->set('set_status', $set_status);
