@@ -745,7 +745,6 @@ class Admin extends AdminModule
      ->isNull('deleted_at')
      ->group('tanggal')
      ->desc('tanggal')
-     ->desc('jam')
      ->toArray();
 
       $row['balance_cairan'] = [];
