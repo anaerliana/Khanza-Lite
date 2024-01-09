@@ -400,19 +400,19 @@
                </tr>
                <tr>
                   <td valign="top" colspan="2">Subjek</td>
-                  <td valign="top" colspan="9"> : {$data.keluhan}</td>
+                  <td valign="top" colspan="9"> : {?=nl2br($data.keluhan)?}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Objek</td>
-                  <td valign="top" colspan="9"> : {$data.pemeriksaan}</td>
+                  <td valign="top" colspan="9"> : {?=nl2br($data.pemeriksaan)?}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Asesment</td>
-                  <td valign="top" colspan="9"> : {$data.penilaian}</td>
+                  <td valign="top" colspan="9"> : {?=nl2br($data.penilaian)?}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Plan</td>
-                  <td valign="top" colspan="9"> : {$data.rtl}</td>
+                  <td valign="top" colspan="9"> : {?=nl2br($data.rtl)?}</td>
                </tr>
              {/loop}
           </table>
