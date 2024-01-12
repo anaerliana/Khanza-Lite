@@ -22,6 +22,7 @@ class Admin extends AdminModule
     return [
       'Manage' => 'manage',
       'Index' => 'index',
+      'Pra Klaim' => 'praklaim',
       'Lengkap' => 'lengkap',
       'Pengajuan' => 'pengajuan',
       'Perbaikan' => 'perbaikan',
@@ -112,6 +113,7 @@ class Admin extends AdminModule
 
     $sub_modules = [
       ['name' => 'Index', 'url' => url([ADMIN, 'vedika', 'index']), 'icon' => 'code', 'desc' => 'Index Vedika'],
+      ['name' => 'Pra Klaim', 'url' => url([ADMIN, 'vedika', 'praklaim']), 'icon' => 'code', 'desc' => 'Pra Klaim Pengajuan Vedika'],
       ['name' => 'Lengkap', 'url' => url([ADMIN, 'vedika', 'lengkap']), 'icon' => 'code', 'desc' => 'Index Lengkap Vedika'],
       ['name' => 'Pengajuan', 'url' => url([ADMIN, 'vedika', 'pengajuan']), 'icon' => 'code', 'desc' => 'Index Pengajuan Vedika'],
       ['name' => 'Perbaikan', 'url' => url([ADMIN, 'vedika', 'perbaikan']), 'icon' => 'code', 'desc' => 'Index Perbaikan Vedika'],
@@ -382,6 +384,7 @@ class Admin extends AdminModule
           $_get_kamar_inap = $this->db('kamar_inap')->where('no_rawat', $row['no_rawat'])->limit(1)->desc('tgl_keluar')->toArray();
           $row['tgl_registrasi'] = $_get_kamar_inap[0]['tgl_keluar'];
           $row['jam_reg'] = $_get_kamar_inap[0]['jam_keluar'];
+          $row['resume_sudah'] = $this->db('resume_pasien_ranap')->select('no_rawat')->where('no_rawat',$row['no_rawat'])->where('ket_dilanjutkan','Selesai')->oneArray();
           $get_kamar = $this->db('kamar')->where('kd_kamar', $_get_kamar_inap[0]['kd_kamar'])->oneArray();
           $get_bangsal = $this->db('bangsal')->where('kd_bangsal', $get_kamar['kd_bangsal'])->oneArray();
           $row['nm_poli'] = $get_bangsal['nm_bangsal'].'/'.$get_kamar['kd_kamar'];
@@ -402,7 +405,167 @@ class Admin extends AdminModule
     $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'index', 'ranap', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
     return $this->draw('index.html', ['tab' => $type, 'vedika' => $this->assign]);
   }
+  
+  public function getTest()
+  {
+    $start_date = date('Y-m-d');
+    $end_date = date('Y-m-d');
+    $phrase = '';   
+    $perpage = '10';    
+    $carabayar = str_replace(",","','", $this->settings->get('vedika.carabayar'));
+    
+    $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat NOT IN (SELECT no_rawat FROM mlite_vedika) LIMIT 1");
+    $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+    $rows = $query->fetchAll();
+	echo json_encode($rows, true);
+    exit();
+  }
 
+  public function anyPraKlaim($type = 'ralan', $page = 1)
+  {
+    $this->_addHeaderFiles();
+    $start_date = date('Y-m-d');
+    if (isset($_GET['start_date']) && $_GET['start_date'] != '')
+      $start_date = $_GET['start_date'];
+    $end_date = date('Y-m-d');
+    if (isset($_GET['end_date']) && $_GET['end_date'] != '')
+      $end_date = $_GET['end_date'];
+    $perpage = '10';
+    $phrase = '';
+    if (isset($_GET['s']))
+      $phrase = $_GET['s'];
+
+    $carabayar = str_replace(",","','", $this->settings->get('vedika.carabayar'));
+
+    // pagination
+    // $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat NOT IN (SELECT no_rawat FROM mlite_vedika)");
+    $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat , status_lanjut from reg_periksa WHERE tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.kd_pj IN ('$carabayar') AND no_rawat NOT IN ( SELECT no_rawat from mlite_vedika where tgl_registrasi BETWEEN '$start_date' AND '$end_date') AND reg_periksa.status_lanjut = 'Ralan'");
+    $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+    $totalRecords = $totalRecords->fetchAll();
+
+    $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'praklaim', $type, '%d?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]));
+    $this->assign['pagination'] = $pagination->nav('pagination', '5');
+    $this->assign['totalRecords'] = $totalRecords;
+
+    $offset = $pagination->offset();
+    // $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat NOT IN (SELECT no_rawat FROM mlite_vedika) LIMIT $perpage OFFSET $offset");
+    $query = $this->db()->pdo()->prepare("SELECT no_rawat , status_lanjut from reg_periksa WHERE tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.kd_pj IN ('$carabayar') AND no_rawat NOT IN ( SELECT no_rawat from mlite_vedika where tgl_registrasi BETWEEN '$start_date' AND '$end_date') AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+    $query->execute();
+    $rows = $query->fetchAll();
+
+    if (isset($_GET['debug']) && $_GET['debug'] == 'yes') {
+      $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat NOT IN (SELECT no_rawat FROM mlite_vedika)");
+      $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+      $totalRecords = $totalRecords->fetchAll();
+
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'praklaim', $type, '%d?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]));
+      $this->assign['pagination'] = $pagination->nav('pagination', '5');
+      $this->assign['totalRecords'] = $totalRecords;
+
+      $offset = $pagination->offset();
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat NOT IN (SELECT no_rawat FROM mlite_vedika) LIMIT $perpage OFFSET $offset");
+      $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+      $rows = $query->fetchAll();
+    }
+
+    if ($type == 'ranap') {
+      // pagination
+      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat , status_lanjut from reg_periksa WHERE tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.kd_pj IN ('$carabayar') AND no_rawat NOT IN ( SELECT no_rawat from mlite_vedika where tgl_registrasi BETWEEN '$start_date' AND '$end_date') AND reg_periksa.status_lanjut = 'Ranap'");
+      $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+      $totalRecords = $totalRecords->fetchAll();
+
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'praklaim', $type, '%d?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]));
+      $this->assign['pagination'] = $pagination->nav('pagination', '5');
+      $this->assign['totalRecords'] = $totalRecords;
+
+      $offset = $pagination->offset();
+      $query = $this->db()->pdo()->prepare("SELECT no_rawat , status_lanjut from reg_periksa WHERE tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.kd_pj IN ('$carabayar') AND no_rawat NOT IN ( SELECT no_rawat from mlite_vedika where tgl_registrasi BETWEEN '$start_date' AND '$end_date') AND reg_periksa.status_lanjut = 'Ranap' LIMIT $perpage OFFSET $offset");
+      $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
+      $rows = $query->fetchAll();
+    }
+    $this->assign['list'] = [];
+    if (count($rows)) {
+      foreach ($rows as $row) {
+        $row['no_rkm_medis'] = $this->core->getRegPeriksaInfo('no_rkm_medis',$row['no_rawat']);
+        $berkas_digital = $this->db('berkas_digital_perawatan')
+          ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
+          ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
+          ->asc('master_berkas_digital.nama')
+          ->toArray();
+        $galleri_pasien = $this->db('mlite_pasien_galleries_items')
+          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
+          ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
+          ->toArray();
+
+        $berkas_digital_pasien = array();
+        if (count($galleri_pasien)) {
+          foreach ($galleri_pasien as $galleri) {
+            $galleri['src'] = unserialize($galleri['src']);
+
+            if (!isset($galleri['src']['sm'])) {
+              $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
+            }
+
+            $berkas_digital_pasien[] = $galleri;
+          }
+        }
+
+        $row = htmlspecialchars_array($row);
+        $row['tgl_registrasi'] = $this->core->getRegPeriksaInfo('tgl_registrasi',$row['no_rawat']);
+        $row['umur'] = $this->core->getRegPeriksaInfo('umurdaftar',$row['no_rawat']);
+        $row['sttsumur'] = $this->core->getRegPeriksaInfo('sttsumur',$row['no_rawat']);
+        $row['jam_reg'] = $this->core->getRegPeriksaInfo('jam_reg',$row['no_rawat']);
+        $row['kd_poli'] = $this->core->getRegPeriksaInfo('kd_poli',$row['no_rawat']);
+        $row['kd_dokter'] = $this->core->getRegPeriksaInfo('kd_dokter',$row['no_rawat']);
+        $row['kd_pj'] = $this->core->getRegPeriksaInfo('kd_pj',$row['no_rawat']);
+        $row['png_jawab'] = $this->core->getPenjabInfo('png_jawab',$row['kd_pj']);
+        $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter',$row['kd_dokter']);
+        $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli',$row['kd_poli']);
+        $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien',$row['no_rkm_medis']);
+        $row['almt_pj'] = $this->core->getPasienInfo('alamat',$row['no_rkm_medis']);
+        $row['jk'] = $this->core->getPasienInfo('jk',$row['no_rkm_medis']);
+        $row['no_sep'] = $this->_getSEPInfo('no_sep', $row['no_rawat']);
+        $row['no_peserta'] = $this->_getSEPInfo('no_kartu', $row['no_rawat']);
+        $row['no_rujukan'] = $this->_getSEPInfo('no_rujukan', $row['no_rawat']);
+        $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
+        $row['nm_penyakit'] = $this->_getDiagnosa('nm_penyakit', $row['no_rawat'], $row['status_lanjut']);
+        $row['kode'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
+        $row['deskripsi_panjang'] = $this->_getProsedur('deskripsi_panjang', $row['no_rawat'], $row['status_lanjut']);
+        $row['berkas_digital'] = $berkas_digital;
+        $row['berkas_digital_pasien'] = $berkas_digital_pasien;
+        $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
+        $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+        $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+        $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+        $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
+        $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
+        if ($type == 'ranap') {
+          $_get_kamar_inap = $this->db('kamar_inap')->select(['tgl_keluar' => 'kamar_inap.tgl_keluar','jam_keluar' => 'kamar_inap.jam_keluar','kd_kamar' => 'kamar_inap.kd_kamar'])->where('no_rawat', $row['no_rawat'])->limit(1)->desc('tgl_keluar')->oneArray();
+          $row['tgl_registrasi'] = $_get_kamar_inap['tgl_keluar'];
+          $row['jam_reg'] = $_get_kamar_inap['jam_keluar'];
+          $row['resume_sudah'] = $this->db('resume_pasien_ranap')->select('no_rawat')->where('no_rawat',$row['no_rawat'])->where('ket_dilanjutkan','Selesai')->oneArray();
+          $get_kamar = $this->db('kamar')->where('kd_kamar', $_get_kamar_inap['kd_kamar'])->oneArray();
+          $get_bangsal = $this->db('bangsal')->where('kd_bangsal', $get_kamar['kd_bangsal'])->oneArray();
+          $row['nm_poli'] = $get_bangsal['nm_bangsal'].'/'.$get_kamar['kd_kamar'];
+          $row['nm_dokter'] = $this->db('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+        }
+        $this->assign['list'][] = $row;
+      }
+    }
+
+    #$this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
+    #$this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+
+    $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'praklaim', $type, $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
+    $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'praklaim', 'ralan', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
+    $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'praklaim', 'ranap', $page . '?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]);
+    return $this->draw('praklaim.html', ['tab' => $type, 'vedika' => $this->assign]);
+    
+  }
+  
   public function anyLengkap($type = 'ralan', $page = 1)
   {
     if (isset($_POST['submit'])) {
@@ -1173,7 +1336,7 @@ class Admin extends AdminModule
     exit();
   }
 
-   public function getHapusBerkas($no_rawat, $nama_file)
+  public function getHapusBerkas($no_rawat, $nama_file)
   {
     $berkasPerawatan = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->like('lokasi_file', '%'.$nama_file.'%')->oneArray();
     if ($berkasPerawatan) {
@@ -1182,23 +1345,21 @@ class Admin extends AdminModule
       //if (file_exists($fileLoc)) {
         //unlink($fileLoc);
         $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
-
+        
         $cetakBerkas = json_encode($berkasPerawatan, JSON_UNESCAPED_SLASHES);
-        // echo $cetakBerkas;
-
-          // Simpan log
-          $this->db('mlite_log')->save([
-              'username' => $this->core->getUserInfo('fullname', null, true),
-              'group_table' => 'berkasdigital',
-              'value_field' => $cetakBerkas,
-              'created_at' => date('Y-m-d H:i:s')
-          ]);
-
+        $this->db('mlite_log')->save([
+                'username' => $this->core->getUserInfo('fullname', null, true),
+                'group_table' => 'berkasdigital',
+                'value_field' => $cetakBerkas,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        echo $cetakBerkas;
+      
         if ($query) {
-          echo 'Hapus berkas sukses';
-        } else {
-          echo 'Hapus berkas gagal';
-        }
+            echo 'Hapus berkas sukses';
+          } else {
+            echo 'Hapus berkas gagal';
+          }
       /*} else {
         echo 'Hapus berkas gagal, berkas tidak ditemukan.';
       }*/
@@ -1321,7 +1482,7 @@ class Admin extends AdminModule
 
     if($data['response']['dpjp']['kdDPJP'] =='0')
     {
-      $data['response']['dpjp']['kdDPJP'] = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['kd_dokter_bpjs'];
+	    $data['response']['dpjp']['kdDPJP'] = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['kd_dokter_bpjs'];
       $data['response']['dpjp']['nmDPJP'] = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs'];
     }
 
@@ -1696,92 +1857,17 @@ class Admin extends AdminModule
     $print_spri['logoURL'] = url(MODULES . '/vclaim/img/bpjslogo.png');
     $this->tpl->set('print_spri', $print_spri);
 
-    // $resume_pasien = $this->db('resume_pasien')
-    // ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
-    // ->where('no_rawat', $this->revertNorawat($id))
-    // ->oneArray();
-
-    // if (!$this->db('resume_pasien')->where('no_rawat', $this->revertNorawat($id))->oneArray()) {
-    //   $resume_pasien = $this->db('resume_pasien_ranap')
-    //       ->join('dokter', 'dokter.kd_dokter = resume_pasien_ranap.kd_dokter')
-    //       ->where('no_rawat', $this->revertNorawat($id))
-    //       ->oneArray();
-
-    //       $tgl_masuk = $this->db('kamar_inap')
-    //           ->where('no_rawat', $resume_pasien['no_rawat'])
-    //           ->asc('tgl_masuk')
-    //           ->oneArray();
-
-    //       $tgl_keluar = $this->db('kamar_inap')
-    //           ->where('no_rawat', $resume_pasien['no_rawat'])
-    //           ->where('stts_pulang', '<>', 'Pindah Kamar')
-    //           ->oneArray();
-    //       $kamar = $this->db('kamar_inap')
-    //           ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
-    //           ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
-    //           ->where('no_rawat', $resume_pasien['no_rawat'])
-    //           ->where('kamar_inap.stts_pulang', '<>', 'Pindah Kamar')
-    //           ->oneArray();
-        
-    //      $skdp = $this->db('booking_registrasi')
-    //          ->join('poliklinik', 'poliklinik.kd_poli=booking_registrasi.kd_poli')
-    //          ->join('kamar_inap', 'kamar_inap.tgl_keluar=booking_registrasi.tanggal_booking')
-    //          ->where('booking_registrasi.no_rkm_medis', $this->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
-    //          ->where('booking_registrasi.tanggal_booking',  $tgl_keluar['tgl_keluar'])
-    //          ->oneArray();
-      
-    //     $cek_dpjp = $this->db('dpjp_ranap')
-    //         ->where('no_rawat', $resume_pasien['no_rawat'])
-    //         ->where('kd_dokter',$resume_pasien['kd_dokter'])
-    //         ->oneArray();
-
-    //     $ket_keadaan = $resume_pasien['ket_keadaan'];
-    //     $kode_ket_keadaan = explode(',', $ket_keadaan);
-    //     $dpjp_resume_arr = [];
-
-    //     foreach ($kode_ket_keadaan as $kode) {
-    //         $cek_dpjpranap = $this->db('dpjp_ranap')
-    //             ->where('no_rawat', $resume_pasien['no_rawat'])
-    //             ->where('kd_dokter', $kode)
-    //             ->oneArray();
-
-    //         $cek_dok = $this->db('dokter')
-    //             ->where('kd_dokter', $cek_dpjpranap['kd_dokter'])
-    //             ->oneArray();
-
-    //         if ($cek_dpjpranap) {
-    //             $dpjp_resume_arr[] = $cek_dok['nm_dokter'] . ' (' . $cek_dpjpranap['jenis_dpjp'] . ')';
-    //         }
-    //     }
-
-    //   $dpjp_resume_str = implode('<br>', $dpjp_resume_arr);
-    //   $resume_pasien['dpjp_resume'] = $dpjp_resume_str;
-
-    //   $resume_pasien['tgl_masuk'] = date('d-m-Y', strtotime($tgl_masuk['tgl_masuk']));
-    //   $resume_pasien['jam_masuk'] = $tgl_masuk['jam_masuk'];
-    //   $resume_pasien['tgl_keluar'] = date('d-m-Y', strtotime($tgl_keluar['tgl_keluar']));
-    //   $resume_pasien['jam_keluar'] = $tgl_keluar['jam_keluar'];
-    //   $resume_pasien['kamar'] = $kamar['nm_bangsal'];
-    //   $resume_pasien['kelas'] = $kamar['kelas'];
-    //   $resume_pasien['skdp'] =  date('d-m-Y', strtotime($skdp['tanggal_periksa']));
-    //   $resume_pasien['poli'] = $skdp['nm_poli'];
-     //  $resume_pasien['jenis_dpjp'] = $cek_dpjp['jenis_dpjp'];
-    //   $resume_pasien['diagnosa_awal'] = htmlspecialchars($resume_pasien['diagnosa_awal']);
-
-    // }
-
-    // $this->tpl->set('resume_pasien', $resume_pasien);
-
     $resume_pasien = $this->db('resume_pasien')
     ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
     ->where('no_rawat', $this->revertNorawat($id))
     ->oneArray();
 
      $this->tpl->set('resume_pasien', $resume_pasien);
+
     
       $resume_pasien_ranap = $this->db('resume_pasien_ranap')
         ->join('dokter', 'dokter.kd_dokter = resume_pasien_ranap.kd_dokter')
-          ->where('resume_pasien_ranap.no_rawat', $this->revertNorawat($id))
+          ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
 
              $tgl_masuk = $this->db('kamar_inap')
@@ -1793,7 +1879,6 @@ class Admin extends AdminModule
               ->where('no_rawat', $resume_pasien_ranap['no_rawat'])
               ->where('stts_pulang', '<>', 'Pindah Kamar')
               ->oneArray();
-
           $kamar = $this->db('kamar_inap')
               ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
               ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
@@ -1981,10 +2066,65 @@ class Admin extends AdminModule
         ->toArray();
       $pemeriksaan_laboratorium[] = $value;
     }
-    $pemberian_obat = $this->db('detail_pemberian_obat')
-      ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
-      ->where('no_rawat', $this->revertNorawat($id))
-      ->toArray();
+    // $pemberian_obat = $this->db('detail_pemberian_obat')
+    //   ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+    //   ->where('no_rawat', $this->revertNorawat($id))
+    //   ->toArray();
+    //$row['resep_obat'] = [];
+    $pemberian_obat = [];   
+    $rows_resep_obat = $this->db('resep_obat')
+    ->join('dokter', 'dokter.kd_dokter = resep_obat.kd_dokter')
+    ->where('no_rawat', $this->revertNorawat($id))
+    ->desc('tgl_perawatan')
+    ->desc('jam')
+    ->toArray();
+
+    foreach ($rows_resep_obat as $value) {
+        $detail = $this->db('detail_pemberian_obat')
+            ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
+            ->where('detail_pemberian_obat.no_rawat', $value['no_rawat'])
+            ->where('detail_pemberian_obat.tgl_perawatan', $value['tgl_perawatan'])
+            ->where('detail_pemberian_obat.jam', $value['jam'])
+            ->toArray();
+
+        $detail_obat = [];
+
+        foreach ($detail as $valuedetail) {
+            $valuedetail['aturan_pakai'] = $this->db('aturan_pakai')
+                ->where('aturan_pakai.no_rawat', $valuedetail['no_rawat'])
+                ->where('aturan_pakai.tgl_perawatan', $valuedetail['tgl_perawatan'])
+                ->where('aturan_pakai.jam', $valuedetail['jam'])
+                ->where('aturan_pakai.kode_brng', $valuedetail['kode_brng'])
+                ->toArray();
+
+            $detail_obat[] = [
+                'nama_brng' => $valuedetail['nama_brng'],
+                'jml' => $valuedetail['jml'],
+                'aturanpakai' => $valuedetail['aturan_pakai'],
+            ];
+
+        }
+        $value['detail_obat'] = $detail_obat;
+        $pemberian_obat[] = $value;
+    }
+      // $pemberian_obat = [];
+      // $rows_pemberian_obat = $this->db('detail_pemberian_obat')
+      //   ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+      //   ->where('no_rawat', $this->revertNorawat($id))
+      //   ->toArray();
+      // foreach ($rows_pemberian_obat as $value) {
+      //   $value['aturan_pakai'] = $this->db('aturan_pakai')
+      //     ->where('aturan_pakai.no_rawat', $value['no_rawat'])
+      //     ->where('aturan_pakai.kode_brng', $value['kode_brng'])
+      //     ->where('aturan_pakai.tgl_perawatan', $value['tgl_perawatan'])
+      //     ->where('aturan_pakai.jam', $value['jam'])
+      //     ->toArray();
+      //     $value['aturan_racikan'] = $this->db('resep_dokter_racikan')
+      //     ->join('resep_dokter_racikan_detail', 'resep_dokter_racikan_detail.no_resep=resep_dokter_racikan.no_resep')
+      //     ->where('resep_dokter_racikan_detail.kode_brng', $value['kode_brng'])
+      //     ->toArray();
+      //   $pemberian_obat[] = $value;
+      // }
     $obat_operasi = $this->db('beri_obat_operasi')
       ->join('obatbhp_ok', 'beri_obat_operasi.kd_obat=obatbhp_ok.kd_obat')
       ->where('no_rawat', $this->revertNorawat($id))
@@ -2007,7 +2147,7 @@ class Admin extends AdminModule
     $shk_bayi = $this->db('shk_bayi')
       ->where('no_rawat', $this->revertNorawat($id))
       ->oneArray();
-
+    
     $lap_op = []; 
     $mlite_lap_op = $this->db('mlite_lap_op')
         ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
@@ -2079,60 +2219,7 @@ class Admin extends AdminModule
         $value['jadwal_operasi'] = $jadwal_operasi;
         $lap_op[] = $value;
     } 
-
-    // $mlite_lap_op = $this->db('mlite_lap_op')
-    // ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
-    //   ->where('no_rawat', $this->revertNorawat($id))
-    //   ->oneArray();
-    // $vedika_operasi = $this->db('operasi')
-    //   ->select([ 
-    //       'asisten_operator1' => 'operasi.asisten_operator1',
-    //       'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
-    //       'dokter_anestesi'   => 'operasi.dokter_anestesi',
-    //       'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
-    //       'kode_paket'        => 'operasi.kode_paket',
-    //       'kategori'          => 'operasi.kategori',
-    //       'nm_asisten'        => 'petugas.nama',
-    //       'nm_perawat'        => 'perawat.nama',
-    //       'dok_anestesi'      => 'dokter.nm_dokter',
-    //       'nm_paket'          => 'paket_operasi.nm_perawatan'
-    //      ])
-    //     ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
-    //     ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
-    //     ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
-    //     ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
-    //   ->where('no_rawat', $this->revertNorawat($id))
-    //   ->oneArray();
-    // $ruangan = $this->db('kamar_inap')
-    //   ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
-    //   ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
-    //   ->where('no_rawat', $this->revertNorawat($id))
-    //   ->where('kamar_inap.stts_pulang', '<>', 'Pindah Kamar')
-    //   ->oneArray();
-    //     $ruangan['kamar'] = $ruangan['nm_bangsal'];  
-    //      $this->tpl->set('ruangan', $ruangan);
-
-    // $jadwal_operasi = $this->db('booking_operasi')
-    // ->where('no_rawat', $this->revertNorawat($id))
-    // ->oneArray();
-    //   $jamMulai = strtotime($jadwal_operasi['jam_mulai']);
-    //   $jamAkhir = strtotime($jadwal_operasi['jam_selesai']);
-    //    if ($jamMulai !== false && $jamAkhir !== false) {
-    //         $lamaOperasiDetik = $jamAkhir - $jamMulai;
-    //         $lamaOperasiJam = floor($lamaOperasiDetik / 3600);
-    //         $lamaOperasiDetik %= 3600;
-    //         $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
-    //         $lamaOperasiDetik %= 60;
-
-    //         if ($lamaOperasiJam > 0) {
-    //             $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
-    //         } else {
-    //             $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
-    //         }
-
-    //         $jadwal_operasi['lama_operasi'] = $lamaOperasi;
-    //     }
-
+    
     $balance_cairan = [];
     $mlite_balance_cairan = $this->db('mlite_balance_cairan')
       ->where('no_rawat', $this->revertNorawat($id))
@@ -2157,30 +2244,67 @@ class Admin extends AdminModule
             ->toArray();
         $balance_cairan[] = $value;
       }
-
-   
+    
     $tindak_ventilator = $this->db('mlite_ventilator')
-      ->where('no_rawat', $this->revertNorawat($id))
+      ->where('mlite_ventilator.no_rawat', $this->revertNorawat($id))
       ->isNull('deleted_at')
       ->toArray(); 
       $ventilator = [];
       foreach ($tindak_ventilator as $value) {
-         $value['nm_dokter'] = $this->db('dokter')
+      $value['nm_dokter'] = $this->db('dokter')
             ->where('kd_dokter', $value['kd_dokter'])
             ->toArray();
 
-      $date1 = new \DateTime($value['intubasi']);
-      $date2 = new \DateTime($value['ekstubasi']);
+      // $date1 = new \DateTime($value['intubasi']);
+      // $date2 = new \DateTime($value['ekstubasi']);
 
-      $diff = $date2->diff($date1);
+      // $diff = $date2->diff($date1);
 
-      $hours = $diff->h;
-      $hours = $hours + ($diff->days*24);
-      $value['range'] = $hours .' Jam';
+      // $hours = $diff->h;
+      // $hours = $hours + ($diff->days*24);
+      // $value['range'] = $hours .' Jam';
 
-         $ventilator[] = $value;
-      } 
+// $date1 = new \DateTime($value['intubasi']);
+// $date2 = new \DateTime($value['ekstubasi']);
 
+// $diff = $date2->diff($date1);
+
+// $minutes = $diff->i; // Menit
+// $minutes = $minutes + ($diff->h*60) + ($diff->days*24*60);
+// $value['range'] = $minutes .' Menit';
+
+        $date1 = new \DateTime($value['intubasi']);
+        $date2 = new \DateTime($value['ekstubasi']);
+
+        $diff = $date2->diff($date1);
+
+        $hours = $diff->h; // Jam
+        $minutes = $diff->i; // Menit
+        $totalMinutes = $minutes + ($hours*60) + ($diff->days*24*60);
+
+        $hoursPart = floor($totalMinutes / 60);
+        $minutesPart = $totalMinutes % 60;
+
+        $value['range'] = $hoursPart .' Jam '. $minutesPart .' Menit';
+
+// $date1 = new \DateTime($value['intubasi']);
+// $date2 = new \DateTime($value['ekstubasi']);
+
+// $diff = $date2->diff($date1);
+
+// $minutes = $diff->i; // Menit
+// $hours = $diff->h; // Jam
+// $minutes = $minutes + ($hours * 60) + ($diff->days * 24 * 60);
+// $value['range'] = $minutes . ' Menit';
+
+// if ($hours > 0) {
+//     $value['range'] .= ' ' . $hours . ' Jam';
+// }
+
+
+      $ventilator[] = $value;
+     } 
+    
     $ekstrapiramidal = $this->db('mlite_ekstrapiramidal')
         ->where('no_rawat', $this->revertNorawat($id))
         ->isNull('deleted_at')
@@ -2263,8 +2387,78 @@ class Admin extends AdminModule
         $formatHasil[] = $value;
     }
 
-     $this->tpl->set('ekstrapiramidal', $ekstrapiramidal);
+    
+    $pasien_mati = $this->db('pasien_mati')
+      ->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
+      ->oneArray();
+      if ($pasien_mati) {
+        $pasien_mati['tgl_lahir'] = date('d/m/Y', strtotime($pasien['tgl_lahir']));;
+        $ruangan =  $this->db('kamar_inap')->select(['ruang' => 'concat(kamar.kd_kamar," ",bangsal.nm_bangsal)',
+        'stts_pulang' => 'kamar_inap.stts_pulang'])
+          ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+          ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+          ->where('kamar_inap.no_rawat', $this->revertNorawat($id))
+          ->desc('kamar_inap.tgl_masuk')
+          ->limit(1)
+          ->oneArray();
+        $pasien_mati['ruangan'] = $ruangan['ruang'];
+        $pasien_mati['stts'] = $ruangan['stts_pulang'];
+        $pasien_mati['bulantahun_kematian'] = date('m/Y', strtotime($pasien_mati['tanggal']));
+        $nm_inisial = $pasien['nm_pasien'];
+        $pasien_mati['inisial'] = substr($nm_inisial, 0, 1);
+        $ttl = date('d - m - Y', strtotime($pasien['tgl_lahir'])); $pasien_mati['ttl'] = 'tanggal ' . date('d', strtotime($pasien['tgl_lahir'])) . ' bulan ' . date('m', strtotime($pasien['tgl_lahir'])) . ' tahun ' . date('Y', strtotime($pasien['tgl_lahir']));
+        $pasien_mati['waktu_meninggal'] = date('d/m/Y', strtotime($pasien_mati['tanggal']));
+        $pasien_mati['umur_meninggal'] = $pasien['umur'];
+        $pasien_mati['tglpemulasaran'] = date('d/m/Y', strtotime($pasien_mati['tgl_pemulasaran']));
+        
+        if ($reg_periksa['stts'] != 'DOA') {
 
+          $lama_inap = $this->db('kamar_inap')->select(['lama' => 'SUM(lama)'])->where('no_rawat',  $this->revertNorawat($id))->oneArray();
+
+          $tgl_igd = new \DateTime($reg_periksa['tgl_registrasi'] . ' ' . $reg_periksa['jam_reg']);
+          $tgl_meninggal = new \DateTime($pasien_mati['tanggal'] . ' ' . $pasien_mati['jam']);
+
+          $diff = $tgl_meninggal->diff($tgl_igd);
+          $totalMinutes = $diff->h * 60 + $diff->i + ($diff->days * 24 * 60);
+
+          $jam = floor($totalMinutes / 60);
+          $menit = $totalMinutes % 60;
+            if ($totalMinutes <= 46 * 60) {
+                // Jika kurang dari atau sama dengan 46 jam, tampilkan dalam jam dan menit
+                $pasien_mati['lama_dirawat'] = $jam . ' Jam ' . $menit . ' Menit';
+            } else {
+                // Jika lebih dari 46 jam, tampilkan dalam hari
+                $lamainap = $lama_inap['lama'];
+                $pasien_mati['lama_dirawat'] = $lamainap. ' Hari';
+            }
+        } else {
+            $pasien_mati['lama_dirawat'] = 'DOA';
+        }
+        
+        $nmdok =  $this->db('dokter')->where('kd_dokter', $pasien_mati['kd_dokter'])->oneArray();
+        $pasien_mati['nm_dokter'] = $nmdok['nm_dokter'];
+      }
+
+        // $lama_inap = $this->db('kamar_inap')->select(['lama' => 'SUM(lama)'])->where('no_rawat',  $this->revertNorawat($id))->oneArray();
+        // $tgl_igd = new \DateTime($reg_periksa['tgl_registrasi'] . ' ' . $reg_periksa['jam_reg']);
+        // $tgl_meninggal = new \DateTime($pasien_mati['tanggal'] . ' ' . $pasien_mati['jam']);
+        // $diff = $tgl_meninggal->diff($tgl_igd);
+        // $hours = $diff->h; // Jam
+        // $minutes = $diff->i; // Menit
+        // $totalMinutes = $minutes + ($hours * 60) + ($diff->days * 24 * 60);
+        // $jam = floor($totalMinutes / 60);
+        // $menit = $totalMinutes % 60;
+        // if ($reg_periksa['stts'] != 'DOA'){
+        //   if ($totalMinutes <= 46 * 60) { 
+        //     // Jika kurang dari atau sama dengan 46 jam, tampilkan dalam jam
+        //     $pasien_mati['lama_dirawat'] = $jam . ' Jam ' . $menit . ' Menit';
+        //    } else {
+        //     // Jika lebih dari 46 jam, tampilkan dalam hari
+        //     $pasien_mati['lama_dirawat'] = $lama_inap['lama'].' Hari';
+        //   }
+        // } else {
+        //   $pasien_mati['lama_dirawat'] = 'DOA';
+        // }
 
     $this->tpl->set('pasien', $pasien);
     $this->tpl->set('reg_periksa', $reg_periksa);
@@ -2294,11 +2488,10 @@ class Admin extends AdminModule
     $this->tpl->set('rujukan_internal_poli_detail', $rujukan_internal_poli_detail);
     $this->tpl->set('shk_bayi', $shk_bayi);
     $this->tpl->set('lap_op', $lap_op);
-    // $this->tpl->set('vedika_operasi', $vedika_operasi);
-    // $this->tpl->set('jadwal_operasi', $jadwal_operasi);
     $this->tpl->set('balance_cairan', $balance_cairan);
     $this->tpl->set('ventilator', $ventilator);
-
+    $this->tpl->set('ekstrapiramidal', $ekstrapiramidal);
+    $this->tpl->set('pasien_mati', $pasien_mati);
     $this->tpl->set('berkas_digital', $berkas_digital);
     $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
     $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
@@ -2953,10 +3146,10 @@ class Admin extends AdminModule
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->oneArray();
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
-    $reg_periksa['kelas_rawat'] = $this->_getSEPInfo('klsrawat', revertNoRawat($no_rawat));
     $reg_periksa['stts_pulang'] = '';
     $reg_periksa['tgl_keluar'] = $reg_periksa['tgl_registrasi'];
     $reg_periksa['jam_keluar'] = '00:00:00';
+    $reg_periksa['kelas_rawat'] = $this->_getSEPInfo('klsrawat', revertNoRawat($no_rawat));
     if($reg_periksa['status_lanjut'] == 'Ranap') {
       $_get_kamar_inap = $this->db('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
       $reg_periksa['tgl_keluar'] = $_get_kamar_inap[0]['tgl_keluar'].' '.$_get_kamar_inap[0]['jam_keluar'];
@@ -2971,20 +3164,19 @@ class Admin extends AdminModule
         ->toArray();
     }
 
-     $row_diagnosa = $this->db('diagnosa_pasien')
+   $row_diagnosa = $this->db('diagnosa_pasien')
       ->where('no_rawat', revertNoRawat($no_rawat))
-      ->where('status', 'Ralan')
+      ->where('status','Ralan')
       ->asc('prioritas')
       ->toArray();
     if($reg_periksa['status_lanjut'] == 'Ranap') {
-    $row_diagnosa = $this->db('diagnosa_pasien')
-      ->where('no_rawat', revertNoRawat($no_rawat))
-      ->where('status', 'Ranap')
-      ->asc('prioritas')
-      ->toArray();
+      $row_diagnosa = $this->db('diagnosa_pasien')
+        ->where('no_rawat', revertNoRawat($no_rawat))
+        ->where('status','Ranap')
+        ->asc('prioritas')
+        ->toArray();
     }
     $a_diagnosa=1;
-    $penyakit = '';
     foreach ($row_diagnosa as $row) {
       if($a_diagnosa==1){
           $penyakit=$row["kd_penyakit"];
@@ -2996,24 +3188,38 @@ class Admin extends AdminModule
 
     $row_prosedur = $this->db('prosedur_pasien')
       ->where('no_rawat', revertNoRawat($no_rawat))
-      ->where('status', 'Ralan')
+      ->where('status','Ralan')
       ->asc('prioritas')
       ->toArray();
     if($reg_periksa['status_lanjut'] == 'Ranap') {
-          $row_prosedur = $this->db('prosedur_pasien')
+      $row_prosedur = $this->db('prosedur_pasien')
       ->where('no_rawat', revertNoRawat($no_rawat))
-      ->where('status', 'Ranap')
+      ->where('status','Ranap')
       ->asc('prioritas')
       ->toArray();
-      }
+    }
     $prosedur= '';
     $a_prosedur=1;
     foreach ($row_prosedur as $row) {
+      /* == Khusus RSHD karena data ICD nya kacau == */
+
+      $kode = $row["kode"];
+      if(strpos($row["kode"],'.') == false) {
+        $kode = substr_replace($row["kode"],".", 2, 0);
+      }
+      if($a_prosedur==1){
+          $prosedur=$kode;
+      }else{
+          $prosedur=$prosedur."#".$kode;
+      }
+
+      /*
       if($a_prosedur==1){
           $prosedur=$row["kode"];
       }else{
           $prosedur=$prosedur."#".$row["kode"];
       }
+      */
       $a_prosedur++;
     }
 
@@ -3923,7 +4129,7 @@ class Admin extends AdminModule
       }
   }
 
-  private function GroupingStage12($nomor_sep,$coder_nik){
+  private function GroupingStage12__($nomor_sep,$coder_nik){
       $request ='{
                       "metadata": {
                           "method":"grouper",
@@ -3947,6 +4153,50 @@ class Admin extends AdminModule
       }
   }
 
+  private function GroupingStage12($nomor_sep,$coder_nik){
+      $request ='{
+                      "metadata": {
+                          "method":"grouper",
+                          "stage":"1"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                 }';
+      $msg= $this->Request($request);
+      if($msg['metadata']['message']=="Ok"){
+        $topup = $msg['special_cmg_option']?$msg['special_cmg_option']:'';
+        if($topup!=''){
+          $temp_grouper="";
+          $i = 0;
+          foreach ($topup as $data) {
+            if($i==0){
+              $temp_grouper.=$data['code'];
+            }else{
+              $temp_grouper.='#'.$data['code'];
+            }
+            $i+=1;
+          }
+          $request2 ='{
+            "metadata": {
+                "method":"grouper",
+                "stage":"2"
+            },
+            "data": {
+                "nomor_sep":"'.$nomor_sep.'",
+                "special_cmg":"'.$temp_grouper.'"
+            }
+          }';
+          $msg2= $this->Request($request2);
+          if($msg2['metadata']['message']=="Ok"){
+            $this->FinalisasiKlaim($nomor_sep,$coder_nik);
+          }
+        }else if($topup==''){
+          $this->FinalisasiKlaim($nomor_sep,$coder_nik);
+        }
+      }
+  }
+  
   private function FinalisasiKlaim($nomor_sep,$coder_nik){
       $request ='{
                       "metadata": {
@@ -4020,4 +4270,194 @@ class Admin extends AdminModule
     $this->core->addJS(url([ADMIN, 'vedika', 'javascript']), 'footer');
   }
 
+  public function getAll($type = 'Ralan')
+  {
+      // CSS
+      $this->core->addCSS(url('assets/css/jquery-ui.css'));
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+      // JS
+      $this->core->addJS(url('assets/jscripts/jquery-ui.js'));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+      $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+      $unit = $this->db('poliklinik')
+        ->select([
+          'kode' => 'kd_poli', 
+          'nama' => 'nm_poli'
+        ])
+        ->toArray();
+      if($type == 'Ranap') {
+        $unit = $this->db('kamar')
+          ->select([
+            'kode' => 'kamar.kd_bangsal', 
+            'nama' => 'bangsal.nm_bangsal'
+          ])
+          ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+          ->group('nm_bangsal')
+          ->toArray();
+      }
+
+      $dokter = $this->db('dokter')->desc('nm_dokter')->toArray();
+      return $this->draw('all.html', ['tab' => $type, 'unit' => $unit, 'dokter' => $dokter]);
+  }
+
+  public function postAllData($type = 'Ralan')
+  {
+
+      // $_POST['length'] = '';
+      // $_POST['start'] = '';
+      // $_POST['order'] = '';
+      // $_POST['search'] = '';
+      // $_POST['draw'] = '';
+     
+      if($type == 'Ralan') {
+        $columns = array( 
+            0 => 'no_rkm_medis',
+            1 => 'nm_pasien',
+            2 => 'no_rawat',
+            3 => 'no_reg', 
+            4 => 'nm_poli', 
+            5 => 'nm_dokter', 
+            6 => 'png_jawab', 
+            7 => 'no_peserta', 
+            8 => 'tgl_registrasi', 
+            9 => 'stts', 
+            10 => 'status_lanjut', 
+            11 => 'status_bayar'
+        );
+      }
+
+      if($type == 'Ranap') {
+        $columns = array( 
+          0 => 'no_rkm_medis',
+          1 => 'nm_pasien',
+          2 => 'no_rawat',
+          3 => 'kd_kamar', 
+          4 => 'nm_bangsal', 
+          5 => 'nm_dokter', 
+          6 => 'png_jawab', 
+          7 => 'no_peserta', 
+          8 => 'tgl_masuk', 
+          9 => 'stts_pulang', 
+          10 => 'status_lanjut', 
+          11 => 'status_bayar'
+        );
+      }
+
+      $start_date = date('Y-m-d');
+      // $start_date = '2023-01-01';
+      $end_date = date('Y-m-d');
+      if(isset($_POST['searchByFromdate']) && $_POST['searchByFromdate'] !='') {
+        $start_date = $_POST['searchByFromdate'];
+      }
+      if(isset($_POST['searchByTodate']) && $_POST['searchByTodate'] !='') {
+        $end_date = $_POST['searchByTodate'];
+      }    
+      
+      $limit = $_POST['length'];
+      $start = $_POST['start'];
+      $order = $columns[$_POST['order']['0']['column']];
+      $dir = $_POST['order']['0']['dir'];
+            
+      $keyword = $_POST['search']['value']; 
+      $dokter = isset($_POST['sortByDokter']) ? $_POST['sortByDokter'] : '';
+      $poliklinik = isset($_POST['sortByUnit']) ? $_POST['sortByUnit'] : '';
+
+      $sql_query = '';
+
+      if($type == 'Ralan') {
+
+        $sql_query = "select reg_periksa.no_rkm_medis,pasien.nm_pasien,reg_periksa.no_rawat,reg_periksa.no_reg, ";
+        $sql_query .= "poliklinik.nm_poli,dokter.nm_dokter,penjab.png_jawab,pasien.no_peserta, ";
+        $sql_query .= "reg_periksa.tgl_registrasi,reg_periksa.stts,reg_periksa.status_lanjut,reg_periksa.status_bayar ";
+        $sql_query .= "from reg_periksa inner join dokter on reg_periksa.kd_dokter=dokter.kd_dokter inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis ";
+        $sql_query .= "inner join poliklinik on reg_periksa.kd_poli=poliklinik.kd_poli inner join penjab on reg_periksa.kd_pj=penjab.kd_pj where ";
+        $sql_query .= "poliklinik.kd_poli<>'IGDK' and poliklinik.kd_poli like ? and  dokter.kd_dokter like ? and reg_periksa.tgl_registrasi between ? and ? and ";
+        $sql_query .= "(reg_periksa.no_reg like ? or reg_periksa.no_rawat like ? or reg_periksa.tgl_registrasi like ? or reg_periksa.kd_dokter like ? or ";
+        $sql_query .= "dokter.nm_dokter like ? or reg_periksa.no_rkm_medis like ? or reg_periksa.stts_daftar like ? or pasien.nm_pasien like ? or ";
+        $sql_query .= "poliklinik.nm_poli like ? or reg_periksa.p_jawab like ? or reg_periksa.almt_pj like ? or reg_periksa.hubunganpj like ? or penjab.png_jawab like ?) ";
+
+        $total = $this->db()->pdo()->prepare($sql_query);
+        $total->execute(['%'.$poliklinik.'%', '%'.$dokter.'%', $start_date, $end_date, '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%']);
+        $total = $total->fetchAll(\PDO::FETCH_ASSOC);          
+
+        $totalData = count($total);
+              
+        $totalFiltered = $totalData; 
+
+        $sql_query .= "order by $order $dir LIMIT $start,$limit";    
+
+        $query = $this->db()->pdo()->prepare($sql_query);
+        $query->execute(['%'.$poliklinik.'%', '%'.$dokter.'%', $start_date, $end_date, '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%', '%'.$keyword.'%']);
+        $query = $query->fetchAll(\PDO::FETCH_ASSOC);
+      }
+
+      if($type == 'Ranap') {
+        $sql_query ="select reg_periksa.no_rkm_medis,pasien.nm_pasien,kamar_inap.no_rawat,";
+        $sql_query .= "kamar_inap.kd_kamar,bangsal.nm_bangsal,dokter.nm_dokter,penjab.png_jawab,pasien.no_peserta,";
+        $sql_query .= "kamar_inap.tgl_masuk,kamar_inap.stts_pulang,reg_periksa.status_lanjut,reg_periksa.status_bayar ";
+        $sql_query .= "from kamar_inap inner join reg_periksa on kamar_inap.no_rawat=reg_periksa.no_rawat inner join dpjp_ranap on kamar_inap.no_rawat=dpjp_ranap.no_rawat inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis ";
+        $sql_query .= "inner join kamar on kamar_inap.kd_kamar=kamar.kd_kamar inner join bangsal on kamar.kd_bangsal=bangsal.kd_bangsal ";
+        $sql_query .= "inner join dokter on dpjp_ranap.kd_dokter=dokter.kd_dokter ";
+        $sql_query .= "inner join penjab on reg_periksa.kd_pj=penjab.kd_pj where dpjp_ranap.jenis_dpjp = 'Utama' and bangsal.kd_bangsal like ? and dpjp_ranap.kd_dokter like ? and kamar_inap.tgl_keluar between ? and ? ";
+        $sql_query .= "and (kamar_inap.no_rawat like '%".$keyword."%' or reg_periksa.no_rkm_medis like '%".$keyword."%' or pasien.nm_pasien like '%".$keyword."%' or ";
+        $sql_query .= "kamar_inap.kd_kamar like '%".$keyword."%' or ";
+        $sql_query .= "bangsal.nm_bangsal like '%".$keyword."%' or kamar_inap.diagnosa_awal like '%".$keyword."%' or kamar_inap.diagnosa_akhir like '%".$keyword."%' or ";
+        $sql_query .= "kamar_inap.tgl_masuk like '%".$keyword."%' or dokter.nm_dokter like '%".$keyword."%' or kamar_inap.stts_pulang like '%".$keyword."%' or ";
+        $sql_query .= "kamar_inap.tgl_keluar like '%".$keyword."%' or penjab.png_jawab like '%".$keyword."%' or pasien.agama like '%".$keyword."%') ";
+
+        $total = $this->db()->pdo()->prepare($sql_query);
+        $total->execute(['%'.$poliklinik.'%', '%'.$dokter.'%', $start_date, $end_date]);
+        $total = $total->fetchAll(\PDO::FETCH_ASSOC);          
+  
+        $totalData = count($total);
+              
+        $totalFiltered = $totalData; 
+  
+        $sql_query .= "order by $order $dir LIMIT $start,$limit";    
+  
+        $query = $this->db()->pdo()->prepare($sql_query);
+        $query->execute(['%'.$poliklinik.'%', '%'.$dokter.'%', $start_date, $end_date]);
+        $query = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+      }
+
+      $data = array();
+      if(!empty($query))
+      {
+          foreach($query as $row) {
+            $ceksep = $this->_getSEPInfo('no_sep', $row['no_rawat']);
+            $pdfURL = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+            $status_pengajuan = $this->db('mlite_vedika')->where('no_rawat', $row['no_rawat'])->desc('id')->limit(1)->toArray();
+            $row['status_pengajuan'] = isset_or($status_pengajuan[0]['status'], 'Belum');
+
+            $row['aksi'] = '';
+            if(!empty($ceksep)) {
+              $row['aksi'] .= '<a href="" class="btn btn-sm btn-info"><i class="fa fa-check"></i></a> ';
+            } else {
+              $row['aksi'] .= '<a href="'.url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]).'" data-toggle="modal" data-target="#moduleModal" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></a> ';
+            }
+            $row['aksi'] .= '<a href="'.url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]).'" target="_blank" class="btn btn-sm btn-primary"><i class="fa fa-print"></i></a> ';
+            if(!empty($ceksep)) {
+              $row['aksi'] .= '<a href="'.$pdfURL.'" data-toggle="modal" data-target="#statusModal" class="btn btn-sm btn-warning"><i class="fa fa-refresh"></i> '.$row['status_pengajuan'].'</a>';
+            }
+            $data[] = $row;
+          }
+      }
+          
+      
+      $json_data = array(
+          "draw"            => intval($_POST['draw']),  
+          "recordsTotal"    => intval($totalData),  
+          "recordsFiltered" => intval($totalFiltered), 
+          "data"            => $data 
+      );
+            
+      echo json_encode($json_data); 
+      exit();
+    
+  } 
+  
 }

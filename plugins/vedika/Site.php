@@ -40,7 +40,7 @@ class Site extends SiteModule
         $this->route('veda/createpdf/(:str)', 'getCreatePDF');
         $this->route('veda/downloadpdf/(:str)', 'getDownloadPDF');
         $this->route('veda/catatan/(:str)', 'getCatatan');
-        $this->route('veda/tarik','getDataSep');
+      	$this->route('veda/tarik','getDataSep');
         $this->route('veda/delfeed/(:str)/(:str)', 'getDelFeed');
         $this->route('veda/logout', function () {
             $this->logout();
@@ -611,7 +611,7 @@ class Site extends SiteModule
       $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
-      $date = $this->settings->get('vedika.verifikasi');
+	    $date = $this->settings->get('vedika.verifikasi');
       if(isset($_GET['periode']) && $_GET['periode'] !=''){
         $date = $_GET['periode'];
       }
@@ -1020,7 +1020,7 @@ class Site extends SiteModule
         $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
         $this->tpl->set('hasil_radiologi', $hasil_radiologi);
         $this->tpl->set('klinis_radiologi', $klinis_radiologi);
-        $this->tpl->set('saran_rad', $saran_rad);
+    	  $this->tpl->set('saran_rad', $saran_rad);
         $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
         $this->tpl->set('pemberian_obat', $pemberian_obat);
         $this->tpl->set('obat_operasi', $obat_operasi);
@@ -1039,7 +1039,7 @@ class Site extends SiteModule
       }
     }
   
-    public function getDataSep(){
+  	public function getDataSep(){
       $sep = $this->db('temp_individu')->where('status','Belum')->limit(25)->toArray();
       if ($sep) {
         foreach ($sep as $value) {
@@ -1482,10 +1482,10 @@ class Site extends SiteModule
       exit();
     }
 
-    public function getDelFeed($id,$user)
+  	public function getDelFeed($id,$user)
     {
-      $delete = $this->db('mlite_vedika_feedback')->where('nosep', $id)->where('username',$user)->delete();
-      if($delete)
+  		$delete = $this->db('mlite_vedika_feedback')->where('nosep', $id)->where('username',$user)->delete();
+   		if($delete)
           header('Location: '.$_SERVER['REQUEST_URI']);
     }
 
@@ -1526,7 +1526,7 @@ class Site extends SiteModule
         return $row[$field];
     }
 
-    private function _getSPRIInfo($field, $no_rawat)
+  	private function _getSPRIInfo($field, $no_rawat)
     {
       $row = $this->db('bridging_surat_pri_bpjs')->where('no_rawat', $no_rawat)->oneArray();
       return $row[$field];

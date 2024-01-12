@@ -83,8 +83,8 @@
                     </span>
                     <div class="stat-title text-grey">Status Perbaikan</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.PerbaikanRalan} / <span class="text-danger">{$stats.PerbaikanRalan1}</span></b> ({?=number_format(($stats.PerbaikanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.PerbaikanRanap} / <span class="text-danger">{$stats.PerbaikanRanap1}</span></b> ({?=number_format(($stats.PerbaikanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
+                      Ralan : <b>{$stats.PerbaikanRalan}</b> ({?=number_format(($stats.PerbaikanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.PerbaikanRanap}</b> ({?=number_format(($stats.PerbaikanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -104,28 +104,29 @@
     </div>
 </div>
 
-<div class="row">
+<article class="row">
     <div class="col-md-12">
-        <ul class="modules" style="padding:0;margin:0;">
-            {loop: $sub_modules}
-            <li class="module">
-                <div class="panel panel-default">
-                    <a href="{$value.url}" class="panel-body text-center">
-                        <div class="panel-thumb">
-                            <i class="fa fa-{$value.icon}"></i>
-                            <div class="desc">
-                                {$value.desc}
+        <div class="row">
+            <ul class="modules" style="padding:0;margin:0;">
+                {loop: $sub_modules}
+                <li class="module">
+                    <div class="panel panel-default">
+                        <a href="{$value.url}" class="panel-body text-center">
+                            <div class="panel-thumb">
+                                <i class="fa fa-{$value.icon}"></i>
+                                <div class="desc">
+                                    {$value.desc}
+                                </div>
                             </div>
-                        </div>
-                        <h4><b>{$value.name}</b></h4>
-                    </a>
-                </div>
-            </li>
-            {/loop}
-        </ul>
+                            <h4><b>{$value.name}</b></h4>
+                        </a>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
     </div>
-</div>
-
+</article>
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
