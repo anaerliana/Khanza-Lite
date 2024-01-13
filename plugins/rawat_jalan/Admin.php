@@ -1836,8 +1836,7 @@ class Admin extends AdminModule
 
             $pacs['data'] = json_encode($arr);
 
-            // $url_orthanc = $this->settings->get('orthanc.server');
-            $url_orthanc = 'http://103.59.94.14:8042/';
+            $url_orthanc = $this->settings->get('orthanc.server');
             $urlfind = $url_orthanc . '/tools/find';
 
             $curl = curl_init();

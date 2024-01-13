@@ -808,8 +808,6 @@ class Admin extends AdminModule
         $pacs['data'] = json_encode($arr);
 
         $url_orthanc = $this->settings->get('orthanc.server');
-        //$url_orthanc = 'http://103.59.94.14:8042';
-        //$url_orthanc2 = 'http://'.$this->settings->get('orthanc.username').':'.$this->settings->get('orthanc.password').'@192.168.0.206:8042';
         $urlfind = $url_orthanc . '/tools/find';
 
         $curl = curl_init();

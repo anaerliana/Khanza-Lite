@@ -2737,33 +2737,6 @@ class Admin extends AdminModule
     return $this->draw('resume.batalklaim.html', ['setbatal' => $this->assign, 'username' => $username]);
   }
 
-  // public function anySkriningCek(){
-  //   // $this->_addHeaderFiles();
-  //   // return $this->draw('skriningceklist.html');
-  //   $i = 1;
-  //   $rows = $this->db('evaluasi_awal_mpp')
-  //     ->where('no_rawat', $_POST['no_rawat'])
-  //     ->toArray();
-
-  //   $result = [];
-  //   foreach ($rows as $row) {
-  //     // $row = $rows;
-  //     $row['nomor'] = $i++;
-
-  //     $pasien = $this->db('reg_periksa')
-  //       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-  //       ->where('no_rawat', $row['no_rawat'])
-  //       ->oneArray();
-
-  //     $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
-  //     $row['nm_pasien'] = $pasien['nm_pasien'];
-
-  //     $result[] = $row;
-  //   }
-
-  //   echo $this->draw('skriningceklist.html', ['skrining' => $result]);
-  //   exit();
-  // }
   public function anySkriningCek()
   {
       $rows = $this->db('evaluasi_awal_mpp')
@@ -2802,46 +2775,7 @@ class Admin extends AdminModule
      
   }
 
-//   public function postSaveSkriningCek()
-// {
-//     $data = isset($_POST['data']) ? $_POST['data'] : array();
-//     $no_rawat = $_POST['no_rawat'];
-//     $tanggal = date('Y-m-d');
-//     $skrining = implode(", ", $data);
-
-//     if (!empty($data)) {
-//         $jumlahCek = count($data);
-
-//         if (!$this->db('evaluasi_awal_mpp')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
-//             $query = $this->db('evaluasi_awal_mpp')
-//                 ->save([
-//                     'no_rawat' => $no_rawat,
-//                     'tanggal' => $tanggal,
-//                     'skrining_ceklist' => $skrining,
-//                     'nilai_skrining' => $jumlahCek,
-//                     'petugas' => $this->core->getUserInfo('username', null, true)
-//                 ]);
-//         } else {
-//             $query = $this->db('evaluasi_awal_mpp')
-//                 ->where('no_rawat', $_POST['no_rawat'])
-//                 ->save([
-//                     'tanggal' => $tanggal,
-//                     'skrining_ceklist' => $skrining,
-//                     'nilai_skrining' => $jumlahCek,
-//                     'petugas' => $this->core->getUserInfo('username', null, true)
-//                 ]);
-//         }
-
-//         if ($query) {
-//             $this->notify('success', 'Data Berhasil Update');
-//         } else {
-//             $this->notify('failure', 'Gagal Update');
-//         }
-//     } else {
-//         $this->notify('failure', 'Tidak ada data yang dipilih');
-//     }
-// }
-public function postSaveSkriningCek()
+  public function postSaveSkriningCek()
   {
     $data = isset($_POST['data']) ? $_POST['data'] : array();
     $no_rawat = $_POST['no_rawat'];
@@ -2882,7 +2816,7 @@ public function postSaveSkriningCek()
     }
   }
 
-public function postCatatanSkrining()
+  public function postCatatanSkrining()
   {
         $data = isset($_POST['data']) ? $_POST['data'] : array();
         $no_rawat = $_POST['no_rawat'];
