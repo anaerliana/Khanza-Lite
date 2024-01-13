@@ -1834,6 +1834,98 @@ class Admin extends AdminModule
       echo $this->draw('resume.html', ['resume_pasien' => $result]);
       exit();
   }
+
+  public function anyLapop()
+  {
+      
+      $no_rawat = $_GET['no_rawat'];
+      $rows = $this->db('mlite_lap_op')
+        ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
+        ->where('mlite_lap_op.no_rawat', $no_rawat)
+        ->desc('tanggal_op')
+        ->isNull('deleted_at')
+        ->toArray();
+      $result = [];
+      foreach ($rows as $row) {
+
+      $pasien = $this->db('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+        ->where('no_rawat', $row['no_rawat'])
+        ->oneArray();
+      $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+      $row['nm_pasien'] = $pasien['nm_pasien'];
+      $row['tgl_lahir'] = date('d-m-Y', strtotime($pasien['tgl_lahir']));
+      $row['png_jawab'] = $pasien['png_jawab'];
+      $row['hasil_op'] = htmlspecialchars($row['hasil_op']);
+
+      $operasi = $this->db('operasi')
+            ->select([ 
+                'no_rawat'          => 'operasi.no_rawat',
+                'tgl_operasi'       => 'operasi.tgl_operasi',
+                'asisten_operator1' => 'operasi.asisten_operator1',
+                'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
+                'dokter_anestesi'   => 'operasi.dokter_anestesi',
+                'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
+                'kode_paket'        => 'operasi.kode_paket',
+                'kategori'          => 'operasi.kategori',
+                'nm_asisten'        => 'petugas.nama',
+                'nm_perawat'        => 'perawat.nama',
+                'dok_anestesi'      => 'dokter.nm_dokter',
+                'nm_paket'          => 'paket_operasi.nm_perawatan'
+            ])
+            ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
+            ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
+            ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
+            ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
+            ->where('operasi.no_rawat', $row['no_rawat'])
+            ->where('operasi.tgl_operasi', $row['tanggal_op'])
+            ->toArray();
+
+        $jadwal_operasi = [];
+        foreach ($operasi as $detail_operasi) {
+            $tgl_operasi = substr($detail_operasi['tgl_operasi'], 0, 10);
+            $bookingOperasi = $this->db('booking_operasi')
+                ->where('no_rawat', $detail_operasi['no_rawat'])
+                ->where('kode_paket', $detail_operasi['kode_paket'])
+                ->where('tanggal', $tgl_operasi)
+                ->oneArray();
+
+            $value['booking_operasi'] = [];
+            if (!empty($bookingOperasi)) {
+              $detail_operasi['tanggal'] = $bookingOperasi['tanggal'];
+              $detail_operasi['jam_mulai'] = $bookingOperasi['jam_mulai'];
+              $detail_operasi['jam_selesai'] = $bookingOperasi['jam_selesai'];
+              //hitung lama operasi
+              $jamMulai = strtotime($bookingOperasi['jam_mulai']);
+              $jamAkhir = strtotime($bookingOperasi['jam_selesai']);
+
+              if ($jamMulai !== false && $jamAkhir !== false) {
+                  $lamaOperasiDetik = $jamAkhir - $jamMulai;
+                  $lamaOperasiJam = floor($lamaOperasiDetik / 3600);
+                  $lamaOperasiDetik %= 3600;
+                  $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
+                  $lamaOperasiDetik %= 60;
+
+                if ($lamaOperasiJam > 0) {
+                    $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                } else {
+                    $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                }
+              $detail_operasi['lama_operasi'] = $lamaOperasi;
+            }
+          } 
+          $jadwal_operasi[] = $detail_operasi;
+        }
+
+        $row['jadwal_operasi'] = $jadwal_operasi;
+
+
+      $result[] = $row;
+    }
+      echo $this->draw('lapop.html', ['lap_op' => $result]);
+      exit();
+  }
   
   public function anyManage_RawatGabung()
   {
@@ -2643,6 +2735,195 @@ class Admin extends AdminModule
     
     $username = $this->core->getUserInfo('username', null, true);
     return $this->draw('resume.batalklaim.html', ['setbatal' => $this->assign, 'username' => $username]);
+  }
+
+  // public function anySkriningCek(){
+  //   // $this->_addHeaderFiles();
+  //   // return $this->draw('skriningceklist.html');
+  //   $i = 1;
+  //   $rows = $this->db('evaluasi_awal_mpp')
+  //     ->where('no_rawat', $_POST['no_rawat'])
+  //     ->toArray();
+
+  //   $result = [];
+  //   foreach ($rows as $row) {
+  //     // $row = $rows;
+  //     $row['nomor'] = $i++;
+
+  //     $pasien = $this->db('reg_periksa')
+  //       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+  //       ->where('no_rawat', $row['no_rawat'])
+  //       ->oneArray();
+
+  //     $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+  //     $row['nm_pasien'] = $pasien['nm_pasien'];
+
+  //     $result[] = $row;
+  //   }
+
+  //   echo $this->draw('skriningceklist.html', ['skrining' => $result]);
+  //   exit();
+  // }
+  public function anySkriningCek()
+  {
+      $rows = $this->db('evaluasi_awal_mpp')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+
+      $result = [];
+      foreach ($rows as $row) {
+        $pasien = $this->db('reg_periksa')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+
+        $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+        $row['nm_pasien'] = $pasien['nm_pasien'];
+
+        $kamar_inap = $this->db('kamar_inap')
+          ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+          ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+
+        $row['kd_kamar'] = $kamar_inap['kd_kamar'];
+
+          $ceklist_skrining = explode(',', $row['skrining_ceklist']);
+
+          $ceklist_skrining = array_filter($ceklist_skrining);
+
+          $row['ceklist_skrining'] = $ceklist_skrining;
+
+        $result[] = $row;
+      }
+
+    echo $this->draw('skriningceklist.html', ['skrining' => $result]);
+    exit();
+     
+  }
+
+//   public function postSaveSkriningCek()
+// {
+//     $data = isset($_POST['data']) ? $_POST['data'] : array();
+//     $no_rawat = $_POST['no_rawat'];
+//     $tanggal = date('Y-m-d');
+//     $skrining = implode(", ", $data);
+
+//     if (!empty($data)) {
+//         $jumlahCek = count($data);
+
+//         if (!$this->db('evaluasi_awal_mpp')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+//             $query = $this->db('evaluasi_awal_mpp')
+//                 ->save([
+//                     'no_rawat' => $no_rawat,
+//                     'tanggal' => $tanggal,
+//                     'skrining_ceklist' => $skrining,
+//                     'nilai_skrining' => $jumlahCek,
+//                     'petugas' => $this->core->getUserInfo('username', null, true)
+//                 ]);
+//         } else {
+//             $query = $this->db('evaluasi_awal_mpp')
+//                 ->where('no_rawat', $_POST['no_rawat'])
+//                 ->save([
+//                     'tanggal' => $tanggal,
+//                     'skrining_ceklist' => $skrining,
+//                     'nilai_skrining' => $jumlahCek,
+//                     'petugas' => $this->core->getUserInfo('username', null, true)
+//                 ]);
+//         }
+
+//         if ($query) {
+//             $this->notify('success', 'Data Berhasil Update');
+//         } else {
+//             $this->notify('failure', 'Gagal Update');
+//         }
+//     } else {
+//         $this->notify('failure', 'Tidak ada data yang dipilih');
+//     }
+// }
+public function postSaveSkriningCek()
+  {
+    $data = isset($_POST['data']) ? $_POST['data'] : array();
+    $no_rawat = $_POST['no_rawat'];
+    $tanggal = date('Y-m-d');
+    $skrining = implode(", ", $data);
+    $catatan_skrining = isset($_POST['catatan_skrining']) ? $_POST['catatan_skrining'] : '';
+
+    if (!empty($data)) {
+      $jumlahCek = count($data);
+
+      if (!$this->db('evaluasi_awal_mpp')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->save([
+            'no_rawat' => $no_rawat,
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'catatan_skrining' => ($jumlahCek < 7) ? $catatan_skrining : '',
+            'petugas' => $this->core->getUserInfo('username', null, true)
+          ]);
+      } else {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save([
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'catatan_skrining' => ($jumlahCek < 7) ? $catatan_skrining : '',
+            'petugas' => $this->core->getUserInfo('username', null, true)
+          ]);
+      }
+
+      if ($query) {
+        $this->notify('success', 'Data Berhasil Update');
+      } else {
+        $this->notify('failure', 'Gagal Update');
+      }
+    }
+  }
+
+public function postCatatanSkrining()
+  {
+        $data = isset($_POST['data']) ? $_POST['data'] : array();
+        $no_rawat = $_POST['no_rawat'];
+        $tanggal = date('Y-m-d');
+        $skrining = implode(", ", $data);
+        $catatan_skrining = $_POST['catatan_skrining'];
+        
+      if (!empty($data)) {
+      $jumlahCek = count($data);
+
+      if (!$this->db('evaluasi_awal_mpp')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->save([
+            'no_rawat' => $no_rawat,
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'petugas' => $this->core->getUserInfo('username', null, true),
+            'catatan_skrining' => $catatan_skrining
+          ]);
+      } else {
+        $query = $this->db('evaluasi_awal_mpp')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save([
+            'tanggal' => $tanggal,
+            'skrining_ceklist' => $skrining,
+            'nilai_skrining' => $jumlahCek,
+            'petugas' => $this->core->getUserInfo('username', null, true),
+            'catatan_skrining' => $catatan_skrining
+          ]);
+      }
+
+      if ($query) {
+        $this->notify('success', 'Data Berhasil Update');
+      } else {
+        $this->notify('failure', 'Gagal Update');
+      }
+    } else {
+      $this->notify('failure', 'Tidak ada data yang dipilih');
+    }
+    redirect(url([ADMIN, 'rawat_inap', 'skriningcek']));
   }
   
   public function convertNorawat($text)

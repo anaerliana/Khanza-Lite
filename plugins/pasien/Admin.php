@@ -862,9 +862,14 @@ class Admin extends AdminModule
                   'Jawaban' => $answer,
               ];
           }
+          $row['konter'] = $this->db('pemeriksaan_ralan')
+            ->where('no_rawat', $row['no_rawat'])
+            ->where('penilaian', 'Konsul Terapi')     
+            ->toArray();
 
           $data['formatHasil'] = $formatHasil;
       }
+
 
         $riwayat['reg_periksa'][] = $row;
       }

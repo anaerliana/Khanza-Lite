@@ -677,6 +677,26 @@
         </td>
       </tr>
       {/if}
+      {if: $value.konter}
+      <tr class="isi">
+        <td valign="top" width="20%">Konsul Terapi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            {loop: $value.konter as $data}
+            <tr align="center">
+              <td valign="top" width="20%" bgcolor="#eee">Tanggal / Jam</td>
+              <td valign="top" width="80%" bgcolor="#eee">Konsul Terapi</td>
+            </tr>
+            <tr>
+              <td valign="top" width="20%">{$data.tgl_perawatan} {$data.jam_rawat}</td>
+              <td valign="top" width="20%">{?=nl2br($data.rtl)?}</td>
+            </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
       {if: $value.resep_obat}
       <tr class="isi">
         <td valign="top" width="20%">Pemberian Obat </td>

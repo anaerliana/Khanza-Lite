@@ -78,7 +78,9 @@ class Admin extends AdminModule
             pasien.*,
             dokter.*,
             poliklinik.*,
-            penjab.*
+            penjab.*,
+            pasien.jk AS jenkel,
+            pasien.tgl_Lahir AS tgllahir
           FROM reg_periksa, pasien, dokter, poliklinik, penjab
           WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
           AND reg_periksa.kd_poli = '$igd'
@@ -104,6 +106,35 @@ class Admin extends AdminModule
         $this->assign['list'] = [];
         foreach ($rows as $row) {
            $row['con_no_rawat'] = convertNorawat($row['no_rawat']);
+           $kamar_inap = $this->db('kamar_inap')
+           ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+           ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+           ->join('dpjp_ranap', 'dpjp_ranap.no_rawat=kamar_inap.no_rawat')
+           ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+           ->where('kamar_inap.no_rawat', $row['no_rawat'])
+           ->where('dpjp_ranap.jenis_dpjp', 'Utama')
+           ->oneArray();
+           $row['tgl_pindah'] = $kamar_inap['tgl_masuk'];
+           $row['jam_pindah'] = $kamar_inap['jam_masuk'];
+           $row['kd_ruanginap'] = $kamar_inap['kd_bangsal'];
+           $row['ruanginap'] = $kamar_inap['nm_bangsal'];
+           $row['kd_dpjp'] = $kamar_inap['kd_dokter'];
+           $row['dok_dpjp'] = $kamar_inap['nm_dokter'];
+
+           $triase_igd = $this->db('data_triase_igd')
+           ->join('pemeriksaan_ralan', 'pemeriksaan_ralan.no_rawat=data_triase_igd.no_rawat AND 
+                  data_triase_igd.tanggal=pemeriksaan_ralan.tgl_perawatan AND data_triase_igd.jam=pemeriksaan_ralan.jam_rawat')
+           ->where('data_triase_igd.no_rawat', $row['no_rawat'])->oneArray();
+           $row['alergi'] = $triase_igd['alergi'];
+           $row['suhu_tubuh'] = $triase_igd['suhu_tubuh'];
+           $row['tensi'] = $triase_igd['tensi'];
+           $row['nadi'] = $triase_igd['nadi'];
+           $row['respirasi'] = $triase_igd['respirasi'];
+           $row['skala_nyeri'] = $triase_igd['skala_nyeri'];
+
+           $row['dx_medis'] = $triase_igd['diagnosis'];
+           $row['dx_keperawatan'] = $triase_igd['diagnosa_keperawatan'];
+
           $this->assign['list'][] = $row;
         }
 
@@ -718,9 +749,39 @@ class Admin extends AdminModule
             echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
           }
       }
-
       exit();
+    }
 
+    public function getHapusBerkas($no_rawat, $nama_file)
+    {
+      $berkasPerawatan = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->like('lokasi_file', '%'.$nama_file.'%')->oneArray();
+      if ($berkasPerawatan) {
+        $lokasi_file = $berkasPerawatan['lokasi_file'];
+        $fileLoc = WEBAPPS_PATH . '/berkasrawat/' . $lokasi_file;
+        if (file_exists($fileLoc)) {
+          //unlink($fileLoc);
+          $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
+          $cetakBerkas = json_encode($berkasPerawatan, JSON_UNESCAPED_SLASHES);
+          $this->db('mlite_log')->save([
+                  'username' => $this->core->getUserInfo('fullname', null, true),
+                  'group_table' => 'berkasdigital',
+                  'value_field' => $cetakBerkas,
+                  'created_at' => date('Y-m-d H:i:s')
+              ]);
+          // echo $cetakBerkas;
+  
+          if ($query) {
+            echo 'Hapus berkas sukses';
+          } else {
+            echo 'Hapus berkas gagal';
+          }
+        } else {
+          echo 'Hapus berkas gagal, berkas tidak ditemukan.';
+        }
+      } else {
+        echo 'Hapus berkas gagal, tidak ada data perawatan.';
+      }
+      exit();
     }
   
     public function anyOrthanc()
@@ -802,6 +863,75 @@ class Admin extends AdminModule
 
         echo $this->draw('data.orthanc.html', ['pacs' => $result]);
         exit();
+    }
+
+    public function anyTransferPasien()
+    {
+
+      $rows = $this->db('transfer_pasien')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+
+      $result = [];
+      foreach ($rows as $row) {
+
+        $pasien = $this->db('reg_periksa')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+
+        $row['no_rkm_medis'] = $pasien['no_rkm_medis'];
+        $row['nm_pasien'] = $pasien['nm_pasien'];
+        $row['tgl_lahir'] = $pasien['tgl_lahir'];
+        $row['jk'] = $pasien['jk'];
+
+        $ruang_awal = $this->db('bangsal')->where('kd_bangsal', $row['ruang_awal'])->oneArray();
+        $row['nm_ruang_awal'] = $ruang_awal['nm_bangsal'];
+        $ruang_pindah = $this->db('bangsal')->where('kd_bangsal', $row['ruang_pindah'])->oneArray();
+        $row['nm_ruang_pindah'] = $ruang_pindah['nm_bangsal'];
+
+        $petugas_awal = $this->db('petugas')->where('nip', $row['petugas_awal'])->oneArray();
+        $row['nm_petugas_awal'] = $petugas_awal['nama'];
+        $petugas_pindah = $this->db('petugas')->where('nip', $row['petugas_pindah'])->oneArray();
+        $row['nm_petugas_pindah'] = $petugas_pindah['nama'];
+
+        $dok_awal = $this->db('dokter')->where('kd_dokter', $row['dokter_awal'])->oneArray();
+        $row['nm_dok_awal'] = $dok_awal['nm_dokter'];
+        $dok_pindah = $this->db('dokter')->where('kd_dokter', $row['dokter_pindah']) ->oneArray();
+        $row['nm_dok_pindah'] = $dok_pindah['nm_dokter'];
+
+        $result[] = $row;
+      }
+
+      echo $this->draw('transferpasien.html', ['transfer_pasien' => $result]);
+      exit();
+
+    }
+
+    public function postSaveTransferPasien()
+    {
+      $user = $this->core->getUserInfo('username', null, true);
+      $hasil_penunjang = implode(';', $_POST['hasil_penunjang']);
+
+      $this->db('transfer_pasien')->save([
+        'no_rawat' => $_POST['no_rawat'],
+        'tanggal' => date('Y-m-d'),
+        'jam' => date('H:i:s'),
+        'ruang_awal' => 'B0054',
+        'dokter_awal' => $_POST['kode_dok'],
+        'petugas_awal' => $_POST['kode_petugas'],
+        'tgl_awal' => $_POST['tglmasuk'],
+        'ruang_pindah' => $_POST['kdruang'],
+        'dokter_pindah' => $_POST['kd_dpjp'],
+        'petugas_pindah' => $_POST['kode_petugas2'],
+        'tgl_pindah' => $_POST['tglpindah'],
+        'alasan_pindah' => $_POST['alasan'],
+        'hasil_penunjang' => $hasil_penunjang,
+        'keterangan' => $_POST['keterangan'],
+        'user' => $user,
+        'status' => 'Ralan'
+      ]);
+      exit();
     }
 
     public function postProviderList()

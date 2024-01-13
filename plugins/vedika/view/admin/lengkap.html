@@ -93,6 +93,11 @@
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
                             <br>
+                          	{if: $this->core->getUserInfo('role') == 'admin'}
+                            <a href="{$value.ubahresume}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modalResume">
+                              <i class="fa fa-pencil"></i> Ubah Resume
+                            </a>
+                            {/if}
                             <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
                               <i class="fa fa-refresh"></i> Grouping Inacbgs
                             </a>
@@ -201,6 +206,13 @@
 </article>
 <!-- Modal -->
 <div class="modal fade" id="moduleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" style="width:1120px;" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modalResume" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" style="width:1120px;" role="document">
         <div class="modal-content">
             ...

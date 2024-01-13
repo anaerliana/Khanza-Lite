@@ -681,7 +681,7 @@ class Admin extends AdminModule
     $sql = "SELECT bundles_hais.tanggal 
             FROM bundles_hais 
             WHERE DATE_FORMAT(bundles_hais.tanggal, '%Y-%m') = DATE_FORMAT(CURDATE(), '%Y-%m') 
-            AND kd_kamar = 'IGDK' 
+            AND (kd_kamar = 'IGDK' OR kd_kamar = 'IGD01') 
             GROUP BY bundles_hais.tanggal";
     $stmt = $this->db()->pdo()->prepare($sql);
     $stmt->execute();
@@ -814,6 +814,7 @@ class Admin extends AdminModule
         ])
         ->where('bundles_hais.tanggal', $row['tanggal'])
         ->where('bundles_hais.kd_kamar', 'IGDK')
+        ->orWhere('bundles_hais.kd_kamar', 'IGD01')
         ->toArray();
       $this->assign['list'][] = $row;
     }
@@ -839,7 +840,7 @@ class Admin extends AdminModule
       if (!empty($date1) && !empty($date2)) {
         $sql = "SELECT COUNT(no_rawat) as jml_no_rawat, tanggal
             FROM bundles_hais 
-            WHERE kd_kamar = 'IGDK' 
+            WHERE (kd_kamar = 'IGDK' OR kd_kamar = 'IGD01') 
             AND tanggal BETWEEN '$date1' AND '$date2' 
             GROUP BY tanggal";
 
@@ -974,6 +975,7 @@ class Admin extends AdminModule
             ])
             ->where('bundles_hais.tanggal', $row['tanggal'])
             ->where('bundles_hais.kd_kamar', 'IGDK')
+            ->orWhere('bundles_hais.kd_kamar', 'IGD01')
             ->toArray();
           $this->assign['list'][] = $row;
         }

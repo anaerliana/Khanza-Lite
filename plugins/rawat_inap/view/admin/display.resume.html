@@ -26,7 +26,7 @@
           <td style="white-space: nowrap;">
             {if: $value.ket_keluar == ''}
             <a href="#toggle-button" data-no_rawat="{$value.no_rawat}" data-ket_keluar="{$value.ket_keluar}" class="btn btn-xs btn-info toggle-button">
-              <i class="fa fa-edit"></i> <span class="button-text"> Siap Klaim</span>
+              <i class="fa fa-edit"></i> <span class="button-text"> Resume Lengkap</span>
             </a>
             {else}
             <a href="#toggle-button" data-no_rawat="{$value.no_rawat}" data-ket_keluar="{$value.ket_keluar}" class="btn btn-xs btn-danger toggle-button">
@@ -103,7 +103,7 @@ $(document).ready(function() {
                     }, function(data) {
                       // button.closest('tr').remove();
                         // Update status tombol menjadi "Batal Set"
-                        button.attr("data-ket_keluar", "Siap Klaim");
+                        button.attr("data-ket_keluar", "Resume Lengkap");
                         buttonText.text("Batal Set");
                         button.addClass('btn-danger');
                         button.removeClass('btn-info');
@@ -121,9 +121,9 @@ $(document).ready(function() {
                     $.post(url, {
                         no_rawat: no_rawat
                     }, function(data) {
-                        // Update status tombol menjadi "Siap Klaim"
+                        // Update status tombol menjadi "Resume Lengkap"
                         button.attr("data-ket_keluar", "");
-                        buttonText.text("Siap Klaim");
+                        buttonText.text("Resume Lengkap");
                         button.removeClass('btn-danger');
                         button.addClass('btn-info');
                         $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+

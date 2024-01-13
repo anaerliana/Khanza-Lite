@@ -23,7 +23,8 @@ class Admin extends AdminModule
             'Laporan Stok Opname' => 'lap_stokopname',
             'Layananan Kefarmasian' => 'lappelfar',
             'Mutasi Obat' => 'mutasiobat',
-            'Input Stok Opname' => 'input_stokopname'
+            'Input Stok Opname' => 'input_stokopname',
+            'Cari Data Obat' => 'data_obat'
         ];
     }
 
@@ -43,6 +44,7 @@ class Admin extends AdminModule
         ['name' => 'Layananan Kefarmasian', 'url' => url([ADMIN, 'laporan_farmasi', 'lappelfar']), 'icon' => 'file', 'desc' => 'Laporan Layananan Kefarmasian'],
         ['name' => 'Mutasi Obat', 'url' => url([ADMIN, 'laporan_farmasi', 'mutasiobat']), 'icon' => 'file', 'desc' => 'Mutasi Obat'],
         ['name' => 'Input Stok Opname', 'url' => url([ADMIN, 'laporan_farmasi', 'input_stokopname']), 'icon' => 'file', 'desc' => 'Input Stok Opname'],
+        ['name' => 'Cari Data Obat', 'url' => url([ADMIN, 'laporan_farmasi', 'data_obat']), 'icon' => 'file', 'desc' => 'Cari Data Obat'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -949,6 +951,76 @@ class Admin extends AdminModule
           echo $output;
         }  
       exit();
+    }
+
+    public function getData_Obat($page = 1)
+    {
+        $this->_addHeaderFiles();
+        $perpage = '10';
+        $phrase = isset($_GET['s']) ? $_GET['s'] : '';
+        
+        if (!$phrase) {
+            return $this->draw('data_obat.html', ['data_obat' => $this->assign]);
+        }
+        
+        $totalRecords = $this->db('databarang')
+            ->like('nama_brng', '%' . $phrase . '%')
+            ->asc('nama_brng')
+            ->toArray();
+    
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'laporan_farmasi', 'data_obat', '&s=' . $phrase]));
+        $this->assign['pagination'] = $pagination->nav('pagination', '5');
+        $this->assign['totalRecords'] = $totalRecords;
+    
+        $offset = $pagination->offset();
+        $rows = $this->db('databarang')
+            ->like('nama_brng', '%' . $phrase . '%')
+            ->asc('nama_brng')
+            ->offset($offset)
+            ->limit($perpage)
+            ->toArray();
+        
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+              $satuan = $this->db('kodesatuan')->where('kode_sat', $row['kode_sat'])->oneArray();
+              $row['satuan'] = $satuan['satuan'];
+
+              $harga_beli = number_format($row['h_beli'], 0, ',', '.');
+              $row['harga_beli'] = $harga_beli;
+
+              $harga_ralan = number_format($row['ralan'], 0, ',', '.');
+              $row['harga_ralan'] = $harga_ralan;
+            
+              $stokgudang = $this->db('gudangbarang')->where('kode_brng', $row['kode_brng'])->where('kd_bangsal', 'B0002')->oneArray();
+              $row['stok_gudang'] = $stokgudang['stok'];
+            
+              $stokrajal = $this->db('gudangbarang')->where('kode_brng', $row['kode_brng'])->where('kd_bangsal', 'B0014')->oneArray();
+              $rajal_stok = $stokrajal['stok'];
+              $rajal = number_format($rajal_stok, 2, ',', '.');
+              $row['stok_rajal'] = $rajal;
+            
+              $stokranap = $this->db('gudangbarang')->where('kode_brng', $row['kode_brng'])->where('kd_bangsal', 'B0001')->oneArray();
+              $ranap_stok = $stokranap['stok'];
+              $ranap = number_format($ranap_stok, 2, ',', '.');
+              $row['stok_ranap'] = $ranap;
+
+              $stokigd = $this->db('gudangbarang')->where('kode_brng', $row['kode_brng'])->where('kd_bangsal', 'B0018')->oneArray();
+              $igd_stok = $stokigd['stok'];
+              $igd = number_format($igd_stok, 2, ',', '.');
+              $row['stok_igd'] = $igd;
+
+            
+              $total = $row['stok_gudang'] + $row['stok_rajal'] + $row['stok_ranap'] + $row['stok_igd'] ;
+              // $row['total_stok'] = $total;
+              $totalstok = number_format($total, 2, ',', '.');
+              $row['total_stok'] = $totalstok;
+          
+                $this->assign['list'][] = $row;
+            }
+        }
+    
+        return $this->draw('data_obat.html', ['data_obat' => $this->assign]);
     }
 
     public function getCSS()

@@ -38,6 +38,9 @@
         <div class="form-group">
           <a href="#" id="ventilator" class="form-control btn" style="background-image: linear-gradient(to right, rgb(221, 46, 233) , rgb(194, 48, 192)); color: white;">Ventilator</a>
         </div>
+        <div class="form-group">
+          <a href="#" class="btn btn-danger form-control" id="lap_op">Laporan Operasi</a>
+        </div>
       </div>
     </div>
   </div>
@@ -467,3 +470,14 @@ $("#form_soap").on("click", "#resume_ranap", function(event){
   window.open(loadURL, '_blank');
 });
 </script>
+<script type="text/javascript">
+  $("#form_soap").on("click", "#lap_op", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    console.log(no_rawat);
+    var loadURL = baseURL + '/rawat_inap/lapop?no_rawat=' + no_rawat + '&t=' + mlite.token;
+    
+    window.open(loadURL, '_blank');
+  });
+  </script>
