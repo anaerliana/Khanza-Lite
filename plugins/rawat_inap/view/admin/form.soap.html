@@ -442,24 +442,6 @@
   });
 </script>
 <script type="text/javascript">
-  $("#form_soap").on("click","#buka_resumepasien", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var no_rawat = $('input:text[name=no_rawat]').val();
-    // console.log(no_rawat);
-    var loadURL =  baseURL + '/rawat_inap/resumepasien?no_rawat=' + no_rawat + '&t=' + mlite.token;
-    // console.log(loadURL);
-    var modal = $('#resumeModal');
-    var modalContent = $('#resumeModal .modal-content');
-    
-    modal.off('show.bs.modal');
-    modal.on('show.bs.modal', function () {
-        modalContent.load(loadURL);
-    }).modal();
-    // return false;
-  });
-</script>
-<script type="text/javascript">
 $("#form_soap").on("click", "#resume_ranap", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();

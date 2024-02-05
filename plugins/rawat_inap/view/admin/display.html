@@ -165,8 +165,9 @@ pointer-events: none;
                 {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
                 disabled
                 {/if}
-              ><span class="fa fa-send"></span> BPJS</button>
+              ><span class="fa fa-send"></span> BPJS </button>
             {/if}
+            {$value.sep}
           {else}
             {$value.png_jawab}
           {/if}

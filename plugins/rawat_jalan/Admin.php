@@ -56,6 +56,7 @@ class Admin extends AdminModule
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->toArray();
         $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
+        $username = $this->core->getUserInfo('username', null, true);
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
         return $this->draw('manage.html',
@@ -65,6 +66,7 @@ class Admin extends AdminModule
             'master_berkas_digital' => $master_berkas_digital,
             'maping_dokter_dpjpvclaim' => $maping_dokter_dpjpvclaim,
             'maping_poli_bpjs' => $maping_poli_bpjs,
+            'username' => $username,
             'responsivevoice' => $responsivevoice,
             'admin_mode' => $this->settings->get('settings.admin_mode')
           ]
@@ -91,9 +93,14 @@ class Admin extends AdminModule
           $status_bayar = $_POST['status_bayar'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $username = $this->core->getUserInfo('username', null, true);
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 
+        'cek_vclaim' => $cek_vclaim,
+        'responsivevoice' => $responsivevoice, 
+        'username' => $username,
+        'admin_mode' => $this->settings->get('settings.admin_mode')]);
         exit();
     }
 
@@ -346,12 +353,56 @@ class Admin extends AdminModule
         $_POST['status_poli'] = 'Lama';
 
         $query = $this->db('reg_periksa')->save($_POST);
+        //log
+        $cariRegist = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        $noRawat = $cariRegist['no_rawat'];
+        $tgl_registrasi = $cariRegist['tgl_registrasi'];
+        $jam = $cariRegist['jam_reg'];
+        $kd_dokter = $cariRegist['kd_dokter'];
+        $no_rkm_medis = $cariRegist['no_rkm_medis'];
+        $poli = $cariRegist['kd_poli'];
+        $kd_pj = $cariRegist['kd_pj'];
+        $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"action":"Simpan"}'; 
+        $this->db('mlite_log')->save([
+            'username' => $this->core->getUserInfo('username', null, true),
+            'group_table' => 'reg_periksa',
+            'value_field' => $value,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
       } else {
+        //log
+        $cariRegist = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        $noRawat = $cariRegist['no_rawat'];
+        $tgl_registrasi = $cariRegist['tgl_registrasi'];
+        $jam = $cariRegist['jam_reg'];
+        $kd_dokter = $cariRegist['kd_dokter'];
+        $no_rkm_medis = $cariRegist['no_rkm_medis'];
+        $poli = $cariRegist['kd_poli'];
+        $kd_pj = $cariRegist['kd_pj'];
+        
         $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
           'kd_poli' => $_POST['kd_poli'],
           'kd_dokter' => $_POST['kd_dokter'],
           'kd_pj' => $_POST['kd_pj']
         ]);
+        
+        //log
+        $cariReg = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+        $noRawat2 = $cariReg['no_rawat'];
+        $tgl_registrasi2 = $cariReg['tgl_registrasi'];
+        $jam2 = $cariReg['jam_reg'];
+        $kd_dokter2 = $cariReg['kd_dokter'];
+        $no_rkm_medis2 = $cariReg['no_rkm_medis'];
+        $poli2 = $cariReg['kd_poli'];
+        $kd_pj2 = $cariReg['kd_pj'];
+      
+       $value = '{"dari":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"ke":{"no_rawat":"'.$noRawat2.'","tgl_registrasi":"'.$tgl_registrasi2.'","jam_reg":"'.$jam2.'","kd_dokter":"'.$kd_dokter2.'","no_rkm_medis":"'.$no_rkm_medis2.'","kd_poli":"'.$poli2.'","kd_pj":"'.$kd_pj2.'"},"action":"Edit"}';
+       $this->db('mlite_log')->save([
+          'username' => $this->core->getUserInfo('username', null, true),
+          'group_table' => 'reg_periksa',
+          'value_field' => $value,
+          'created_at' => date('Y-m-d H:i:s')
+      ]);        
       }
 
       if($query) {
@@ -811,6 +862,22 @@ class Admin extends AdminModule
 
     public function postHapus()
     {
+      $cariRegist = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+      $noRawat = $cariRegist['no_rawat'];
+      $tgl_registrasi = $cariRegist['tgl_registrasi'];
+      $jam = $cariRegist['jam_reg'];
+      $kd_dokter = $cariRegist['kd_dokter'];
+      $no_rkm_medis = $cariRegist['no_rkm_medis'];
+      $poli = $cariRegist['kd_poli'];
+      $kd_pj = $cariRegist['kd_pj'];
+      
+      $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"action":"Hapus"}';
+      $this->db('mlite_log')->save([
+          'username' => $this->core->getUserInfo('username', null, true),
+          'group_table' => 'reg_periksa',
+          'value_field' => $value,
+          'created_at' => date('Y-m-d H:i:s')
+      ]);
       $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
     }
@@ -1066,6 +1133,8 @@ class Admin extends AdminModule
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $jumlah_total = $jumlah_total + $row['biaya_rawat'];
           $row['provider'] = 'rawat_jl_pr';
+          $cek_role = $this->db('mlite_users')->where('username', $row['nip'])->oneArray();
+          $row['role'] = $cek_role['role'];
           $rawat_jl_pr[] = $row;
         }
       }

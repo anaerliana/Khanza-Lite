@@ -151,6 +151,8 @@ class Admin extends AdminModule
         ->toArray();
       $row['dokter'] = $dpjp_ranap;
       $row['con_no_rawat'] = convertNorawat($row['no_rawat']);
+      $cek_sep = $this->db('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
+      $row['sep'] = $cek_sep['no_sep'];
       $this->assign['list'][] = $row;
     }
 
@@ -556,6 +558,21 @@ class Admin extends AdminModule
           'no_rawat' => $_POST['no_rawat'],
           'kd_jenis_prw' => $_POST['kd_jenis_prw'],
           'nip' => $_POST['kode_provider3'],
+          'tgl_perawatan' => $_POST['tgl_perawatan'],
+          'jam_rawat' => $_POST['jam_rawat'],
+          'material' => $jns_perawatan['material'],
+          'bhp' => $jns_perawatan['bhp'],
+          'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
+          'kso' => $jns_perawatan['kso'],
+          'menejemen' => $jns_perawatan['menejemen'],
+          'biaya_rawat' => $jns_perawatan['total_byrdr']
+        ]);
+      }
+      if ($_POST['provider'] == 'rawat_inap_gizi') {
+        $this->db('rawat_inap_pr')->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+          'nip' => $_POST['kode_provider4'],
           'tgl_perawatan' => $_POST['tgl_perawatan'],
           'jam_rawat' => $_POST['jam_rawat'],
           'material' => $jns_perawatan['material'],
@@ -1089,6 +1106,38 @@ class Admin extends AdminModule
       }
     }
 
+    exit();
+  }
+
+  public function getHapusBerkas($no_rawat, $nama_file)
+  {
+    $berkasPerawatan = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->like('lokasi_file', '%'.$nama_file.'%')->oneArray();
+    if ($berkasPerawatan) {
+      $lokasi_file = $berkasPerawatan['lokasi_file'];
+      $fileLoc = WEBAPPS_PATH . '/berkasrawat/' . $lokasi_file;
+      if (file_exists($fileLoc)) {
+        //unlink($fileLoc);
+        $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
+        $cetakBerkas = json_encode($berkasPerawatan, JSON_UNESCAPED_SLASHES);
+        $this->db('mlite_log')->save([
+                'username' => $this->core->getUserInfo('username', null, true),
+                'group_table' => 'berkasdigital',
+                'value_field' => $cetakBerkas,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+        // echo $cetakBerkas;
+
+        if ($query) {
+          echo 'Hapus berkas sukses';
+        } else {
+          echo 'Hapus berkas gagal';
+        }
+      } else {
+        echo 'Hapus berkas gagal, berkas tidak ditemukan.';
+      }
+    } else {
+      echo 'Hapus berkas gagal, tidak ada data perawatan.';
+    }
     exit();
   }
 
@@ -1660,6 +1709,25 @@ class Admin extends AdminModule
       $output = '';
       $key = "%" . $_POST["query"] . "%";
       $rows = $this->db('mlite_users')->like('fullname', $key)->where('role', 'apoteker')->limit(10)->toArray();
+      $output = '';
+      if (count($rows)) {
+        foreach ($rows as $row) {
+          $output .= '<li class="list-group-item link-class">' . $row["username"] . ': ' . $row["fullname"] . '</li>';
+        }
+      }
+      echo $output;
+    }
+
+    exit();
+  }
+
+  public function postProviderList4()
+  {
+
+    if (isset($_POST["query"])) {
+      $output = '';
+      $key = "%" . $_POST["query"] . "%";
+      $rows = $this->db('mlite_users')->like('fullname', $key)->where('role', 'gizi')->limit(10)->toArray();
       $output = '';
       if (count($rows)) {
         foreach ($rows as $row) {
