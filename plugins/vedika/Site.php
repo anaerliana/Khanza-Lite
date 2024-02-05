@@ -1000,6 +1000,262 @@ class Site extends SiteModule
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
         $this->tpl->set('rujukan_internal_poli_detail', $rujukan_internal_poli_detail);
+        
+        $shk_bayi = $this->db('shk_bayi')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->oneArray();
+
+        $lap_op = []; 
+        $mlite_lap_op = $this->db('mlite_lap_op')
+            ->join('dokter', 'dokter.kd_dokter=mlite_lap_op.kd_dokter')
+            ->where('mlite_lap_op.no_rawat', $this->revertNorawat($id))
+            ->isNull('deleted_at')
+            ->desc('tanggal_op')
+            ->toArray();
+
+        foreach ($mlite_lap_op as $value) {
+            $operasi = $this->db('operasi')
+                ->select([ 
+                    'no_rawat'          => 'operasi.no_rawat',
+                    'tgl_operasi'       => 'operasi.tgl_operasi',
+                    'asisten_operator1' => 'operasi.asisten_operator1',
+                    'perawaat_resusitas'=> 'operasi.perawaat_resusitas',
+                    'dokter_anestesi'   => 'operasi.dokter_anestesi',
+                    'jenis_anasthesi'   => 'operasi.jenis_anasthesi',
+                    'kode_paket'        => 'operasi.kode_paket',
+                    'kategori'          => 'operasi.kategori',
+                    'nm_asisten'        => 'petugas.nama',
+                    'nm_perawat'        => 'perawat.nama',
+                    'dok_anestesi'      => 'dokter.nm_dokter',
+                    'nm_paket'          => 'paket_operasi.nm_perawatan'
+                ])
+                ->join('petugas', 'operasi.asisten_operator1=petugas.nip')
+                ->join('petugas as perawat', 'operasi.perawaat_resusitas=perawat.nip')
+                ->join('dokter', 'operasi.dokter_anestesi=dokter.kd_dokter')
+                ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
+                ->where('operasi.no_rawat', $value['no_rawat'])
+                ->where('operasi.tgl_operasi', $value['tanggal_op'])
+                ->toArray();
+
+            $jadwal_operasi = [];
+            foreach ($operasi as $detail_operasi) {
+                $tgl_operasi = substr($detail_operasi['tgl_operasi'], 0, 10);
+                $bookingOperasi = $this->db('booking_operasi')
+                    ->where('no_rawat', $detail_operasi['no_rawat'])
+                    ->where('kode_paket', $detail_operasi['kode_paket'])
+                    ->where('tanggal', $tgl_operasi)
+                    ->oneArray();
+
+                $value['booking_operasi'] = [];
+                if (!empty($bookingOperasi)) {
+                  $detail_operasi['tanggal'] = $bookingOperasi['tanggal'];
+                  $detail_operasi['jam_mulai'] = $bookingOperasi['jam_mulai'];
+                  $detail_operasi['jam_selesai'] = $bookingOperasi['jam_selesai'];
+                  //hitung lama operasi
+                  $jamMulai = strtotime($bookingOperasi['jam_mulai']);
+                  $jamAkhir = strtotime($bookingOperasi['jam_selesai']);
+
+                  if ($jamMulai !== false && $jamAkhir !== false) {
+                      $lamaOperasiDetik = $jamAkhir - $jamMulai;
+                      $lamaOperasiJam = floor($lamaOperasiDetik / 3600);
+                      $lamaOperasiDetik %= 3600;
+                      $lamaOperasiMenit = floor($lamaOperasiDetik / 60);
+                      $lamaOperasiDetik %= 60;
+
+                    if ($lamaOperasiJam > 0) {
+                        $lamaOperasi = $lamaOperasiJam . ' jam ' . $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                    } else {
+                        $lamaOperasi = $lamaOperasiMenit . ' menit ' . $lamaOperasiDetik . ' detik';
+                    }
+                  $detail_operasi['lama_operasi'] = $lamaOperasi;
+                }
+              } 
+              $jadwal_operasi[] = $detail_operasi;
+            }
+
+            $value['jadwal_operasi'] = $jadwal_operasi;
+            $lap_op[] = $value;
+        } 
+
+        $balance_cairan = [];
+        $mlite_balance_cairan = $this->db('mlite_balance_cairan')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->isNull('deleted_at')
+          ->group('tanggal')
+          ->toArray();
+          foreach ($mlite_balance_cairan as $value) {
+             $value['hasil_bc'] = $this->db('mlite_balance_cairan')
+                ->where('no_rawat', $value['no_rawat'])
+                ->where('tanggal', $value['tanggal'])
+                ->toArray();
+
+              $value['total']  = $this->db('mlite_balance_cairan')
+                ->select([
+                  'no_rawat'    => 'no_rawat',
+                  'tanggal'     => 'tanggal',
+                  'total_intake'=> 'COALESCE(SUM(total_in), 0)',
+                  'total_output'=> 'COALESCE(SUM(total_out), 0)',
+                  'hasil_bc'    => 'COALESCE(SUM(total_in), 0) - COALESCE(SUM(total_out), 0)'])
+                ->where('no_rawat', $value['no_rawat']) 
+                ->where('tanggal', $value['tanggal'])
+                ->toArray();
+            $balance_cairan[] = $value;
+          }
+
+        $tindak_ventilator = $this->db('mlite_ventilator')
+          ->where('mlite_ventilator.no_rawat', $this->revertNorawat($id))
+          ->isNull('deleted_at')
+          ->toArray(); 
+          $ventilator = [];
+          foreach ($tindak_ventilator as $value) {
+          $value['nm_dokter'] = $this->db('dokter')
+                ->where('kd_dokter', $value['kd_dokter'])
+                ->toArray();
+
+          $date1 = new \DateTime($value['intubasi']);
+          $date2 = new \DateTime($value['ekstubasi']);
+
+          $diff = $date2->diff($date1);
+
+          $minutes = $diff->h + ($diff->days*24);
+          $value['range'] = $minutes .' Jam';
+
+          $ventilator[] = $value;
+         } 
+
+        $ekstrapiramidal = $this->db('mlite_ekstrapiramidal')
+            ->where('no_rawat', $this->revertNorawat($id))
+            ->isNull('deleted_at')
+            ->toArray();
+
+        $formatHasil = [];
+        foreach ($ekstrapiramidal as &$value) {
+            $hasil = json_decode($value['hasil'], true);
+
+            $hasilPiramidal = [];
+
+            foreach ($hasil as $key => $result) {
+                $question = '';
+                $answer = '';
+
+                switch ($key) {
+                                   case 'piramidal1':
+                            $question = 'Perlambatan atau kelemahan yang nyata, ada kesan kesulitan dalam menjalankan tugas rutin';
+                            break;
+                        case 'piramidal2':
+                            $question = 'Kesulitan dalam berjalan dan menjaga keseimbangan';
+                            break;
+                        case 'piramidal3':
+                            $question = 'Kesulitan dalam menelan atau berbicara';
+                            break;
+                        case 'piramidal4':
+                            $question = 'Kekakuan, postur tubuh kaku';
+                            break;
+                        case 'piramidal5':
+                            $question = 'Kram atau nyeri pada anggota gerak, tulang belakang, dan atau leher';
+                            break;
+                        case 'piramidal6':
+                            $question = 'Gelisah, nervous, tidak bisa diam';
+                            break;
+                        case 'piramidal7':
+                            $question = 'Tremor, gemetar';
+                            break;
+                        case 'piramidal8':
+                            $question = 'Krisis okulogirik atau postur tubuh yang abnormal yang dipertahankan';
+                            break;
+                        case 'piramidal9':
+                            $question = 'Banyak ludah';
+                            break;
+                        case 'piramidal10':
+                            $question = 'Gerakan-gerakan yang involunter yang abnormal (diskinesia) dari anggota gerak atau badan';
+                            break;
+                        case 'piramidal11':
+                            $question = 'Gerakan-gerakan yang involunter yang abnormal (diskinesia) dari lidah, rahang, bibir atau muka';
+                            break;
+                        case 'piramidal12':
+                            $question = 'Pusing pada saat berdiri (khususnya pada pagi hari)';
+                            break;
+                }
+
+                switch ($result) {
+                    case '1':
+                        $answer = 'Tidak Ada';
+                        break;
+                    case '2':
+                        $answer = 'Ringan';
+                        break;
+                    case '3':
+                        $answer = 'Sedang';
+                        break;
+                    case '4':
+                        $answer = 'Berat';
+                        break;
+                    default:
+                        $answer = '';
+                        break;
+                }
+
+                $hasilPiramidal[] = [
+                    'Pertanyaan' => $question,
+                    'Jawaban' => $answer,
+                ];
+            }
+
+            $value['formatHasil'] = $hasilPiramidal;
+            $formatHasil[] = $value;
+        }
+
+        $pasien_mati = $this->db('pasien_mati')
+          ->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
+          ->oneArray();
+        if ($pasien_mati) {
+            $pasien_mati['tgl_lahir'] = date('d/m/Y', strtotime($pasien['tgl_lahir']));;
+            $ruangan =  $this->db('kamar_inap')
+              ->select(['ruang' => 'concat(kamar.kd_kamar," ",bangsal.nm_bangsal)',
+                        'stts_pulang' => 'kamar_inap.stts_pulang'])
+              ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+              ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+              ->where('kamar_inap.no_rawat', $this->revertNorawat($id))
+              ->desc('kamar_inap.tgl_masuk')
+              ->limit(1)
+              ->oneArray();
+            $pasien_mati['ruangan'] = $ruangan['ruang'];
+            $pasien_mati['stts'] = $ruangan['stts_pulang'];
+            $pasien_mati['bulantahun_kematian'] = date('m/Y', strtotime($pasien_mati['tanggal']));
+            $nm_inisial = $pasien['nm_pasien'];
+            $pasien_mati['inisial'] = substr($nm_inisial, 0, 1);
+            $ttl = date('d - m - Y', strtotime($pasien['tgl_lahir'])); $pasien_mati['ttl'] = 'tanggal ' . date('d', strtotime($pasien['tgl_lahir'])) . ' bulan ' . date('m', strtotime($pasien['tgl_lahir'])) . ' tahun ' . date('Y', strtotime($pasien['tgl_lahir']));
+            $pasien_mati['waktu_meninggal'] = date('d/m/Y', strtotime($pasien_mati['tanggal']));
+            $pasien_mati['umur_meninggal'] = $pasien['umur'];
+            $pasien_mati['tglpemulasaran'] = date('d/m/Y', strtotime($pasien_mati['tgl_pemulasaran']));
+
+            if ($reg_periksa['stts'] != 'DOA') {
+
+              $lama_inap = $this->db('kamar_inap')->select(['lama' => 'SUM(lama)'])->where('no_rawat',  $this->revertNorawat($id))->oneArray();
+
+              $tgl_igd = new \DateTime($reg_periksa['tgl_registrasi'] . ' ' . $reg_periksa['jam_reg']);
+              $tgl_meninggal = new \DateTime($pasien_mati['tanggal'] . ' ' . $pasien_mati['jam']);
+
+              $diff = $tgl_meninggal->diff($tgl_igd);
+              $totalMinutes = $diff->h * 60 + $diff->i + ($diff->days * 24 * 60);
+
+              $jam = floor($totalMinutes / 60);
+              $menit = $totalMinutes % 60;
+                if ($totalMinutes <= 46 * 60) {
+                    // Jika kurang dari atau sama dengan 46 jam, tampilkan dalam jam dan menit
+                    $pasien_mati['lama_dirawat'] = $jam . ' Jam ' . $menit . ' Menit';
+                } else {
+                    // Jika lebih dari 46 jam, tampilkan dalam hari
+                    $lamainap = $lama_inap['lama'];
+                    $pasien_mati['lama_dirawat'] = $lamainap. ' Hari';
+                }
+            } else {
+                $pasien_mati['lama_dirawat'] = 'DOA';
+            }
+
+            $nmdok =  $this->db('dokter')->where('kd_dokter', $pasien_mati['kd_dokter'])->oneArray();
+            $pasien_mati['nm_dokter'] = $nmdok['nm_dokter'];
+        }
 
         $this->tpl->set('pasien', $pasien);
         $this->tpl->set('reg_periksa', $reg_periksa);
@@ -1020,15 +1276,20 @@ class Site extends SiteModule
         $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
         $this->tpl->set('hasil_radiologi', $hasil_radiologi);
         $this->tpl->set('klinis_radiologi', $klinis_radiologi);
-    	  $this->tpl->set('saran_rad', $saran_rad);
+    	$this->tpl->set('saran_rad', $saran_rad);
         $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
         $this->tpl->set('pemberian_obat', $pemberian_obat);
         $this->tpl->set('obat_operasi', $obat_operasi);
         $this->tpl->set('resep_pulang', $resep_pulang);
         $this->tpl->set('laporan_operasi', $laporan_operasi);
-
         $this->tpl->set('berkas_digital', $berkas_digital);
         $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
+        $this->tpl->set('shk_bayi', $shk_bayi);
+        $this->tpl->set('lap_op', $lap_op);
+        $this->tpl->set('balance_cairan', $balance_cairan);
+        $this->tpl->set('ventilator', $ventilator);
+        $this->tpl->set('ekstrapiramidal', $ekstrapiramidal);
+        $this->tpl->set('pasien_mati', $pasien_mati);
         $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('vedika', htmlspecialchars_array($this->settings('vedika')));
