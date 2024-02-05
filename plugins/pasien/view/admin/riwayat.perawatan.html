@@ -311,6 +311,26 @@
         </td>
       </tr>
       {/if}
+      {if: $value.konter}
+      <tr class="isi">
+        <td valign="top" width="20%">Konsul Terapi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            {loop: $value.konter as $data}
+            <tr align="center">
+              <td valign="top" width="20%" bgcolor="#eee">Tanggal / Jam</td>
+              <td valign="top" width="80%" bgcolor="#eee">Konsul Terapi</td>
+            </tr>
+            <tr>
+              <td valign="top" width="20%">{$data.tgl_perawatan} {$data.jam_rawat}</td>
+              <td valign="top" width="20%">{?=nl2br($data.rtl)?}</td>
+            </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
       {if: $value.pemeriksaan_ralan ||  $value.pemeriksaan_ranap}
       <tr class="isi">
         <td valign="top" width="20%">Pemeriksaan</td>
@@ -674,26 +694,6 @@
             {/loop}
           </table>
           {/if}
-        </td>
-      </tr>
-      {/if}
-      {if: $value.konter}
-      <tr class="isi">
-        <td valign="top" width="20%">Konsul Terapi</td>
-        <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">
-          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-            {loop: $value.konter as $data}
-            <tr align="center">
-              <td valign="top" width="20%" bgcolor="#eee">Tanggal / Jam</td>
-              <td valign="top" width="80%" bgcolor="#eee">Konsul Terapi</td>
-            </tr>
-            <tr>
-              <td valign="top" width="20%">{$data.tgl_perawatan} {$data.jam_rawat}</td>
-              <td valign="top" width="20%">{?=nl2br($data.rtl)?}</td>
-            </tr>
-            {/loop}
-          </table>
         </td>
       </tr>
       {/if}
@@ -1063,6 +1063,36 @@
             </tr>
              {/loop}
             {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+      {if: $value.berkas_digital}
+      <tr class="isi">
+        <td valign="top" width="20%">Berkas Digital</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align="center">
+              <td>
+                <div class="row">
+                    <div class="gallery">
+                    {loop: $value.berkas_digital as $data}
+                        <div class="col-sm-6 col-md-6">
+                            <div class="thumbnail">
+                                <a href="{?=url(WEBAPPS_URL.'/berkasrawat/'.$data.lokasi_file)?}" class="images">
+                                    <img src="{?=url(WEBAPPS_URL.'/berkasrawat/'.$data.lokasi_file)?}" class="img-responsive">
+                                </a>
+                            </div>
+                            <div class="caption">
+                              {$data.nama}
+                            </div>
+                        </div>
+                    {/loop}
+                    </div>
+                </div>
+              </td>
+            </tr>
           </table>
         </td>
       </tr>
