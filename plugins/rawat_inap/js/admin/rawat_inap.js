@@ -1715,14 +1715,13 @@ $("#formkerohanian").on("click", "#simpan_kerohanian", function(event){
   var kd_kamar        = $('input:text[name=kd_kamar]').val();
   var noorder         = $('input:text[name=noorder]').val();
   var tgl_permintaan  = $('input:text[name=tgl_permintaan]').val();
-  var perujuk         = $('input:hidden[name=nip]').val();
-
+  var nip             = $('input:hidden[name=nip]').val();
   var kd_rh           = $("#kd_rh").val();
   var petugas         = $('input:text[name=petugas]').val();
   var keterangan      = $('textarea[name=keterangan]').val();
   console.log({
     no_rawat, kd_kamar, noorder,
-    tgl_permintaan, perujuk, kd_rh, keterangan
+    tgl_permintaan, nip, kd_rh, keterangan
   });
 
   var url = baseURL + '/rawat_inap/savekerohanian?t=' + mlite.token;
@@ -1731,7 +1730,7 @@ $("#formkerohanian").on("click", "#simpan_kerohanian", function(event){
     kd_kamar: kd_kamar,
     noorder : noorder,
     tgl_permintaan : tgl_permintaan,
-    perujuk : perujuk,
+    nip : nip,
     kd_rh : kd_rh,
     petugas : petugas,
     keterangan : keterangan,

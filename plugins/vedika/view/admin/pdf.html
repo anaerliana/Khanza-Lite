@@ -3196,11 +3196,11 @@ Ralan :
                 <div style="display: inline-block; text-align: center;">
                   <p style="margin: 0;">Pihak yang menerima</p><br>
                  <div class="qrcodePJ"></div><br>
-                   <p style="margin: 0;"><u>{$reg_periksa.p_jawab}</u></p>
+                   <p style="margin: 0;">{if: $pasien.namakeluarga == '-'}{$pasien.namakeluarga}{else}<u>{$pasien.namakeluarga}</u>{/if}</p>
                   </div>
                   <script>
                       jQuery('.qrcodePJ:last').qrcode({
-                          text: "Pihak yang menerima: {$reg_periksa.p_jawab}"
+                          text: "Pihak yang menerima: {$pasien.namakeluarga}"
                       });
                   </script>
               </td>

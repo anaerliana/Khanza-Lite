@@ -1424,10 +1424,15 @@ class Admin extends AdminModule
         ->oneArray();
       $row['kd_kamar'] = $kamar_inap['kd_kamar'];
 
-      $petugas = $this->db('petugas')
+      $perujuk = $this->db('petugas')
         ->where('nip', $row['perujuk'])
         ->oneArray();
-      $row['nama'] = $petugas['nama'];
+      $row['nm_perujuk'] = $perujuk['nama'];
+
+      $petugas = $this->db('petugas')
+       ->where('nip', $row['petugas'])
+       ->oneArray();
+      $row['nm_petugas'] = $petugas['nama'];
 
       $row['ppk'] = $this->db('permintaan_pemeriksaan_kerohanian')
         ->select(['nama_rh' => 'jns_kerohanian.nama_rh'])
@@ -1459,8 +1464,8 @@ class Admin extends AdminModule
           'no_rawat' => $_POST['no_rawat'],
           'kd_kamar' => $_POST['kd_kamar'],
           'tgl_permintaan' => $_POST['tgl_permintaan'],
-          'perujuk' => $_POST['perujuk'],
-          'petugas' => $this->core->getUserInfo('username', null, true),
+          'perujuk' => $this->core->getUserInfo('username', null, true),
+          'petugas' => $_POST['nip'],
           'keterangan' => $_POST['keterangan']
         ]);
 
