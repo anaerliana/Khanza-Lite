@@ -53,26 +53,56 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $date = date('Y-m-d');
-        $rows = $this->db('pasien')
-          ->join('reg_periksa', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
-          ->join('penjab', 'reg_periksa.kd_pj = penjab.kd_pj')
-          ->join('resep_obat', 'reg_periksa.no_rawat = resep_obat.no_rawat')
-          ->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')
-          ->join('databarang', 'resep_dokter.kode_brng = databarang.kode_brng')
-          ->where('reg_periksa.kd_poli', '<>', 'IGDK')
-          ->where('reg_periksa.kd_poli', '<>', 'U0027')
-          ->where('reg_periksa.status_lanjut', 'Ralan')
-          ->where('reg_periksa.tgl_registrasi', $date)
-          ->group('resep_dokter.no_resep')
-          ->select('pasien.nm_pasien')
-          ->select('reg_periksa.no_rkm_medis')
-          ->select('pasien.alamat')
-          ->select('penjab.png_jawab')
-          ->select('reg_periksa.stts')
-          ->select('reg_periksa.status_bayar')
-          ->select('resep_obat.no_resep')
-          ->select('group_concat(distinct concat(databarang.nama_brng, \' [ \', resep_dokter.jml, \' ] \', resep_dokter.aturan_pakai) SEPARATOR \'<br>\') AS resep_dokter')
-          ->toArray();
+        // $rows = $this->db('reg_periksa')
+        //   ->join('resep_obat', 'resep_obat.no_rawat = reg_periksa.no_rawat')
+        //   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+        //   ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+        //   ->join('resep_dokter', 'resep_obat.no_resep = resep_dokter.no_resep')
+        //   ->join('databarang', 'resep_dokter.kode_brng = databarang.kode_brng')
+        //   ->select([
+        //     'no_rkm_medis' => 'reg_periksa.no_rkm_medis',
+        //     'stts' => 'reg_periksa.stts',
+        //     'status_bayar' => 'reg_periksa.status_bayar',
+        //     'nm_pasien' => 'pasien.nm_pasien',
+        //     'alamat' => 'pasien.alamat',
+        //     'no_resep' => 'resep_obat.no_resep',
+        //     'png_jawab' => 'penjab.png_jawab',
+        //     'resep_dokter' => 'group_concat(distinct concat(databarang.nama_brng, \' [ \', resep_dokter.jml, \' ] \', resep_dokter.aturan_pakai) SEPARATOR \'<br>\')'
+        //   ])
+        //   ->where('reg_periksa.kd_poli', '<>', 'IGD01')
+        //   ->where('reg_periksa.kd_poli', '<>', 'PL049')
+        //   ->where('reg_periksa.status_lanjut', 'Ralan')
+        //   ->where('reg_periksa.tgl_registrasi', $date)
+        //   ->group('resep_dokter.no_resep')
+        //   ->toArray();
+        $sql = "SELECT 
+          reg_periksa.no_rkm_medis AS no_rkm_medis,
+          reg_periksa.stts AS stts,
+          reg_periksa.status_bayar AS status_bayar,
+          pasien.nm_pasien AS nm_pasien,
+          pasien.alamat AS alamat,
+          resep_obat.no_resep AS no_resep,
+          penjab.png_jawab AS png_jawab,
+          GROUP_CONCAT(
+              DISTINCT CONCAT(databarang.nama_brng, ' [ ', resep_dokter.jml, ' ] ', resep_dokter.aturan_pakai) 
+              SEPARATOR '<br>'
+          ) AS resep_dokter
+          FROM 
+              reg_periksa
+          JOIN resep_obat ON resep_obat.no_rawat = reg_periksa.no_rawat
+          JOIN pasien ON pasien.no_rkm_medis = reg_periksa.no_rkm_medis
+          JOIN penjab ON penjab.kd_pj = reg_periksa.kd_pj
+          JOIN resep_dokter ON resep_obat.no_resep = resep_dokter.no_resep
+          JOIN databarang ON resep_dokter.kode_brng = databarang.kode_brng
+          WHERE (reg_periksa.kd_poli != 'IGDK' OR reg_periksa.kd_poli  !='IGD01')
+              AND (reg_periksa.kd_poli != 'U0027' OR reg_periksa.kd_poli != 'PL049')
+              AND reg_periksa.status_lanjut = 'Ralan'
+              AND reg_periksa.tgl_registrasi = '$date'
+          GROUP BY resep_dokter.no_resep";
+
+        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
 
         $this->assign['list'] = [];
         if (count($rows)) {
@@ -95,9 +125,12 @@ class Admin extends AdminModule
           $date2 = $_POST['date2'];
 
           if (!empty($date1) && !empty($date2)) {
-                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, b.stts, b.status_bayar, d.no_resep, GROUP_CONCAT(f.nama_brng, ' [', e.jml, '] - ', e.aturan_pakai SEPARATOR '<br>') AS resep_dokter 
-                FROM pasien a, reg_periksa b, penjab c, resep_obat d, resep_dokter e, databarang f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli != 'IGDK' AND b.kd_poli != 'U0027' AND b.status_lanjut = 'Ralan' AND b.no_rawat = d.no_rawat AND d.no_resep = e.no_resep AND e.kode_brng = f.kode_brng
-                 AND b.tgl_registrasi BETWEEN '$date1' AND '$date2' GROUP BY e.no_resep";
+                $sql = "SELECT c.nm_pasien, a.no_rkm_medis, c.alamat, d.png_jawab, a.stts, a.status_bayar, b.no_resep, 
+                        GROUP_CONCAT(f.nama_brng, ' [', e.jml, '] - ', e.aturan_pakai SEPARATOR '<br>') AS resep_dokter 
+                        FROM reg_periksa a, resep_obat b,  pasien c, penjab d, resep_dokter e, databarang f
+                        WHERE  a.no_rawat = b.no_rawat AND a.no_rkm_medis = c.no_rkm_medis AND a.kd_pj = d.kd_pj AND b.no_resep = e.no_resep AND e.kode_brng = f.kode_brng 
+                        AND (a.kd_poli != 'IGDK' OR a.kd_poli  !='IGD01')  AND (a.kd_poli != 'U0027' OR a.kd_poli  !='PL049')  AND a.status_lanjut = 'Ralan'
+                        AND a.tgl_registrasi BETWEEN '$date1' AND '$date2' GROUP BY e.no_resep";
               
           $stmt = $this->db()->pdo()->prepare($sql);
           $stmt->execute();
@@ -129,7 +162,11 @@ class Admin extends AdminModule
 
         $date = $_POST['date1'];
         if (!empty($date)){
-          $sql = "SELECT d.nama_brng, a.kode_brng, c.nm_pasien, b.no_rkm_medis, a.no_rawat, a.jml, e.nm_dokter, a.biaya_obat, f.png_jawab FROM detail_pemberian_obat a, reg_periksa b, pasien c, databarang d, dokter e, penjab f WHERE a.no_rawat = b.no_rawat AND b.no_rkm_medis = c.no_rkm_medis AND a.kode_brng = d.kode_brng AND b.kd_dokter = e.kd_dokter AND b.kd_pj = f.kd_pj AND a.tgl_perawatan = '$date' ORDER BY a.no_rawat ASC";
+          $sql = "SELECT d.nama_brng, a.kode_brng, c.nm_pasien, b.no_rkm_medis, a.no_rawat, a.jml, e.nm_dokter, a.biaya_obat, f.png_jawab 
+          FROM detail_pemberian_obat a, reg_periksa b, pasien c, databarang d, dokter e, penjab f 
+          WHERE a.no_rawat = b.no_rawat AND b.no_rkm_medis = c.no_rkm_medis AND a.kode_brng = d.kode_brng AND b.kd_dokter = e.kd_dokter AND b.kd_pj = f.kd_pj 
+          AND a.tgl_perawatan = '$date' 
+          ORDER BY a.no_rawat ASC";
             
         $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
@@ -213,7 +250,7 @@ class Admin extends AdminModule
               $sql = "SELECT a.no_resep,a.tgl_perawatan,a.no_rawat,b.no_rkm_medis,c.nm_pasien,d.nm_dokter,a.tgl_peresepan, e.nm_poli as ruang,a.status as stts,
                   if (a.jam_peresepan=a.jam,'Belum Terlayani','Sudah Terlayani') as status FROM resep_obat as a,reg_periksa as b,
                   pasien as c,dokter as d,poliklinik as e where a.tgl_peresepan >='$date1' and a.tgl_peresepan <= '$date2'
-                  AND a.no_rawat=b.no_rawat AND b.no_rkm_medis=c.no_rkm_medis and b.kd_poli=e.kd_poli and b.kd_poli NOT IN ('IGDK','U0027','U0019')
+                  AND a.no_rawat=b.no_rawat AND b.no_rkm_medis=c.no_rkm_medis and b.kd_poli=e.kd_poli and b.kd_poli NOT IN ('IGDK','U0027','U0019','IGD01','PL049','PL051')
                   AND a.kd_dokter = d.kd_dokter";
             }
             if($status == 'Ranap') {

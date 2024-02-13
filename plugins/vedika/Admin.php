@@ -2590,6 +2590,7 @@ class Admin extends AdminModule
           ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
           ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
           ->where('kamar_inap.no_rawat', $this->revertNorawat($id))
+          ->where('kamar_inap.stts_pulang', 'Meninggal')
           ->desc('kamar_inap.tgl_masuk')
           ->limit(1)
           ->oneArray();
