@@ -1002,6 +1002,34 @@ class Admin extends AdminModule
     if (!$this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
       $this->db('pemeriksaan_ranap')->save($_POST);
     } else {
+      
+      $cariSoap = $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray();
+      $noRawat = $cariSoap['no_rawat'];
+      $tgl_perawatan = $cariSoap['tgl_perawatan'];
+      $jam = $cariSoap['jam_rawat'];
+      $suhu_tubuh = $cariSoap['suhu_tubuh'];
+      $tensi = $cariSoap['tensi'];
+      $nadi = $cariSoap['nadi'];
+      $respirasi = $cariSoap['respirasi'];
+      $tinggi = $cariSoap['tinggi'];
+      $berat = $cariSoap['berat'];
+      $spo2 = $cariSoap['spo2'];
+      $gcs = $cariSoap['gcs'];
+      $keluhan = $cariSoap['keluhan'];
+      $pemeriksaan = $cariSoap['pemeriksaan'];
+      $alergi = $cariSoap['alergi'];
+      $penilaian = $cariSoap['penilaian'];
+      $rtl = $cariSoap['rtl'];
+      $instruksi = $cariSoap['instruksi'];
+      $evaluasi = $cariSoap['evaluasi'];
+      $nip = $cariSoap['nip'];
+      $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_perawatan":"'.$tgl_perawatan.'","jam_rawat":"'.$jam.'","suhu_tubuh":"'.$suhu_tubuh.'","tensi":"'.$tensi.'","nadi":"'.$nadi.'","respirasi":"'.$respirasi.'","berat":"'.$berat.'","spo2":"'.$spo2.'","gcs":"'.$gcs.'","keluhan":"'.$keluhan.'","pemeriksaan":"'.$pemeriksaan.'","alergi":"'.$alergi.'","penilaian":"'.$penilaian.'","rtl":"'.$rtl.'","instruksi":"'.$instruksi.'","evaluasi":"'.$evaluasi.'","nip":"'.$nip.'"},"action":"Edit_"}'; 
+      $this->db('mlite_log')->save([
+          'username' => $this->core->getUserInfo('username', null, true),
+          'group_table' => 'pemeriksaan_ranap',
+          'value_field' => $value,
+          'created_at' => date('Y-m-d H:i:s')
+      ]);
       $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
     }
     // echo json_encode($_POST);
@@ -1010,6 +1038,33 @@ class Admin extends AdminModule
 
   public function postHapusSOAP()
   {
+    $cariSoap = $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray();
+    $noRawat = $cariSoap['no_rawat'];
+    $tgl_perawatan = $cariSoap['tgl_perawatan'];
+    $jam = $cariSoap['jam_rawat'];
+    $suhu_tubuh = $cariSoap['suhu_tubuh'];
+    $tensi = $cariSoap['tensi'];
+    $nadi = $cariSoap['nadi'];
+    $respirasi = $cariSoap['respirasi'];
+    $tinggi = $cariSoap['tinggi'];
+    $berat = $cariSoap['berat'];
+    $spo2 = $cariSoap['spo2'];
+    $gcs = $cariSoap['gcs'];
+    $keluhan = $cariSoap['keluhan'];
+    $pemeriksaan = $cariSoap['pemeriksaan'];
+    $alergi = $cariSoap['alergi'];
+    $penilaian = $cariSoap['penilaian'];
+    $rtl = $cariSoap['rtl'];
+    $instruksi = $cariSoap['instruksi'];
+    $evaluasi = $cariSoap['evaluasi'];
+    $nip = $cariSoap['nip'];
+    $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_perawatan":"'.$tgl_perawatan.'","jam_rawat":"'.$jam.'","suhu_tubuh":"'.$suhu_tubuh.'","tensi":"'.$tensi.'","nadi":"'.$nadi.'","respirasi":"'.$respirasi.'","berat":"'.$berat.'","spo2":"'.$spo2.'","gcs":"'.$gcs.'","keluhan":"'.$keluhan.'","pemeriksaan":"'.$pemeriksaan.'","alergi":"'.$alergi.'","penilaian":"'.$penilaian.'","rtl":"'.$rtl.'","instruksi":"'.$instruksi.'","evaluasi":"'.$evaluasi.'","nip":"'.$nip.'"},"action":"Hapus_"}'; 
+    $this->db('mlite_log')->save([
+        'username' => $this->core->getUserInfo('username', null, true),
+        'group_table' => 'pemeriksaan_ranap',
+        'value_field' => $value,
+        'created_at' => date('Y-m-d H:i:s')
+    ]);
     $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->delete();
     exit();
   }
