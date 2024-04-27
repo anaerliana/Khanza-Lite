@@ -362,7 +362,7 @@ class Admin extends AdminModule
         $no_rkm_medis = $cariRegist['no_rkm_medis'];
         $poli = $cariRegist['kd_poli'];
         $kd_pj = $cariRegist['kd_pj'];
-        $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"action":"Simpan"}'; 
+        $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'. $tgl_registrasi .'","jam_reg":"'. $jam .'", "kd_dokter":"'. $kd_dokter .'","no_rkm_medis":"'. $no_rkm_medis .'","kd_poli":"'. $poli .'","kd_pj":"'. $kd_pj .'"},"action":"Simpan_"}'; 
         $this->db('mlite_log')->save([
             'username' => $this->core->getUserInfo('username', null, true),
             'group_table' => 'reg_periksa',
@@ -396,7 +396,7 @@ class Admin extends AdminModule
         $poli2 = $cariReg['kd_poli'];
         $kd_pj2 = $cariReg['kd_pj'];
       
-       $value = '{"dari":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"ke":{"no_rawat":"'.$noRawat2.'","tgl_registrasi":"'.$tgl_registrasi2.'","jam_reg":"'.$jam2.'","kd_dokter":"'.$kd_dokter2.'","no_rkm_medis":"'.$no_rkm_medis2.'","kd_poli":"'.$poli2.'","kd_pj":"'.$kd_pj2.'"},"action":"Edit"}';
+       $value = '{"dari":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"ke":{"no_rawat":"'.$noRawat2.'","tgl_registrasi":"'.$tgl_registrasi2.'","jam_reg":"'.$jam2.'","kd_dokter":"'.$kd_dokter2.'","no_rkm_medis":"'.$no_rkm_medis2.'","kd_poli":"'.$poli2.'","kd_pj":"'.$kd_pj2.'"},"action":"Edit_"}';
        $this->db('mlite_log')->save([
           'username' => $this->core->getUserInfo('username', null, true),
           'group_table' => 'reg_periksa',
@@ -871,7 +871,7 @@ class Admin extends AdminModule
       $poli = $cariRegist['kd_poli'];
       $kd_pj = $cariRegist['kd_pj'];
       
-      $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"action":"Hapus"}';
+      $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_registrasi":"'.$tgl_registrasi.'","jam_reg":"'.$jam.'","kd_dokter":"'.$kd_dokter.'","no_rkm_medis":"'.$no_rkm_medis.'","kd_poli":"'.$poli.'","kd_pj":"'.$kd_pj.'"},"action":"Hapus_"}';
       $this->db('mlite_log')->save([
           'username' => $this->core->getUserInfo('username', null, true),
           'group_table' => 'reg_periksa',
@@ -1256,27 +1256,93 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
-      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
-      $check_db->execute();
-      $check_db = $check_db->fetch();
-
-      if($check_db) {
-        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
-      } else {
-        unset($_POST['instruksi']);
-      }
+        // //$check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+        // $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'penilaian'");
+        // $check_db->execute();
+        // $check_db = $check_db->fetch();
+  
+        // if($check_db) {
+        //   $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+        //   $_POST['created_at'] = date('Y-m-d H:i:s');
+        // } else {
+        //  // unset($_POST['instruksi']);
+        //    unset($_POST['penilaian']);
+        // }
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+      $_POST['created_at'] = date('Y-m-d H:i:s');
 
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
-        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
+        $cariSoap = $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray();
+        $noRawat = $cariSoap['no_rawat'];
+        $tgl_perawatan = $cariSoap['tgl_perawatan'];
+        $jam = $cariSoap['jam_rawat'];
+        $suhu_tubuh = $cariSoap['suhu_tubuh'];
+        $tensi = $cariSoap['tensi'];
+        $nadi = $cariSoap['nadi'];
+        $respirasi = $cariSoap['respirasi'];
+        $tinggi = $cariSoap['tinggi'];
+        $berat = $cariSoap['berat'];
+        $gcs = $cariSoap['gcs'];
+        $keluhan = $cariSoap['keluhan'];
+        $pemeriksaan = $cariSoap['pemeriksaan'];
+        $alergi = $cariSoap['alergi'];
+        $imun = $cariSoap['imun_ke'];
+        $rtl = $cariSoap['rtl'];
+        $penilaian = $cariSoap['penilaian'];
+        $nip = $cariSoap['nip'];
+
+        $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_perawatan":"'.$tgl_perawatan.'","jam_rawat":"'.$jam.'","suhu_tubuh":"'.$suhu_tubuh.'","tensi":"'.$tensi.'","nadi":"'.$nadi.'","respirasi":"'.$respirasi.'","berat":"'.$berat.'","gcs":"'.$gcs.'","keluhan":"'.$keluhan.'","pemeriksaan":"'.$pemeriksaan.'","alergi":"'.$alergi.'","imun":"'.$imun.'","rtl":"'.$rtl.'","penilaian":"'.$penilaian.'","nip":"'.$nip.'"},"action":"Edit_"}'; 
+          $this->db('mlite_log')->save([
+              'username' => $this->core->getUserInfo('username', null, true),
+              'group_table' => 'pemeriksaan_ralan',
+              'value_field' => $value,
+              'created_at' => date('Y-m-d H:i:s')
+          ]);
+          $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
       }
       exit();
+
+      // if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
+      //   $this->db('pemeriksaan_ralan')->save($_POST);
+      // } else {
+      //   $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
+      // }
+      // exit();
     }
 
     public function postHapusSOAP()
     {
+      $cariSoap = $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray();
+      $noRawat = $cariSoap['no_rawat'];
+      $tgl_perawatan = $cariSoap['tgl_perawatan'];
+      $jam = $cariSoap['jam_rawat'];
+      $suhu_tubuh = $cariSoap['suhu_tubuh'];
+      $tensi = $cariSoap['tensi'];
+      $nadi = $cariSoap['nadi'];
+      $respirasi = $cariSoap['respirasi'];
+      $tinggi = $cariSoap['tinggi'];
+      $berat = $cariSoap['berat'];
+      $gcs = $cariSoap['gcs'];
+      $keluhan = $cariSoap['keluhan'];
+      $pemeriksaan = $cariSoap['pemeriksaan'];
+      $alergi = $cariSoap['alergi'];
+      $imun = $cariSoap['imun_ke'];
+      $rtl = $cariSoap['rtl'];
+      $penilaian = $cariSoap['penilaian'];
+      $nip = $cariSoap['nip'];
+
+      $value = '{"data":{"no_rawat":"'.$noRawat.'","tgl_perawatan":"'.$tgl_perawatan.'","jam_rawat":"'.$jam.'","suhu_tubuh":"'.$suhu_tubuh.'","tensi":"'.$tensi.'", "nadi":"'.$nadi.'","respirasi":"'.$respirasi.'","berat":"'.$berat.'", "gcs":"'.$gcs.'", "keluhan":"'.$keluhan.'", "pemeriksaan":"'.$pemeriksaan.'","alergi":"'.$alergi.'","imun":"'.$imun.'","rtl":"'.$rtl.'","penilaian":"'.$penilaian.'","nip":"'.$nip.'"},"action":"Hapus_"}'; 
+        $this->db('mlite_log')->save([
+            'username' => $this->core->getUserInfo('username', null, true),
+            'group_table' => 'pemeriksaan_ralan',
+            'value_field' => $value,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+    
       $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->delete();
+      
       exit();
     }
 
@@ -1342,10 +1408,8 @@ class Admin extends AdminModule
             echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
           }
       }
-
       exit();
-
-    }
+  }
 
   public function getHapusBerkas($no_rawat, $nama_file)
   {
@@ -1356,6 +1420,13 @@ class Admin extends AdminModule
       if (file_exists($fileLoc)) {
         //unlink($fileLoc);
         $query = $this->db('berkas_digital_perawatan')->where('no_rawat', revertNorawat($no_rawat))->where('lokasi_file', $lokasi_file)->delete();
+        $cetakBerkas = json_encode($berkasPerawatan, JSON_UNESCAPED_SLASHES);
+        $this->db('mlite_log')->save([
+                'username' => $this->core->getUserInfo('username', null, true),
+                'group_table' => 'berkasdigital',
+                'value_field' => $cetakBerkas,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
         if ($query) {
           echo 'Hapus berkas sukses';
         } else {
