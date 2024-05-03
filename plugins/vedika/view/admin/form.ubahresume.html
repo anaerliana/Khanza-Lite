@@ -34,7 +34,8 @@
     <div class="col-md-6">
       <div class="form-group">
         <label>Riwayat Perawatan</label>
-        <input type="text" name="keluhan_utama" class="form-control" required value="{$resume.keluhan_utama}" />
+         <!-- <input type="text" name="keluhan_utama" class="form-control" required value="{$resume.keluhan_utama}" /> -->
+        <input type="text" name="jalannya_penyakit" class="form-control" required value="{$resume.jalannya_penyakit}" />
       </div>
     </div>
     <div class="col-md-6">
@@ -145,7 +146,8 @@
 
     var no_rawat = $('input:text[name=no_rawat]').val();
     var diagnosa_awal = $('input:text[name=diagnosa_awal]').val();
-    var keluhan_utama = $('input:text[name=keluhan_utama]').val();
+   // var keluhan_utama = $('input:text[name=keluhan_utama]').val();
+    var jalannya_penyakit = $('input:text[name=jalannya_penyakit]').val();
     var pemeriksaan_fisik = $('textarea[name=pemeriksaan_fisik]').val();
     var pemeriksaan_penunjang = $('textarea[name=pemeriksaan_penunjang]').val();
     var hasil_laborat = $('textarea[name=hasil_laborat]').val();
@@ -163,7 +165,8 @@
     var json = {
       no_rawat: no_rawat,
       diagnosa_awal: diagnosa_awal,
-      keluhan_utama: keluhan_utama,
+      //keluhan_utama: keluhan_utama,
+      jalannya_penyakit:jalannya_penyakit,
       pemeriksaan_fisik: pemeriksaan_fisik,
       pemeriksaan_penunjang: pemeriksaan_penunjang,
       hasil_laborat: hasil_laborat,

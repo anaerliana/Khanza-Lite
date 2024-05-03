@@ -555,8 +555,8 @@ Ralan :
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             {loop: $pemeriksaan_ranap}
             <tr align="center">
-                <td valign="top" width="9%" bgcolor="#FFFAF8">Tanggal</td>
-                <td valign="top" width="9%" bgcolor="#FFFAF8">Suhu(C}</td>
+                <td valign="top" width="13%" bgcolor="#FFFAF8">Tanggal</td>
+                <td valign="top" width="5%" bgcolor="#FFFAF8">Suhu(C}</td>
                 <td valign="top" width="9%" bgcolor="#FFFAF8">Tensi</td>
                 <td valign="top" width="9%" bgcolor="#FFFAF8">Nadi(/menit}</td>
                 <td valign="top" width="9%" bgcolor="#FFFAF8">RR(/menit}</td>
@@ -567,7 +567,7 @@ Ralan :
              </tr>
              <tr>
                 <td valign="top">{$value.tgl_perawatan} {$value.jam_rawat} <br>{$value.nama}<br>
-               ({if: $value.departemen == 'RI'}Perawat{elseif: $value.departemen =='SP'}Dokter Spesialis{elseif: $value.departemen =='UM'}Dokter Umum{elseif: $value.bidang=='Instalasi Farmasi (Ikhtiar)'}Apoteker{elseif: $value.bidang=='Instalasi Gizi (Mubarak)'}Nutrisionis{elseif: $value.bidang=='Irsyad'}Fisioterapis{elseif: $value.bidang=='Unit Hemodialisis (Shabirin)'}Hemodialisis{else}-{/if})</td>
+               ({if: $value.departemen == 'RI'}Perawat {$value.bidang} {elseif: $value.departemen =='SP'}Dokter Spesialis{elseif: $value.departemen =='UM'}Dokter Umum{elseif: $value.bidang=='Instalasi Farmasi (Ikhtiar)'}Apoteker{elseif: $value.bidang=='Instalasi Gizi (Mubarak)'}Nutrisionis{elseif: $value.bidang=='Irsyad'}Fisioterapis{elseif: $value.bidang=='Unit Hemodialisis (Shabirin)'}Hemodialisis{else}-{/if})</td>
                 <td valign="top">{$value.suhu_tubuh}</td>
                 <td valign="top">{$value.tensi}</td>
                 <td valign="top">{$value.nadi}</td>
@@ -1395,8 +1395,8 @@ Ralan :
         <td colspan="7" padding="0">
           <hr />
           <center>
-            <font color="333333" size="3" face="Tahoma"><b><u>PERSETUJUAN KOMITE MEDIK</u></b></font>
-            <font color="333333" size="2" face="Tahoma"><br>Nomor : 445 / &nbsp; &nbsp;  / RSUD / 2024</font>
+            <font color="333333" size="3" face="Tahoma"><b><u>PERSETUJUAN SUPERVISOR SEVERITY LEVEL III</u></b></font>
+            <font color="333333" size="2" face="Tahoma"><br>Nomor : 445 / eSL3-01 / RSUD / 2024</font>
           </center>
         </td>
       </tr>
@@ -1428,7 +1428,7 @@ Ralan :
                 :
               </td>
               <td width="400">
-                dr. Iin Trilistiyanti Nugrahani, Sp.A.M.Biomed
+                 dr. Resmilasari
               </td>
             </tr>
           </table>
@@ -1446,8 +1446,8 @@ Ralan :
               <td width="20">
                 :
               </td>
-              <td width="400">
-                Ketua Komite Medik RSUD H.Damanhuri Barabai
+              <td width="450">
+                Supervisor Severity Level III RSUD H.Damanhuri Barabai
               </td>
             </tr>
           </table>
@@ -1570,10 +1570,10 @@ Ralan :
             <tr>
               <td width="20">
               </td>
-              <td width="250">
+              <td width="250" style="vertical-align: top;">
                 Diagnosa Sekunder
               </td>
-              <td width="20">
+              <td width="20" style="vertical-align: top;">
                 :
               </td>
               <td width="900">
@@ -1634,7 +1634,7 @@ Ralan :
                 :
               </td>
               <td width="500">
-                {$data.hari_prwtn} Hari
+                {$data.hari_prwtn} 
               </td>
             </tr>
           </table>
@@ -1666,7 +1666,7 @@ Ralan :
               <td width="20">
               </td>
               <td width="1000">
-               Telah dilakukan audit medik di Komite Medik RSUD H.Damanhuri Barabai dan mempertimbangkan bahwa pasien tersebut telah menjalani perawatan yang sesuai dengan ketentuan dan prosedur yang ditetapkan. Demikian surat persetujuan ini kami buat dengan sebenarnya.
+               Telah dilakukan audit medik di RSUD H.Damanhuri Barabai dan mempertimbangkan bahwa pasien tersebut telah menjalani perawatan yang sesuai dengan ketentuan dan prosedur yang ditetapkan. Demikian surat persetujuan ini kami buat dengan sebenarnya.
               </td>
             </tr>
           </table>
@@ -1680,13 +1680,13 @@ Ralan :
               </td>
                 <td width="350" halign="center" valign="bottom">
                 <div style="display: inline-block; text-align: center;">
-                <p style="margin: 0;">Barabai, {$data.tglsl}<br> Ketua Komite Medik<br>RSUD H. Damanhuri Barabai</p><br>
+                <p style="margin: 0;">Barabai, {$data.tglsl}<br> Supervisor Severity Level III <br>RSUD H. Damanhuri Barabai</p><br>
                <div class="qrcodeKomdik"></div><br>
-                 <p style="margin: 0;"><u>dr. Iin Trilistiyanti Nugrahani, Sp.A.M.Biomed</u><br>NIP. 19801024 200604 2 029</p>
+                 <p style="margin: 0;"><u>dr. Resmilasari</u><br>NIP. 19770508 200803 2 002</p>
                 </div>
                 <script>
                     jQuery('.qrcodeKomdik:last').qrcode({
-                        text: "DPJP: dr. Iin Trilistiyanti Nugrahani, Sp.A.M.Biomed"
+                        text: "DPJP: dr. Resmilasari"
                     });
                 </script>
             </td>
@@ -3706,6 +3706,132 @@ Ralan :
    {/if}
   </fieldset>
   <br><br><br>
+<!-- Verifikasi Pending -->
+  {if: $verifikasi_pending}
+  <fieldset style="page-break-before:always;">
+    <tr>
+      <td colspan="7" padding="0">
+        <hr />
+        <center>
+          <font color="333333" size="5" face="Tahoma">Konfirmasi Verifikasi Klaim BPJS Kesehatan</font>
+        </center>
+      </td>
+    </tr>
+    <table>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="250">
+                No. RM / No.Rawat
+              </td>
+              <td>
+                :
+              </td>
+              <td width="250">
+                {$pasien.no_rkm_medis} ( {$verifikasi_pending.no_rawat} )
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="250">
+                Nama Pasien
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$pasien.nm_pasien}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="250">
+                Tgl Masuk
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$verifikasi_pending.mrs}
+              </td><td width="80">
+                Tgl Keluar
+              </td>
+              <td>
+                :
+              </td>
+              <td width="250">
+                {$verifikasi_pending.krs}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="250">
+                JKN
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$verifikasi_pending.nosep} ( {$pasien.no_peserta}  )
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="250">
+                Hasil Konfirmasi
+              </td>
+              <td>
+                :
+              </td>
+              <td width="350">
+                {$verifikasi_pending.keterangan}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <div style="float: right;">
+      <br>
+      <p>
+      <div style="display: inline-block; text-align: center;">
+        <p style="margin: 0;">Dokter</p><br>
+        <div class="qrcodeBedah"></div><br>
+        <p style="margin: 0;">{$verifikasi_pending.nm_dokter}</p>
+      </div>
+      <script>
+        jQuery('.qrcodeBedah:last').qrcode({
+          text: "DPJP: {$verifikasi_pending.nm_dokter}"
+        });
+      </script>
+      </p>
+      <br>
+    </div>
+  </fieldset>
+  <br><br><br>
+  {/if}
+  <!-- Verifikasi Pending -->
   {if: $berkas_digital_pasien}
   <!-- Berkas Digital -->
   <fieldset style="page-break-before:always;">

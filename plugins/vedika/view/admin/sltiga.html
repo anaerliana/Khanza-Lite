@@ -84,7 +84,7 @@
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
                             <br>
-                            {if: $this->core->getUserInfo('role') == 'admin' || $value.isubahresume == true && $value.status_lanjut == 'Ranap'}
+                            {if: $this->core->getUserInfo('role') == 'admin' || $value.isubahresume == true}
                             <a href="{$value.ubahresume}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#modalResume">
                               <i class="fa fa-pencil"></i> Ubah Resume
                             </a>
@@ -93,9 +93,10 @@
                             <a href="#" class="btn {if: $value.sl == 'false'}btn-success sltiga{else}btn-danger sltigabatal{/if} btn-xs" id="{?=convertNorawat($value.no_rawat)?}" data-no_rawat="{?=convertNorawat($value.no_rawat)?}" data-nm_pasien = "{$value.nm_pasien}">
                               <i class="fa fa-pencil"></i> SL III
                             </a>
-                            <!-- <a href="#" class="btn btn-danger btn-xs hapus_vedika" data-no_sep="{$value.no_sep}">
-                              <i class="fa fa-trash"></i> Hapus
-                            </a> -->
+                            <br>
+                            <a href="#" class="btn btn-warning btn-xs verif_sl" data-id_sl="{$value.id}" data-nm_pasien = "{$value.nm_pasien}">
+                              <i class="fa fa-check"></i> Verifikasi SL III
+                            </a>
                           {/if}
                         </td>
       									<td>
@@ -142,10 +143,13 @@
                               <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
                             </tr>
                             <tr>
-                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Dx. Utama</a></td><td>: {$value.kd_penyakit} - {$value.nm_penyakit}</td>
+                              <td width='120px'>Diagnosa</td><td>{loop: $value.diagnosa_penyakit as $pdx} {$pdx.kd_penyakit} {$pdx.nm_penyakit}<br>{/loop}</td>
                             </tr>
                             <tr>
-                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahprosedur',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Pros. Utama</a></td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
+                              <td width='120px'></td><td>--------------------------------------------------</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'>Prosedur</td><td>{loop: $value.prosedur as $ppx} {$ppx.kode}  {$ppx.deskripsi_panjang} <br> {/loop}</td>
                             </tr>
                           </table>
                         </td>
@@ -199,43 +203,6 @@
   $('.gallery').lightbox();
 </script>
 <script type="text/javascript">
-  // ketika tombol hapus ditekan
-  $("#display").on("click",".hapus_vedika", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/vedika/hapus?t=' + mlite.token;
-    var no_sep = $(this).attr("data-no_sep");
-
-    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
-      // ketika ditekan tombol ok
-      if (result){
-        window.open(baseURL + '/vedika/hapus/' + no_sep + '?t=' + mlite.token, '_blank');
-      }
-    });
-    event.stopPropagation();
-    return false;
-  });
-</script>
-<script type="text/javascript">
-  // ketika tombol hapus ditekan
-  $("#display").on("click",".hapus_berkas", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/vedika/hapusberkas?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-    var nama_file = $(this).attr("data-nama_file");
-
-    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
-      // ketika ditekan tombol ok
-      if (result){
-        window.open(baseURL + '/vedika/hapusberkas/' + no_rawat + '/' + nama_file + '?t=' + mlite.token, '_blank');
-      }
-    });
-    event.stopPropagation();
-    return false;
-  });
-</script>
-<script type="text/javascript">
   $("#display").on("click",".sltiga", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -287,6 +254,30 @@
             document.getElementById(no_rawat).classList.remove('btn-danger');
           } else {
             alert('Data pasien ' + nm_pasien + ' gagal dibatalkan SL III!!');
+          }
+        });
+      }
+    });
+  });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".verif_sl", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var id_sl = $(this).attr("data-id_sl");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var loadURL =  baseURL + '/vedika/verifsltiga?t=' + mlite.token;
+
+    bootbox.confirm("Apakah Anda ingin memverifikasi SL III untuk pasien ini?", function(result){
+      if (result){
+        $.post(loadURL, {
+          id_sl: id_sl
+        } ,function(data) {
+          console.log(data);
+          if (data == 200) {
+            alert('Data pasien ' + nm_pasien + ' sudah diverifikasi untuk SL III!!');
+          } else {
+            alert('Data pasien ' + nm_pasien + ' gagal diverifikasi untuk SL III!!');
           }
         });
       }
